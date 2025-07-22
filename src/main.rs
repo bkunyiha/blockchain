@@ -51,11 +51,11 @@ enum Command {
     #[structopt(name = "reindexutxo", about = "rebuild UTXO index set")]
     Reindexutxo,
     #[structopt(name = "startnode", about = "Start a node")]
-    StartNode {
-        #[structopt(name = "connect_node", help = "Connect to a node")]
-        connect_node: ConnectNode,
+    StartNode {        
         #[structopt(name = "miner", help = "Enable mining mode and send reward to ADDRESS")]
         miner: Option<String>,
+        #[structopt(name = "connect_nodes", help = "Connect to a node")]
+        connect_nodes: Vec<ConnectNode>,
     },
 }
 
@@ -176,8 +176,8 @@ fn main() {
             println!("Done! There are {} transactions in the UTXO set.", count);
         }
         Command::StartNode {
-            connect_node,
             miner,
+            connect_nodes,            
         } => {
             if let Some(addr) = miner {
                 if !validate_address(addr.as_str()) {
@@ -187,13 +187,11 @@ fn main() {
                 GLOBAL_CONFIG.set_mining_addr(addr.parse().unwrap());
             }
 
-            println!("HERE");
-
             let blockchain = Blockchain::new_blockchain();
             let sockert_addr = GLOBAL_CONFIG.get_node_addr();
             println!("Starting node at address: {}", sockert_addr);
-            println!("Will try connect to node: {:?}", connect_node);
-            Server::new(blockchain.clone()).run(&sockert_addr, connect_node);
+            println!("Will try connect to nodes: {:?}", connect_nodes);
+            Server::new(blockchain.clone()).run(&sockert_addr, connect_nodes);
         }
     }
 }

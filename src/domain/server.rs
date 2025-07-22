@@ -60,6 +60,19 @@ pub enum ConnectNode {
     Remote(SocketAddr),
 }
 
+impl ConnectNode {
+    pub fn is_remote(&self) -> bool {
+        matches!(self, ConnectNode::Remote(_))
+    }
+
+    pub fn get_addr(&self) -> SocketAddr {
+        match self {
+            ConnectNode::Remote(addr) => *addr,
+            ConnectNode::Local => *CENTERAL_NODE,
+        }
+    }
+}
+
 impl FromStr for ConnectNode {
     type Err = std::net::AddrParseError;
 
@@ -82,20 +95,28 @@ impl Server {
         Server { blockchain }
     }
 
-    pub fn run(&self, addr: &SocketAddr, connect_node: ConnectNode) {
-        let listener = TcpListener::bind(addr).unwrap();
+    pub fn run(&self, addrs: &SocketAddr, connect_nodes: Vec<ConnectNode>) {
+        let listener = TcpListener::bind(addrs).unwrap();
 
         // If the node is not the central node, send the version message to the central node.
-        if !addr.eq(&CENTERAL_NODE) {
+        if !addrs.eq(&CENTERAL_NODE) {
             let best_height = self.blockchain.get_best_height();
             send_version(&CENTERAL_NODE, best_height);
         } else {
-            info!("Register with node {:?}", connect_node);
+            info!("Register with node {:?}", connect_nodes);
             // Add the connect node to the global nodes set.
-            if let ConnectNode::Remote(addr) = connect_node {
-                GLOBAL_NODES.add_node(addr);
+
+            let remote_nodes: Vec<SocketAddr> = connect_nodes
+                .iter()
+                .filter(|node| node.is_remote())
+                .map(|node| node.get_addr())
+                .collect();
+
+            GLOBAL_NODES.add_nodes(remote_nodes.clone());
+
+            for remote_node in remote_nodes {
                 send_known_nodes(
-                    &addr,
+                    &remote_node,
                     GLOBAL_NODES
                         .get_nodes()
                         .iter()
@@ -199,7 +220,6 @@ fn send_get_data(addr_to: &SocketAddr, op_type: OpType, id: &[u8]) {
     );
 }
 
-///
 /// The `send_inv` function abstracts the process of sending inventory information (Inv) to a specified address
 /// using a standardized package format, including source address, operation type, and a collection of
 /// byte vector items, which in this case represent blocks. This function will help broadcast inventory
@@ -444,8 +464,17 @@ fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>
                 transaction,
             } => {
                 let tx = Transaction::deserialize(transaction.as_slice());
+                // CPU intensive operation.
+                // It will create a new transaction and add it to the memory pool.
+                // It will also broadcast the transaction to all other nodes.
+                // It will also mine a new block if the memory pool has reached a certain threshold.
                 process_transaction(&addr_from, tx, &blockchain)
             }
+
+            // CPU intensive operation.
+            // It will create a new transaction and add it to the memory pool.
+            // It will also broadcast the transaction to all other nodes.
+            // It will also mine a new block if the memory pool has reached a certain threshold.
             Package::SendBitCoin {
                 addr_from,
                 wlt_frm_addr,
@@ -616,6 +645,18 @@ fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain: &Blo
     }
 }
 
+/// The `process_known_nodes` function processes known nodes.
+/// 1) It will add new nodes to the global nodes set and send version to all new nodes plus sender.
+/// 2) If I know nodes not known by sender, then i will
+///     - Send all known nodes to the sender
+///     - Send all known nodes to all new nodes that i received from the sender
+/// 3) It will also send version to all new noded that i received from the sender.
+///
+/// # Arguments
+///
+/// * `blockchain` - A reference to the blockchain.
+/// * `addr_from` - A reference to the address of the sender.
+/// * `nodes` - A reference to the nodes.
 fn process_known_nodes(blockchain: Blockchain, addr_from: &SocketAddr, nodes: Vec<SocketAddr>) {
     let new_nodes: Vec<SocketAddr> = nodes
         .iter()
