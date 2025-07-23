@@ -230,7 +230,8 @@ async fn send_get_data(addr_to: &SocketAddr, op_type: OpType, id: &[u8]) {
             op_type,
             id: id.to_vec(),
         },
-    );
+    )
+    .await;
 }
 
 /// The `send_inv` function abstracts the process of sending inventory information (Inv) to a specified address
@@ -252,7 +253,8 @@ async fn send_inv(addr_to: &SocketAddr, op_type: OpType, blocks: &[Vec<u8>]) {
             op_type,
             items: blocks.to_vec(),
         },
-    );
+    )
+    .await;
 }
 
 /// The `send_block` function sends a block to a specified address.
@@ -269,7 +271,8 @@ async fn send_block(addr_to: &SocketAddr, block: &Block) {
             addr_from: node_addr,
             block: block.serialize(),
         },
-    );
+    )
+    .await;
 }
 
 /// The `send_tx` function sends a transaction to a specified address.
@@ -286,7 +289,8 @@ pub async fn send_tx(addr_to: &SocketAddr, tx: &Transaction) {
             addr_from: node_addr,
             transaction: tx.serialize(),
         },
-    );
+    )
+    .await;
 }
 
 /// The `send_block` function sends a block to a specified address.
@@ -303,7 +307,8 @@ async fn send_known_nodes(addr_to: &SocketAddr, nodes: Vec<SocketAddr>) {
             addr_from: node_addr,
             nodes,
         },
-    );
+    )
+    .await;
 }
 
 /// The `send_version` function sends a version request to a specified address.
@@ -321,7 +326,8 @@ async fn send_version(addr_to: &SocketAddr, height: usize) {
             version: NODE_VERSION,
             best_height: height,
         },
-    );
+    )
+    .await;
 }
 
 /// The `send_get_blocks` function sends a get_blocks request to a specified address.
@@ -336,7 +342,8 @@ async fn send_get_blocks(addr_to: &SocketAddr) {
         Package::GetBlocks {
             addr_from: node_addr,
         },
-    );
+    )
+    .await;
 }
 
 /// The `send_message` function sends a message to a specified address.
@@ -353,7 +360,8 @@ async fn send_message(addr_to: &SocketAddr, message_type: MessageType, message: 
             message_type,
             message,
         },
-    );
+    )
+    .await;
 }
 
 async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>> {
@@ -574,7 +582,7 @@ async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn 
 /// byte vector items, which in this case represent blocks. This function will help broadcast inventory
 /// notifications for specific data items to the indicated network address.
 ///
-fn send_data(addr_to: &SocketAddr, pkg: Package) {
+async fn send_data(addr_to: &SocketAddr, pkg: Package) {
     info!("send package: {:?}", &pkg);
     let stream = TcpStream::connect(addr_to);
     if stream.is_err() {
