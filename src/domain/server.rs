@@ -594,6 +594,7 @@ async fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain
     // If transaction exists, do nothing
     // This is to prevent duplicate transactions and retransmission of existing transactions to other nodes
     if GLOBAL_MEMORY_POOL.contains_transaction(&tx) {
+        info!("Transaction: {:?} already exists", tx.get_id());
         send_message(
             addr_from,
             MessageType::Error,
