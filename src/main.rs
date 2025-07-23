@@ -51,7 +51,7 @@ enum Command {
     #[structopt(name = "reindexutxo", about = "rebuild UTXO index set")]
     Reindexutxo,
     #[structopt(name = "startnode", about = "Start a node")]
-    StartNode {        
+    StartNode {
         #[structopt(name = "miner", help = "Enable mining mode and send reward to ADDRESS")]
         miner: Option<String>,
         #[structopt(name = "connect_nodes", help = "Connect to a node")]
@@ -59,7 +59,9 @@ enum Command {
     },
 }
 
-fn main() {
+#[tokio::main]
+#[deny(unused_must_use)]
+async fn main() {
     env_logger::builder().filter_level(LevelFilter::Info).init();
     let opt = Opt::from_args();
     match opt.command {
@@ -127,7 +129,7 @@ fn main() {
 
                 utxo_set.update(&block);
             } else {
-                send_tx(&CENTERAL_NODE, &transaction);
+                send_tx(&CENTERAL_NODE, &transaction).await;
             }
             println!("Success!")
         }
@@ -177,7 +179,7 @@ fn main() {
         }
         Command::StartNode {
             miner,
-            connect_nodes,            
+            connect_nodes,
         } => {
             if let Some(addr) = miner {
                 if !validate_address(addr.as_str()) {
@@ -191,7 +193,9 @@ fn main() {
             let sockert_addr = GLOBAL_CONFIG.get_node_addr();
             println!("Starting node at address: {}", sockert_addr);
             println!("Will try connect to nodes: {:?}", connect_nodes);
-            Server::new(blockchain.clone()).run(&sockert_addr, connect_nodes);
+            Server::new(blockchain.clone())
+                .run(&sockert_addr, connect_nodes)
+                .await;
         }
     }
 }

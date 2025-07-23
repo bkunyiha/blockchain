@@ -1,1 +1,10 @@
-/target
+.*
+!.gitignore
+
+target/
+
+data*
+
+wallet*
+
+

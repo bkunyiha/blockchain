@@ -1,3 +1,4 @@
+use crate::node::Node;
 use crate::{
     Block, BlockInTransit, Blockchain, GLOBAL_CONFIG, MemoryPool, Nodes, Transaction, UTXOSet,
     validate_address,
@@ -13,7 +14,6 @@ use std::error::Error;
 use std::io::{BufReader, Write};
 use std::net::{Shutdown, SocketAddr, TcpListener, TcpStream};
 use std::str::FromStr;
-use std::thread;
 use std::time::Duration;
 
 const NODE_VERSION: usize = 1;
@@ -95,13 +95,13 @@ impl Server {
         Server { blockchain }
     }
 
-    pub fn run(&self, addrs: &SocketAddr, connect_nodes: Vec<ConnectNode>) {
+    pub async fn run(&self, addrs: &SocketAddr, connect_nodes: Vec<ConnectNode>) {
         let listener = TcpListener::bind(addrs).unwrap();
 
         // If the node is not the central node, send the version message to the central node.
         if !addrs.eq(&CENTERAL_NODE) {
             let best_height = self.blockchain.get_best_height();
-            send_version(&CENTERAL_NODE, best_height);
+            send_version(&CENTERAL_NODE, best_height).await;
         } else {
             info!("Register with node {:?}", connect_nodes);
             // Add the connect node to the global nodes set.
@@ -122,21 +122,34 @@ impl Server {
                         .iter()
                         .map(|node| node.get_addr())
                         .collect(),
-                );
+                )
+                .await;
             }
         }
 
         // Serve the incoming connections.
         for stream in listener.incoming() {
             let blockchain = self.blockchain.clone();
-            thread::spawn(|| match stream {
-                Ok(stream) => {
-                    serve(blockchain, stream).unwrap();
-                }
-                Err(e) => {
-                    error!("Error: {}", e);
+
+            tokio::spawn(async move {
+                match stream {
+                    Ok(stream) => {
+                        serve(blockchain, stream).await.unwrap();
+                    }
+                    Err(e) => {
+                        error!("Error: {}", e);
+                    }
                 }
             });
+
+            // thread::spawn(|| match stream {
+            //     Ok(stream) => {
+            //         serve(blockchain, stream).unwrap();
+            //     }
+            //     Err(e) => {
+            //         error!("Error: {}", e);
+            //     }
+            // });
         }
     }
 }
@@ -208,7 +221,7 @@ pub enum Package {
 /// * `addr` - A reference to the address.
 /// * `op_type` - A reference to the operation type.
 /// * `id` - A reference to the id.
-fn send_get_data(addr_to: &SocketAddr, op_type: OpType, id: &[u8]) {
+async fn send_get_data(addr_to: &SocketAddr, op_type: OpType, id: &[u8]) {
     let node_addr = GLOBAL_CONFIG.get_node_addr();
     send_data(
         addr_to,
@@ -230,7 +243,7 @@ fn send_get_data(addr_to: &SocketAddr, op_type: OpType, id: &[u8]) {
 /// * `addr` - A reference to the address.
 /// * `op_type` - A reference to the operation type.
 /// * `blocks` - A reference to the blocks.
-fn send_inv(addr_to: &SocketAddr, op_type: OpType, blocks: &[Vec<u8>]) {
+async fn send_inv(addr_to: &SocketAddr, op_type: OpType, blocks: &[Vec<u8>]) {
     let node_addr = GLOBAL_CONFIG.get_node_addr();
     send_data(
         addr_to,
@@ -248,7 +261,7 @@ fn send_inv(addr_to: &SocketAddr, op_type: OpType, blocks: &[Vec<u8>]) {
 ///
 /// * `addr` - A reference to the address.
 /// * `block` - A reference to the block.
-fn send_block(addr_to: &SocketAddr, block: &Block) {
+async fn send_block(addr_to: &SocketAddr, block: &Block) {
     let node_addr = GLOBAL_CONFIG.get_node_addr();
     send_data(
         addr_to,
@@ -265,7 +278,7 @@ fn send_block(addr_to: &SocketAddr, block: &Block) {
 ///
 /// * `addr` - A reference to the address.
 /// * `tx` - A reference to the transaction.
-pub fn send_tx(addr_to: &SocketAddr, tx: &Transaction) {
+pub async fn send_tx(addr_to: &SocketAddr, tx: &Transaction) {
     let node_addr = GLOBAL_CONFIG.get_node_addr();
     send_data(
         addr_to,
@@ -282,7 +295,7 @@ pub fn send_tx(addr_to: &SocketAddr, tx: &Transaction) {
 ///
 /// * `addr` - A reference to the address.
 /// * `block` - A reference to the block.
-fn send_known_nodes(addr_to: &SocketAddr, nodes: Vec<SocketAddr>) {
+async fn send_known_nodes(addr_to: &SocketAddr, nodes: Vec<SocketAddr>) {
     let node_addr = GLOBAL_CONFIG.get_node_addr();
     send_data(
         addr_to,
@@ -299,7 +312,7 @@ fn send_known_nodes(addr_to: &SocketAddr, nodes: Vec<SocketAddr>) {
 ///
 /// * `addr` - A reference to the address.
 /// * `height` - A reference to the height.
-fn send_version(addr_to: &SocketAddr, height: usize) {
+async fn send_version(addr_to: &SocketAddr, height: usize) {
     let node_addr = GLOBAL_CONFIG.get_node_addr();
     send_data(
         addr_to,
@@ -316,7 +329,7 @@ fn send_version(addr_to: &SocketAddr, height: usize) {
 /// # Arguments
 ///
 /// * `addr` - A reference to the address.
-fn send_get_blocks(addr_to: &SocketAddr) {
+async fn send_get_blocks(addr_to: &SocketAddr) {
     let node_addr = GLOBAL_CONFIG.get_node_addr();
     send_data(
         addr_to,
@@ -331,7 +344,7 @@ fn send_get_blocks(addr_to: &SocketAddr) {
 /// # Arguments
 ///
 /// * `addr` - A reference to the address.
-fn send_message(addr_to: &SocketAddr, message_type: MessageType, message: String) {
+async fn send_message(addr_to: &SocketAddr, message_type: MessageType, message: String) {
     let node_addr = GLOBAL_CONFIG.get_node_addr();
     send_data(
         addr_to,
@@ -343,7 +356,7 @@ fn send_message(addr_to: &SocketAddr, message_type: MessageType, message: String
     );
 }
 
-fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>> {
+async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>> {
     // peer_addr is the address of the peer that is sending the request.
     let peer_addr = stream.peer_addr()?;
     let reader = BufReader::new(&stream);
@@ -388,7 +401,7 @@ fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>
                 // If there are no more blocks in transit, it reindexes the UTXO set of the blockchain.
                 if GLOBAL_BLOCKS_IN_TRANSIT.is_not_empty() {
                     let block_hash = GLOBAL_BLOCKS_IN_TRANSIT.first().unwrap();
-                    send_get_data(&addr_from, OpType::Block, &block_hash);
+                    send_get_data(&addr_from, OpType::Block, &block_hash).await;
 
                     //GLOBAL_BLOCKS_IN_TRANSIT.remove(block_hash.as_slice());
                 } else {
@@ -407,7 +420,7 @@ fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>
             Package::GetBlocks { addr_from } => {
                 let blocks = blockchain.get_block_hashes();
                 // Send an inv message with a list of hashes to the requesting peer.
-                send_inv(&addr_from, OpType::Block, &blocks);
+                send_inv(&addr_from, OpType::Block, &blocks).await;
             }
             // Retrieves the requested block or transaction from the blockchain
             // or the global memory pool and sends it back to the requesting peer.
@@ -419,13 +432,13 @@ fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>
                 // When a node receives a block, it adds it to the blockchain and sends a request for the next block.
                 OpType::Block => {
                     if let Some(block) = blockchain.get_block(id.as_slice()) {
-                        send_block(&addr_from, &block);
+                        send_block(&addr_from, &block).await;
                     }
                 }
                 OpType::Tx => {
                     let txid_hex = HEXLOWER.encode(id.as_slice());
                     if let Some(tx) = GLOBAL_MEMORY_POOL.get(txid_hex.as_str()) {
-                        send_tx(&addr_from, &tx);
+                        send_tx(&addr_from, &tx).await;
                     }
                 }
             },
@@ -441,7 +454,7 @@ fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>
                     GLOBAL_BLOCKS_IN_TRANSIT.add_blocks(items.as_slice());
 
                     let block_hash = items.first().unwrap();
-                    send_get_data(&addr_from, OpType::Block, block_hash);
+                    send_get_data(&addr_from, OpType::Block, block_hash).await;
 
                     //GLOBAL_BLOCKS_IN_TRANSIT.remove(block_hash.as_slice());
                 }
@@ -451,7 +464,7 @@ fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>
                     let txid_hex = HEXLOWER.encode(txid);
 
                     if !GLOBAL_MEMORY_POOL.contains(txid_hex.as_str()) {
-                        send_get_data(&addr_from, OpType::Tx, txid);
+                        send_get_data(&addr_from, OpType::Tx, txid).await;
                     }
                 }
             },
@@ -468,7 +481,7 @@ fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>
                 // It will create a new transaction and add it to the memory pool.
                 // It will also broadcast the transaction to all other nodes.
                 // It will also mine a new block if the memory pool has reached a certain threshold.
-                process_transaction(&addr_from, tx, &blockchain)
+                process_transaction(&addr_from, tx, &blockchain).await;
             }
 
             // CPU intensive operation.
@@ -486,13 +499,15 @@ fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>
                         &addr_from,
                         MessageType::Error,
                         "Invalid addr_from: ${wlt_frm_addr}".to_string(),
-                    );
+                    )
+                    .await;
                 } else if !validate_address(wlt_to_addr.as_str()) {
                     send_message(
                         &addr_from,
                         MessageType::Error,
                         "Invalid addr_to: ${wlt_to_addr}".to_string(),
-                    );
+                    )
+                    .await;
                 } else {
                     let utxo_set = UTXOSet::new(blockchain.clone());
 
@@ -502,7 +517,7 @@ fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>
                         amount,
                         &utxo_set,
                     );
-                    process_transaction(&addr_from, transaction, &blockchain)
+                    process_transaction(&addr_from, transaction, &blockchain).await;
                 }
             }
             Package::Version {
@@ -513,10 +528,10 @@ fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>
                 info!("version = {}, best_height = {}", version, best_height);
                 let local_best_height = blockchain.get_best_height();
                 if local_best_height < best_height {
-                    send_get_blocks(&addr_from);
+                    send_get_blocks(&addr_from).await;
                 }
                 if local_best_height > best_height {
-                    send_version(&addr_from, blockchain.get_best_height());
+                    send_version(&addr_from, blockchain.get_best_height()).await;
                 }
 
                 if !GLOBAL_NODES.node_is_known(&addr_from) {
@@ -524,7 +539,7 @@ fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>
                 }
             }
             Package::KnownNodes { addr_from, nodes } => {
-                process_known_nodes(blockchain.clone(), &addr_from, nodes);
+                process_known_nodes(blockchain.clone(), &addr_from, nodes).await;
             }
             Package::Message {
                 addr_from,
@@ -575,7 +590,7 @@ fn send_data(addr_to: &SocketAddr, pkg: Package) {
     let _ = stream.flush();
 }
 
-fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain: &Blockchain) {
+async fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain: &Blockchain) {
     // If transaction exists, do nothing
     // This is to prevent duplicate transactions and retransmission of existing transactions to other nodes
     if GLOBAL_MEMORY_POOL.contains_transaction(&tx) {
@@ -583,7 +598,8 @@ fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain: &Blo
             addr_from,
             MessageType::Error,
             "Transaction: ${tx.get_id()} already exists".to_string(),
-        );
+        )
+        .await;
         return;
     }
 
@@ -596,7 +612,12 @@ fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain: &Blo
 
     // If the node is the central node, it broadcasts the transaction to all other nodes.
     if my_node_addr.eq(&CENTERAL_NODE) {
-        let nodes = GLOBAL_NODES.get_nodes();
+        let nodes = GLOBAL_NODES
+            .get_nodes()
+            .into_iter()
+            .filter(|node| node.get_addr().ne(addr_from))
+            .collect::<Vec<Node>>();
+
         for node in &nodes {
             if my_node_addr.eq(&node.get_addr()) {
                 continue;
@@ -604,7 +625,7 @@ fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain: &Blo
             if addr_from.eq(&node.get_addr()) {
                 continue;
             }
-            send_inv(&node.get_addr(), OpType::Tx, &[txid.clone()])
+            send_inv(&node.get_addr(), OpType::Tx, &[txid.clone()]).await;
         }
     }
 
@@ -640,7 +661,8 @@ fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain: &Blo
                 &node.get_addr(),
                 OpType::Block,
                 &[new_block.get_hash_bytes()],
-            );
+            )
+            .await;
         }
     }
 }
@@ -657,7 +679,11 @@ fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain: &Blo
 /// * `blockchain` - A reference to the blockchain.
 /// * `addr_from` - A reference to the address of the sender.
 /// * `nodes` - A reference to the nodes.
-fn process_known_nodes(blockchain: Blockchain, addr_from: &SocketAddr, nodes: Vec<SocketAddr>) {
+async fn process_known_nodes(
+    blockchain: Blockchain,
+    addr_from: &SocketAddr,
+    nodes: Vec<SocketAddr>,
+) {
     let new_nodes: Vec<SocketAddr> = nodes
         .iter()
         .filter(|current_new_node_candidate| {
@@ -687,19 +713,16 @@ fn process_known_nodes(blockchain: Blockchain, addr_from: &SocketAddr, nodes: Ve
         // Send All know nodes to to sender
         // Send All know nodes to to sender new nodes
 
-        nodes_to_add.clone().into_iter().for_each(|node| {
-            send_known_nodes(&node.clone(), all_known_nodes_addresses.clone());
-        });
+        for node in nodes_to_add.clone().into_iter() {
+            send_known_nodes(&node, all_known_nodes_addresses.clone()).await;
+        }
     }
 
     // Send Version to all new nodes plus sender
     let best_height = blockchain.get_best_height();
 
-    send_version(addr_from, best_height);
-    nodes_to_add
-        .into_iter()
-        .filter(|node| node.ne(addr_from))
-        .for_each(|node| {
-            send_version(&node.clone(), best_height);
-        });
+    send_version(addr_from, best_height).await;
+    for node in nodes_to_add.into_iter().filter(|node| node.ne(addr_from)) {
+        send_version(&node, best_height).await;
+    }
 }
