@@ -1,6 +1,7 @@
 use super::block::Block;
 use super::blockchain::Blockchain;
 use super::transaction::TXOutput;
+use super::transaction::Transaction;
 use data_encoding::HEXLOWER;
 use std::collections::HashMap;
 
@@ -46,7 +47,11 @@ impl UTXOSet {
             let txid_hex = HEXLOWER.encode(k.to_vec().as_slice());
             let tx_out: Vec<TXOutput> = bincode::deserialize(v.to_vec().as_slice())
                 .expect("unable to deserialize TXOutput");
-            for (idx, out) in tx_out.iter().enumerate() {
+            for (idx, out) in tx_out
+                .iter()
+                .filter(|out| out.not_in_global_mem_pool())
+                .enumerate()
+            {
                 if out.is_locked_with_key(pub_key_hash) && accmulated < amount {
                     accmulated += out.get_value();
                     if unspent_outputs.contains_key(txid_hex.as_str()) {
@@ -115,24 +120,27 @@ impl UTXOSet {
         let utxo_tree = db.open_tree(UTXO_TREE).unwrap();
         for block_tx in block.get_transactions() {
             if !block_tx.is_coinbase() {
-                for curr_tx_inpt in block_tx.get_vin() {
+                for curr_blc_tx_inpt in block_tx.get_vin() {
                     let mut updated_outs = vec![];
-                    let outs_bytes = utxo_tree.get(curr_tx_inpt.get_txid()).unwrap().unwrap();
-                    let utxo_curr_tx_outs: Vec<TXOutput> =
-                        bincode::deserialize(outs_bytes.as_ref())
+                    let curr_blc_tx_inpt_utxo_ivec =
+                        utxo_tree.get(curr_blc_tx_inpt.get_txid()).unwrap().unwrap();
+                    let curr_blc_tx_inpt_utxo_list: Vec<TXOutput> =
+                        bincode::deserialize(curr_blc_tx_inpt_utxo_ivec.as_ref())
                             .expect("unable to deserialize TXOutput");
-                    for (utxo_curr_utxo_idx, db_curr_utxo) in utxo_curr_tx_outs.iter().enumerate() {
-                        if utxo_curr_utxo_idx != curr_tx_inpt.get_vout() {
+                    for (utxo_curr_utxo_idx, db_curr_utxo) in
+                        curr_blc_tx_inpt_utxo_list.iter().enumerate()
+                    {
+                        if utxo_curr_utxo_idx != curr_blc_tx_inpt.get_vout() {
                             updated_outs.push(db_curr_utxo.clone())
                         }
                     }
                     if updated_outs.is_empty() {
-                        utxo_tree.remove(curr_tx_inpt.get_txid()).unwrap();
+                        utxo_tree.remove(curr_blc_tx_inpt.get_txid()).unwrap();
                     } else {
                         let outs_bytes = bincode::serialize(&updated_outs)
                             .expect("unable to serialize TXOutput");
                         utxo_tree
-                            .insert(curr_tx_inpt.get_txid(), outs_bytes)
+                            .insert(curr_blc_tx_inpt.get_txid(), outs_bytes)
                             .unwrap();
                     }
                 }
@@ -144,6 +152,49 @@ impl UTXOSet {
             let outs_bytes =
                 bincode::serialize(&new_outputs).expect("unable to serialize TXOutput");
             let _ = utxo_tree.insert(block_tx.get_id(), outs_bytes).unwrap();
+        }
+    }
+
+    pub fn update_global_mem_pool(&self, tx: &Transaction) {
+        let db = self.blockchain.get_db();
+        let utxo_tree = db.open_tree(UTXO_TREE).unwrap();
+
+        if !tx.is_coinbase() {
+            for curr_tx_inpt in tx.get_vin() {
+                if let Some(curr_tx_inpt_utxo_ivec) =
+                    utxo_tree.get(curr_tx_inpt.get_txid()).unwrap()
+                {
+                    let mut curr_tx_inpt_utxo_list: Vec<TXOutput> =
+                        bincode::deserialize(curr_tx_inpt_utxo_ivec.as_ref())
+                            .expect("unable to deserialize TXOutput");
+                    for (utxo_curr_utxo_idx, db_curr_utxo) in
+                        curr_tx_inpt_utxo_list.iter_mut().enumerate()
+                    {
+                        if utxo_curr_utxo_idx == curr_tx_inpt.get_vout() {
+                            // Flag the TXOutput as in global mem pool
+                            db_curr_utxo.set_in_global_mem_pool(true);
+                            log::info!(
+                                "\n\n ------------------------------------------------------"
+                            );
+                            log::info!("Set TXOUT to Intransit");
+                            log::info!("utxo_curr_utxo_idx: {:?}", utxo_curr_utxo_idx);
+                            log::info!("db_curr_utxo.get_value(): {:?}", db_curr_utxo.get_value());
+                            for tx_out in tx.get_vout() {
+                                log::info!("tx_out.get_value(): {:?}", tx_out.get_value());
+                            }
+                            log::info!("------------------------------------------------------");
+                        }
+                    }
+                    log::info!("Update UTXO in DB");
+                    let outs_bytes = bincode::serialize(&curr_tx_inpt_utxo_list)
+                        .expect("unable to serialize TXOutput");
+                    utxo_tree
+                        .insert(curr_tx_inpt.get_txid(), outs_bytes)
+                        .unwrap();
+                } else {
+                    log::info!("TXOUT not found in DB");
+                }
+            }
         }
     }
 }

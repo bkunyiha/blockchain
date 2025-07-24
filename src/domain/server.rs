@@ -1,7 +1,7 @@
 use crate::node::Node;
 use crate::{
-    Block, BlockInTransit, Blockchain, GLOBAL_CONFIG, MemoryPool, Nodes, Transaction, UTXOSet,
-    validate_address,
+    ADDRESS_CHECK_SUM_LEN, Block, BlockInTransit, Blockchain, GLOBAL_CONFIG, MemoryPool, Nodes,
+    Transaction, UTXOSet, base58_decode, convert_address, hash_pub_key, validate_address,
 };
 use data_encoding::HEXLOWER;
 use log::{error, info};
@@ -141,15 +141,6 @@ impl Server {
                     }
                 }
             });
-
-            // thread::spawn(|| match stream {
-            //     Ok(stream) => {
-            //         serve(blockchain, stream).unwrap();
-            //     }
-            //     Err(e) => {
-            //         error!("Error: {}", e);
-            //     }
-            // });
         }
     }
 }
@@ -167,6 +158,12 @@ pub enum MessageType {
     Info,
     Warning,
     Ack,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum AdminNodeQueryType {
+    GetBalance { wlt_address: String },
+    GetAllTransactions,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -211,6 +208,10 @@ pub enum Package {
         addr_from: SocketAddr,
         message_type: MessageType,
         message: String,
+    },
+    AdminNodeQuery {
+        addr_from: SocketAddr,
+        query_type: AdminNodeQueryType,
     },
 }
 
@@ -570,6 +571,68 @@ async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn 
                     info!("{} sent ack: {}", addr_from, message);
                 }
             },
+            Package::AdminNodeQuery {
+                addr_from,
+                query_type,
+            } => match query_type {
+                AdminNodeQueryType::GetBalance { wlt_address } => {
+                    let address_valid = validate_address(wlt_address.as_str());
+                    if !address_valid {
+                        panic!("ERROR: Address is not valid")
+                    }
+                    let payload = base58_decode(wlt_address.as_str());
+                    let pub_key_hash = &payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN];
+
+                    let utxo_set = UTXOSet::new(blockchain.clone());
+                    let utxos = utxo_set.find_utxo(pub_key_hash);
+                    let mut balance = 0;
+                    for utxo in utxos {
+                        balance += utxo.get_value();
+                    }
+                    println!("Balance of {}: {}", addr_from, balance);
+                }
+                AdminNodeQueryType::GetAllTransactions => {
+                    let mut block_iterator = blockchain.iterator();
+                    loop {
+                        let option = block_iterator.next();
+                        if option.is_none() {
+                            break;
+                        }
+                        let block = option.unwrap();
+                        println!("Pre block hash: {}", block.get_pre_block_hash());
+                        println!("Cur block hash: {}", block.get_hash());
+                        println!("Cur block Timestamp: {}", block.get_timestamp());
+                        for tx in block.get_transactions() {
+                            let cur_txid_hex = HEXLOWER.encode(tx.get_id());
+                            println!("- Transaction txid_hex: {}", cur_txid_hex);
+
+                            if !tx.is_coinbase() {
+                                for input in tx.get_vin() {
+                                    let txid_hex = HEXLOWER.encode(input.get_txid());
+                                    let pub_key_hash = hash_pub_key(input.get_pub_key());
+                                    let address = convert_address(pub_key_hash.as_slice());
+                                    println!(
+                                        "-- Input txid = {}, vout = {}, from = {}",
+                                        txid_hex,
+                                        input.get_vout(),
+                                        address,
+                                    )
+                                }
+                            }
+                            for output in tx.get_vout() {
+                                let pub_key_hash = output.get_pub_key_hash();
+                                let address = convert_address(pub_key_hash);
+                                println!(
+                                    "-- Output value = {}, to = {}",
+                                    output.get_value(),
+                                    address,
+                                )
+                            }
+                        }
+                        println!()
+                    }
+                }
+            },
         }
     }
     let _ = stream.shutdown(Shutdown::Both);
@@ -598,6 +661,12 @@ async fn send_data(addr_to: &SocketAddr, pkg: Package) {
     let _ = stream.flush();
 }
 
+async fn add_to_memory_pool(tx: Transaction, blockchain: &Blockchain) {
+    GLOBAL_MEMORY_POOL.add(tx.clone());
+    let utxo_set = UTXOSet::new(blockchain.clone());
+    utxo_set.update_global_mem_pool(&tx.clone());
+}
+
 async fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain: &Blockchain) {
     // If transaction exists, do nothing
     // This is to prevent duplicate transactions and retransmission of existing transactions to other nodes
@@ -615,7 +684,7 @@ async fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain
     let txid = tx.get_id_bytes();
 
     // Add to Memory Pool
-    GLOBAL_MEMORY_POOL.add(tx);
+    add_to_memory_pool(tx, blockchain).await;
 
     let my_node_addr = GLOBAL_CONFIG.get_node_addr();
 

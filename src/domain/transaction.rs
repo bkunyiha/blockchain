@@ -50,6 +50,7 @@ impl TXInput {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct TXOutput {
     value: i32,
+    in_global_mem_pool: bool,
     pub_key_hash: Vec<u8>,
 }
 
@@ -57,6 +58,7 @@ impl TXOutput {
     pub fn new(value: i32, address: &str) -> TXOutput {
         let mut output = TXOutput {
             value,
+            in_global_mem_pool: false,
             pub_key_hash: vec![],
         };
         output.lock(address);
@@ -84,6 +86,17 @@ impl TXOutput {
 
     pub fn is_locked_with_key(&self, pub_key_hash: &[u8]) -> bool {
         self.pub_key_hash.eq(pub_key_hash)
+    }
+
+    pub fn set_in_global_mem_pool(&mut self, value: bool) {
+        self.in_global_mem_pool = value;
+    }
+
+    pub fn is_in_global_mem_pool(&self) -> bool {
+        self.in_global_mem_pool
+    }
+    pub fn not_in_global_mem_pool(&self) -> bool {
+        !self.in_global_mem_pool
     }
 }
 
