@@ -1,3 +1,4 @@
+use super::error::{BtcError, Result};
 use super::transaction::Transaction;
 use data_encoding::HEXLOWER;
 use std::collections::HashMap;
@@ -20,44 +21,71 @@ impl MemoryPool {
         }
     }
 
-    pub fn contains(&self, txid_hex: &str) -> bool {
-        self.inner_tx.read().unwrap().contains_key(txid_hex)
+    pub fn contains(&self, txid_hex: &str) -> Result<bool> {
+        let inner = self
+            .inner_tx
+            .read()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.contains_key(txid_hex))
     }
 
-    pub fn contains_transaction(&self, tx: &Transaction) -> bool {
+    pub fn contains_transaction(&self, tx: &Transaction) -> Result<bool> {
         let txid_hex = HEXLOWER.encode(tx.get_id());
         self.contains(&txid_hex)
     }
 
-    pub fn add(&self, tx: Transaction) {
+    pub fn add(&self, tx: Transaction) -> Result<()> {
         let txid_hex = HEXLOWER.encode(tx.get_id());
-        self.inner_tx.write().unwrap().insert(txid_hex, tx);
+        self.inner_tx
+            .write()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?
+            .insert(txid_hex, tx);
+        Ok(())
     }
 
-    pub fn get(&self, txid_hex: &str) -> Option<Transaction> {
-        self.inner_tx.read().unwrap().get(txid_hex).cloned()
+    pub fn get(&self, txid_hex: &str) -> Result<Option<Transaction>> {
+        let inner = self
+            .inner_tx
+            .read()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.get(txid_hex).cloned())
     }
 
-    pub fn remove(&self, txid_hex: &str) {
-        let mut inner = self.inner_tx.write().unwrap();
-        inner.remove(txid_hex);
+    pub fn remove(&self, txid_hex: &str) -> Result<Option<Transaction>> {
+        let mut inner = self
+            .inner_tx
+            .write()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
+        let rem_trx_op = inner.remove(txid_hex);
+        Ok(rem_trx_op)
     }
 
-    pub fn get_all(&self) -> Vec<Transaction> {
-        let inner = self.inner_tx.read().unwrap();
+    pub fn get_all(&self) -> Result<Vec<Transaction>> {
+        let inner = self
+            .inner_tx
+            .read()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
         let mut txs = vec![];
         for (_, v) in inner.iter() {
             txs.push(v.clone());
         }
-        txs
+        Ok(txs)
     }
 
-    pub fn len(&self) -> usize {
-        self.inner_tx.read().unwrap().len()
+    pub fn len(&self) -> Result<usize> {
+        let inner = self
+            .inner_tx
+            .read()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.len())
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.inner_tx.read().unwrap().is_empty()
+    pub fn is_empty(&self) -> Result<bool> {
+        let inner = self
+            .inner_tx
+            .read()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.is_empty())
     }
 }
 
@@ -91,43 +119,66 @@ impl BlockInTransit {
         }
     }
 
-    pub fn add_blocks(&self, blocks: &[Vec<u8>]) {
-        let mut inner = self.inner.write().unwrap();
+    pub fn add_blocks(&self, blocks: &[Vec<u8>]) -> Result<()> {
+        let mut inner = self
+            .inner
+            .write()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
         for hash in blocks {
             inner.push(hash.to_vec());
         }
+        Ok(())
     }
 
-    pub fn first(&self) -> Option<Vec<u8>> {
-        let inner = self.inner.read().unwrap();
-        inner.first().map(|block_hash| block_hash.to_vec())
+    pub fn first(&self) -> Result<Option<Vec<u8>>> {
+        let inner = self
+            .inner
+            .read()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.first().map(|block_hash| block_hash.to_vec()))
     }
 
-    pub fn remove(&self, block_hash: &[u8]) -> Option<Vec<u8>> {
-        let mut inner = self.inner.write().unwrap();
+    pub fn remove(&self, block_hash: &[u8]) -> Result<Option<Vec<u8>>> {
+        let mut inner = self
+            .inner
+            .write()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
         if let Some(idx) = inner.iter().position(|x| x.eq(block_hash)) {
             inner.remove(idx);
-            Some(block_hash.to_vec())
+            Ok(Some(block_hash.to_vec()))
         } else {
-            None
+            Ok(None)
         }
     }
 
-    pub fn clear(&self) {
-        let mut inner = self.inner.write().unwrap();
+    pub fn clear(&self) -> Result<()> {
+        let mut inner = self
+            .inner
+            .write()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
         inner.clear();
+        Ok(())
     }
 
-    pub fn len(&self) -> usize {
-        self.inner.read().unwrap().len()
+    pub fn len(&self) -> Result<usize> {
+        let inner = self
+            .inner
+            .read()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.len())
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.inner.read().unwrap().is_empty()
+    pub fn is_empty(&self) -> Result<bool> {
+        let inner = self
+            .inner
+            .read()
+            .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.is_empty())
     }
 
-    pub fn is_not_empty(&self) -> bool {
-        !self.is_empty()
+    pub fn is_not_empty(&self) -> Result<bool> {
+        let is_empty = self.is_empty()?;
+        Ok(!is_empty)
     }
 }
 

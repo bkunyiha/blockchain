@@ -1,4 +1,5 @@
 use super::blockchain::Blockchain;
+use super::error::{BtcError, Result};
 use super::utxo_set::UTXOSet;
 use super::wallet::{ADDRESS_CHECK_SUM_LEN, hash_pub_key};
 use super::wallets::Wallets;
@@ -55,14 +56,14 @@ pub struct TXOutput {
 }
 
 impl TXOutput {
-    pub fn new(value: i32, address: &str) -> TXOutput {
+    pub fn new(value: i32, address: &str) -> Result<TXOutput> {
         let mut output = TXOutput {
             value,
             in_global_mem_pool: false,
             pub_key_hash: vec![],
         };
-        output.lock(address);
-        output
+        output.lock(address)?;
+        Ok(output)
     }
 
     pub fn get_value(&self) -> i32 {
@@ -78,10 +79,11 @@ impl TXOutput {
     // It uses the `ADDRESS_CHECK_SUM_LEN` constant to get the length of the address check sum.
     // It uses the `pub_key_hash` field to store the public key hash.
     // It returns the new output.
-    fn lock(&mut self, address: &str) {
-        let payload = base58_decode(address);
+    fn lock(&mut self, address: &str) -> Result<()> {
+        let payload = base58_decode(address)?;
         let pub_key_hash = payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN].to_vec();
         self.pub_key_hash = pub_key_hash;
+        Ok(())
     }
 
     pub fn is_locked_with_key(&self, pub_key_hash: &[u8]) -> bool {
@@ -112,8 +114,8 @@ impl Transaction {
     // It uses the `SUBSIDY` constant to set the value of the transaction.
     // It uses the `to` parameter to set the address of the recipient.
     // It returns the new transaction.
-    pub fn new_coinbase_tx(to: &str) -> Transaction {
-        let txout = TXOutput::new(SUBSIDY, to);
+    pub fn new_coinbase_tx(to: &str) -> Result<Transaction> {
+        let txout = TXOutput::new(SUBSIDY, to)?;
         let tx_input = TXInput {
             signature: Uuid::new_v4().as_bytes().to_vec(),
             ..Default::default()
@@ -125,8 +127,8 @@ impl Transaction {
             vout: vec![txout],
         };
 
-        tx.id = tx.hash();
-        tx
+        tx.id = tx.hash()?;
+        Ok(tx)
     }
 
     ///
@@ -145,20 +147,22 @@ impl Transaction {
         to: &str,
         amount: i32,
         utxo_set: &UTXOSet,
-    ) -> Transaction {
-        let wallets = Wallets::new();
+    ) -> Result<Transaction> {
+        let wallets = Wallets::new()?;
         let from_wallet = wallets.get_wallet(from).expect("unable to found wallet");
         let public_key_hash = hash_pub_key(from_wallet.get_public_key());
 
         let (accumulated, valid_outputs) =
-            utxo_set.find_spendable_outputs(public_key_hash.as_slice(), amount);
+            utxo_set.find_spendable_outputs(public_key_hash.as_slice(), amount)?;
         if accumulated < amount {
             panic!("Error: Not enough funds")
         }
 
         let mut inputs = vec![];
         for (txid_hex, outs) in valid_outputs {
-            let txid = HEXLOWER.decode(txid_hex.as_bytes()).unwrap();
+            let txid = HEXLOWER
+                .decode(txid_hex.as_bytes())
+                .map_err(|e| BtcError::TransactionIdHexDecodingError(e.to_string()))?;
             for out in outs {
                 let input = TXInput {
                     txid: txid.clone(),
@@ -170,10 +174,10 @@ impl Transaction {
             }
         }
 
-        let mut outputs = vec![TXOutput::new(amount, to)];
+        let mut outputs = vec![TXOutput::new(amount, to)?];
 
         if accumulated > amount {
-            outputs.push(TXOutput::new(accumulated - amount, from)) // to: Return change to the sender
+            outputs.push(TXOutput::new(accumulated - amount, from)?); // to: Return change to the sender
         }
 
         // Create a new transaction with the spent inputs and unspent outputs
@@ -182,10 +186,10 @@ impl Transaction {
             vin: inputs,
             vout: outputs,
         };
-        tx.id = tx.hash();
+        tx.id = tx.hash()?;
 
-        tx.sign(utxo_set.get_blockchain(), from_wallet.get_pkcs8());
-        tx
+        tx.sign(utxo_set.get_blockchain(), from_wallet.get_pkcs8())?;
+        Ok(tx)
     }
 
     ///
@@ -226,23 +230,24 @@ impl Transaction {
     /// # Returns
     ///
     /// A signed transaction.
-    fn sign(&mut self, blockchain: &Blockchain, pkcs8: &[u8]) {
+    fn sign(&mut self, blockchain: &Blockchain, pkcs8: &[u8]) -> Result<()> {
         let mut tx_copy = self.trimmed_copy();
 
         for (idx, vin) in self.vin.iter_mut().enumerate() {
-            let prev_tx_option = blockchain.find_transaction(vin.get_txid());
-            if prev_tx_option.is_none() {
-                panic!("ERROR: Previous transaction is not correct")
-            }
-            let prev_tx = prev_tx_option.unwrap();
+            let prev_tx_option = blockchain.find_transaction(vin.get_txid())?;
+            let prev_tx = prev_tx_option.ok_or(BtcError::TransactionNotFoundError(
+                "(sign) Previous transaction is not correct".to_string(),
+            ))?;
+
             tx_copy.vin[idx].signature = vec![];
             tx_copy.vin[idx].pub_key = prev_tx.vout[vin.vout].pub_key_hash.clone();
-            tx_copy.id = tx_copy.hash();
+            tx_copy.id = tx_copy.hash()?;
             tx_copy.vin[idx].pub_key = vec![];
 
-            let signature = ecdsa_p256_sha256_sign_digest(pkcs8, tx_copy.get_id());
+            let signature = ecdsa_p256_sha256_sign_digest(pkcs8, tx_copy.get_id())?;
             vin.signature = signature;
         }
+        Ok(())
     }
 
     ///
@@ -256,20 +261,21 @@ impl Transaction {
     ///
     /// # Returns
     ///
-    pub fn verify(&self, blockchain: &Blockchain) -> bool {
+    pub fn verify(&self, blockchain: &Blockchain) -> Result<bool> {
         if self.is_coinbase() {
-            return true;
+            return Ok(true);
         }
         let mut trimmed_self_copy = self.trimmed_copy();
         for (idx, vin) in self.vin.iter().enumerate() {
-            let current_vin_tx_option = blockchain.find_transaction(vin.get_txid());
-            if current_vin_tx_option.is_none() {
-                panic!("ERROR: Previous transaction is not correct")
-            }
-            let current_vin_tx = current_vin_tx_option.unwrap();
+            let current_vin_tx_option = blockchain.find_transaction(vin.get_txid())?;
+            let current_vin_tx =
+                current_vin_tx_option.ok_or(BtcError::TransactionNotFoundError(
+                    "(verify) Previous transaction is not correct".to_string(),
+                ))?;
+
             trimmed_self_copy.vin[idx].signature = vec![];
             trimmed_self_copy.vin[idx].pub_key = current_vin_tx.vout[vin.vout].pub_key_hash.clone();
-            trimmed_self_copy.id = trimmed_self_copy.hash();
+            trimmed_self_copy.id = trimmed_self_copy.hash()?;
             trimmed_self_copy.vin[idx].pub_key = vec![];
 
             let verify = ecdsa_p256_sha256_sign_verify(
@@ -278,10 +284,10 @@ impl Transaction {
                 trimmed_self_copy.get_id(),
             );
             if !verify {
-                return false;
+                return Ok(false);
             }
         }
-        true
+        Ok(true)
     }
 
     pub fn is_coinbase(&self) -> bool {
@@ -300,13 +306,13 @@ impl Transaction {
     /// # Returns
     ///
     /// The transaction's hash.
-    fn hash(&mut self) -> Vec<u8> {
+    fn hash(&mut self) -> Result<Vec<u8>> {
         let tx_copy = Transaction {
             id: vec![],
             vin: self.vin.clone(),
             vout: self.vout.clone(),
         };
-        sha256_digest(tx_copy.serialize().as_slice())
+        Ok(sha256_digest(tx_copy.serialize()?.as_slice()))
     }
 
     pub fn get_id(&self) -> &[u8] {
@@ -325,11 +331,14 @@ impl Transaction {
         self.vout.as_slice()
     }
 
-    pub fn serialize(&self) -> Vec<u8> {
-        bincode::serialize(self).unwrap().to_vec()
+    pub fn serialize(&self) -> Result<Vec<u8>> {
+        bincode::serialize(self)
+            .map(|t| t.to_vec())
+            .map_err(|e| BtcError::TransactionSerializationError(e.to_string()))
     }
 
-    pub fn deserialize(bytes: &[u8]) -> Transaction {
-        bincode::deserialize(bytes).unwrap()
+    pub fn deserialize(bytes: &[u8]) -> Result<Transaction> {
+        bincode::deserialize(bytes)
+            .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))
     }
 }

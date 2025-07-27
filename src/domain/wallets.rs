@@ -1,6 +1,7 @@
 // wallets
 
 use super::wallet::Wallet;
+use crate::domain::error::{BtcError, Result};
 use std::collections::HashMap;
 use std::env;
 use std::env::current_dir;
@@ -14,20 +15,20 @@ pub struct Wallets {
 }
 
 impl Wallets {
-    pub fn new() -> Wallets {
+    pub fn new() -> Result<Wallets> {
         let mut wallets = Wallets {
             wallets: HashMap::new(),
         };
-        wallets.load_from_file();
-        wallets
+        wallets.load_from_file()?;
+        Ok(wallets)
     }
 
-    pub fn create_wallet(&mut self) -> String {
-        let wallet = Wallet::new();
-        let address = wallet.get_address();
+    pub fn create_wallet(&mut self) -> Result<String> {
+        let wallet = Wallet::new()?;
+        let address = wallet.get_address()?;
         self.wallets.insert(address.clone(), wallet);
-        self.save_to_file();
-        address
+        self.save_to_file()?;
+        Ok(address)
     }
 
     pub fn get_addresses(&self) -> Vec<String> {
@@ -46,40 +47,53 @@ impl Wallets {
         }
     }
 
-    pub fn load_from_file(&mut self) {
-        let path = current_dir().unwrap().join(self.get_wallet_file_path());
+    pub fn load_from_file(&mut self) -> Result<()> {
+        let path = current_dir()
+            .map_err(|e| BtcError::WalletsFilePathError(e.to_string()))?
+            .join(self.get_wallet_file_path());
         if !path.exists() {
-            return;
+            return Err(BtcError::WalletsFilePathError(
+                "File does not exist".to_string(),
+            ));
         }
-        let mut file = File::open(path).unwrap();
-        let metadata = file.metadata().expect("unable to read metadata");
+        let mut file =
+            File::open(path).map_err(|e| BtcError::WalletsFileOpenError(e.to_string()))?;
+        let metadata = file
+            .metadata()
+            .map_err(|e| BtcError::WalletsFileMetadataError(e.to_string()))?;
         let mut buf = vec![0; metadata.len() as usize];
-        let _ = file.read(&mut buf).expect("buffer overflow");
-        let wallets = bincode::deserialize(&buf[..]).expect("unable to deserialize file data");
+        let _ = file
+            .read(&mut buf)
+            .map_err(|e| BtcError::WalletsFileReadError(e.to_string()))?;
+        let wallets = bincode::deserialize(&buf[..])
+            .map_err(|e| BtcError::WalletsDeserializationError(e.to_string()))?;
         self.wallets = wallets;
+        Ok(())
     }
 
-    fn save_to_file(&self) {
-        let path = current_dir().unwrap().join(self.get_wallet_file_path());
+    fn save_to_file(&self) -> Result<()> {
+        let path = current_dir()
+            .map_err(|e| BtcError::WalletsFilePathError(e.to_string()))?
+            .join(self.get_wallet_file_path());
         let file = OpenOptions::new()
             .create(true)
             .truncate(true)
             .write(true)
             .open(&path)
-            .expect("unable to open wallet.dat");
+            .map_err(|e| BtcError::SavingWalletsError(e.to_string()))?;
         let mut writer = BufWriter::new(file);
-        let wallets_bytes = bincode::serialize(&self.wallets).expect("unable to serialize wallets");
-        writer.write_all(wallets_bytes.as_slice()).unwrap();
-        let _ = writer.flush();
+        let wallets_bytes = bincode::serialize(&self.wallets)
+            .map_err(|e| BtcError::WalletsSerializationError(e.to_string()))?;
+        writer
+            .write_all(wallets_bytes.as_slice())
+            .map_err(|e| BtcError::SavingWalletsError(e.to_string()))?;
+        writer
+            .flush()
+            .map_err(|e| BtcError::SavingWalletsError(e.to_string()))?;
+        Ok(())
     }
 
     pub fn get_wallet_file_path(&self) -> String {
         env::var("WALLET_FILE").unwrap_or(DEFAULT_WALLET_FILE.to_string())
-    }
-}
-
-impl Default for Wallets {
-    fn default() -> Self {
-        Self::new()
     }
 }

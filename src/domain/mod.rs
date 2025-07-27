@@ -1,5 +1,7 @@
+// Declare and defines a module for the domain layer
 pub mod block;
 pub mod blockchain;
+pub mod error;
 pub mod memory_pool;
 pub mod node;
 
@@ -10,8 +12,10 @@ pub mod utxo_set;
 pub mod wallet;
 pub mod wallets;
 
+// Re-export the  modules
 pub use block::Block;
 pub use blockchain::Blockchain;
+pub use error::*;
 pub use memory_pool::BlockInTransit;
 pub use memory_pool::MemoryPool;
 pub use node::Nodes;

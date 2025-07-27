@@ -4,6 +4,7 @@
 //!
 
 extern crate bincode;
+use super::error::{BtcError, Result};
 use super::proof_of_work::ProofOfWork;
 use super::transaction::Transaction;
 use serde::{Deserialize, Serialize};
@@ -50,7 +51,7 @@ impl Block {
         let mut block = Block {
             timestamp: crate::current_timestamp(),
             pre_block_hash,
-            hash: String::new(),
+            hash: String::new(), // to be filled in the next step
             transactions: transactions.to_vec(),
             nonce: 0,
             height,
@@ -62,12 +63,14 @@ impl Block {
         block
     }
 
-    pub fn deserialize(bytes: &[u8]) -> Block {
-        bincode::deserialize(bytes).unwrap()
+    pub fn deserialize(bytes: &[u8]) -> Result<Block> {
+        bincode::deserialize(bytes).map_err(|e| BtcError::BlockDeserializationError(e.to_string()))
     }
 
-    pub fn serialize(&self) -> Vec<u8> {
-        bincode::serialize(self).unwrap().to_vec()
+    pub fn serialize(&self) -> Result<Vec<u8>> {
+        bincode::serialize(self)
+            .map_err(|e| BtcError::BlockSerializationError(e.to_string()))
+            .map(|v| v.to_vec())
     }
 
     pub fn get_transactions(&self) -> &[Transaction] {
@@ -108,9 +111,11 @@ impl Block {
     }
 }
 
-impl From<Block> for IVec {
-    fn from(b: Block) -> Self {
-        let bytes = bincode::serialize(&b).unwrap();
-        Self::from(bytes)
+impl TryFrom<Block> for IVec {
+    type Error = BtcError;
+    fn try_from(b: Block) -> Result<Self> {
+        let bytes =
+            bincode::serialize(&b).map_err(|e| BtcError::BlockSerializationError(e.to_string()))?;
+        Ok(Self::from(bytes))
     }
 }

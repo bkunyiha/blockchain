@@ -1,10 +1,11 @@
 use super::block::Block;
+use super::error::{BtcError, Result};
 use super::transaction::TXOutput;
 use super::transaction::Transaction;
 use data_encoding::HEXLOWER;
 use log::info;
-use sled::transaction::TransactionResult;
-use sled::{Db, Tree};
+use sled::transaction::{TransactionResult, UnabortableTransactionError};
+use sled::{Db, IVec, Tree};
 use std::collections::HashMap;
 use std::env;
 use std::env::current_dir;
@@ -21,92 +22,124 @@ pub struct Blockchain {
 }
 
 impl Blockchain {
-    pub fn create_blockchain(genesis_address: &str) -> Blockchain {
-        let db = sled::open(current_dir().unwrap().join(Blockchain::get_db_path())).unwrap();
-        let blocks_tree = db.open_tree(Blockchain::get_blocks_tree_path()).unwrap();
+    pub fn create_blockchain(genesis_address: &str) -> Result<Blockchain> {
+        let path = current_dir()
+            .map(|p| p.join(Blockchain::get_db_path()))
+            .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
+        let db = sled::open(path).map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
+        let blocks_tree = db
+            .open_tree(Blockchain::get_blocks_tree_path())
+            .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
 
-        let data = blocks_tree.get(DEFAULT_TIP_BLOCK_HASH_KEY).unwrap();
+        let data = blocks_tree
+            .get(DEFAULT_TIP_BLOCK_HASH_KEY)
+            .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?;
         let tip_hash = data.map_or_else(
             || {
-                let coinbase_tx = Transaction::new_coinbase_tx(genesis_address);
+                let coinbase_tx = Transaction::new_coinbase_tx(genesis_address)?;
                 let block = Block::generate_genesis_block(&coinbase_tx);
-                Self::update_blocks_tree(&blocks_tree, &block);
-                String::from(block.get_hash())
+                Self::update_blocks_tree(&blocks_tree, &block)?;
+                Ok(String::from(block.get_hash()))
             },
-            |data| String::from_utf8(data.to_vec()).unwrap(),
-        );
+            |data| {
+                String::from_utf8(data.to_vec())
+                    .map_err(|e| BtcError::BlockChainTipHashError(e.to_string()))
+            },
+        )?;
 
-        Blockchain {
+        Ok(Blockchain {
             tip_hash: Arc::new(RwLock::new(tip_hash)),
             db,
-        }
+        })
     }
 
-    fn update_blocks_tree(blocks_tree: &Tree, block: &Block) {
+    fn update_blocks_tree(blocks_tree: &Tree, block: &Block) -> Result<()> {
         let block_hash = block.get_hash();
-        let _: TransactionResult<(), ()> = blocks_tree.transaction(|tx_db| {
-            let _ = tx_db.insert(block_hash, block.clone());
-            let _ = tx_db.insert(DEFAULT_TIP_BLOCK_HASH_KEY, block_hash);
+        let block_ivec = IVec::try_from(block.clone())?;
+        let transaction_result: TransactionResult<(), ()> = blocks_tree.transaction(|tx_db| {
+            let _ = tx_db.insert(block_hash, block_ivec.clone())?;
+            let _ = tx_db.insert(DEFAULT_TIP_BLOCK_HASH_KEY, block_hash)?;
             Ok(())
         });
+        transaction_result
+            .map(|_| ())
+            .map_err(|e| BtcError::BlockchainDBconnection(format!("{:?}", e)))
     }
 
-    pub fn new_blockchain() -> Blockchain {
-        let db = sled::open(current_dir().unwrap().join(Blockchain::get_db_path())).unwrap();
-        let blocks_tree = db.open_tree(Blockchain::get_blocks_tree_path()).unwrap();
+    pub fn new_blockchain() -> Result<Blockchain> {
+        let path = current_dir()
+            .map(|p| p.join(Blockchain::get_db_path()))
+            .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
+        let db = sled::open(path).map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
+        let blocks_tree = db
+            .open_tree(Blockchain::get_blocks_tree_path())
+            .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
+
         let tip_bytes = blocks_tree
             .get(DEFAULT_TIP_BLOCK_HASH_KEY)
-            .unwrap()
-            .expect("No existing blockchain found. Create one first.");
-        let tip_hash = String::from_utf8(tip_bytes.to_vec()).unwrap();
-        Blockchain {
+            .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?
+            .ok_or(BtcError::BlockchainNotFoundError(
+                "No existing blockchain found. Create one first.".to_string(),
+            ))?;
+        let tip_hash = String::from_utf8(tip_bytes.to_vec())
+            .map_err(|e| BtcError::BlockChainTipHashError(e.to_string()))?;
+        Ok(Blockchain {
             tip_hash: Arc::new(RwLock::new(tip_hash)),
             db,
-        }
+        })
     }
 
     pub fn get_db(&self) -> &Db {
         &self.db
     }
 
-    pub fn get_tip_hash(&self) -> String {
-        self.tip_hash.read().unwrap().clone()
+    pub fn get_tip_hash(&self) -> Result<String> {
+        self.tip_hash
+            .read()
+            .map_err(|e| BtcError::BlockchainTipHashPoisonedLockError(e.to_string()))
+            .map(|v| v.clone())
     }
 
-    pub fn set_tip_hash(&self, new_tip_hash: &str) {
-        let mut tip_hash = self.tip_hash.write().unwrap();
-        *tip_hash = String::from(new_tip_hash)
+    pub fn set_tip_hash(&self, new_tip_hash: &str) -> Result<()> {
+        let mut tip_hash = self
+            .tip_hash
+            .write()
+            .map_err(|e| BtcError::BlockchainTipHashPoisonedLockError(e.to_string()))?;
+        *tip_hash = String::from(new_tip_hash);
+        Ok(())
     }
 
     // The `mine_block` function mines a new block with the transactions in the memory pool.
     // It uses the `blockchain` instance to mine the block which also adds the new block to the blockchain.
     // It returns the new block.
-    pub fn mine_block(&self, transactions: &[Transaction]) -> Block {
+    pub fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
         for trasaction in transactions {
-            if !trasaction.verify(self) {
+            let is_valid = trasaction.verify(self)?;
+            if !is_valid {
                 panic!("ERROR: Invalid transaction")
             }
         }
-        let best_height = self.get_best_height();
+        let best_height = self.get_best_height()?;
 
-        let block = Block::new_block(self.get_tip_hash(), transactions, best_height + 1);
+        let block = Block::new_block(self.get_tip_hash()?, transactions, best_height + 1);
         let block_hash = block.get_hash();
 
         let blocks_tree = self
             .db
             .open_tree(Blockchain::get_blocks_tree_path())
-            .unwrap();
+            .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
         // The `update_blocks_tree` function updates the blocks tree with the new block.
         // It uses the `blocks_tree` instance to update the blocks tree.
         // It uses the `block` instance to update the blocks tree.
         // It returns the new block.
-        Self::update_blocks_tree(&blocks_tree, &block);
-        self.set_tip_hash(block_hash);
-        block
+        Self::update_blocks_tree(&blocks_tree, &block)?;
+        self.set_tip_hash(block_hash)?;
+        Ok(block)
     }
 
-    pub fn iterator(&self) -> BlockchainIterator {
-        BlockchainIterator::new(self.get_tip_hash(), self.db.clone())
+    pub fn iterator(&self) -> Result<BlockchainIterator> {
+        self.get_tip_hash()
+            .map(|hash| BlockchainIterator::new(hash, self.db.clone()))
     }
 
     /// The `find_utxo` function finds all unspent transaction outputs (UTXOs) in the blockchain.
@@ -116,100 +149,115 @@ impl Blockchain {
     ///
     /// A HashMap containing transaction IDs as keys and vectors of TXOutput as values.
     ///
-    pub fn find_utxo(&self) -> HashMap<String, Vec<TXOutput>> {
+    pub fn find_utxo(&self) -> Result<HashMap<String, Vec<TXOutput>>> {
         let mut utxo: HashMap<String, Vec<TXOutput>> = HashMap::new();
         let mut spent_txos: HashMap<String, Vec<usize>> = HashMap::new();
-        let mut iterator = self.iterator();
+        let mut iterator = self.iterator()?;
         // Iterate through the blockchain, find all UTXOs, and return them in a HashMap.
         loop {
-            let option = iterator.next();
-            if option.is_none() {
-                break;
-            }
-            let block = option.unwrap();
-            'outer: for tx in block.get_transactions() {
-                let txid_hex = HEXLOWER.encode(tx.get_id());
-                for (idx, tx_out) in tx.get_vout().iter().enumerate() {
-                    if let Some(outs) = spent_txos.get(txid_hex.as_str()) {
-                        for spend_out_idx in outs {
-                            if idx.eq(spend_out_idx) {
-                                continue 'outer;
+            match iterator.next() {
+                None => break, // if no more blocks, break the loop
+                Some(block) => {
+                    'outer: for tx in block.get_transactions() {
+                        let txid_hex = HEXLOWER.encode(tx.get_id());
+                        for (idx, tx_out) in tx.get_vout().iter().enumerate() {
+                            if let Some(outs) = spent_txos.get(txid_hex.as_str()) {
+                                for spend_out_idx in outs {
+                                    if idx.eq(spend_out_idx) {
+                                        continue 'outer;
+                                    }
+                                }
+                            }
+                            if utxo.contains_key(txid_hex.as_str()) {
+                                utxo.get_mut(txid_hex.as_str())
+                                    .ok_or(BtcError::UTXONotFoundError(format!(
+                                        "UTXO not found for transaction {}",
+                                        txid_hex
+                                    )))?
+                                    .push(tx_out.clone());
+                            } else {
+                                utxo.insert(txid_hex.clone(), vec![tx_out.clone()]);
+                            }
+                        }
+
+                        if tx.is_coinbase() {
+                            continue;
+                        }
+
+                        for tx_in in tx.get_vin() {
+                            let tx_in_id_hex = HEXLOWER.encode(tx_in.get_txid());
+                            if spent_txos.contains_key(tx_in_id_hex.as_str()) {
+                                spent_txos
+                                    .get_mut(tx_in_id_hex.as_str())
+                                    .ok_or(BtcError::UTXONotFoundError(format!(
+                                        "UTXO not found for transaction {}",
+                                        tx_in_id_hex
+                                    )))?
+                                    .push(tx_in.get_vout());
+                            } else {
+                                spent_txos.insert(tx_in_id_hex, vec![tx_in.get_vout()]);
                             }
                         }
                     }
-                    if utxo.contains_key(txid_hex.as_str()) {
-                        utxo.get_mut(txid_hex.as_str())
-                            .unwrap()
-                            .push(tx_out.clone());
-                    } else {
-                        utxo.insert(txid_hex.clone(), vec![tx_out.clone()]);
-                    }
-                }
-
-                if tx.is_coinbase() {
-                    continue;
-                }
-
-                for tx_in in tx.get_vin() {
-                    let tx_in_id_hex = HEXLOWER.encode(tx_in.get_txid());
-                    if spent_txos.contains_key(tx_in_id_hex.as_str()) {
-                        spent_txos
-                            .get_mut(tx_in_id_hex.as_str())
-                            .unwrap()
-                            .push(tx_in.get_vout());
-                    } else {
-                        spent_txos.insert(tx_in_id_hex, vec![tx_in.get_vout()]);
-                    }
                 }
             }
         }
-        utxo
+        Ok(utxo)
     }
 
-    pub fn find_transaction(&self, txid: &[u8]) -> Option<Transaction> {
-        let mut iterator = self.iterator();
+    pub fn find_transaction(&self, txid: &[u8]) -> Result<Option<Transaction>> {
+        let mut iterator = self.iterator()?;
         loop {
-            let option = iterator.next();
-            if option.is_none() {
-                break;
-            }
-            let block = option.unwrap();
-            for transaction in block.get_transactions() {
-                if txid.eq(transaction.get_id()) {
-                    return Some(transaction.clone());
+            match iterator.next() {
+                None => break,
+                Some(block) => {
+                    for transaction in block.get_transactions() {
+                        if txid.eq(transaction.get_id()) {
+                            return Ok(Some(transaction.clone()));
+                        }
+                    }
                 }
             }
         }
-        None
+        Ok(None)
     }
 
     // The `add_block` function adds a block to the blockchain.
     // It uses the `block_tree` instance to add the block to the blockchain.
     // It uses the `block` instance to add the block to the blockchain.
     // It will not add the block if its height is less than current tip height in the block chain.
-    pub fn add_block(&self, block: &Block) {
+    pub fn add_block(&self, block: &Block) -> Result<()> {
         let block_tree = self
             .db
             .open_tree(Blockchain::get_blocks_tree_path())
-            .unwrap();
-        if block_tree.get(block.get_hash()).unwrap().is_some() {
-            return;
-        }
-        let _: TransactionResult<(), ()> = block_tree.transaction(|transaction| {
-            let _ = transaction
-                .insert(block.get_hash(), block.serialize())
-                .unwrap();
+            .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
 
-            let tip_block_bytes = transaction
-                .get(self.get_tip_hash())
-                .unwrap()
-                .expect("The tip hash is not valid");
-            let tip_block = Block::deserialize(tip_block_bytes.as_ref());
+        let block_bytes = block_tree
+            .get(block.get_hash())
+            .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?;
+        if block_bytes.is_some() {
+            return Ok(());
+        }
+        let block_bytes = block.serialize()?;
+        let tip_hash = self.get_tip_hash()?;
+        let _: TransactionResult<(), ()> = block_tree.transaction(|transaction| {
+            let _ = transaction.insert(block.get_hash(), block_bytes.clone())?;
+
+            let tip_block_bytes =
+                transaction
+                    .get(tip_hash.clone())?
+                    .ok_or(UnabortableTransactionError::Storage(
+                        sled::Error::CollectionNotFound(IVec::from(tip_hash.as_bytes())),
+                    ))?;
+
+            let tip_block = Block::deserialize(tip_block_bytes.as_ref()).map_err(|e| {
+                UnabortableTransactionError::Storage(sled::Error::Unsupported(e.to_string()))
+            })?;
+
             if block.get_height() > tip_block.get_height() {
-                let _ = transaction
-                    .insert(DEFAULT_TIP_BLOCK_HASH_KEY, block.get_hash())
-                    .unwrap();
-                self.set_tip_hash(block.get_hash());
+                let _ = transaction.insert(DEFAULT_TIP_BLOCK_HASH_KEY, block.get_hash())?;
+
+                self.set_tip_hash(block.get_hash()).unwrap();
             } else {
                 info!(
                     "Block {:?} not added because its height is less than mine",
@@ -218,46 +266,51 @@ impl Blockchain {
             }
             Ok(())
         });
+        Ok(())
     }
 
-    pub fn get_best_height(&self) -> usize {
+    pub fn get_best_height(&self) -> Result<usize> {
         let block_tree = self
             .db
             .open_tree(Blockchain::get_blocks_tree_path())
-            .unwrap();
+            .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
         let tip_block_bytes = block_tree
-            .get(self.get_tip_hash())
-            .unwrap()
-            .expect("The tip hash is valid");
-        let tip_block = Block::deserialize(tip_block_bytes.as_ref());
-        tip_block.get_height()
+            .get(self.get_tip_hash()?)
+            .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?
+            .ok_or(BtcError::GetBlockchainError("tip is invalid".to_string()))?;
+        let tip_block = Block::deserialize(tip_block_bytes.as_ref())?;
+        Ok(tip_block.get_height())
     }
 
-    pub fn get_block(&self, block_hash: &[u8]) -> Option<Block> {
+    pub fn get_block(&self, block_hash: &[u8]) -> Result<Option<Block>> {
         let block_tree = self
             .db
             .open_tree(Blockchain::get_blocks_tree_path())
-            .unwrap();
-        if let Some(block_bytes) = block_tree.get(block_hash).unwrap() {
-            let block = Block::deserialize(block_bytes.as_ref());
-            Some(block)
+            .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
+        let block_bytes = block_tree
+            .get(block_hash)
+            .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?;
+
+        if let Some(block_bytes) = block_bytes {
+            let block = Block::deserialize(block_bytes.as_ref())?;
+            Ok(Some(block))
         } else {
-            None
+            Ok(None)
         }
     }
 
-    pub fn get_block_hashes(&self) -> Vec<Vec<u8>> {
-        let mut iterator = self.iterator();
+    pub fn get_block_hashes(&self) -> Result<Vec<Vec<u8>>> {
+        let mut iterator = self.iterator()?;
         let mut blocks = vec![];
         loop {
-            let option = iterator.next();
-            if option.is_none() {
-                break;
+            match iterator.next() {
+                None => break,
+                Some(block) => {
+                    blocks.push(block.get_hash_bytes());
+                }
             }
-            let block = option.unwrap();
-            blocks.push(block.get_hash_bytes());
         }
-        blocks
+        Ok(blocks)
     }
 
     pub fn get_db_path() -> String {
@@ -289,7 +342,7 @@ impl BlockchainIterator {
             .unwrap();
         let data = block_tree.get(self.current_hash.clone()).unwrap()?;
 
-        let block = Block::deserialize(data.to_vec().as_slice());
+        let block = Block::deserialize(data.to_vec().as_slice()).unwrap();
         self.current_hash = block.get_pre_block_hash().clone();
         Some(block)
     }

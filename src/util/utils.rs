@@ -1,3 +1,4 @@
+use crate::domain::error::{BtcError, Result};
 use crypto::digest::Digest;
 use ring::digest::{Context, SHA256};
 use ring::rand::SystemRandom;
@@ -64,8 +65,8 @@ pub fn ripemd160_digest(data: &[u8]) -> Vec<u8> {
 /// # Arguments
 ///
 /// * `data` - A reference to the input data.
-pub fn base58_encode(data: &[u8]) -> String {
-    bs58::encode(data).into_string()
+pub fn base58_encode(data: &[u8]) -> Result<String> {
+    Ok(bs58::encode(data).into_string())
 }
 
 ///
@@ -75,8 +76,10 @@ pub fn base58_encode(data: &[u8]) -> String {
 /// # Arguments
 ///
 /// * `data` - A reference to the input data.
-pub fn base58_decode(data: &str) -> Vec<u8> {
-    bs58::decode(data).into_vec().unwrap()
+pub fn base58_decode(data: &str) -> Result<Vec<u8>> {
+    bs58::decode(data)
+        .into_vec()
+        .map_err(|e| crate::domain::error::BtcError::AddressDecodingError(e.to_string()))
 }
 
 ///
@@ -88,11 +91,12 @@ pub fn base58_decode(data: &str) -> Vec<u8> {
 ///
 /// A new key pair.
 ///
-pub fn new_key_pair() -> Vec<u8> {
+pub fn new_key_pair() -> Result<Vec<u8>> {
     let rng = SystemRandom::new();
     // Generates new key pair serialized as a PKCS#8 document.
-    let pkcs8 = EcdsaKeyPair::generate_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, &rng).unwrap();
-    pkcs8.as_ref().to_vec()
+    let pkcs8 = EcdsaKeyPair::generate_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, &rng)
+        .map_err(|e| BtcError::WalletKeyPairError(e.to_string()))?;
+    Ok(pkcs8.as_ref().to_vec())
 }
 
 ///
@@ -104,10 +108,14 @@ pub fn new_key_pair() -> Vec<u8> {
 ///
 /// * `pkcs8` - A reference to the PKCS#8 document.
 /// * `message` - A reference to the message.
-pub fn ecdsa_p256_sha256_sign_digest(pkcs8: &[u8], message: &[u8]) -> Vec<u8> {
-    let key_pair = EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, pkcs8).unwrap();
+pub fn ecdsa_p256_sha256_sign_digest(pkcs8: &[u8], message: &[u8]) -> Result<Vec<u8>> {
+    let key_pair = EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, pkcs8)
+        .map_err(|e| BtcError::TransactionSignatureError(e.to_string()))?;
     let rng = ring::rand::SystemRandom::new();
-    key_pair.sign(&rng, message).unwrap().as_ref().to_vec()
+    key_pair
+        .sign(&rng, message)
+        .map(|signature| signature.as_ref().to_vec())
+        .map_err(|e| BtcError::TransactionSignatureError(e.to_string()))
 }
 
 ///

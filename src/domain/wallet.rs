@@ -12,6 +12,7 @@
 //! let address = wallet.get_address();
 //! ```
 
+use crate::domain::error::{BtcError, Result};
 use ring::signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair, KeyPair};
 use serde::{Deserialize, Serialize};
 
@@ -35,17 +36,17 @@ impl Wallet {
     /// # Returns
     ///
     /// A new `Wallet` instance.
-    pub fn new() -> Wallet {
+    pub fn new() -> Result<Wallet> {
         // Generates new key pair.
         // The `new_key_pair` function generates a new ECDSA key pair and returns the private key as a byte vector.
         // It utilizes EcdsaKeyPair and SystemRandom from the ring crate to generate a private key in PKCS#8 format
         // and converts it to a byte vector.
-        let pkcs8 = crate::new_key_pair();
+        let pkcs8 = crate::new_key_pair()?;
         // Generate public key from private key.
-        let key_pair =
-            EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, pkcs8.as_ref()).unwrap();
+        let key_pair = EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, pkcs8.as_ref())
+            .map_err(|e| BtcError::WalletKeyPairError(e.to_string()))?;
         let public_key = key_pair.public_key().as_ref().to_vec();
-        Wallet { pkcs8, public_key }
+        Ok(Wallet { pkcs8, public_key })
     }
 
     ///
@@ -55,7 +56,7 @@ impl Wallet {
     /// # Returns
     ///
     /// A Bitcoin address as a `String`.
-    pub fn get_address(&self) -> String {
+    pub fn get_address(&self) -> Result<String> {
         let pub_key_hash = hash_pub_key(self.public_key.as_slice());
         let mut payload: Vec<u8> = vec![];
         payload.push(VERSION);
@@ -84,12 +85,6 @@ impl Wallet {
     /// A reference to the private key.
     pub fn get_pkcs8(&self) -> &[u8] {
         self.pkcs8.as_slice()
-    }
-}
-
-impl Default for Wallet {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -134,8 +129,8 @@ fn checksum(payload: &[u8]) -> Vec<u8> {
 /// # Returns
 ///
 /// A boolean indicating whether the address is valid.
-pub fn validate_address(address: &str) -> bool {
-    let payload = crate::base58_decode(address);
+pub fn validate_address(address: &str) -> Result<bool> {
+    let payload = crate::base58_decode(address)?;
     let actual_checksum = payload[payload.len() - ADDRESS_CHECK_SUM_LEN..].to_vec();
     let version = payload[0];
     let pub_key_hash = payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN].to_vec();
@@ -144,7 +139,7 @@ pub fn validate_address(address: &str) -> bool {
     target_vec.push(version);
     target_vec.extend(pub_key_hash);
     let target_checksum = checksum(target_vec.as_slice());
-    actual_checksum.eq(target_checksum.as_slice())
+    Ok(actual_checksum.eq(target_checksum.as_slice()))
 }
 
 ///
@@ -159,7 +154,7 @@ pub fn validate_address(address: &str) -> bool {
 /// # Returns
 ///
 /// A Bitcoin address as a `String`.
-pub fn convert_address(pub_hash_key: &[u8]) -> String {
+pub fn convert_address(pub_hash_key: &[u8]) -> Result<String> {
     let mut payload: Vec<u8> = vec![];
     payload.push(VERSION);
     payload.extend(pub_hash_key);

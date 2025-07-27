@@ -2,6 +2,7 @@ use super::block::Block;
 use super::blockchain::Blockchain;
 use super::transaction::TXOutput;
 use super::transaction::Transaction;
+use crate::domain::error::{BtcError, Result};
 use data_encoding::HEXLOWER;
 use std::collections::HashMap;
 
@@ -37,16 +38,18 @@ impl UTXOSet {
         &self,
         pub_key_hash: &[u8],
         amount: i32,
-    ) -> (i32, HashMap<String, Vec<usize>>) {
+    ) -> Result<(i32, HashMap<String, Vec<usize>>)> {
         let mut unspent_outputs: HashMap<String, Vec<usize>> = HashMap::new();
         let mut accmulated = 0;
         let db = self.blockchain.get_db();
-        let utxo_tree = db.open_tree(UTXO_TREE).unwrap();
+        let utxo_tree = db
+            .open_tree(UTXO_TREE)
+            .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
         for item in utxo_tree.iter() {
             let (k, v) = item.unwrap();
             let txid_hex = HEXLOWER.encode(k.to_vec().as_slice());
             let tx_out: Vec<TXOutput> = bincode::deserialize(v.to_vec().as_slice())
-                .expect("unable to deserialize TXOutput");
+                .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))?;
             for (idx, out) in tx_out
                 .iter()
                 .filter(|out| out.not_in_global_mem_pool())
@@ -57,7 +60,10 @@ impl UTXOSet {
                     if unspent_outputs.contains_key(txid_hex.as_str()) {
                         unspent_outputs
                             .get_mut(txid_hex.as_str())
-                            .unwrap()
+                            .ok_or(BtcError::UTXONotFoundError(format!(
+                                "(find_spendable_outputs) UTXO {} not found",
+                                txid_hex
+                            )))?
                             .push(idx);
                     } else {
                         unspent_outputs.insert(txid_hex.clone(), vec![idx]);
@@ -65,34 +71,38 @@ impl UTXOSet {
                 }
             }
         }
-        (accmulated, unspent_outputs)
+        Ok((accmulated, unspent_outputs))
     }
 
-    pub fn find_utxo(&self, pub_key_hash: &[u8]) -> Vec<TXOutput> {
+    pub fn find_utxo(&self, pub_key_hash: &[u8]) -> Result<Vec<TXOutput>> {
         let db = self.blockchain.get_db();
-        let utxo_tree = db.open_tree(UTXO_TREE).unwrap();
+        let utxo_tree = db
+            .open_tree(UTXO_TREE)
+            .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
         let mut utxos = vec![];
         for item in utxo_tree.iter() {
             let (_, v) = item.unwrap();
             let outs: Vec<TXOutput> = bincode::deserialize(v.to_vec().as_slice())
-                .expect("unable to deserialize TXOutput");
+                .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))?;
             for out in outs.iter() {
                 if out.is_locked_with_key(pub_key_hash) {
                     utxos.push(out.clone())
                 }
             }
         }
-        utxos
+        Ok(utxos)
     }
 
-    pub fn count_transactions(&self) -> i32 {
+    pub fn count_transactions(&self) -> Result<i32> {
         let db = self.blockchain.get_db();
-        let utxo_tree = db.open_tree(UTXO_TREE).unwrap();
+        let utxo_tree = db
+            .open_tree(UTXO_TREE)
+            .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
         let mut counter = 0;
         for _ in utxo_tree.iter() {
             counter += 1;
         }
-        counter
+        Ok(counter)
     }
 
     /// The `reindex` function reindexes the UTXO set by clearing the existing UTXO tree and rebuilding it from the blockchain.
@@ -102,31 +112,49 @@ impl UTXOSet {
     ///
     /// * `blockchain` - A reference to the blockchain.
     ///
-    pub fn reindex(&self) {
+    pub fn reindex(&self) -> Result<()> {
         let db = self.blockchain.get_db();
-        let utxo_tree = db.open_tree(UTXO_TREE).unwrap();
-        utxo_tree.clear().unwrap();
+        let utxo_tree = db
+            .open_tree(UTXO_TREE)
+            .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
+        utxo_tree
+            .clear()
+            .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
 
-        let utxo_map = self.blockchain.find_utxo();
+        let utxo_map = self.blockchain.find_utxo()?;
         for (txid_hex, outs) in &utxo_map {
-            let txid = HEXLOWER.decode(txid_hex.as_bytes()).unwrap();
-            let value = bincode::serialize(outs).unwrap();
-            let _ = utxo_tree.insert(txid.as_slice(), value).unwrap();
+            let txid = HEXLOWER
+                .decode(txid_hex.as_bytes())
+                .map_err(|e| BtcError::TransactionIdHexDecodingError(e.to_string()))?;
+            let value = bincode::serialize(outs)
+                .map_err(|e| BtcError::TransactionSerializationError(e.to_string()))?;
+            let _ = utxo_tree
+                .insert(txid.as_slice(), value)
+                .map_err(|e| BtcError::SavingUTXOError(e.to_string()))?;
         }
+        Ok(())
     }
 
-    pub fn update(&self, block: &Block) {
+    pub fn update(&self, block: &Block) -> Result<()> {
         let db = self.blockchain.get_db();
-        let utxo_tree = db.open_tree(UTXO_TREE).unwrap();
+        let utxo_tree = db
+            .open_tree(UTXO_TREE)
+            .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
         for block_tx in block.get_transactions() {
             if !block_tx.is_coinbase() {
                 for curr_blc_tx_inpt in block_tx.get_vin() {
                     let mut updated_outs = vec![];
-                    let curr_blc_tx_inpt_utxo_ivec =
-                        utxo_tree.get(curr_blc_tx_inpt.get_txid()).unwrap().unwrap();
+                    let curr_blc_tx_inpt_utxo_ivec = utxo_tree
+                        .get(curr_blc_tx_inpt.get_txid())
+                        .map_err(|e| BtcError::GettingUTXOError(e.to_string()))?
+                        .ok_or(BtcError::UTXONotFoundError(format!(
+                            "(update) UTXO {} not found",
+                            HEXLOWER.encode(curr_blc_tx_inpt.get_txid())
+                        )))?;
                     let curr_blc_tx_inpt_utxo_list: Vec<TXOutput> =
-                        bincode::deserialize(curr_blc_tx_inpt_utxo_ivec.as_ref())
-                            .expect("unable to deserialize TXOutput");
+                        bincode::deserialize(curr_blc_tx_inpt_utxo_ivec.as_ref()).map_err(|e| {
+                            BtcError::TransactionDeserializationError(e.to_string())
+                        })?;
                     for (utxo_curr_utxo_idx, db_curr_utxo) in
                         curr_blc_tx_inpt_utxo_list.iter().enumerate()
                     {
@@ -135,13 +163,15 @@ impl UTXOSet {
                         }
                     }
                     if updated_outs.is_empty() {
-                        utxo_tree.remove(curr_blc_tx_inpt.get_txid()).unwrap();
+                        utxo_tree
+                            .remove(curr_blc_tx_inpt.get_txid())
+                            .map_err(|e| BtcError::RemovingUTXOError(e.to_string()))?;
                     } else {
                         let outs_bytes = bincode::serialize(&updated_outs)
-                            .expect("unable to serialize TXOutput");
+                            .map_err(|e| BtcError::TransactionSerializationError(e.to_string()))?;
                         utxo_tree
                             .insert(curr_blc_tx_inpt.get_txid(), outs_bytes)
-                            .unwrap();
+                            .map_err(|e| BtcError::SavingUTXOError(e.to_string()))?;
                     }
                 }
             }
@@ -149,24 +179,31 @@ impl UTXOSet {
             for curr_tx_out in block_tx.get_vout() {
                 new_outputs.push(curr_tx_out.clone())
             }
-            let outs_bytes =
-                bincode::serialize(&new_outputs).expect("unable to serialize TXOutput");
-            let _ = utxo_tree.insert(block_tx.get_id(), outs_bytes).unwrap();
+            let outs_bytes = bincode::serialize(&new_outputs)
+                .map_err(|e| BtcError::TransactionSerializationError(e.to_string()))?;
+            let _ = utxo_tree
+                .insert(block_tx.get_id(), outs_bytes)
+                .map_err(|e| BtcError::SavingUTXOError(e.to_string()))?;
         }
+        Ok(())
     }
 
-    pub fn update_global_mem_pool(&self, tx: &Transaction) {
+    pub fn update_global_mem_pool(&self, tx: &Transaction) -> Result<()> {
         let db = self.blockchain.get_db();
-        let utxo_tree = db.open_tree(UTXO_TREE).unwrap();
+        let utxo_tree = db
+            .open_tree(UTXO_TREE)
+            .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
 
         if !tx.is_coinbase() {
             for curr_tx_inpt in tx.get_vin() {
-                if let Some(curr_tx_inpt_utxo_ivec) =
-                    utxo_tree.get(curr_tx_inpt.get_txid()).unwrap()
+                if let Some(curr_tx_inpt_utxo_ivec) = utxo_tree
+                    .get(curr_tx_inpt.get_txid())
+                    .map_err(|e| BtcError::GettingUTXOError(e.to_string()))?
                 {
                     let mut curr_tx_inpt_utxo_list: Vec<TXOutput> =
-                        bincode::deserialize(curr_tx_inpt_utxo_ivec.as_ref())
-                            .expect("unable to deserialize TXOutput");
+                        bincode::deserialize(curr_tx_inpt_utxo_ivec.as_ref()).map_err(|e| {
+                            BtcError::TransactionDeserializationError(e.to_string())
+                        })?;
                     for (utxo_curr_utxo_idx, db_curr_utxo) in
                         curr_tx_inpt_utxo_list.iter_mut().enumerate()
                     {
@@ -187,14 +224,15 @@ impl UTXOSet {
                     }
                     log::info!("Update UTXO in DB");
                     let outs_bytes = bincode::serialize(&curr_tx_inpt_utxo_list)
-                        .expect("unable to serialize TXOutput");
+                        .map_err(|e| BtcError::TransactionSerializationError(e.to_string()))?;
                     utxo_tree
                         .insert(curr_tx_inpt.get_txid(), outs_bytes)
-                        .unwrap();
+                        .map_err(|e| BtcError::SavingUTXOError(e.to_string()))?;
                 } else {
                     log::info!("TXOUT not found in DB");
                 }
             }
         }
+        Ok(())
     }
 }

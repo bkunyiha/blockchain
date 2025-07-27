@@ -1,3 +1,4 @@
+use super::error::{BtcError, Result};
 use std::collections::HashSet;
 use std::net::SocketAddr;
 use std::sync::RwLock;
@@ -15,10 +16,6 @@ impl Node {
     pub fn get_addr(&self) -> SocketAddr {
         self.addr
     }
-
-    pub fn parse_socket_addr(&self) -> SocketAddr {
-        self.addr.to_string().parse().unwrap()
-    }
 }
 
 pub struct Nodes {
@@ -32,43 +29,72 @@ impl Nodes {
         }
     }
 
-    pub fn add_node(&self, addr: SocketAddr) {
-        let mut inner = self.inner.write().unwrap();
+    pub fn add_node(&self, addr: SocketAddr) -> Result<()> {
+        let mut inner = self
+            .inner
+            .write()
+            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
         inner.insert(Node::new(addr));
+        Ok(())
     }
 
-    pub fn add_nodes(&self, nodes: Vec<SocketAddr>) {
-        let mut inner = self.inner.write().unwrap();
+    pub fn add_nodes(&self, nodes: Vec<SocketAddr>) -> Result<()> {
+        let mut inner = self
+            .inner
+            .write()
+            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
         for node in nodes {
             inner.insert(Node::new(node));
         }
+        Ok(())
     }
 
-    pub fn evict_node(&self, addr: &SocketAddr) {
-        let mut inner = self.inner.write().unwrap();
-        inner.remove(&Node::new(*addr));
+    pub fn evict_node(&self, addr: &SocketAddr) -> Result<bool> {
+        let mut inner = self
+            .inner
+            .write()
+            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.remove(&Node::new(*addr)))
     }
 
-    pub fn first(&self) -> Option<Node> {
-        let inner = self.inner.read().unwrap();
-        inner.iter().next().cloned()
+    pub fn first(&self) -> Result<Option<Node>> {
+        let inner = self
+            .inner
+            .read()
+            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.iter().next().cloned())
     }
 
-    pub fn get_nodes(&self) -> Vec<Node> {
-        self.inner.read().unwrap().iter().cloned().collect()
+    pub fn get_nodes(&self) -> Result<Vec<Node>> {
+        let inner = self
+            .inner
+            .read()
+            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.iter().cloned().collect())
     }
 
-    pub fn len(&self) -> usize {
-        self.inner.read().unwrap().len()
+    pub fn len(&self) -> Result<usize> {
+        let inner = self
+            .inner
+            .read()
+            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.len())
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.inner.read().unwrap().is_empty()
+    pub fn is_empty(&self) -> Result<bool> {
+        let inner = self
+            .inner
+            .read()
+            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.is_empty())
     }
 
-    pub fn node_is_known(&self, addr: &SocketAddr) -> bool {
-        let inner = self.inner.read().unwrap();
-        inner.iter().any(|x| x.get_addr().eq(addr))
+    pub fn node_is_known(&self, addr: &SocketAddr) -> Result<bool> {
+        let inner = self
+            .inner
+            .read()
+            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
+        Ok(inner.iter().any(|x| x.get_addr().eq(addr)))
     }
 }
 

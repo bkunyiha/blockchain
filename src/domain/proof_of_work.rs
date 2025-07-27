@@ -54,7 +54,6 @@ impl ProofOfWork {
                 nonce += 1;
             }
         }
-        println!();
         (nonce, HEXLOWER.encode(hash.as_slice()))
     }
 }

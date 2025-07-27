@@ -66,27 +66,27 @@ async fn main() {
     let opt = Opt::from_args();
     match opt.command {
         Command::Createblockchain { address } => {
-            let blockchain = Blockchain::create_blockchain(address.as_str());
+            let blockchain = Blockchain::create_blockchain(address.as_str()).unwrap();
             let utxo_set = UTXOSet::new(blockchain);
-            utxo_set.reindex();
+            utxo_set.reindex().unwrap();
             println!("Done!");
         }
         Command::Createwallet => {
-            let mut wallet = Wallets::new();
-            let address = wallet.create_wallet();
+            let mut wallets = Wallets::new().unwrap();
+            let address = wallets.create_wallet().unwrap();
             println!("Your new address: {}", address)
         }
         Command::GetBalance { address } => {
-            let address_valid = validate_address(address.as_str());
+            let address_valid = validate_address(address.as_str()).unwrap();
             if !address_valid {
                 panic!("ERROR: Address is not valid")
             }
-            let payload = base58_decode(address.as_str());
+            let payload = base58_decode(address.as_str()).unwrap();
             let pub_key_hash = &payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN];
 
-            let blockchain = Blockchain::new_blockchain();
+            let blockchain = Blockchain::new_blockchain().unwrap();
             let utxo_set = UTXOSet::new(blockchain);
-            let utxos = utxo_set.find_utxo(pub_key_hash);
+            let utxos = utxo_set.find_utxo(pub_key_hash).unwrap();
             let mut balance = 0;
             for utxo in utxos {
                 balance += utxo.get_value();
@@ -94,7 +94,7 @@ async fn main() {
             println!("Balance of {}: {}", address, balance);
         }
         Command::ListAddresses => {
-            let wallets = Wallets::new();
+            let wallets = Wallets::new().unwrap();
             for address in wallets.get_addresses() {
                 println!("{}", address)
             }
@@ -105,17 +105,18 @@ async fn main() {
             amount,
             mine,
         } => {
-            if !validate_address(from.as_str()) {
+            if !validate_address(from.as_str()).unwrap() {
                 panic!("ERROR: Sender address is not valid")
             }
-            if !validate_address(to.as_str()) {
+            if !validate_address(to.as_str()).unwrap() {
                 panic!("ERROR: Recipient address is not valid")
             }
-            let blockchain = Blockchain::new_blockchain();
+            let blockchain = Blockchain::new_blockchain().unwrap();
             let utxo_set = UTXOSet::new(blockchain.clone());
 
             let transaction =
-                Transaction::new_utxo_transaction(from.as_str(), to.as_str(), amount, &utxo_set);
+                Transaction::new_utxo_transaction(from.as_str(), to.as_str(), amount, &utxo_set)
+                    .unwrap();
 
             // If the node a mining node, it mines the block.
             if mine == MINE_TRUE {
@@ -123,18 +124,18 @@ async fn main() {
                 // The `new_coinbase_tx` function creates a new coinbase transaction.
                 // It uses the `from` parameter to set the address of the sender.
                 // It returns the new transaction.
-                let coinbase_tx = Transaction::new_coinbase_tx(from.as_str());
+                let coinbase_tx = Transaction::new_coinbase_tx(from.as_str()).unwrap();
 
-                let block = blockchain.mine_block(&[transaction, coinbase_tx]);
+                let block = blockchain.mine_block(&[transaction, coinbase_tx]).unwrap();
 
-                utxo_set.update(&block);
+                utxo_set.update(&block).unwrap();
             } else {
                 send_tx(&CENTERAL_NODE, &transaction).await;
             }
             println!("Success!")
         }
         Command::Printchain => {
-            let mut block_iterator = Blockchain::new_blockchain().iterator();
+            let mut block_iterator = Blockchain::new_blockchain().unwrap().iterator().unwrap();
             loop {
                 let option = block_iterator.next();
                 if option.is_none() {
@@ -152,7 +153,7 @@ async fn main() {
                         for input in tx.get_vin() {
                             let txid_hex = HEXLOWER.encode(input.get_txid());
                             let pub_key_hash = hash_pub_key(input.get_pub_key());
-                            let address = convert_address(pub_key_hash.as_slice());
+                            let address = convert_address(pub_key_hash.as_slice()).unwrap();
                             println!(
                                 "-- Input txid = {}, vout = {}, from = {}",
                                 txid_hex,
@@ -163,7 +164,7 @@ async fn main() {
                     }
                     for output in tx.get_vout() {
                         let pub_key_hash = output.get_pub_key_hash();
-                        let address = convert_address(pub_key_hash);
+                        let address = convert_address(pub_key_hash).unwrap();
                         println!("-- Output value = {}, to = {}", output.get_value(), address,)
                     }
                 }
@@ -171,10 +172,10 @@ async fn main() {
             }
         }
         Command::Reindexutxo => {
-            let blockchain = Blockchain::new_blockchain();
+            let blockchain = Blockchain::new_blockchain().unwrap();
             let utxo_set = UTXOSet::new(blockchain);
-            utxo_set.reindex();
-            let count = utxo_set.count_transactions();
+            utxo_set.reindex().unwrap();
+            let count = utxo_set.count_transactions().unwrap();
             println!("Done! There are {} transactions in the UTXO set.", count);
         }
         Command::StartNode {
@@ -182,14 +183,14 @@ async fn main() {
             connect_nodes,
         } => {
             if let Some(addr) = miner {
-                if !validate_address(addr.as_str()) {
+                if !validate_address(addr.as_str()).unwrap() {
                     panic!("Wrong miner address!")
                 }
                 println!("Mining is on. Address to receive rewards: {}", addr);
                 GLOBAL_CONFIG.set_mining_addr(addr.parse().unwrap());
             }
 
-            let blockchain = Blockchain::new_blockchain();
+            let blockchain = Blockchain::new_blockchain().unwrap();
             let sockert_addr = GLOBAL_CONFIG.get_node_addr();
             println!("Starting node at address: {}", sockert_addr);
             println!("Will try connect to nodes: {:?}", connect_nodes);
