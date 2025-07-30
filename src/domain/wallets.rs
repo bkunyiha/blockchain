@@ -52,9 +52,7 @@ impl Wallets {
             .map_err(|e| BtcError::WalletsFilePathError(e.to_string()))?
             .join(self.get_wallet_file_path());
         if !path.exists() {
-            return Err(BtcError::WalletsFilePathError(
-                "File does not exist".to_string(),
-            ));
+            return Ok(());
         }
         let mut file =
             File::open(path).map_err(|e| BtcError::WalletsFileOpenError(e.to_string()))?;
