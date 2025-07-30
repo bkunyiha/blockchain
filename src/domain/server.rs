@@ -14,7 +14,9 @@ use std::error::Error;
 use std::io::{BufReader, Write};
 use std::net::{Shutdown, SocketAddr, TcpListener, TcpStream};
 use std::str::FromStr;
+use std::sync::Arc;
 use std::time::Duration;
+use tokio::sync::RwLock;
 
 const NODE_VERSION: usize = 1;
 
@@ -54,7 +56,7 @@ static GLOBAL_BLOCKS_IN_TRANSIT: Lazy<BlockInTransit> = Lazy::new(BlockInTransit
 
 const TCP_WRITE_TIMEOUT: u64 = 1000;
 
-#[derive(Debug)]
+#[derive(PartialEq, Eq, Hash, Debug)]
 pub enum ConnectNode {
     Local,
     Remote(SocketAddr),
@@ -87,26 +89,26 @@ impl FromStr for ConnectNode {
 }
 
 pub struct Server {
-    blockchain: Blockchain,
+    blockchain: Arc<RwLock<Blockchain>>,
 }
 
 impl Server {
-    pub fn new(blockchain: Blockchain) -> Server {
+    pub fn new(blockchain: Arc<RwLock<Blockchain>>) -> Server {
         Server { blockchain }
     }
 
-    pub async fn run(&self, addrs: &SocketAddr, connect_nodes: Vec<ConnectNode>) {
+    pub async fn run(&self, addrs: &SocketAddr, connect_nodes: HashSet<ConnectNode>) {
         let listener = TcpListener::bind(addrs).unwrap();
 
         // If the node is not the central node, send the version message to the central node.
         if !addrs.eq(&CENTERAL_NODE) {
-            let best_height = self.blockchain.get_best_height().unwrap();
+            let best_height = self.blockchain.read().await.get_best_height().unwrap();
             send_version(&CENTERAL_NODE, best_height).await;
         } else {
             info!("Register with node {:?}", connect_nodes);
             // Add the connect node to the global nodes set.
 
-            let remote_nodes: Vec<SocketAddr> = connect_nodes
+            let remote_nodes: HashSet<SocketAddr> = connect_nodes
                 .iter()
                 .filter(|node| node.is_remote())
                 .map(|node| node.get_addr())
@@ -135,7 +137,7 @@ impl Server {
             tokio::spawn(async move {
                 match stream {
                     Ok(stream) => {
-                        serve(blockchain, stream).await.unwrap();
+                        serve(blockchain.clone(), stream).await.unwrap();
                     }
                     Err(e) => {
                         error!("Error: {}", e);
@@ -165,6 +167,7 @@ pub enum MessageType {
 pub enum AdminNodeQueryType {
     GetBalance { wlt_address: String },
     GetAllTransactions,
+    GetBlockHeight,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -366,7 +369,10 @@ async fn send_message(addr_to: &SocketAddr, message_type: MessageType, message: 
     .await;
 }
 
-async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn Error>> {
+async fn serve(
+    blockchain: Arc<RwLock<Blockchain>>,
+    stream: TcpStream,
+) -> Result<(), Box<dyn Error>> {
     // peer_addr is the address of the peer that is sending the request.
     let peer_addr = stream.peer_addr()?;
     let reader = BufReader::new(&stream);
@@ -393,7 +399,7 @@ async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn 
                 let block = Block::deserialize(block.as_slice()).unwrap();
                 // If the block is not the best block, do nothing
                 // `add_block` will not add the block if its height is less than current tip height in the block chain.
-                blockchain.add_block(&block).unwrap();
+                blockchain.write().await.add_block(&block).unwrap();
                 let added_block_hash = block.get_hash_bytes();
                 info!("Added block {:?}", added_block_hash.as_slice());
 
@@ -417,7 +423,7 @@ async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn 
 
                     //GLOBAL_BLOCKS_IN_TRANSIT.remove(block_hash.as_slice());
                 } else {
-                    let utxo_set = UTXOSet::new(blockchain.clone());
+                    let utxo_set = UTXOSet::new(blockchain.read().await.clone());
                     // The `reindex` function reindexes the UTXO set by clearing the existing UTXO tree and rebuilding it from the blockchain.
                     // It iterates through the blockchain, finds all UTXOs, and inserts them into the UTXO tree.
                     //
@@ -430,7 +436,7 @@ async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn 
             // Retrieves all block hashes from the blockchain and sends an
             // inv message with a list of hashes to the requesting peer.
             Package::GetBlocks { addr_from } => {
-                let blocks = blockchain.get_block_hashes().unwrap();
+                let blocks = blockchain.read().await.get_block_hashes().unwrap();
                 // Send an inv message with a list of hashes to the requesting peer.
                 send_inv(&addr_from, OpType::Block, &blocks).await;
             }
@@ -443,7 +449,7 @@ async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn 
             } => match op_type {
                 // When a node receives a block, it adds it to the blockchain and sends a request for the next block.
                 OpType::Block => {
-                    if let Some(block) = blockchain.get_block(id.as_slice()).unwrap() {
+                    if let Some(block) = blockchain.read().await.get_block(id.as_slice()).unwrap() {
                         send_block(&addr_from, &block).await;
                     }
                 }
@@ -463,7 +469,9 @@ async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn 
             } => match op_type {
                 // When a node receives a block, it adds it to the blocks in transit set and sends a request for the first block.
                 OpType::Block => {
-                    GLOBAL_BLOCKS_IN_TRANSIT.add_blocks(items.as_slice()).unwrap();
+                    GLOBAL_BLOCKS_IN_TRANSIT
+                        .add_blocks(items.as_slice())
+                        .unwrap();
 
                     let block_hash = items.first().unwrap();
                     send_get_data(&addr_from, OpType::Block, block_hash).await;
@@ -521,7 +529,7 @@ async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn 
                     )
                     .await;
                 } else {
-                    let utxo_set = UTXOSet::new(blockchain.clone());
+                    let utxo_set = UTXOSet::new(blockchain.read().await.clone());
 
                     let transaction = Transaction::new_utxo_transaction(
                         wlt_frm_addr.as_str(),
@@ -538,20 +546,26 @@ async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn 
                 best_height,
             } => {
                 info!("version = {}, best_height = {}", version, best_height);
-                let local_best_height = blockchain.get_best_height().unwrap();
+                let local_best_height = blockchain.read().await.get_best_height().unwrap();
                 if local_best_height < best_height {
                     send_get_blocks(&addr_from).await;
                 }
                 if local_best_height > best_height {
-                    send_version(&addr_from, blockchain.get_best_height().unwrap()).await;
+                    send_version(
+                        &addr_from,
+                        blockchain.read().await.get_best_height().unwrap(),
+                    )
+                    .await;
                 }
+
+                // If height is the same then get the first and last block hashes for comparison
 
                 if !GLOBAL_NODES.node_is_known(&addr_from).unwrap() {
                     GLOBAL_NODES.add_node(addr_from).unwrap();
                 }
             }
             Package::KnownNodes { addr_from, nodes } => {
-                process_known_nodes(blockchain.clone(), &addr_from, nodes).await;
+                process_known_nodes(blockchain.read().await.clone(), &addr_from, nodes).await;
             }
             Package::Message {
                 addr_from,
@@ -586,7 +600,7 @@ async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn 
                     let payload = base58_decode(wlt_address.as_str()).unwrap();
                     let pub_key_hash = &payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN];
 
-                    let utxo_set = UTXOSet::new(blockchain.clone());
+                    let utxo_set = UTXOSet::new(blockchain.read().await.clone());
                     let utxos = utxo_set.find_utxo(pub_key_hash).unwrap();
                     let mut balance = 0;
                     for utxo in utxos {
@@ -595,7 +609,7 @@ async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn 
                     println!("Balance of {}: {}", addr_from, balance);
                 }
                 AdminNodeQueryType::GetAllTransactions => {
-                    let mut block_iterator = blockchain.iterator().unwrap();
+                    let mut block_iterator = blockchain.read().await.iterator().unwrap();
                     loop {
                         let option = block_iterator.next();
                         if option.is_none() {
@@ -635,6 +649,10 @@ async fn serve(blockchain: Blockchain, stream: TcpStream) -> Result<(), Box<dyn 
                         println!()
                     }
                 }
+                AdminNodeQueryType::GetBlockHeight => {
+                    let height = blockchain.read().await.get_best_height().unwrap();
+                    println!("Block height: {}", height);
+                }
             },
         }
     }
@@ -664,13 +682,17 @@ async fn send_data(addr_to: &SocketAddr, pkg: Package) {
     let _ = stream.flush();
 }
 
-async fn add_to_memory_pool(tx: Transaction, blockchain: &Blockchain) {
+async fn add_to_memory_pool(tx: Transaction, blockchain: &Arc<RwLock<Blockchain>>) {
     GLOBAL_MEMORY_POOL.add(tx.clone()).unwrap();
-    let utxo_set = UTXOSet::new(blockchain.clone());
+    let utxo_set = UTXOSet::new(blockchain.read().await.clone());
     utxo_set.update_global_mem_pool(&tx.clone()).unwrap();
 }
 
-async fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain: &Blockchain) {
+async fn process_transaction(
+    addr_from: &SocketAddr,
+    tx: Transaction,
+    blockchain: &Arc<RwLock<Blockchain>>,
+) {
     // If transaction exists, do nothing
     // This is to prevent duplicate transactions and retransmission of existing transactions to other nodes
     if GLOBAL_MEMORY_POOL.contains_transaction(&tx).unwrap() {
@@ -720,12 +742,12 @@ async fn process_transaction(addr_from: &SocketAddr, tx: Transaction, blockchain
         // The `mine_block` function mines a new block with the transactions in the memory pool.
         // It uses the `blockchain` instance to mine the block which also adds the new block to the blockchain.
         // It returns the new block.
-        let new_block = blockchain.mine_block(txs.as_slice()).unwrap();
+        let new_block = blockchain.write().await.mine_block(txs.as_slice()).unwrap();
 
         // The `reindex` function reindexes the UTXO set of the blockchain.
         // It uses the `blockchain` instance to reindex the UTXO set.
         // It returns the new UTXO set.
-        let utxo_set = UTXOSet::new(blockchain.clone());
+        let utxo_set = UTXOSet::new(blockchain.read().await.clone());
         utxo_set.reindex().unwrap();
         info!("New block {} is mined!", new_block.get_hash());
 
@@ -766,7 +788,7 @@ async fn process_known_nodes(
     addr_from: &SocketAddr,
     nodes: Vec<SocketAddr>,
 ) {
-    let new_nodes: Vec<SocketAddr> = nodes
+    let new_nodes: HashSet<SocketAddr> = nodes
         .iter()
         .filter(|current_new_node_candidate| {
             !GLOBAL_NODES

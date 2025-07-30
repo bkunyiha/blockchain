@@ -12,6 +12,7 @@ use std::env::current_dir;
 use std::sync::{Arc, RwLock};
 
 const DEFAULT_TIP_BLOCK_HASH_KEY: &str = "tip_block_hash";
+const DEFAULT_EMPTY_TIP_BLOCK_HASH_VALUE: &str = "empty";
 const DEFAULT_BLOCKS_TREE: &str = "blocks1";
 const DEFAULT_TREE_DIR: &str = "data1";
 
@@ -19,6 +20,7 @@ const DEFAULT_TREE_DIR: &str = "data1";
 pub struct Blockchain {
     tip_hash: Arc<RwLock<String>>, // hash of last block
     db: Db,
+    is_empty: bool,
 }
 
 impl Blockchain {
@@ -50,6 +52,7 @@ impl Blockchain {
         Ok(Blockchain {
             tip_hash: Arc::new(RwLock::new(tip_hash)),
             db,
+            is_empty: false,
         })
     }
 
@@ -66,7 +69,7 @@ impl Blockchain {
             .map_err(|e| BtcError::BlockchainDBconnection(format!("{:?}", e)))
     }
 
-    pub fn new_blockchain() -> Result<Blockchain> {
+    pub fn open_blockchain() -> Result<Blockchain> {
         let path = current_dir()
             .map(|p| p.join(Blockchain::get_db_path()))
             .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
@@ -79,14 +82,34 @@ impl Blockchain {
             .get(DEFAULT_TIP_BLOCK_HASH_KEY)
             .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?
             .ok_or(BtcError::BlockchainNotFoundError(
-                "No existing blockchain found. Create one first.".to_string(),
+                "No existing blockchain found. Connect to a blcock chain cluster first."
+                    .to_string(),
             ))?;
         let tip_hash = String::from_utf8(tip_bytes.to_vec())
             .map_err(|e| BtcError::BlockChainTipHashError(e.to_string()))?;
         Ok(Blockchain {
             tip_hash: Arc::new(RwLock::new(tip_hash)),
             db,
+            is_empty: false,
         })
+    }
+
+    pub fn open_blockchain_empty() -> Result<Blockchain> {
+        let path = current_dir()
+            .map(|p| p.join(Blockchain::get_db_path()))
+            .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
+        let db = sled::open(path).map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
+        let tip_hash = DEFAULT_EMPTY_TIP_BLOCK_HASH_VALUE.to_string();
+
+        Ok(Blockchain {
+            tip_hash: Arc::new(RwLock::new(tip_hash)),
+            db,
+            is_empty: true,
+        })
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.is_empty
     }
 
     pub fn get_db(&self) -> &Db {
@@ -107,6 +130,10 @@ impl Blockchain {
             .map_err(|e| BtcError::BlockchainTipHashPoisonedLockError(e.to_string()))?;
         *tip_hash = String::from(new_tip_hash);
         Ok(())
+    }
+
+    fn set_not_empty(&mut self) {
+        self.is_empty = false;
     }
 
     // The `mine_block` function mines a new block with the transactions in the memory pool.
@@ -226,60 +253,82 @@ impl Blockchain {
     // It uses the `block_tree` instance to add the block to the blockchain.
     // It uses the `block` instance to add the block to the blockchain.
     // It will not add the block if its height is less than current tip height in the block chain.
-    pub fn add_block(&self, block: &Block) -> Result<()> {
+    pub fn add_block(&mut self, new_block: &Block) -> Result<()> {
         let block_tree = self
             .db
             .open_tree(Blockchain::get_blocks_tree_path())
             .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
 
-        let block_bytes = block_tree
-            .get(block.get_hash())
-            .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?;
-        if block_bytes.is_some() {
+        if self.is_empty() {
+            info!("Blockchain is empty, adding block");
+
+            self.set_not_empty();
+            info!("Blockchain is now not empty");
+            Self::update_blocks_tree(&block_tree, new_block)?;
+            self.set_tip_hash(new_block.get_hash())?;
+            let best_height = self.get_best_height()?;
+            info!(
+                "Blockchain is now not empty, best height is {}",
+                best_height
+            );
             return Ok(());
-        }
-        let block_bytes = block.serialize()?;
-        let tip_hash = self.get_tip_hash()?;
-        let _: TransactionResult<(), ()> = block_tree.transaction(|transaction| {
-            let _ = transaction.insert(block.get_hash(), block_bytes.clone())?;
-
-            let tip_block_bytes =
-                transaction
-                    .get(tip_hash.clone())?
-                    .ok_or(UnabortableTransactionError::Storage(
-                        sled::Error::CollectionNotFound(IVec::from(tip_hash.as_bytes())),
-                    ))?;
-
-            let tip_block = Block::deserialize(tip_block_bytes.as_ref()).map_err(|e| {
-                UnabortableTransactionError::Storage(sled::Error::Unsupported(e.to_string()))
-            })?;
-
-            if block.get_height() > tip_block.get_height() {
-                let _ = transaction.insert(DEFAULT_TIP_BLOCK_HASH_KEY, block.get_hash())?;
-
-                self.set_tip_hash(block.get_hash()).unwrap();
-            } else {
-                info!(
-                    "Block {:?} not added because its height is less than mine",
-                    block.get_hash()
-                );
+        } else {
+            let block_bytes = block_tree
+                .get(new_block.get_hash())
+                .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?;
+            // If the block is already in the blockchain, return Ok(())
+            if block_bytes.is_some() {
+                return Ok(());
             }
-            Ok(())
-        });
+            let block_bytes = new_block.serialize()?;
+            let tip_hash = self.get_tip_hash()?;
+            let _: TransactionResult<(), ()> = block_tree.transaction(|transaction| {
+                let _ = transaction.insert(new_block.get_hash(), block_bytes.clone())?;
+
+                let tip_block_bytes = transaction.get(tip_hash.clone())?.ok_or(
+                    UnabortableTransactionError::Storage(sled::Error::CollectionNotFound(
+                        IVec::from(tip_hash.as_bytes()),
+                    )),
+                )?;
+
+                let tip_block = Block::deserialize(tip_block_bytes.as_ref()).map_err(|e| {
+                    UnabortableTransactionError::Storage(sled::Error::Unsupported(e.to_string()))
+                })?;
+
+                if self.is_empty() || new_block.get_height() > tip_block.get_height() {
+                    let _ = transaction.insert(DEFAULT_TIP_BLOCK_HASH_KEY, new_block.get_hash())?;
+
+                    self.set_tip_hash(new_block.get_hash()).unwrap();
+                } else {
+                    info!(
+                        "Block {:?} not added because its height is less than mine",
+                        new_block.get_hash()
+                    );
+                }
+
+                Ok(())
+            });
+        }
+
         Ok(())
     }
 
     pub fn get_best_height(&self) -> Result<usize> {
-        let block_tree = self
-            .db
-            .open_tree(Blockchain::get_blocks_tree_path())
-            .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
-        let tip_block_bytes = block_tree
-            .get(self.get_tip_hash()?)
-            .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?
-            .ok_or(BtcError::GetBlockchainError("tip is invalid".to_string()))?;
-        let tip_block = Block::deserialize(tip_block_bytes.as_ref())?;
-        Ok(tip_block.get_height())
+        if self.is_empty() {
+            info!("Blockchain is empty, returning height 0");
+            Ok(0)
+        } else {
+            let block_tree = self
+                .db
+                .open_tree(Blockchain::get_blocks_tree_path())
+                .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
+            let tip_block_bytes = block_tree
+                .get(self.get_tip_hash()?)
+                .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?
+                .ok_or(BtcError::GetBlockchainError("tip is invalid".to_string()))?;
+            let tip_block = Block::deserialize(tip_block_bytes.as_ref())?;
+            Ok(tip_block.get_height())
+        }
     }
 
     pub fn get_block(&self, block_hash: &[u8]) -> Result<Option<Block>> {

@@ -1,13 +1,34 @@
 use blockchain::{
-    ADDRESS_CHECK_SUM_LEN, Blockchain, CENTERAL_NODE, ConnectNode, GLOBAL_CONFIG, Server,
-    Transaction, UTXOSet, Wallets, base58_decode, convert_address, hash_pub_key, send_tx,
-    validate_address,
+    Blockchain, BtcError, CENTERAL_NODE, ConnectNode, GLOBAL_CONFIG, Result, Server, Transaction,
+    UTXOSet, Wallets, convert_address, hash_pub_key, send_tx, validate_address,
 };
 use data_encoding::HEXLOWER;
 use log::LevelFilter;
+use std::collections::HashSet;
+use std::str::FromStr;
+use std::sync::Arc;
 use structopt::StructOpt;
+use tokio::sync::RwLock;
 
 const MINE_TRUE: usize = 1;
+
+#[derive(Debug)]
+enum IsMiner {
+    Yes,
+    No,
+}
+
+impl FromStr for IsMiner {
+    type Err = BtcError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "yes" => Ok(IsMiner::Yes),
+            "no" => Ok(IsMiner::No),
+            _ => Err(BtcError::InvalidValueForMiner(s.to_string())),
+        }
+    }
+}
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "blockchain")]
@@ -18,21 +39,12 @@ struct Opt {
 
 #[derive(StructOpt, Debug)]
 enum Command {
-    #[structopt(name = "createblockchain", about = "Create a new blockchain")]
-    Createblockchain {
-        #[structopt(name = "address", help = "The address to send genesis block reward to")]
-        address: String,
-    },
     #[structopt(name = "createwallet", about = "Create a new wallet")]
     Createwallet,
     #[structopt(
         name = "getbalance",
         about = "Get the wallet balance of the target address"
     )]
-    GetBalance {
-        #[structopt(name = "address", help = "The wallet address")]
-        address: String,
-    },
     #[structopt(name = "listaddresses", about = "Print local wallet addres")]
     ListAddresses,
     #[structopt(name = "send", about = "Add new block to chain")]
@@ -52,8 +64,10 @@ enum Command {
     Reindexutxo,
     #[structopt(name = "startnode", about = "Start a node")]
     StartNode {
-        #[structopt(name = "miner", help = "Enable mining mode and send reward to ADDRESS")]
-        miner: Option<String>,
+        #[structopt(name = "wlt_addr", help = "Wallet Address")]
+        wlt_addr: String,
+        #[structopt(name = "is_miner", help = "Is Node a Miner?")]
+        is_miner: IsMiner,
         #[structopt(name = "connect_nodes", help = "Connect to a node")]
         connect_nodes: Vec<ConnectNode>,
     },
@@ -65,33 +79,10 @@ async fn main() {
     env_logger::builder().filter_level(LevelFilter::Info).init();
     let opt = Opt::from_args();
     match opt.command {
-        Command::Createblockchain { address } => {
-            let blockchain = Blockchain::create_blockchain(address.as_str()).unwrap();
-            let utxo_set = UTXOSet::new(blockchain);
-            utxo_set.reindex().unwrap();
-            println!("Done!");
-        }
         Command::Createwallet => {
             let mut wallets = Wallets::new().unwrap();
             let address = wallets.create_wallet().unwrap();
             println!("Your new address: {}", address)
-        }
-        Command::GetBalance { address } => {
-            let address_valid = validate_address(address.as_str()).unwrap();
-            if !address_valid {
-                panic!("ERROR: Address is not valid")
-            }
-            let payload = base58_decode(address.as_str()).unwrap();
-            let pub_key_hash = &payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN];
-
-            let blockchain = Blockchain::new_blockchain().unwrap();
-            let utxo_set = UTXOSet::new(blockchain);
-            let utxos = utxo_set.find_utxo(pub_key_hash).unwrap();
-            let mut balance = 0;
-            for utxo in utxos {
-                balance += utxo.get_value();
-            }
-            println!("Balance of {}: {}", address, balance);
         }
         Command::ListAddresses => {
             let wallets = Wallets::new().unwrap();
@@ -111,7 +102,7 @@ async fn main() {
             if !validate_address(to.as_str()).unwrap() {
                 panic!("ERROR: Recipient address is not valid")
             }
-            let blockchain = Blockchain::new_blockchain().unwrap();
+            let blockchain = Blockchain::open_blockchain().unwrap();
             let utxo_set = UTXOSet::new(blockchain.clone());
 
             let transaction =
@@ -135,7 +126,7 @@ async fn main() {
             println!("Success!")
         }
         Command::Printchain => {
-            let mut block_iterator = Blockchain::new_blockchain().unwrap().iterator().unwrap();
+            let mut block_iterator = Blockchain::open_blockchain().unwrap().iterator().unwrap();
             loop {
                 let option = block_iterator.next();
                 if option.is_none() {
@@ -172,29 +163,62 @@ async fn main() {
             }
         }
         Command::Reindexutxo => {
-            let blockchain = Blockchain::new_blockchain().unwrap();
+            let blockchain = Blockchain::open_blockchain().unwrap();
             let utxo_set = UTXOSet::new(blockchain);
             utxo_set.reindex().unwrap();
             let count = utxo_set.count_transactions().unwrap();
             println!("Done! There are {} transactions in the UTXO set.", count);
         }
         Command::StartNode {
-            miner,
+            wlt_addr,
+            is_miner,
             connect_nodes,
         } => {
-            if let Some(addr) = miner {
-                if !validate_address(addr.as_str()).unwrap() {
+            if let IsMiner::Yes = is_miner {
+                if !validate_address(wlt_addr.as_str()).unwrap() {
                     panic!("Wrong miner address!")
                 }
-                println!("Mining is on. Address to receive rewards: {}", addr);
-                GLOBAL_CONFIG.set_mining_addr(addr.parse().unwrap());
+                println!("Mining is on. Address to receive rewards: {}", wlt_addr);
+                GLOBAL_CONFIG.set_mining_addr(wlt_addr.parse().unwrap());
             }
 
-            let blockchain = Blockchain::new_blockchain().unwrap();
+            // Open blockchain or create a new one
+            let blockchain_result: Result<Blockchain> = match Blockchain::open_blockchain() {
+                Ok(blockchain) => Ok(blockchain),
+                Err(e) => {
+                    match e {
+                        BtcError::BlockchainNotFoundError(_) => {
+                            // If seed node, create a new blockchain
+                            // If not seed node, open an empty blockchain
+                            if connect_nodes.contains(&ConnectNode::Local) {
+                                // If seed node, create a new blockchain
+                                println!(
+                                    "Seed Node, Creating BlockChain With Address: {}",
+                                    wlt_addr
+                                );
+                                let blockchain = Blockchain::create_blockchain(&wlt_addr).unwrap();
+                                let utxo_set = UTXOSet::new(blockchain.clone());
+                                utxo_set.reindex().unwrap();
+                                Ok(blockchain)
+                            } else {
+                                //
+                                Blockchain::open_blockchain_empty()
+                            }
+                        }
+                        e => {
+                            println!("Blockchain error: {}", e);
+                            Err(e)
+                        }
+                    }
+                }
+            };
+
+            let blockchain = blockchain_result.unwrap();
             let sockert_addr = GLOBAL_CONFIG.get_node_addr();
             println!("Starting node at address: {}", sockert_addr);
             println!("Will try connect to nodes: {:?}", connect_nodes);
-            Server::new(blockchain.clone())
+            let connect_nodes: HashSet<ConnectNode> = connect_nodes.into_iter().collect();
+            Server::new(Arc::new(RwLock::new(blockchain)))
                 .run(&sockert_addr, connect_nodes)
                 .await;
         }

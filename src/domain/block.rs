@@ -107,7 +107,7 @@ impl Block {
 
     pub fn generate_genesis_block(transaction: &Transaction) -> Block {
         let transactions = vec![transaction.clone()];
-        Block::new_block(String::from("None"), &transactions, 0)
+        Block::new_block(String::from("None"), &transactions, 1)
     }
 }
 

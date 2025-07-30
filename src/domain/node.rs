@@ -38,7 +38,7 @@ impl Nodes {
         Ok(())
     }
 
-    pub fn add_nodes(&self, nodes: Vec<SocketAddr>) -> Result<()> {
+    pub fn add_nodes(&self, nodes: HashSet<SocketAddr>) -> Result<()> {
         let mut inner = self
             .inner
             .write()
