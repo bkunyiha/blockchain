@@ -149,7 +149,7 @@ impl Transaction {
         utxo_set: &UTXOSet,
     ) -> Result<Transaction> {
         let wallets = Wallets::new()?;
-        let from_wallet = wallets.get_wallet(from).expect("unable to found wallet");
+        let from_wallet = wallets.get_wallet(from).expect("unable to find wallet");
         let public_key_hash = hash_pub_key(from_wallet.get_public_key());
 
         let (accumulated, valid_outputs) =
@@ -165,8 +165,8 @@ impl Transaction {
                 .map_err(|e| BtcError::TransactionIdHexDecodingError(e.to_string()))?;
             for out in outs {
                 let input = TXInput {
-                    txid: txid.clone(),
-                    vout: out,
+                    txid: txid.clone(), // txid is the hash of the previous transaction or transaction that contains the output that is being spent
+                    vout: out, // vout is the index of the output that is being spent in the previous transaction or transaction that contains the output that is being spent
                     signature: vec![],
                     pub_key: from_wallet.get_public_key().to_vec(),
                 };
@@ -187,7 +187,6 @@ impl Transaction {
             vout: outputs,
         };
         tx.id = tx.hash()?;
-
         tx.sign(utxo_set.get_blockchain(), from_wallet.get_pkcs8())?;
         Ok(tx)
     }

@@ -46,7 +46,7 @@ impl UTXOSet {
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
         for item in utxo_tree.iter() {
-            let (k, v) = item.unwrap();
+            let (k, v) = item.map_err(|e| BtcError::GettingUTXOError(e.to_string()))?;
             let txid_hex = HEXLOWER.encode(k.to_vec().as_slice());
             let tx_out: Vec<TXOutput> = bincode::deserialize(v.to_vec().as_slice())
                 .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))?;
@@ -81,7 +81,7 @@ impl UTXOSet {
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
         let mut utxos = vec![];
         for item in utxo_tree.iter() {
-            let (_, v) = item.unwrap();
+            let (_, v) = item.map_err(|e| BtcError::GettingUTXOError(e.to_string()))?;
             let outs: Vec<TXOutput> = bincode::deserialize(v.to_vec().as_slice())
                 .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))?;
             for out in outs.iter() {
@@ -140,9 +140,10 @@ impl UTXOSet {
         let utxo_tree = db
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
-        for block_tx in block.get_transactions() {
-            if !block_tx.is_coinbase() {
-                for curr_blc_tx_inpt in block_tx.get_vin() {
+        for curr_block_tx in block.get_transactions() {
+            // Coinbase transactions dont have inputs
+            if !curr_block_tx.is_coinbase() {                
+                for curr_blc_tx_inpt in curr_block_tx.get_vin() {
                     let mut updated_outs = vec![];
                     let curr_blc_tx_inpt_utxo_ivec = utxo_tree
                         .get(curr_blc_tx_inpt.get_txid())
@@ -176,25 +177,26 @@ impl UTXOSet {
                 }
             }
             let mut new_outputs = vec![];
-            for curr_tx_out in block_tx.get_vout() {
+            for curr_tx_out in curr_block_tx.get_vout() {
                 new_outputs.push(curr_tx_out.clone())
             }
             let outs_bytes = bincode::serialize(&new_outputs)
                 .map_err(|e| BtcError::TransactionSerializationError(e.to_string()))?;
             let _ = utxo_tree
-                .insert(block_tx.get_id(), outs_bytes)
+                .insert(curr_block_tx.get_id(), outs_bytes)
                 .map_err(|e| BtcError::SavingUTXOError(e.to_string()))?;
         }
         Ok(())
     }
 
-    pub fn update_global_mem_pool(&self, tx: &Transaction) -> Result<()> {
+    pub fn set_global_mem_pool_flag(&self, tx: &Transaction, flag: bool) -> Result<()> {
         let db = self.blockchain.get_db();
         let utxo_tree = db
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
 
         if !tx.is_coinbase() {
+            // Coinbase transactions dont have inputs
             for curr_tx_inpt in tx.get_vin() {
                 if let Some(curr_tx_inpt_utxo_ivec) = utxo_tree
                     .get(curr_tx_inpt.get_txid())
@@ -209,7 +211,7 @@ impl UTXOSet {
                     {
                         if utxo_curr_utxo_idx == curr_tx_inpt.get_vout() {
                             // Flag the TXOutput as in global mem pool
-                            db_curr_utxo.set_in_global_mem_pool(true);
+                            db_curr_utxo.set_in_global_mem_pool(flag);
                             log::info!(
                                 "\n\n ------------------------------------------------------"
                             );

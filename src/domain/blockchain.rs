@@ -190,6 +190,7 @@ impl Blockchain {
                         for (idx, tx_out) in tx.get_vout().iter().enumerate() {
                             if let Some(outs) = spent_txos.get(txid_hex.as_str()) {
                                 for spend_out_idx in outs {
+                                    // If the output is spent(ie output of a previous transaction in-input), continue to the next output
                                     if idx.eq(spend_out_idx) {
                                         continue 'outer;
                                     }
@@ -207,10 +208,12 @@ impl Blockchain {
                             }
                         }
 
+                        // Coinbase transactions dont have inputs
                         if tx.is_coinbase() {
                             continue;
                         }
 
+                        // Add the spend transaction(ie inputs) to the spent_txos map
                         for tx_in in tx.get_vin() {
                             let tx_in_id_hex = HEXLOWER.encode(tx_in.get_txid());
                             if spent_txos.contains_key(tx_in_id_hex.as_str()) {
