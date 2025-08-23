@@ -1,6 +1,6 @@
 use blockchain::{
-    Blockchain, BtcError, CENTERAL_NODE, ConnectNode, GLOBAL_CONFIG, Result, Server, Transaction,
-    UTXOSet, Wallets, convert_address, hash_pub_key, send_tx, validate_address,
+    Blockchain, BtcError, ConnectNode, GLOBAL_CONFIG, Result, Server, UTXOSet, Wallets,
+    convert_address, hash_pub_key, validate_address,
 };
 use data_encoding::HEXLOWER;
 use log::LevelFilter;
@@ -9,8 +9,6 @@ use std::str::FromStr;
 use std::sync::Arc;
 use structopt::StructOpt;
 use tokio::sync::RwLock;
-
-const MINE_TRUE: usize = 1;
 
 #[derive(Debug)]
 enum IsMiner {
@@ -48,20 +46,9 @@ enum Command {
     #[structopt(name = "listaddresses", about = "Print local wallet addres")]
     ListAddresses,
     #[structopt(name = "send", about = "Add new block to chain")]
-    Send {
-        #[structopt(name = "from", help = "Source wallet address")]
-        from: String,
-        #[structopt(name = "to", help = "Destination wallet address")]
-        to: String,
-        #[structopt(name = "amount", help = "Amount to send")]
-        amount: i32,
-        #[structopt(name = "mine", help = "Mine immediately on the same node")]
-        mine: usize,
-    },
     #[structopt(name = "printchain", about = "Print blockchain all block")]
     Printchain,
     #[structopt(name = "reindexutxo", about = "rebuild UTXO index set")]
-    Reindexutxo,
     #[structopt(name = "startnode", about = "Start a node")]
     StartNode {
         #[structopt(name = "wlt_addr", help = "Wallet Address")]
@@ -89,41 +76,6 @@ async fn main() {
             for address in wallets.get_addresses() {
                 println!("{}", address)
             }
-        }
-        Command::Send {
-            from,
-            to,
-            amount,
-            mine,
-        } => {
-            if !validate_address(from.as_str()).unwrap() {
-                panic!("ERROR: Sender address is not valid")
-            }
-            if !validate_address(to.as_str()).unwrap() {
-                panic!("ERROR: Recipient address is not valid")
-            }
-            let blockchain = Blockchain::open_blockchain().unwrap();
-            let utxo_set = UTXOSet::new(blockchain.clone());
-
-            let transaction =
-                Transaction::new_utxo_transaction(from.as_str(), to.as_str(), amount, &utxo_set)
-                    .unwrap();
-
-            // If the node a mining node, it mines the block.
-            if mine == MINE_TRUE {
-                // If the node is a mining node, it creates a new coinbase transaction.
-                // The `new_coinbase_tx` function creates a new coinbase transaction.
-                // It uses the `from` parameter to set the address of the sender.
-                // It returns the new transaction.
-                let coinbase_tx = Transaction::new_coinbase_tx(from.as_str()).unwrap();
-
-                let block = blockchain.mine_block(&[transaction, coinbase_tx]).unwrap();
-
-                utxo_set.update(&block).unwrap();
-            } else {
-                send_tx(&CENTERAL_NODE, &transaction).await;
-            }
-            println!("Success!")
         }
         Command::Printchain => {
             let mut block_iterator = Blockchain::open_blockchain().unwrap().iterator().unwrap();
@@ -161,13 +113,6 @@ async fn main() {
                 }
                 println!()
             }
-        }
-        Command::Reindexutxo => {
-            let blockchain = Blockchain::open_blockchain().unwrap();
-            let utxo_set = UTXOSet::new(blockchain);
-            utxo_set.reindex().unwrap();
-            let count = utxo_set.count_transactions().unwrap();
-            println!("Done! There are {} transactions in the UTXO set.", count);
         }
         Command::StartNode {
             wlt_addr,

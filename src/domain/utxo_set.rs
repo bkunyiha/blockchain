@@ -142,7 +142,7 @@ impl UTXOSet {
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
         for curr_block_tx in block.get_transactions() {
             // Coinbase transactions dont have inputs
-            if !curr_block_tx.is_coinbase() {                
+            if !curr_block_tx.is_coinbase() {
                 for curr_blc_tx_inpt in curr_block_tx.get_vin() {
                     let mut updated_outs = vec![];
                     let curr_blc_tx_inpt_utxo_ivec = utxo_tree
