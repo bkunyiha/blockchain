@@ -3,20 +3,20 @@ use super::error::{BtcError, Result};
 use super::transaction::TXOutput;
 use super::transaction::Transaction;
 use data_encoding::HEXLOWER;
-use log::info;
 use sled::transaction::{TransactionResult, UnabortableTransactionError};
 use sled::{Db, IVec, Tree};
 use std::collections::HashMap;
 use std::env;
 use std::env::current_dir;
 use std::sync::{Arc, RwLock};
+use tracing::info;
 
 const DEFAULT_TIP_BLOCK_HASH_KEY: &str = "tip_block_hash";
 const DEFAULT_EMPTY_TIP_BLOCK_HASH_VALUE: &str = "empty";
 const DEFAULT_BLOCKS_TREE: &str = "blocks1";
 const DEFAULT_TREE_DIR: &str = "data1";
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Blockchain {
     tip_hash: Arc<RwLock<String>>, // hash of last block
     db: Db,

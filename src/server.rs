@@ -7,7 +7,6 @@ pub use operations::{send_known_nodes, send_version};
 pub use process_messages::process_stream;
 
 use crate::{BlockInTransit, Blockchain, MemoryPool, Nodes};
-use log::{error, info};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -16,6 +15,7 @@ use std::net::{SocketAddr, TcpListener};
 use std::str::FromStr;
 use std::sync::Arc;
 use tokio::sync::RwLock;
+use tracing::{error, info, instrument};
 
 pub const NODE_VERSION: usize = 1;
 
@@ -87,6 +87,7 @@ impl FromStr for ConnectNode {
     }
 }
 
+#[derive(Debug)]
 pub struct Server {
     blockchain: Arc<RwLock<Blockchain>>,
 }
@@ -96,8 +97,13 @@ impl Server {
         Server { blockchain }
     }
 
+    #[instrument(skip(self, addrs, connect_nodes))]
     pub async fn run(&self, addrs: &SocketAddr, connect_nodes: HashSet<ConnectNode>) {
         let listener = TcpListener::bind(addrs).expect("TcpListener bind error");
+        info!(
+            "Server listening on {:?}",
+            listener.local_addr().expect("TcpListener local_addr error")
+        );
 
         // If the node is not the central node, send the version message to the central node.
         if !addrs.eq(&CENTERAL_NODE) {

@@ -3,12 +3,18 @@ use blockchain::{
     convert_address, hash_pub_key, validate_address,
 };
 use data_encoding::HEXLOWER;
-use log::LevelFilter;
 use std::collections::HashSet;
 use std::str::FromStr;
 use std::sync::Arc;
 use structopt::StructOpt;
 use tokio::sync::RwLock;
+
+use tracing::info;
+use tracing_subscriber::{
+    filter::{EnvFilter, LevelFilter},
+    fmt,
+    prelude::*,
+};
 
 #[derive(Debug)]
 enum IsMiner {
@@ -63,18 +69,29 @@ enum Command {
 #[tokio::main]
 #[deny(unused_must_use)]
 async fn main() {
-    env_logger::builder().filter_level(LevelFilter::Info).init();
+    // Build an EnvFilter that defaults to INFO if RUST_LOG is not set.
+    // The `from_env_lossy()` method parses directives from `RUST_LOG`
+    // but falls back gracefully if it fails.
+    // This builder will first check `RUST_LOG` and fall back to `INFO` if it's not set.
+    let filter = EnvFilter::builder()
+        .with_default_directive(LevelFilter::INFO.into())
+        .from_env_lossy();
+
+    tracing_subscriber::registry()
+        .with(fmt::layer().with_filter(filter))
+        .init();
+
     let opt = Opt::from_args();
     match opt.command {
         Command::Createwallet => {
             let mut wallets = Wallets::new().unwrap();
             let address = wallets.create_wallet().unwrap();
-            println!("Your new address: {}", address)
+            info!("Your new address: {}", address)
         }
         Command::ListAddresses => {
             let wallets = Wallets::new().unwrap();
             for address in wallets.get_addresses() {
-                println!("{}", address)
+                info!("{}", address)
             }
         }
         Command::Printchain => {
@@ -85,19 +102,19 @@ async fn main() {
                     break;
                 }
                 let block = option.unwrap();
-                println!("Pre block hash: {}", block.get_pre_block_hash());
-                println!("Cur block hash: {}", block.get_hash());
-                println!("Cur block Timestamp: {}", block.get_timestamp());
+                info!("Pre block hash: {}", block.get_pre_block_hash());
+                info!("Cur block hash: {}", block.get_hash());
+                info!("Cur block Timestamp: {}", block.get_timestamp());
                 for tx in block.get_transactions() {
                     let cur_txid_hex = HEXLOWER.encode(tx.get_id());
-                    println!("- Transaction txid_hex: {}", cur_txid_hex);
+                    info!("- Transaction txid_hex: {}", cur_txid_hex);
 
                     if !tx.is_coinbase() {
                         for input in tx.get_vin() {
                             let txid_hex = HEXLOWER.encode(input.get_txid());
                             let pub_key_hash = hash_pub_key(input.get_pub_key());
                             let address = convert_address(pub_key_hash.as_slice()).unwrap();
-                            println!(
+                            info!(
                                 "-- Input txid = {}, vout = {}, from = {}",
                                 txid_hex,
                                 input.get_vout(),
@@ -108,10 +125,9 @@ async fn main() {
                     for output in tx.get_vout() {
                         let pub_key_hash = output.get_pub_key_hash();
                         let address = convert_address(pub_key_hash).unwrap();
-                        println!("-- Output value = {}, to = {}", output.get_value(), address,)
+                        info!("-- Output value = {}, to = {}", output.get_value(), address,)
                     }
                 }
-                println!()
             }
         }
         Command::StartNode {
@@ -123,7 +139,7 @@ async fn main() {
                 if !validate_address(wlt_addr.as_str()).unwrap() {
                     panic!("Wrong miner address!")
                 }
-                println!("Mining is on. Address to receive rewards: {}", wlt_addr);
+                info!("Mining is on. Address to receive rewards: {}", wlt_addr);
                 GLOBAL_CONFIG.set_mining_addr(wlt_addr.parse().unwrap());
             }
 
@@ -137,10 +153,7 @@ async fn main() {
                             // If not seed node, open an empty blockchain
                             if connect_nodes.contains(&ConnectNode::Local) {
                                 // If seed node, create a new blockchain
-                                println!(
-                                    "Seed Node, Creating BlockChain With Address: {}",
-                                    wlt_addr
-                                );
+                                info!("Seed Node, Creating BlockChain With Address: {}", wlt_addr);
                                 let blockchain = Blockchain::create_blockchain(&wlt_addr).unwrap();
                                 let utxo_set = UTXOSet::new(blockchain.clone());
                                 utxo_set.reindex().unwrap();
@@ -151,7 +164,7 @@ async fn main() {
                             }
                         }
                         e => {
-                            println!("Blockchain error: {}", e);
+                            info!("Blockchain error: {}", e);
                             Err(e)
                         }
                     }
@@ -160,8 +173,8 @@ async fn main() {
 
             let blockchain = blockchain_result.unwrap();
             let sockert_addr = GLOBAL_CONFIG.get_node_addr();
-            println!("Starting node at address: {}", sockert_addr);
-            println!("Will try connect to nodes: {:?}", connect_nodes);
+            info!("Starting node at address: {}", sockert_addr);
+            info!("Will try connect to nodes: {:?}", connect_nodes);
             let connect_nodes: HashSet<ConnectNode> = connect_nodes.into_iter().collect();
             Server::new(Arc::new(RwLock::new(blockchain)))
                 .run(&sockert_addr, connect_nodes)

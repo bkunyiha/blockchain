@@ -6,13 +6,13 @@ use crate::server::{
 use crate::{Block, Blockchain, GLOBAL_CONFIG, Transaction, UTXOSet};
 
 use data_encoding::HEXLOWER;
-use log::{error, info};
 use std::collections::HashSet;
 use std::io::Write;
 use std::net::{SocketAddr, TcpStream};
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::RwLock;
+use tracing::{error, info};
 
 /// The `send_get_data` function sends a get_data request to a specified address.
 ///

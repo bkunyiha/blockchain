@@ -11,14 +11,15 @@ use crate::{
     convert_address, hash_pub_key, validate_address,
 };
 use data_encoding::HEXLOWER;
-use log::{error, info};
 use serde_json::Deserializer;
 use std::error::Error;
 use std::io::BufReader;
 use std::net::{Shutdown, TcpStream};
 use std::sync::Arc;
 use tokio::sync::RwLock;
+use tracing::{debug, error, info, instrument, trace, warn};
 
+#[instrument(skip(blockchain, stream))]
 pub async fn process_stream(
     blockchain: Arc<RwLock<Blockchain>>,
     stream: TcpStream,
@@ -223,7 +224,7 @@ pub async fn process_stream(
                 version,
                 best_height,
             } => {
-                info!("version = {}, best_height = {}", version, best_height);
+                debug!("version = {}, best_height = {}", version, best_height);
                 let local_best_height = blockchain
                     .read()
                     .await
@@ -265,16 +266,16 @@ pub async fn process_stream(
                     error!("{} sent error: {}", addr_from, message);
                 }
                 MessageType::Warning => {
-                    info!("{} sent warning: {}", addr_from, message);
+                    warn!("{} sent warning: {}", addr_from, message);
                 }
                 MessageType::Info => {
-                    info!("{} sent info: {}", addr_from, message);
+                    debug!("{} sent info: {}", addr_from, message);
                 }
                 MessageType::Success => {
-                    info!("{} sent success: {}", addr_from, message);
+                    debug!("{} sent success: {}", addr_from, message);
                 }
                 MessageType::Ack => {
-                    info!("{} sent ack: {}", addr_from, message);
+                    debug!("{} sent ack: {}", addr_from, message);
                 }
             },
             Package::AdminNodeQuery {
@@ -298,7 +299,7 @@ pub async fn process_stream(
                     for utxo in utxos {
                         balance += utxo.get_value();
                     }
-                    println!("Balance of {}: {}", addr_from, balance);
+                    debug!("Balance of {}: {}", addr_from, balance);
                 }
                 AdminNodeQueryType::GetAllTransactions => {
                     let mut block_iterator = blockchain
@@ -312,12 +313,12 @@ pub async fn process_stream(
                             break;
                         }
                         let block = option.expect("Block iterator next error");
-                        println!("Pre block hash: {}", block.get_pre_block_hash());
-                        println!("Cur block hash: {}", block.get_hash());
-                        println!("Cur block Timestamp: {}", block.get_timestamp());
+                        trace!("Pre block hash: {}", block.get_pre_block_hash());
+                        trace!("Cur block hash: {}", block.get_hash());
+                        trace!("Cur block Timestamp: {}", block.get_timestamp());
                         for tx in block.get_transactions() {
                             let cur_txid_hex = HEXLOWER.encode(tx.get_id());
-                            println!("- Transaction txid_hex: {}", cur_txid_hex);
+                            trace!("- Transaction txid_hex: {}", cur_txid_hex);
 
                             if !tx.is_coinbase() {
                                 for input in tx.get_vin() {
@@ -325,7 +326,7 @@ pub async fn process_stream(
                                     let pub_key_hash = hash_pub_key(input.get_pub_key());
                                     let address = convert_address(pub_key_hash.as_slice())
                                         .expect("Convert address error");
-                                    println!(
+                                    trace!(
                                         "-- Input txid = {}, vout = {}, from = {}",
                                         txid_hex,
                                         input.get_vout(),
@@ -337,14 +338,9 @@ pub async fn process_stream(
                                 let pub_key_hash = output.get_pub_key_hash();
                                 let address =
                                     convert_address(pub_key_hash).expect("Convert address error");
-                                println!(
-                                    "-- Output value = {}, to = {}",
-                                    output.get_value(),
-                                    address,
-                                )
+                                trace!("-- Output value = {}, to = {}", output.get_value(), address,)
                             }
                         }
-                        println!()
                     }
                 }
                 AdminNodeQueryType::GetBlockHeight => {
@@ -353,21 +349,21 @@ pub async fn process_stream(
                         .await
                         .get_best_height()
                         .expect("Blockchain read error");
-                    println!("Block height: {}", height);
+                    trace!("Block height: {}", height);
                 }
                 AdminNodeQueryType::MineEmptyBlock => {
                     if GLOBAL_CONFIG.is_miner() {
                         mine_empty_block(&blockchain).await;
                     } else {
-                        println!("Not a miner");
+                        trace!("Not a miner");
                     }
-                    println!("Mining empty block");
+                    trace!("Mining empty block");
                 }
                 AdminNodeQueryType::ReindexUtxo => {
                     let utxo_set = UTXOSet::new(blockchain.read().await.clone());
                     utxo_set.reindex().expect("UTXO set reindex error");
                     let count = utxo_set.count_transactions().expect("UTXO set count error");
-                    println!(
+                    trace!(
                         "Reindexed UTXO set. There are {} transactions in the UTXO set.",
                         count
                     );
