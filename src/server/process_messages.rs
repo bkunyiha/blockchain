@@ -1,3 +1,4 @@
+use crate::domain::error::BtcError;
 use crate::server::operations::{
     mine_empty_block, process_known_nodes, process_transaction, send_block, send_get_blocks,
     send_get_data, send_inv, send_message, send_tx, send_version,
@@ -286,7 +287,8 @@ pub async fn process_stream(
                     let address_valid =
                         validate_address(wlt_address.as_str()).expect("Address validation error");
                     if !address_valid {
-                        panic!("ERROR: Address is not valid")
+                        error!("Invalid address: {}", wlt_address);
+                        return Err(Box::new(BtcError::InvalidAddress(wlt_address.clone())));
                     }
                     let payload = base58_decode(wlt_address.as_str()).expect("Base58 decode error");
                     let pub_key_hash = &payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN];

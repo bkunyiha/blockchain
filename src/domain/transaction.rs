@@ -155,7 +155,7 @@ impl Transaction {
         let (accumulated, valid_outputs) =
             utxo_set.find_spendable_outputs(public_key_hash.as_slice(), amount)?;
         if accumulated < amount {
-            panic!("Error: Not enough funds")
+            return Err(BtcError::NotEnoughFunds);
         }
 
         let mut inputs = vec![];

@@ -35,6 +35,9 @@ pub enum BtcError {
     #[error("Block serialization error: {0}")]
     BlockSerializationError(String),
 
+    #[error("Not enough funds")]
+    NotEnoughFunds,
+
     #[error("Blockchain tip hash error: {0}")]
     BlockChainTipHashError(String),
 
@@ -61,6 +64,9 @@ pub enum BtcError {
     NodesInnerPoisonedLockError(String),
     #[error("Memory pool inner poisoned lock error: {0}")]
     MemoryPoolInnerPoisonedLockError(String),
+    #[error("Invalid address: {0}")]
+    InvalidAddress(String),
+
     // IO errors
     #[error("Saving wallets error: {0}")]
     SavingWalletsError(String),

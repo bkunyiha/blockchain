@@ -143,7 +143,7 @@ impl Blockchain {
         for trasaction in transactions {
             let is_valid = trasaction.verify(self)?;
             if !is_valid {
-                panic!("ERROR: Invalid transaction")
+                return Err(BtcError::InvalidTransaction);
             }
         }
         let best_height = self.get_best_height()?;
