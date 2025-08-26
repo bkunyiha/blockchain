@@ -10,15 +10,16 @@ use super::transaction::Transaction;
 use serde::{Deserialize, Serialize};
 use sled::IVec;
 
-// TODO: Add a block header that contains timestamp, pre_block_hash, hash, nonce, height
-// TODO: Block to be composed of block header and transactions
-//pub struct BlockHeader {
-//    timestamp: i64,
-//    pre_block_hash: String,
-//    hash: String,
-//    nonce: i64,
-//    height: usize,
-//}
+// Add a block header that contains timestamp, pre_block_hash, hash, nonce, height
+// Block to be composed of block header and transactions
+#[derive(Clone, Serialize, Deserialize)]
+pub struct BlockHeader {
+    timestamp: i64,
+    pre_block_hash: String,
+    hash: String,
+    nonce: i64,
+    height: usize,
+}
 
 /// Block
 ///
@@ -38,28 +39,27 @@ use sled::IVec;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Block {
-    timestamp: i64,
-    pre_block_hash: String,
-    hash: String,
+    header: BlockHeader,
     transactions: Vec<Transaction>,
-    nonce: i64,
-    height: usize,
 }
 
 impl Block {
     pub fn new_block(pre_block_hash: String, transactions: &[Transaction], height: usize) -> Block {
-        let mut block = Block {
+        let header = BlockHeader {
             timestamp: crate::current_timestamp(),
             pre_block_hash,
             hash: String::new(), // to be filled in the next step
-            transactions: transactions.to_vec(),
             nonce: 0,
             height,
         };
+        let mut block = Block {
+            header,
+            transactions: transactions.to_vec(),
+        };
         let pow = ProofOfWork::new_proof_of_work(block.clone());
         let (nonce, hash) = pow.run();
-        block.nonce = nonce;
-        block.hash = hash;
+        block.header.nonce = nonce;
+        block.header.hash = hash;
         block
     }
 
@@ -78,23 +78,23 @@ impl Block {
     }
 
     pub fn get_pre_block_hash(&self) -> String {
-        self.pre_block_hash.clone()
+        self.header.pre_block_hash.clone()
     }
 
     pub fn get_hash(&self) -> &str {
-        self.hash.as_str()
+        self.header.hash.as_str()
     }
 
     pub fn get_hash_bytes(&self) -> Vec<u8> {
-        self.hash.as_bytes().to_vec()
+        self.header.hash.as_bytes().to_vec()
     }
 
     pub fn get_timestamp(&self) -> i64 {
-        self.timestamp
+        self.header.timestamp
     }
 
     pub fn get_height(&self) -> usize {
-        self.height
+        self.header.height
     }
 
     pub fn hash_transactions(&self) -> Vec<u8> {
