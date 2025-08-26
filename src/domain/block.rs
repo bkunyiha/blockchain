@@ -119,3 +119,83 @@ impl TryFrom<Block> for IVec {
         Ok(Self::from(bytes))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::domain::transaction::Transaction;
+
+    fn generate_test_genesis_address() -> String {
+        // Create a wallet to get a valid Bitcoin address
+        let wallet = crate::domain::wallet::Wallet::new().expect("Failed to create test wallet");
+        wallet.get_address().expect("Failed to get wallet address")
+    }
+
+    #[test]
+    fn test_block_creation() {
+        let transactions = vec![];
+        let prev_block_hash = "previous_hash".to_string();
+        let height = 1;
+
+        let block = Block::new_block(prev_block_hash.clone(), transactions.as_slice(), height);
+
+        assert_eq!(block.header.pre_block_hash, prev_block_hash);
+        assert_eq!(block.transactions.len(), 0);
+        assert_eq!(block.header.height, height);
+        assert!(!block.header.hash.is_empty()); // Should be filled by PoW
+        assert!(block.header.nonce >= 0);
+    }
+
+    #[test]
+    fn test_block_serialization_deserialization() {
+        let genesis_address = generate_test_genesis_address();
+        let coinbase_tx =
+            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
+        let transactions = vec![coinbase_tx];
+        let block = Block::new_block("prev_hash".to_string(), transactions.as_slice(), 1);
+
+        let serialized = block.serialize().expect("Serialization failed");
+        let deserialized = Block::deserialize(&serialized).expect("Deserialization failed");
+
+        assert_eq!(block.header.timestamp, deserialized.header.timestamp);
+        assert_eq!(
+            block.header.pre_block_hash,
+            deserialized.header.pre_block_hash
+        );
+        assert_eq!(block.header.hash, deserialized.header.hash);
+        assert_eq!(block.header.nonce, deserialized.header.nonce);
+        assert_eq!(block.header.height, deserialized.header.height);
+    }
+
+    #[test]
+    fn test_block_getters() {
+        let block = Block::new_block("prev_hash".to_string(), &[], 1);
+
+        assert_eq!(block.get_pre_block_hash(), "prev_hash");
+        assert!(!block.get_hash().is_empty());
+        assert_eq!(block.get_height(), 1);
+        assert!(block.get_timestamp() > 0);
+        assert_eq!(block.get_transactions().len(), 0);
+    }
+
+    #[test]
+    fn test_block_with_transactions() {
+        let genesis_address = generate_test_genesis_address();
+        let coinbase_tx =
+            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
+        let transactions = vec![coinbase_tx];
+
+        let block = Block::new_block("prev_hash".to_string(), transactions.as_slice(), 1);
+
+        assert_eq!(block.transactions.len(), 1);
+        assert_eq!(block.get_transactions().len(), 1);
+    }
+
+    #[test]
+    fn test_block_hash_bytes() {
+        let block = Block::new_block("prev_hash".to_string(), &[], 1);
+        let hash_bytes = block.get_hash_bytes();
+        assert!(!hash_bytes.is_empty());
+        assert_eq!(hash_bytes, block.header.hash.as_bytes());
+    }
+}

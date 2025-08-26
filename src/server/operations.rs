@@ -411,3 +411,220 @@ pub async fn mine_empty_block(blockchain: &Arc<RwLock<Blockchain>>) {
         process_mine_block(txs, blockchain).await;
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::domain::blockchain::Blockchain;
+    use crate::domain::transaction::Transaction;
+    use std::net::SocketAddr;
+    use std::str::FromStr;
+
+    fn generate_test_genesis_address() -> String {
+        // Create a wallet to get a valid Bitcoin address
+        let wallet = crate::domain::wallet::Wallet::new().expect("Failed to create test wallet");
+        wallet.get_address().expect("Failed to get wallet address")
+    }
+
+    fn create_test_blockchain() -> (Arc<RwLock<Blockchain>>, String) {
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let test_db_path = format!("test_blockchain_db_{}_{}", timestamp, uuid::Uuid::new_v4());
+
+        // Clean up any existing test database
+        let _ = std::fs::remove_dir_all(&test_db_path);
+
+        // Set environment variable for unique database path
+        unsafe {
+            std::env::set_var("TREE_DIR", &test_db_path);
+        }
+        unsafe {
+            std::env::set_var("BLOCKS_TREE", &test_db_path);
+        }
+
+        let genesis_address = generate_test_genesis_address();
+        let blockchain = Blockchain::create_blockchain(&genesis_address)
+            .expect("Failed to create test blockchain");
+        (Arc::new(RwLock::new(blockchain)), test_db_path)
+    }
+
+    fn cleanup_test_blockchain(db_path: &str) {
+        let _ = std::fs::remove_dir_all(db_path);
+    }
+
+    #[tokio::test]
+    async fn test_send_tx() {
+        let genesis_address = generate_test_genesis_address();
+        let tx =
+            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create transaction");
+        let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
+
+        // This should not panic even if the connection fails
+        send_tx(&addr, &tx).await;
+    }
+
+    #[tokio::test]
+    async fn test_send_block() {
+        let (blockchain, db_path) = create_test_blockchain();
+        let block = blockchain
+            .read()
+            .await
+            .mine_block(&[])
+            .expect("Failed to mine block");
+        let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
+
+        // This should not panic even if the connection fails
+        send_block(&addr, &block).await;
+
+        // Cleanup
+        cleanup_test_blockchain(&db_path);
+    }
+
+    #[tokio::test]
+    async fn test_send_get_data() {
+        let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
+        let id = vec![1, 2, 3, 4];
+
+        // This should not panic even if the connection fails
+        send_get_data(&addr, OpType::Block, &id).await;
+        send_get_data(&addr, OpType::Tx, &id).await;
+    }
+
+    #[tokio::test]
+    async fn test_send_inv() {
+        let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
+        let items = vec![vec![1, 2, 3], vec![4, 5, 6]];
+
+        // This should not panic even if the connection fails
+        send_inv(&addr, OpType::Block, &items).await;
+        send_inv(&addr, OpType::Tx, &items).await;
+    }
+
+    #[tokio::test]
+    async fn test_send_message() {
+        let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
+        let message = "Test message".to_string();
+
+        // This should not panic even if the connection fails
+        send_message(&addr, MessageType::Info, message.clone()).await;
+        send_message(&addr, MessageType::Error, message.clone()).await;
+        send_message(&addr, MessageType::Success, message.clone()).await;
+        send_message(&addr, MessageType::Warning, message.clone()).await;
+        send_message(&addr, MessageType::Ack, message).await;
+    }
+
+    #[tokio::test]
+    async fn test_send_version() {
+        let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
+        let height = 42;
+
+        // This should not panic even if the connection fails
+        send_version(&addr, height).await;
+    }
+
+    #[tokio::test]
+    async fn test_send_get_blocks() {
+        let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
+
+        // This should not panic even if the connection fails
+        send_get_blocks(&addr).await;
+    }
+
+    #[tokio::test]
+    async fn test_send_known_nodes() {
+        let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
+        let nodes = vec![
+            SocketAddr::from_str("127.0.0.1:8081").expect("Failed to parse address"),
+            SocketAddr::from_str("127.0.0.1:8082").expect("Failed to parse address"),
+        ];
+
+        // This should not panic even if the connection fails
+        send_known_nodes(&addr, nodes).await;
+    }
+
+    #[tokio::test]
+    async fn test_process_transaction() {
+        let (blockchain, db_path) = create_test_blockchain();
+        let genesis_address = generate_test_genesis_address();
+        let tx =
+            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create transaction");
+        let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
+
+        // This should not panic
+        process_transaction(&addr, tx, &blockchain).await;
+
+        // Cleanup
+        cleanup_test_blockchain(&db_path);
+    }
+
+    #[tokio::test]
+    async fn test_process_known_nodes() {
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let test_db_path = format!("test_blockchain_db_{}_{}", timestamp, uuid::Uuid::new_v4());
+        let _ = std::fs::remove_dir_all(&test_db_path);
+
+        // Set environment variable for unique database path
+        unsafe {
+            std::env::set_var("TREE_DIR", &test_db_path);
+        }
+        unsafe {
+            std::env::set_var("BLOCKS_TREE", &test_db_path);
+        }
+
+        let genesis_address = generate_test_genesis_address();
+        let blockchain = Blockchain::create_blockchain(&genesis_address)
+            .expect("Failed to create test blockchain");
+        let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
+        let nodes = vec![
+            SocketAddr::from_str("127.0.0.1:8081").expect("Failed to parse address"),
+            SocketAddr::from_str("127.0.0.1:8082").expect("Failed to parse address"),
+        ];
+
+        // This should not panic
+        process_known_nodes(blockchain, &addr, nodes).await;
+        cleanup_test_blockchain(&test_db_path);
+    }
+
+    #[tokio::test]
+    async fn test_mine_empty_block() {
+        let (blockchain, db_path) = create_test_blockchain();
+
+        // This should not panic
+        mine_empty_block(&blockchain).await;
+
+        // Cleanup
+        cleanup_test_blockchain(&db_path);
+    }
+
+    #[test]
+    fn test_op_type_serialization() {
+        let op_type_block = OpType::Block;
+        let op_type_tx = OpType::Tx;
+
+        // Test that they can be serialized (this would fail at compile time if not)
+        let _block_json = serde_json::to_string(&op_type_block).expect("Failed to serialize Block");
+        let _tx_json = serde_json::to_string(&op_type_tx).expect("Failed to serialize Tx");
+    }
+
+    #[test]
+    fn test_message_type_serialization() {
+        let message_types = vec![
+            MessageType::Error,
+            MessageType::Success,
+            MessageType::Info,
+            MessageType::Warning,
+            MessageType::Ack,
+        ];
+
+        for msg_type in message_types {
+            let _json = serde_json::to_string(&msg_type).expect("Failed to serialize MessageType");
+        }
+    }
+}

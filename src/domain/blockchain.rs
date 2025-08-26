@@ -21,16 +21,21 @@ pub struct Blockchain {
     tip_hash: Arc<RwLock<String>>, // hash of last block
     db: Db,
     is_empty: bool,
+    file_system_blocks_tree: String,
+    file_system_tree_dir: String,
 }
 
 impl Blockchain {
     pub fn create_blockchain(genesis_address: &str) -> Result<Blockchain> {
+        let file_system_blocks_tree = env::var("TREE_DIR").unwrap_or(DEFAULT_TREE_DIR.to_string());
+        let file_system_tree_dir =
+            env::var("BLOCKS_TREE").unwrap_or(DEFAULT_BLOCKS_TREE.to_string());
         let path = current_dir()
-            .map(|p| p.join(Blockchain::get_db_path()))
+            .map(|p| p.join(file_system_blocks_tree.clone()))
             .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
         let db = sled::open(path).map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
         let blocks_tree = db
-            .open_tree(Blockchain::get_blocks_tree_path())
+            .open_tree(file_system_tree_dir.clone())
             .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
 
         let data = blocks_tree
@@ -53,6 +58,8 @@ impl Blockchain {
             tip_hash: Arc::new(RwLock::new(tip_hash)),
             db,
             is_empty: false,
+            file_system_blocks_tree,
+            file_system_tree_dir,
         })
     }
 
@@ -70,12 +77,15 @@ impl Blockchain {
     }
 
     pub fn open_blockchain() -> Result<Blockchain> {
+        let file_system_blocks_tree = env::var("TREE_DIR").unwrap_or(DEFAULT_TREE_DIR.to_string());
+        let file_system_tree_dir =
+            env::var("BLOCKS_TREE").unwrap_or(DEFAULT_BLOCKS_TREE.to_string());
         let path = current_dir()
-            .map(|p| p.join(Blockchain::get_db_path()))
+            .map(|p| p.join(file_system_blocks_tree.clone()))
             .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
         let db = sled::open(path).map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
         let blocks_tree = db
-            .open_tree(Blockchain::get_blocks_tree_path())
+            .open_tree(file_system_tree_dir.clone())
             .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
 
         let tip_bytes = blocks_tree
@@ -91,12 +101,17 @@ impl Blockchain {
             tip_hash: Arc::new(RwLock::new(tip_hash)),
             db,
             is_empty: false,
+            file_system_blocks_tree,
+            file_system_tree_dir,
         })
     }
 
     pub fn open_blockchain_empty() -> Result<Blockchain> {
+        let file_system_blocks_tree = env::var("TREE_DIR").unwrap_or(DEFAULT_TREE_DIR.to_string());
+        let file_system_tree_dir =
+            env::var("BLOCKS_TREE").unwrap_or(DEFAULT_BLOCKS_TREE.to_string());
         let path = current_dir()
-            .map(|p| p.join(Blockchain::get_db_path()))
+            .map(|p| p.join(file_system_blocks_tree.clone()))
             .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
         let db = sled::open(path).map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
         let tip_hash = DEFAULT_EMPTY_TIP_BLOCK_HASH_VALUE.to_string();
@@ -105,6 +120,8 @@ impl Blockchain {
             tip_hash: Arc::new(RwLock::new(tip_hash)),
             db,
             is_empty: true,
+            file_system_blocks_tree,
+            file_system_tree_dir,
         })
     }
 
@@ -153,7 +170,7 @@ impl Blockchain {
 
         let blocks_tree = self
             .db
-            .open_tree(Blockchain::get_blocks_tree_path())
+            .open_tree(self.get_blocks_tree_path())
             .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
         // The `update_blocks_tree` function updates the blocks tree with the new block.
         // It uses the `blocks_tree` instance to update the blocks tree.
@@ -165,8 +182,9 @@ impl Blockchain {
     }
 
     pub fn iterator(&self) -> Result<BlockchainIterator> {
-        self.get_tip_hash()
-            .map(|hash| BlockchainIterator::new(hash, self.db.clone()))
+        self.get_tip_hash().map(|hash| {
+            BlockchainIterator::new(hash, self.db.clone(), self.file_system_blocks_tree.clone())
+        })
     }
 
     /// The `find_utxo` function finds all unspent transaction outputs (UTXOs) in the blockchain.
@@ -259,7 +277,7 @@ impl Blockchain {
     pub fn add_block(&mut self, new_block: &Block) -> Result<()> {
         let block_tree = self
             .db
-            .open_tree(Blockchain::get_blocks_tree_path())
+            .open_tree(self.get_blocks_tree_path())
             .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
 
         if self.is_empty() {
@@ -323,7 +341,7 @@ impl Blockchain {
         } else {
             let block_tree = self
                 .db
-                .open_tree(Blockchain::get_blocks_tree_path())
+                .open_tree(self.get_blocks_tree_path())
                 .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
             let tip_block_bytes = block_tree
                 .get(self.get_tip_hash()?)
@@ -337,7 +355,7 @@ impl Blockchain {
     pub fn get_block(&self, block_hash: &[u8]) -> Result<Option<Block>> {
         let block_tree = self
             .db
-            .open_tree(Blockchain::get_blocks_tree_path())
+            .open_tree(self.get_blocks_tree_path())
             .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
         let block_bytes = block_tree
             .get(block_hash)
@@ -365,24 +383,26 @@ impl Blockchain {
         Ok(blocks)
     }
 
-    pub fn get_db_path() -> String {
-        env::var("TREE_DIR").unwrap_or(DEFAULT_TREE_DIR.to_string())
+    pub fn get_db_path(&self) -> String {
+        self.file_system_tree_dir.clone()
     }
 
-    pub fn get_blocks_tree_path() -> String {
-        env::var("BLOCKS_TREE").unwrap_or(DEFAULT_BLOCKS_TREE.to_string())
+    pub fn get_blocks_tree_path(&self) -> String {
+        self.file_system_blocks_tree.clone()
     }
 }
 
 pub struct BlockchainIterator {
     db: Db,
+    file_system_blocks_tree: String,
     current_hash: String,
 }
 
 impl BlockchainIterator {
-    fn new(tip_hash: String, db: Db) -> BlockchainIterator {
+    fn new(tip_hash: String, db: Db, file_system_blocks_tree: String) -> BlockchainIterator {
         BlockchainIterator {
             current_hash: tip_hash,
+            file_system_blocks_tree,
             db,
         }
     }
@@ -390,12 +410,269 @@ impl BlockchainIterator {
     pub fn next(&mut self) -> Option<Block> {
         let block_tree = self
             .db
-            .open_tree(Blockchain::get_blocks_tree_path())
+            .open_tree(self.file_system_blocks_tree.clone())
             .unwrap();
         let data = block_tree.get(self.current_hash.clone()).unwrap()?;
 
         let block = Block::deserialize(data.to_vec().as_slice()).unwrap();
         self.current_hash = block.get_pre_block_hash().clone();
         Some(block)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::domain::transaction::Transaction;
+
+    use std::fs;
+
+    fn generate_test_genesis_address() -> String {
+        // Create a wallet to get a valid Bitcoin address
+        let wallet = crate::domain::wallet::Wallet::new().expect("Failed to create test wallet");
+        wallet.get_address().expect("Failed to get wallet address")
+    }
+
+    fn create_test_blockchain() -> (Blockchain, String) {
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let test_db_path = format!("test_blockchain_db_{}_{}", timestamp, uuid::Uuid::new_v4());
+
+        // Clean up any existing test database
+        let _ = fs::remove_dir_all(&test_db_path);
+
+        // Set environment variable for unique database path
+        unsafe {
+            std::env::set_var("TREE_DIR", &test_db_path);
+        }
+        unsafe {
+            std::env::set_var("BLOCKS_TREE", &test_db_path);
+        }
+
+        let genesis_address = generate_test_genesis_address();
+        let blockchain = Blockchain::create_blockchain(&genesis_address)
+            .expect("Failed to create test blockchain");
+        (blockchain, test_db_path)
+    }
+
+    fn cleanup_test_blockchain(db_path: &str) {
+        let _ = fs::remove_dir_all(db_path);
+    }
+
+    #[test]
+    fn test_blockchain_creation() {
+        let (blockchain, db_path) = create_test_blockchain();
+
+        assert_eq!(
+            blockchain.get_best_height().expect("Failed to get height"),
+            1
+        );
+        cleanup_test_blockchain(&db_path);
+    }
+
+    #[test]
+    fn test_genesis_block_creation() {
+        let (blockchain, db_path) = create_test_blockchain();
+
+        // Genesis block should be created automatically
+        assert_eq!(
+            blockchain.get_best_height().expect("Failed to get height"),
+            1
+        );
+
+        // Get the genesis block using the tip hash
+        let tip_hash = blockchain.get_tip_hash().expect("Failed to get tip hash");
+        let genesis_block = blockchain
+            .get_block(tip_hash.as_bytes())
+            .expect("Failed to get genesis block")
+            .expect("Genesis block should exist");
+        assert_eq!(genesis_block.get_height(), 1);
+        assert_eq!(genesis_block.get_pre_block_hash(), "None");
+
+        cleanup_test_blockchain(&db_path);
+    }
+
+    #[test]
+    fn test_add_block() {
+        let (mut blockchain, db_path) = create_test_blockchain();
+        let genesis_address = generate_test_genesis_address();
+
+        // Create a new block
+        let coinbase_tx =
+            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
+        let transactions = vec![coinbase_tx];
+        let new_block = blockchain
+            .mine_block(transactions.as_slice())
+            .expect("Failed to mine block");
+
+        // Add the block
+        blockchain
+            .add_block(&new_block)
+            .expect("Failed to add block");
+
+        assert_eq!(
+            blockchain.get_best_height().expect("Failed to get height"),
+            2
+        );
+
+        cleanup_test_blockchain(&db_path);
+    }
+
+    #[test]
+    fn test_get_block() {
+        let (mut blockchain, db_path) = create_test_blockchain();
+        let genesis_address = generate_test_genesis_address();
+
+        // Create and add a block
+        let coinbase_tx =
+            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
+        let transactions = vec![coinbase_tx];
+        let new_block = blockchain
+            .mine_block(transactions.as_slice())
+            .expect("Failed to mine block");
+        blockchain
+            .add_block(&new_block)
+            .expect("Failed to add block");
+
+        // Get the block by hash
+        let retrieved_block = blockchain
+            .get_block(new_block.get_hash_bytes().as_slice())
+            .expect("Failed to get block")
+            .expect("Block should exist");
+
+        assert_eq!(retrieved_block.get_hash(), new_block.get_hash());
+        assert_eq!(retrieved_block.get_height(), 2);
+
+        cleanup_test_blockchain(&db_path);
+    }
+
+    #[test]
+    fn test_get_block_hashes() {
+        let (mut blockchain, db_path) = create_test_blockchain();
+        let genesis_address = generate_test_genesis_address();
+
+        // Add a few blocks
+        for _i in 0..3 {
+            let coinbase_tx = Transaction::new_coinbase_tx(&genesis_address)
+                .expect("Failed to create coinbase tx");
+            let transactions = vec![coinbase_tx];
+            let new_block = blockchain
+                .mine_block(transactions.as_slice())
+                .expect("Failed to mine block");
+            blockchain
+                .add_block(&new_block)
+                .expect("Failed to add block");
+        }
+
+        let block_hashes = blockchain
+            .get_block_hashes()
+            .expect("Failed to get block hashes");
+
+        // Should have genesis block + 3 new blocks = 4 total
+        assert_eq!(block_hashes.len(), 4);
+
+        cleanup_test_blockchain(&db_path);
+    }
+
+    #[test]
+    fn test_blockchain_iterator() {
+        let (mut blockchain, db_path) = create_test_blockchain();
+
+        // Add a block
+        let genesis_address = generate_test_genesis_address();
+        let coinbase_tx =
+            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
+        let transactions = vec![coinbase_tx];
+        let new_block = blockchain
+            .mine_block(transactions.as_slice())
+            .expect("Failed to mine block");
+        blockchain
+            .add_block(&new_block)
+            .expect("Failed to add block");
+
+        let mut iterator = blockchain.iterator().expect("Failed to create iterator");
+        let mut block_count = 0;
+
+        while iterator.next().is_some() {
+            block_count += 1;
+        }
+
+        // Should have genesis block + 1 new block = 2 total
+        assert_eq!(block_count, 2);
+
+        cleanup_test_blockchain(&db_path);
+    }
+
+    #[test]
+    fn test_blockchain_persistence() {
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let db_path = format!("test_persistence_db_{}_{}", timestamp, uuid::Uuid::new_v4());
+        let _ = fs::remove_dir_all(&db_path);
+
+        // Set environment variable for unique database path
+        unsafe {
+            std::env::set_var("TREE_DIR", &db_path);
+        }
+        unsafe {
+            std::env::set_var("BLOCKS_TREE", &db_path);
+        }
+
+        let genesis_address = generate_test_genesis_address();
+
+        {
+            let mut blockchain = Blockchain::create_blockchain(&genesis_address)
+                .expect("Failed to create blockchain");
+
+            // Add a block
+            let coinbase_tx = Transaction::new_coinbase_tx(&genesis_address)
+                .expect("Failed to create coinbase tx");
+            let transactions = vec![coinbase_tx];
+            let new_block = blockchain
+                .mine_block(transactions.as_slice())
+                .expect("Failed to mine block");
+            blockchain
+                .add_block(&new_block)
+                .expect("Failed to add block");
+        } // blockchain goes out of scope here
+
+        // Create a new blockchain instance with the same database
+        let blockchain = Blockchain::create_blockchain(&genesis_address)
+            .expect("Failed to create new blockchain");
+
+        // Should still have the block we added
+        assert_eq!(
+            blockchain.get_best_height().expect("Failed to get height"),
+            2
+        );
+
+        cleanup_test_blockchain(&db_path);
+    }
+
+    #[test]
+    fn test_mine_block() {
+        let (blockchain, db_path) = create_test_blockchain();
+
+        let genesis_address = generate_test_genesis_address();
+        let coinbase_tx =
+            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
+        let transactions = vec![coinbase_tx];
+
+        let new_block = blockchain
+            .mine_block(transactions.as_slice())
+            .expect("Failed to mine block");
+
+        // Check that the block was mined correctly
+        assert_eq!(new_block.get_height(), 2); // Height 2 because genesis block is height 1
+        assert!(!new_block.get_hash().is_empty());
+        assert!(new_block.get_transactions().len() > 0);
+
+        cleanup_test_blockchain(&db_path);
     }
 }

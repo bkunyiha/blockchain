@@ -8,8 +8,9 @@
 //! # Examples
 //!
 //! ```
-//! let wallet = Wallet::new();
-//! let address = wallet.get_address();
+//! use blockchain::Wallet;
+//! let wallet = Wallet::new().expect("Failed to create wallet");
+//! let address = wallet.get_address().expect("Failed to get address");
 //! ```
 
 use crate::domain::error::{BtcError, Result};

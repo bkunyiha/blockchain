@@ -341,3 +341,136 @@ impl Transaction {
             .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn generate_test_genesis_address() -> String {
+        // Create a wallet to get a valid Bitcoin address
+        let wallet = crate::domain::wallet::Wallet::new().expect("Failed to create test wallet");
+        wallet.get_address().expect("Failed to get wallet address")
+    }
+
+    #[test]
+    fn test_coinbase_transaction_creation() {
+        let address = generate_test_genesis_address(); // Valid Bitcoin address
+        let tx =
+            Transaction::new_coinbase_tx(&address).expect("Failed to create coinbase transaction");
+
+        assert!(tx.is_coinbase());
+        assert_eq!(tx.get_vout().len(), 1);
+        assert_eq!(tx.get_vin().len(), 1);
+
+        let output = &tx.get_vout()[0];
+        assert_eq!(output.get_value(), 10); // Default coinbase reward
+    }
+
+    #[test]
+    fn test_transaction_serialization_deserialization() {
+        let genesis_address = generate_test_genesis_address();
+        let tx = Transaction::new_coinbase_tx(&genesis_address)
+            .expect("Failed to create coinbase transaction");
+
+        let serialized = tx.serialize().expect("Serialization failed");
+        let deserialized = Transaction::deserialize(&serialized).expect("Deserialization failed");
+
+        assert_eq!(tx.get_id(), deserialized.get_id());
+        assert_eq!(tx.get_vin().len(), deserialized.get_vin().len());
+        assert_eq!(tx.get_vout().len(), deserialized.get_vout().len());
+    }
+
+    #[test]
+    fn test_transaction_id() {
+        let genesis_address = generate_test_genesis_address();
+        let tx = Transaction::new_coinbase_tx(&genesis_address)
+            .expect("Failed to create coinbase transaction");
+        let tx_id = tx.get_id();
+
+        assert!(!tx_id.is_empty());
+        assert_eq!(tx_id.len(), 32); // SHA256 hash is 32 bytes
+    }
+
+    #[test]
+    fn test_transaction_id_bytes() {
+        let genesis_address = generate_test_genesis_address();
+        let tx = Transaction::new_coinbase_tx(&genesis_address)
+            .expect("Failed to create coinbase transaction");
+        let tx_id_bytes = tx.get_id_bytes();
+
+        assert_eq!(tx_id_bytes.len(), 32);
+        assert_eq!(tx_id_bytes, tx.get_id());
+    }
+
+    #[test]
+    fn test_coinbase_transaction_validation() {
+        let genesis_address = generate_test_genesis_address();
+        let tx = Transaction::new_coinbase_tx(&genesis_address)
+            .expect("Failed to create coinbase transaction");
+
+        // Coinbase transactions should have empty signature and pub_key
+        let vin = &tx.get_vin()[0];
+        assert!(vin.get_pub_key().is_empty());
+    }
+
+    #[test]
+    fn test_transaction_output_value() {
+        let genesis_address = generate_test_genesis_address();
+        let tx = Transaction::new_coinbase_tx(&genesis_address)
+            .expect("Failed to create coinbase transaction");
+        let output = &tx.get_vout()[0];
+
+        assert_eq!(output.get_value(), 10);
+        assert!(!output.get_pub_key_hash().is_empty());
+    }
+
+    #[test]
+    fn test_transaction_input_creation() {
+        let tx_id = vec![1, 2, 3, 4];
+        let vout = 0;
+
+        let tx_input = TXInput::new(&tx_id, vout);
+
+        assert_eq!(tx_input.get_txid(), tx_id.as_slice());
+        assert_eq!(tx_input.get_vout(), vout);
+        assert!(tx_input.get_pub_key().is_empty());
+    }
+
+    #[test]
+    fn test_transaction_output_creation() {
+        let value = 100;
+        let address = generate_test_genesis_address();
+
+        let tx_output = TXOutput::new(value, &address).expect("Failed to create output");
+
+        assert_eq!(tx_output.get_value(), value);
+        assert!(!tx_output.get_pub_key_hash().is_empty());
+    }
+
+    #[test]
+    fn test_transaction_output_lock_unlock() {
+        let value = 100;
+        let address = generate_test_genesis_address();
+        let tx_output = TXOutput::new(value, &address).expect("Failed to create output");
+
+        // Test locking with pub_key_hash
+        let pub_key_hash = tx_output.get_pub_key_hash();
+        assert!(tx_output.is_locked_with_key(pub_key_hash));
+
+        // Test with wrong pub_key_hash
+        let wrong_pub_key_hash = vec![5, 6, 7, 8];
+        assert!(!tx_output.is_locked_with_key(&wrong_pub_key_hash));
+    }
+
+    #[test]
+    fn test_transaction_input_can_unlock() {
+        let tx_id = vec![1, 2, 3, 4];
+        let vout = 0;
+
+        let tx_input = TXInput::new(&tx_id, vout);
+
+        // Test with empty pub_key (should return false)
+        let pub_key_hash = vec![1, 2, 3, 4];
+        assert!(!tx_input.uses_key(&pub_key_hash));
+    }
+}
