@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-#[derive(Error, Debug)]
+#[derive(Clone, Error, Debug)]
 pub enum BtcError {
     // Recoverable errors
     #[error("Blockchain not found error: {0}")]

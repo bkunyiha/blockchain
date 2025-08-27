@@ -13,7 +13,7 @@ pub mod wallets;
 
 // Re-export the  modules
 pub use block::Block;
-pub use blockchain::{Blockchain, BlockchainService};
+pub use blockchain::BlockchainService;
 pub use error::*;
 pub use memory_pool::BlockInTransit;
 pub use memory_pool::MemoryPool;

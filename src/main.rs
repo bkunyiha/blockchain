@@ -1,6 +1,6 @@
 use blockchain::{
-    Blockchain, BlockchainService, BtcError, ConnectNode, GLOBAL_CONFIG, Result, Server, UTXOSet,
-    Wallets, convert_address, hash_pub_key, validate_address,
+    BtcError, ConnectNode, GLOBAL_CONFIG, Result, Server, UTXOSet, Wallets,
+    blockchain::BlockchainService, convert_address, hash_pub_key, validate_address,
 };
 use data_encoding::HEXLOWER;
 use std::collections::HashSet;
@@ -152,7 +152,7 @@ fn process_block(block: &blockchain::Block) {
 
 /// Print the entire blockchain using functional iteration
 async fn print_blockchain() -> Result<()> {
-    let blockchain = Blockchain::open_blockchain().await?;
+    let blockchain = BlockchainService::default().await?;
     let mut iterator = blockchain.iterator().await.expect("Failed to get iterator");
     while let Some(block) = iterator.next() {
         process_block(&block);
@@ -179,12 +179,10 @@ fn validate_miner_config(wlt_addr: &str, is_miner: &IsMiner) -> Result<()> {
 }
 
 /// Create blockchain for seed node
-async fn create_seed_blockchain(wlt_addr: &str) -> Result<Blockchain> {
+async fn create_seed_blockchain(wlt_addr: &str) -> Result<BlockchainService> {
     info!("Seed Node, Creating BlockChain With Address: {}", wlt_addr);
-    let blockchain = Blockchain::create_blockchain(wlt_addr)
-        .await
-        .expect("Failed to create blockchain");
-    let utxo_set = UTXOSet::new(BlockchainService::new(blockchain.clone()));
+    let blockchain = BlockchainService::initialize(wlt_addr).await?;
+    let utxo_set = UTXOSet::new(blockchain.clone());
     utxo_set.reindex().await?;
     Ok(blockchain)
 }
@@ -193,14 +191,14 @@ async fn create_seed_blockchain(wlt_addr: &str) -> Result<Blockchain> {
 async fn open_or_create_blockchain(
     wlt_addr: &str,
     connect_nodes: &[ConnectNode],
-) -> Result<Blockchain> {
-    match Blockchain::open_blockchain().await {
+) -> Result<BlockchainService> {
+    match BlockchainService::default().await {
         Ok(blockchain) => Ok(blockchain),
         Err(BtcError::BlockchainNotFoundError(_)) => {
             if connect_nodes.contains(&ConnectNode::Local) {
                 create_seed_blockchain(wlt_addr).await
             } else {
-                Blockchain::open_blockchain_empty().await
+                BlockchainService::empty().await
             }
         }
         Err(e) => {
@@ -231,7 +229,7 @@ async fn start_node(
     let connect_nodes_set: HashSet<ConnectNode> = connect_nodes.into_iter().collect();
 
     // Start server
-    Server::new(BlockchainService::new(blockchain.clone()))
+    Server::new(blockchain)
         .run(&socket_addr, connect_nodes_set)
         .await;
 

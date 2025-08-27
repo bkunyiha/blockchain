@@ -1,4 +1,4 @@
-use blockchain::{Blockchain, Transaction, Wallets};
+use blockchain::{BlockchainService, Transaction, Wallets};
 use std::path::PathBuf;
 use tempfile::TempDir;
 
@@ -23,13 +23,18 @@ pub fn set_blockchain_env_vars(db_path: &PathBuf) {
 }
 
 /// Create a blockchain with given genesis address
-pub async fn create_blockchain_with_address(genesis_address: &str, db_path: &PathBuf) -> Blockchain {
+pub async fn create_blockchain_with_address(
+    genesis_address: &str,
+    db_path: &PathBuf,
+) -> BlockchainService {
     set_blockchain_env_vars(db_path);
-    Blockchain::create_blockchain(genesis_address).await.expect("Failed to create test blockchain")
+    BlockchainService::initialize(genesis_address)
+        .await
+        .expect("Failed to create test blockchain")
 }
 
 /// Create a temporary blockchain for testing
-pub async fn create_temp_blockchain() -> (Blockchain, TempDir) {
+pub async fn create_temp_blockchain() -> (BlockchainService, TempDir) {
     let temp_dir = create_temp_dir();
     let db_path = temp_dir.path().join("test_blockchain");
     let genesis_address = generate_test_genesis_address();
@@ -43,7 +48,10 @@ pub fn create_coinbase_transaction(address: &str) -> Transaction {
 }
 
 /// Mine a block with given transactions
-pub async fn mine_block(blockchain: &mut Blockchain, transactions: &[Transaction]) -> blockchain::Block {
+pub async fn mine_block(
+    blockchain: &BlockchainService,
+    transactions: &[Transaction],
+) -> blockchain::Block {
     blockchain
         .mine_block(transactions)
         .await
@@ -51,25 +59,31 @@ pub async fn mine_block(blockchain: &mut Blockchain, transactions: &[Transaction
 }
 
 /// Add a block to the blockchain
-pub async fn add_block(blockchain: &mut Blockchain, block: &blockchain::Block) {
-    blockchain.add_block(block).await.expect("Failed to add block");
+pub async fn add_block(blockchain: &BlockchainService, block: &blockchain::Block) {
+    blockchain
+        .add_block(block)
+        .await
+        .expect("Failed to add block");
 }
 
 /// Create a single block with coinbase transaction
-pub async fn create_single_block(blockchain: &mut Blockchain, address: &str) -> blockchain::Block {
+pub async fn create_single_block(
+    blockchain: &BlockchainService,
+    address: &str,
+) -> blockchain::Block {
     let coinbase_tx = create_coinbase_transaction(address);
     let transactions = vec![coinbase_tx];
     mine_block(blockchain, &transactions).await
 }
 
 /// Helper function to create a blockchain with some initial blocks
-pub async fn create_blockchain_with_blocks(num_blocks: usize) -> (Blockchain, TempDir) {
-    let (mut blockchain, temp_dir) = create_temp_blockchain().await;
+pub async fn create_blockchain_with_blocks(num_blocks: usize) -> (BlockchainService, TempDir) {
+    let (blockchain, temp_dir) = create_temp_blockchain().await;
     let genesis_address = generate_test_genesis_address();
 
     for _ in 0..num_blocks {
-        let block = create_single_block(&mut blockchain, &genesis_address).await;
-        add_block(&mut blockchain, &block).await;
+        let block = create_single_block(&blockchain, &genesis_address).await;
+        add_block(&blockchain, &block).await;
     }
 
     (blockchain, temp_dir)
@@ -81,13 +95,15 @@ pub fn create_test_wallets() -> Wallets {
 }
 
 /// Collect blocks from iterator into a sorted vector
-pub async fn collect_and_sort_blocks(blockchain: &Blockchain) -> Option<Vec<blockchain::Block>> {
+pub async fn collect_and_sort_blocks(
+    blockchain: &BlockchainService,
+) -> Option<Vec<blockchain::Block>> {
     let mut iterator = blockchain.iterator().await.ok()?;
     let mut blocks = Vec::new();
     while let Some(block) = iterator.next() {
         blocks.push(block);
     }
-    blocks.sort_by_key(|block| block.get_height());
+    blocks.sort_by_key(|block: &blockchain::Block| block.get_height());
     Some(blocks)
 }
 
@@ -102,7 +118,7 @@ pub fn verify_block_integrity(
 }
 
 /// Verify blockchain integrity using functional approach
-pub async fn verify_blockchain_integrity(blockchain: &Blockchain) -> bool {
+pub async fn verify_blockchain_integrity(blockchain: &BlockchainService) -> bool {
     collect_and_sort_blocks(blockchain)
         .await
         .map(|blocks| {
@@ -138,21 +154,29 @@ pub fn validate_addresses(addresses: &[String]) -> bool {
 }
 
 /// Compose blockchain creation with validation
-pub async fn create_validated_blockchain() -> (Blockchain, TempDir) {
+pub async fn create_validated_blockchain() -> (BlockchainService, TempDir) {
     let (blockchain, temp_dir) = create_temp_blockchain().await;
     assert_eq!(
-        blockchain.get_best_height().await.expect("Failed to get height"),
+        blockchain
+            .get_best_height()
+            .await
+            .expect("Failed to get height"),
         1
     );
     (blockchain, temp_dir)
 }
 
 /// Compose blockchain creation with blocks and validation
-pub async fn create_validated_blockchain_with_blocks(num_blocks: usize) -> (Blockchain, TempDir) {
+pub async fn create_validated_blockchain_with_blocks(
+    num_blocks: usize,
+) -> (BlockchainService, TempDir) {
     let (blockchain, temp_dir) = create_blockchain_with_blocks(num_blocks).await;
     let expected_height = num_blocks + 1;
     assert_eq!(
-        blockchain.get_best_height().await.expect("Failed to get height"),
+        blockchain
+            .get_best_height()
+            .await
+            .expect("Failed to get height"),
         expected_height
     );
     (blockchain, temp_dir)
@@ -172,7 +196,10 @@ mod tests {
     async fn test_create_blockchain_with_blocks() {
         let (blockchain, _temp_dir) = create_validated_blockchain_with_blocks(3).await;
         assert_eq!(
-            blockchain.get_best_height().await.expect("Failed to get height"),
+            blockchain
+                .get_best_height()
+                .await
+                .expect("Failed to get height"),
             4
         );
     }
@@ -199,15 +226,18 @@ mod tests {
 
     #[tokio::test]
     async fn test_functional_block_creation() {
-        let (mut blockchain, _temp_dir) = create_temp_blockchain().await;
+        let (blockchain, _temp_dir) = create_temp_blockchain().await;
         let genesis_address = generate_test_genesis_address();
 
         // Test functional block creation
-        let block = create_single_block(&mut blockchain, &genesis_address).await;
-        add_block(&mut blockchain, &block).await;
+        let block = create_single_block(&blockchain, &genesis_address).await;
+        add_block(&blockchain, &block).await;
 
         assert_eq!(
-            blockchain.get_best_height().await.expect("Failed to get height"),
+            blockchain
+                .get_best_height()
+                .await
+                .expect("Failed to get height"),
             2
         );
     }

@@ -1,4 +1,4 @@
-use blockchain::{Blockchain, BlockchainService, ConnectNode, GLOBAL_CONFIG, Transaction, UTXOSet, Wallets};
+use blockchain::{BlockchainService, ConnectNode, GLOBAL_CONFIG, Transaction, UTXOSet, Wallets};
 use std::str::FromStr;
 
 mod test_helpers;
@@ -29,20 +29,27 @@ fn set_blockchain_env_vars(db_path: &str) {
 }
 
 /// Create a blockchain with given genesis address and database path
-async fn create_blockchain_with_config(genesis_address: &str, db_path: &str) -> Blockchain {
+async fn create_blockchain_with_config(genesis_address: &str, db_path: &str) -> BlockchainService {
     set_blockchain_env_vars(db_path);
-    Blockchain::create_blockchain(genesis_address).await.expect("Failed to create test blockchain")
+    BlockchainService::initialize(genesis_address)
+        .await
+        .expect("Failed to create test blockchain")
 }
 
 /// Create a blockchain with given genesis address and database path (clears existing data)
-async fn create_blockchain_with_config_clean(genesis_address: &str, db_path: &str) -> Blockchain {
+async fn create_blockchain_with_config_clean(
+    genesis_address: &str,
+    db_path: &str,
+) -> BlockchainService {
     let _ = std::fs::remove_dir_all(db_path);
     set_blockchain_env_vars(db_path);
-    Blockchain::create_blockchain(genesis_address).await.expect("Failed to create test blockchain")
+    BlockchainService::initialize(genesis_address)
+        .await
+        .expect("Failed to create test blockchain")
 }
 
 /// Create a test blockchain with automatic cleanup
-async fn create_test_blockchain() -> (Blockchain, String) {
+async fn create_test_blockchain() -> (BlockchainService, String) {
     let db_path = create_unique_db_path();
     let genesis_address = generate_test_genesis_address();
     let blockchain = create_blockchain_with_config_clean(&genesis_address, &db_path).await;
@@ -83,7 +90,10 @@ fn create_coinbase_transaction(address: &str) -> Transaction {
 }
 
 /// Mine a block with given transactions
-async fn mine_block(blockchain: &mut Blockchain, transactions: &[Transaction]) -> blockchain::Block {
+async fn mine_block(
+    blockchain: &BlockchainService,
+    transactions: &[Transaction],
+) -> blockchain::Block {
     blockchain
         .mine_block(transactions)
         .await
@@ -91,12 +101,15 @@ async fn mine_block(blockchain: &mut Blockchain, transactions: &[Transaction]) -
 }
 
 /// Add a block to the blockchain
-async fn add_block(blockchain: &mut Blockchain, block: &blockchain::Block) {
-    blockchain.add_block(block).await.expect("Failed to add block");
+async fn add_block(blockchain: &BlockchainService, block: &blockchain::Block) {
+    blockchain
+        .add_block(block)
+        .await
+        .expect("Failed to add block");
 }
 
 /// Create and add a single block with coinbase transaction
-async fn create_and_add_block(blockchain: &mut Blockchain, address: &str) -> blockchain::Block {
+async fn create_and_add_block(blockchain: &BlockchainService, address: &str) -> blockchain::Block {
     let coinbase_tx = create_coinbase_transaction(address);
     let transactions = vec![coinbase_tx];
     let block = mine_block(blockchain, &transactions).await;
@@ -105,15 +118,25 @@ async fn create_and_add_block(blockchain: &mut Blockchain, address: &str) -> blo
 }
 
 /// Create a UTXO set and reindex it
-async fn create_and_reindex_utxo_set(blockchain: Blockchain) -> UTXOSet {
-    let utxo_set = UTXOSet::new(BlockchainService::new(blockchain));
-    utxo_set.reindex().await.expect("Failed to reindex UTXO set");
+async fn create_and_reindex_utxo_set(blockchain: BlockchainService) -> UTXOSet {
+    let utxo_set = UTXOSet::new(blockchain);
+    utxo_set
+        .reindex()
+        .await
+        .expect("Failed to reindex UTXO set");
     utxo_set
 }
 
 /// Validate blockchain height
-async fn validate_blockchain_height(blockchain: &Blockchain, expected_height: usize) -> bool {
-    blockchain.get_best_height().await.expect("Failed to get height") == expected_height
+async fn validate_blockchain_height(
+    blockchain: &BlockchainService,
+    expected_height: usize,
+) -> bool {
+    blockchain
+        .get_best_height()
+        .await
+        .expect("Failed to get height")
+        == expected_height
 }
 
 /// Create a wallet with unique path
@@ -131,14 +154,14 @@ fn create_wallet_with_temp_path() -> (Wallets, tempfile::TempDir) {
 
 #[tokio::test]
 async fn test_blockchain_integration() {
-    let (mut blockchain, db_path) = create_test_blockchain().await;
+    let (blockchain, db_path) = create_test_blockchain().await;
     let genesis_address = generate_test_genesis_address();
 
     // Test creating a new blockchain
     assert!(validate_blockchain_height(&blockchain, 1).await);
 
     // Test mining a block with the same blockchain instance
-    let _new_block = create_and_add_block(&mut blockchain, &genesis_address).await;
+    let _new_block = create_and_add_block(&blockchain, &genesis_address).await;
     assert!(validate_blockchain_height(&blockchain, 2).await);
 
     // Cleanup
@@ -161,11 +184,11 @@ async fn test_wallet_integration() {
 
 #[tokio::test]
 async fn test_utxo_set_integration() {
-    let (mut blockchain, db_path) = create_test_blockchain().await;
+    let (blockchain, db_path) = create_test_blockchain().await;
     let genesis_address = generate_test_genesis_address();
 
     // Create blockchain and add a block
-    create_and_add_block(&mut blockchain, &genesis_address).await;
+    create_and_add_block(&blockchain, &genesis_address).await;
 
     // Test UTXO set - need to reindex first
     let utxo_set = create_and_reindex_utxo_set(blockchain).await;
@@ -182,10 +205,9 @@ async fn test_utxo_set_integration() {
 #[tokio::test]
 async fn test_server_creation() {
     let (blockchain, db_path) = create_test_blockchain().await;
-    let blockchain_service = BlockchainService::new(blockchain);
 
     // Test that we can create a server (the blockchain field is private, so we can't test it directly)
-    let _server = blockchain::server::Server::new(blockchain_service);
+    let _server = blockchain::server::Server::new(blockchain);
     // If we get here without panicking, the server was created successfully
 
     // Cleanup
@@ -240,9 +262,9 @@ async fn test_blockchain_persistence() {
 
     // Create blockchain and add a block
     {
-        let mut blockchain =
+        let blockchain =
             create_blockchain_with_config_clean(&genesis_address, _guard.get_path()).await;
-        create_and_add_block(&mut blockchain, &genesis_address).await;
+        create_and_add_block(&blockchain, &genesis_address).await;
     }
 
     // Create new blockchain instance and verify persistence
@@ -253,16 +275,19 @@ async fn test_blockchain_persistence() {
 
 #[tokio::test]
 async fn test_blockchain_iterator() {
-    let (mut blockchain, db_path) = create_test_blockchain().await;
+    let (blockchain, db_path) = create_test_blockchain().await;
     let genesis_address = generate_test_genesis_address();
 
     // Add multiple blocks using functional approach
     for _ in 0..3 {
-        create_and_add_block(&mut blockchain, &genesis_address).await;
+        create_and_add_block(&blockchain, &genesis_address).await;
     }
 
     // Test iterator
-    let mut iterator = blockchain.iterator().await.expect("Failed to create iterator");
+    let mut iterator = blockchain
+        .iterator()
+        .await
+        .expect("Failed to create iterator");
     let mut block_count = 0;
     while let Some(block) = iterator.next() {
         block_count += 1;
@@ -279,7 +304,7 @@ async fn test_blockchain_iterator() {
 
 #[tokio::test]
 async fn test_wallet_transaction_creation() {
-    let (mut blockchain, db_path) = create_test_blockchain().await;
+    let (blockchain, db_path) = create_test_blockchain().await;
 
     // Create wallets with unique path
     let (mut wallets, _temp_dir) = create_wallet_with_temp_path();
@@ -287,7 +312,7 @@ async fn test_wallet_transaction_creation() {
     let address2 = wallets.create_wallet().expect("Failed to create wallet 2");
 
     // Create blockchain with some initial balance to address1
-    create_and_add_block(&mut blockchain, &address1).await;
+    create_and_add_block(&blockchain, &address1).await;
 
     // Create UTXO set and reindex
     let utxo_set = create_and_reindex_utxo_set(blockchain).await;

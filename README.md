@@ -89,9 +89,11 @@ Repeat these steps in separate terminals for each node you want to run.
 
 ---
 
-#TODO's: 
+# TODO's: 
 
-## Version enhancements to ensure using the write blockchain db or filesystem, since multiple blockchain could be in existence.
+## 1. Add capability to have multiple database backends, currently only the filesystem is supported.
+
+## 2. Version enhancements to ensure using the right blockchain db or filesystem, since multiple blockchain could be in existence.
 When a Bitcoin node, especially a new one, joins the network (often referred to as a "cluster" in this context, although the term isn't standard in Bitcoin), it undergoes a crucial process called **Initial Block Download (IBD)** to ensure it's using the correct and most secure blockchain.
 
 Here's how this verification process unfolds:

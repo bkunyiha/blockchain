@@ -459,7 +459,7 @@ pub async fn mine_empty_block(blockchain: &BlockchainService) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::blockchain::Blockchain;
+    use crate::domain::blockchain::BlockchainService;
     use crate::domain::transaction::Transaction;
     use std::net::SocketAddr;
     use std::str::FromStr;
@@ -490,10 +490,13 @@ mod tests {
         }
 
         let genesis_address = generate_test_genesis_address();
-        let blockchain = Blockchain::create_blockchain(&genesis_address)
-            .await
-            .expect("Failed to create test blockchain");
-        (BlockchainService::new(blockchain), test_db_path)
+
+        (
+            BlockchainService::initialize(&genesis_address)
+                .await
+                .expect("Failed to initialize blockchain"),
+            test_db_path,
+        )
     }
 
     fn cleanup_test_blockchain(db_path: &str) {
@@ -606,26 +609,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_process_known_nodes() {
-        use std::time::{SystemTime, UNIX_EPOCH};
-        let timestamp = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let test_db_path = format!("test_blockchain_db_{}_{}", timestamp, uuid::Uuid::new_v4());
-        let _ = std::fs::remove_dir_all(&test_db_path);
-
-        // Set environment variable for unique database path
-        unsafe {
-            std::env::set_var("TREE_DIR", &test_db_path);
-        }
-        unsafe {
-            std::env::set_var("BLOCKS_TREE", &test_db_path);
-        }
-
-        let genesis_address = generate_test_genesis_address();
-        let blockchain = Blockchain::create_blockchain(&genesis_address)
-            .await
-            .expect("Failed to create test blockchain");
+        let (blockchain, db_path) = create_test_blockchain().await;
         let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
         let nodes = vec![
             SocketAddr::from_str("127.0.0.1:8081").expect("Failed to parse address"),
@@ -633,8 +617,8 @@ mod tests {
         ];
 
         // This should not panic
-        process_known_nodes(BlockchainService::new(blockchain), &addr, nodes).await;
-        cleanup_test_blockchain(&test_db_path);
+        process_known_nodes(blockchain, &addr, nodes).await;
+        cleanup_test_blockchain(&db_path);
     }
 
     #[tokio::test]
