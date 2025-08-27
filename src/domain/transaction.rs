@@ -1,4 +1,4 @@
-use super::blockchain::Blockchain;
+use super::blockchain::BlockchainService;
 use super::error::{BtcError, Result};
 use super::utxo_set::UTXOSet;
 use super::wallet::{ADDRESS_CHECK_SUM_LEN, hash_pub_key};
@@ -142,7 +142,7 @@ impl Transaction {
     ///
     /// * `from` - The address of the sender.
     /// * `to` - The address of the recipient.
-    pub fn new_utxo_transaction(
+    pub async fn new_utxo_transaction(
         from: &str,
         to: &str,
         amount: i32,
@@ -152,8 +152,9 @@ impl Transaction {
         let from_wallet = wallets.get_wallet(from).expect("unable to find wallet");
         let public_key_hash = hash_pub_key(from_wallet.get_public_key());
 
-        let (accumulated, valid_outputs) =
-            utxo_set.find_spendable_outputs(public_key_hash.as_slice(), amount)?;
+        let (accumulated, valid_outputs) = utxo_set
+            .find_spendable_outputs(public_key_hash.as_slice(), amount)
+            .await?;
         if accumulated < amount {
             return Err(BtcError::NotEnoughFunds);
         }
@@ -187,7 +188,8 @@ impl Transaction {
             vout: outputs,
         };
         tx.id = tx.hash()?;
-        tx.sign(utxo_set.get_blockchain(), from_wallet.get_pkcs8())?;
+        tx.sign(utxo_set.get_blockchain(), from_wallet.get_pkcs8())
+            .await?;
         Ok(tx)
     }
 
@@ -229,14 +231,19 @@ impl Transaction {
     /// # Returns
     ///
     /// A signed transaction.
-    fn sign(&mut self, blockchain: &Blockchain, pkcs8: &[u8]) -> Result<()> {
+    async fn sign(&mut self, blockchain: &BlockchainService, pkcs8: &[u8]) -> Result<()> {
         let mut tx_copy = self.trimmed_copy();
 
         for (idx, vin) in self.vin.iter_mut().enumerate() {
-            let prev_tx_option = blockchain.find_transaction(vin.get_txid())?;
-            let prev_tx = prev_tx_option.ok_or(BtcError::TransactionNotFoundError(
-                "(sign) Previous transaction is not correct".to_string(),
-            ))?;
+            let prev_tx_option = blockchain.find_transaction(vin.get_txid()).await?;
+            let prev_tx = match prev_tx_option {
+                Some(tx) => tx,
+                None => {
+                    return Err(BtcError::TransactionNotFoundError(
+                        "(sign) Previous transaction is not correct".to_string(),
+                    ));
+                }
+            };
 
             tx_copy.vin[idx].signature = vec![];
             tx_copy.vin[idx].pub_key = prev_tx.vout[vin.vout].pub_key_hash.clone();
@@ -260,17 +267,21 @@ impl Transaction {
     ///
     /// # Returns
     ///
-    pub fn verify(&self, blockchain: &Blockchain) -> Result<bool> {
+    pub async fn verify(&self, blockchain: &BlockchainService) -> Result<bool> {
         if self.is_coinbase() {
             return Ok(true);
         }
         let mut trimmed_self_copy = self.trimmed_copy();
         for (idx, vin) in self.vin.iter().enumerate() {
-            let current_vin_tx_option = blockchain.find_transaction(vin.get_txid())?;
-            let current_vin_tx =
-                current_vin_tx_option.ok_or(BtcError::TransactionNotFoundError(
-                    "(verify) Previous transaction is not correct".to_string(),
-                ))?;
+            let current_vin_tx_option = blockchain.find_transaction(vin.get_txid()).await?;
+            let current_vin_tx = match current_vin_tx_option {
+                Some(tx) => tx,
+                None => {
+                    return Err(BtcError::TransactionNotFoundError(
+                        "(verify) Previous transaction is not correct".to_string(),
+                    ));
+                }
+            };
 
             trimmed_self_copy.vin[idx].signature = vec![];
             trimmed_self_copy.vin[idx].pub_key = current_vin_tx.vout[vin.vout].pub_key_hash.clone();

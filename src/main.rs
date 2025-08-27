@@ -1,13 +1,11 @@
 use blockchain::{
-    Blockchain, BtcError, ConnectNode, GLOBAL_CONFIG, Result, Server, UTXOSet, Wallets,
-    convert_address, hash_pub_key, validate_address,
+    Blockchain, BlockchainService, BtcError, ConnectNode, GLOBAL_CONFIG, Result, Server, UTXOSet,
+    Wallets, convert_address, hash_pub_key, validate_address,
 };
 use data_encoding::HEXLOWER;
 use std::collections::HashSet;
 use std::str::FromStr;
-use std::sync::Arc;
 use structopt::StructOpt;
-use tokio::sync::RwLock;
 
 use tracing::info;
 use tracing_subscriber::{
@@ -66,13 +64,8 @@ enum Command {
     },
 }
 
-#[tokio::main]
-#[deny(unused_must_use)]
-async fn main() {
-    // Build an EnvFilter that defaults to INFO if RUST_LOG is not set.
-    // The `from_env_lossy()` method parses directives from `RUST_LOG`
-    // but falls back gracefully if it fails.
-    // This builder will first check `RUST_LOG` and fall back to `INFO` if it's not set.
+/// Initialize logging with functional configuration
+fn initialize_logging() {
     let filter = EnvFilter::builder()
         .with_default_directive(LevelFilter::INFO.into())
         .from_env_lossy();
@@ -80,105 +73,197 @@ async fn main() {
     tracing_subscriber::registry()
         .with(fmt::layer().with_filter(filter))
         .init();
+}
 
-    let opt = Opt::from_args();
-    match opt.command {
-        Command::Createwallet => {
-            let mut wallets = Wallets::new().unwrap();
-            let address = wallets.create_wallet().unwrap();
-            info!("Your new address: {}", address)
-        }
-        Command::ListAddresses => {
-            let wallets = Wallets::new().unwrap();
-            for address in wallets.get_addresses() {
-                info!("{}", address)
+/// Create a new wallet and return the address
+fn create_wallet() -> Result<String> {
+    Wallets::new()
+        .and_then(|mut wallets| wallets.create_wallet())
+        .map(|address| {
+            info!("Your new address: {}", address);
+            address
+        })
+}
+
+/// List all wallet addresses
+fn list_addresses() -> Result<()> {
+    Wallets::new().map(|wallets| {
+        wallets
+            .get_addresses()
+            .iter()
+            .for_each(|address| info!("{}", address));
+    })
+}
+
+/// Format transaction input information
+fn format_transaction_input(input: &blockchain::TXInput) -> String {
+    let txid_hex = HEXLOWER.encode(input.get_txid());
+    let pub_key_hash = hash_pub_key(input.get_pub_key());
+    let address =
+        convert_address(pub_key_hash.as_slice()).unwrap_or_else(|_| "Unknown".to_string());
+
+    format!(
+        "-- Input txid = {}, vout = {}, from = {}",
+        txid_hex,
+        input.get_vout(),
+        address,
+    )
+}
+
+/// Format transaction output information
+fn format_transaction_output(output: &blockchain::TXOutput) -> String {
+    let pub_key_hash = output.get_pub_key_hash();
+    let address = convert_address(pub_key_hash).unwrap_or_else(|_| "Unknown".to_string());
+
+    format!("-- Output value = {}, to = {}", output.get_value(), address)
+}
+
+/// Process a single transaction and log its details
+fn process_transaction(tx: &blockchain::Transaction) {
+    let cur_txid_hex = HEXLOWER.encode(tx.get_id());
+    info!("- Transaction txid_hex: {}", cur_txid_hex);
+
+    // Process inputs if not coinbase
+    if !tx.is_coinbase() {
+        tx.get_vin()
+            .iter()
+            .map(format_transaction_input)
+            .for_each(|input_info| info!("{}", input_info));
+    }
+
+    // Process outputs
+    tx.get_vout()
+        .iter()
+        .map(format_transaction_output)
+        .for_each(|output_info| info!("{}", output_info));
+}
+
+/// Process a single block and log its details
+fn process_block(block: &blockchain::Block) {
+    info!("Pre block hash: {}", block.get_pre_block_hash());
+    info!("Cur block hash: {}", block.get_hash());
+    info!("Cur block Timestamp: {}", block.get_timestamp());
+
+    block
+        .get_transactions()
+        .iter()
+        .for_each(process_transaction);
+}
+
+/// Print the entire blockchain using functional iteration
+async fn print_blockchain() -> Result<()> {
+    let blockchain = Blockchain::open_blockchain().await?;
+    let mut iterator = blockchain.iterator().await.expect("Failed to get iterator");
+    while let Some(block) = iterator.next() {
+        process_block(&block);
+    }
+    Ok(())
+}
+
+/// Validate miner configuration
+fn validate_miner_config(wlt_addr: &str, is_miner: &IsMiner) -> Result<()> {
+    match is_miner {
+        IsMiner::Yes => validate_address(wlt_addr).and_then(|is_valid| {
+            if is_valid {
+                info!("Mining is on. Address to receive rewards: {}", wlt_addr);
+                GLOBAL_CONFIG.set_mining_addr(wlt_addr.parse().unwrap());
+                Ok(())
+            } else {
+                Err(BtcError::InvalidValueForMiner(
+                    "Wrong miner address!".to_string(),
+                ))
+            }
+        }),
+        IsMiner::No => Ok(()),
+    }
+}
+
+/// Create blockchain for seed node
+async fn create_seed_blockchain(wlt_addr: &str) -> Result<Blockchain> {
+    info!("Seed Node, Creating BlockChain With Address: {}", wlt_addr);
+    let blockchain = Blockchain::create_blockchain(wlt_addr)
+        .await
+        .expect("Failed to create blockchain");
+    let utxo_set = UTXOSet::new(BlockchainService::new(blockchain.clone()));
+    utxo_set.reindex().await?;
+    Ok(blockchain)
+}
+
+/// Handle blockchain opening with fallback logic
+async fn open_or_create_blockchain(
+    wlt_addr: &str,
+    connect_nodes: &[ConnectNode],
+) -> Result<Blockchain> {
+    match Blockchain::open_blockchain().await {
+        Ok(blockchain) => Ok(blockchain),
+        Err(BtcError::BlockchainNotFoundError(_)) => {
+            if connect_nodes.contains(&ConnectNode::Local) {
+                create_seed_blockchain(wlt_addr).await
+            } else {
+                Blockchain::open_blockchain_empty().await
             }
         }
-        Command::Printchain => {
-            let mut block_iterator = Blockchain::open_blockchain().unwrap().iterator().unwrap();
-            loop {
-                let option = block_iterator.next();
-                if option.is_none() {
-                    break;
-                }
-                let block = option.unwrap();
-                info!("Pre block hash: {}", block.get_pre_block_hash());
-                info!("Cur block hash: {}", block.get_hash());
-                info!("Cur block Timestamp: {}", block.get_timestamp());
-                for tx in block.get_transactions() {
-                    let cur_txid_hex = HEXLOWER.encode(tx.get_id());
-                    info!("- Transaction txid_hex: {}", cur_txid_hex);
-
-                    if !tx.is_coinbase() {
-                        for input in tx.get_vin() {
-                            let txid_hex = HEXLOWER.encode(input.get_txid());
-                            let pub_key_hash = hash_pub_key(input.get_pub_key());
-                            let address = convert_address(pub_key_hash.as_slice()).unwrap();
-                            info!(
-                                "-- Input txid = {}, vout = {}, from = {}",
-                                txid_hex,
-                                input.get_vout(),
-                                address,
-                            )
-                        }
-                    }
-                    for output in tx.get_vout() {
-                        let pub_key_hash = output.get_pub_key_hash();
-                        let address = convert_address(pub_key_hash).unwrap();
-                        info!("-- Output value = {}, to = {}", output.get_value(), address,)
-                    }
-                }
-            }
+        Err(e) => {
+            info!("Blockchain error: {}", e);
+            Err(e)
         }
+    }
+}
+
+/// Start the node with functional configuration
+async fn start_node(
+    wlt_addr: String,
+    is_miner: IsMiner,
+    connect_nodes: Vec<ConnectNode>,
+) -> Result<()> {
+    // Validate miner configuration
+    validate_miner_config(&wlt_addr, &is_miner)?;
+
+    // Open or create blockchain
+    let blockchain = open_or_create_blockchain(&wlt_addr, &connect_nodes).await?;
+
+    // Get node configuration
+    let socket_addr = GLOBAL_CONFIG.get_node_addr();
+    info!("Starting node at address: {}", socket_addr);
+    info!("Will try connect to nodes: {:?}", connect_nodes);
+
+    // Convert connect nodes to HashSet
+    let connect_nodes_set: HashSet<ConnectNode> = connect_nodes.into_iter().collect();
+
+    // Start server
+    Server::new(BlockchainService::new(blockchain.clone()))
+        .run(&socket_addr, connect_nodes_set)
+        .await;
+
+    Ok(())
+}
+
+/// Process commands using functional patterns
+async fn process_command(command: Command) -> Result<()> {
+    match command {
+        Command::Createwallet => create_wallet().map(|_| ()),
+        Command::ListAddresses => list_addresses(),
+        Command::Printchain => print_blockchain().await,
         Command::StartNode {
             wlt_addr,
             is_miner,
             connect_nodes,
-        } => {
-            if let IsMiner::Yes = is_miner {
-                if !validate_address(wlt_addr.as_str()).unwrap() {
-                    panic!("Wrong miner address!")
-                }
-                info!("Mining is on. Address to receive rewards: {}", wlt_addr);
-                GLOBAL_CONFIG.set_mining_addr(wlt_addr.parse().unwrap());
-            }
+        } => start_node(wlt_addr, is_miner, connect_nodes).await,
+    }
+}
 
-            // Open blockchain or create a new one
-            let blockchain_result: Result<Blockchain> = match Blockchain::open_blockchain() {
-                Ok(blockchain) => Ok(blockchain),
-                Err(e) => {
-                    match e {
-                        BtcError::BlockchainNotFoundError(_) => {
-                            // If seed node, create a new blockchain
-                            // If not seed node, open an empty blockchain
-                            if connect_nodes.contains(&ConnectNode::Local) {
-                                // If seed node, create a new blockchain
-                                info!("Seed Node, Creating BlockChain With Address: {}", wlt_addr);
-                                let blockchain = Blockchain::create_blockchain(&wlt_addr).unwrap();
-                                let utxo_set = UTXOSet::new(blockchain.clone());
-                                utxo_set.reindex().unwrap();
-                                Ok(blockchain)
-                            } else {
-                                //
-                                Blockchain::open_blockchain_empty()
-                            }
-                        }
-                        e => {
-                            info!("Blockchain error: {}", e);
-                            Err(e)
-                        }
-                    }
-                }
-            };
+#[tokio::main]
+#[deny(unused_must_use)]
+async fn main() {
+    // Initialize logging
+    initialize_logging();
 
-            let blockchain = blockchain_result.unwrap();
-            let sockert_addr = GLOBAL_CONFIG.get_node_addr();
-            info!("Starting node at address: {}", sockert_addr);
-            info!("Will try connect to nodes: {:?}", connect_nodes);
-            let connect_nodes: HashSet<ConnectNode> = connect_nodes.into_iter().collect();
-            Server::new(Arc::new(RwLock::new(blockchain)))
-                .run(&sockert_addr, connect_nodes)
-                .await;
-        }
+    // Parse command line arguments
+    let opt = Opt::from_args();
+
+    // Process command with error handling
+    if let Err(e) = process_command(opt.command).await {
+        eprintln!("Error: {}", e);
+        std::process::exit(1);
     }
 }

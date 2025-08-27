@@ -8,21 +8,19 @@ use crate::server::{
     OpType, Package,
 };
 use crate::{
-    ADDRESS_CHECK_SUM_LEN, Block, Blockchain, GLOBAL_CONFIG, Transaction, UTXOSet, base58_decode,
-    convert_address, hash_pub_key, validate_address,
+    ADDRESS_CHECK_SUM_LEN, Block, BlockchainService, GLOBAL_CONFIG, Transaction, UTXOSet,
+    base58_decode, convert_address, hash_pub_key, validate_address,
 };
 use data_encoding::HEXLOWER;
 use serde_json::Deserializer;
 use std::error::Error;
 use std::io::BufReader;
 use std::net::{Shutdown, TcpStream};
-use std::sync::Arc;
-use tokio::sync::RwLock;
 use tracing::{debug, error, info, instrument, trace, warn};
 
 #[instrument(skip(blockchain, stream))]
 pub async fn process_stream(
-    blockchain: Arc<RwLock<Blockchain>>,
+    blockchain: BlockchainService,
     stream: TcpStream,
 ) -> Result<(), Box<dyn Error>> {
     // peer_addr is the address of the peer that is sending the request.
@@ -53,9 +51,8 @@ pub async fn process_stream(
                 // If the block is not the best block, do nothing
                 // `add_block` will not add the block if its height is less than current tip height in the block chain.
                 blockchain
-                    .write()
-                    .await
                     .add_block(&block)
+                    .await
                     .expect("Blockchain write error");
                 let added_block_hash = block.get_hash_bytes();
                 info!("Added block {:?}", added_block_hash.as_slice());
@@ -86,23 +83,22 @@ pub async fn process_stream(
 
                     //GLOBAL_BLOCKS_IN_TRANSIT.remove(block_hash.as_slice());
                 } else {
-                    let utxo_set = UTXOSet::new(blockchain.read().await.clone());
+                    let utxo_set = UTXOSet::new(blockchain.clone());
                     // The `reindex` function reindexes the UTXO set by clearing the existing UTXO tree and rebuilding it from the blockchain.
                     // It iterates through the blockchain, finds all UTXOs, and inserts them into the UTXO tree.
                     //
                     // # Arguments
                     //
                     // * `blockchain` - A reference to the blockchain.
-                    utxo_set.reindex().expect("UTXO set reindex error");
+                    utxo_set.reindex().await.expect("UTXO set reindex error");
                 }
             }
             // Retrieves all block hashes from the blockchain and sends an
             // inv message with a list of hashes to the requesting peer.
             Package::GetBlocks { addr_from } => {
                 let blocks = blockchain
-                    .read()
-                    .await
                     .get_block_hashes()
+                    .await
                     .expect("Blockchain read error");
                 // Send an inv message with a list of hashes to the requesting peer.
                 send_inv(&addr_from, OpType::Block, &blocks).await;
@@ -117,9 +113,8 @@ pub async fn process_stream(
                 // When a node receives a block, it adds it to the blockchain and sends a request for the next block.
                 OpType::Block => {
                     if let Some(block) = blockchain
-                        .read()
-                        .await
                         .get_block(id.as_slice())
+                        .await
                         .expect("Blockchain read error")
                     {
                         send_block(&addr_from, &block).await;
@@ -209,14 +204,15 @@ pub async fn process_stream(
                     )
                     .await;
                 } else {
-                    let utxo_set = UTXOSet::new(blockchain.read().await.clone());
+                    let utxo_set = UTXOSet::new(blockchain.clone());
 
                     let transaction = Transaction::new_utxo_transaction(
                         wlt_frm_addr.as_str(),
                         wlt_to_addr.as_str(),
                         amount,
                         &utxo_set,
-                    )?;
+                    )
+                    .await?;
                     process_transaction(&addr_from, transaction, &blockchain).await;
                 }
             }
@@ -227,9 +223,8 @@ pub async fn process_stream(
             } => {
                 debug!("version = {}, best_height = {}", version, best_height);
                 let local_best_height = blockchain
-                    .read()
-                    .await
                     .get_best_height()
+                    .await
                     .expect("Blockchain read error");
                 if local_best_height < best_height {
                     send_get_blocks(&addr_from).await;
@@ -238,9 +233,8 @@ pub async fn process_stream(
                     send_version(
                         &addr_from,
                         blockchain
-                            .read()
-                            .await
                             .get_best_height()
+                            .await
                             .expect("Blockchain read error"),
                     )
                     .await;
@@ -256,7 +250,7 @@ pub async fn process_stream(
                 }
             }
             Package::KnownNodes { addr_from, nodes } => {
-                process_known_nodes(blockchain.read().await.clone(), &addr_from, nodes).await;
+                process_known_nodes(blockchain.clone(), &addr_from, nodes).await;
             }
             Package::Message {
                 addr_from,
@@ -293,9 +287,10 @@ pub async fn process_stream(
                     let payload = base58_decode(wlt_address.as_str()).expect("Base58 decode error");
                     let pub_key_hash = &payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN];
 
-                    let utxo_set = UTXOSet::new(blockchain.read().await.clone());
+                    let utxo_set = UTXOSet::new(blockchain.clone());
                     let utxos = utxo_set
                         .find_utxo(pub_key_hash)
+                        .await
                         .expect("UTXO set find error");
                     let mut balance = 0;
                     for utxo in utxos {
@@ -305,13 +300,13 @@ pub async fn process_stream(
                 }
                 AdminNodeQueryType::GetAllTransactions => {
                     let mut block_iterator = blockchain
-                        .read()
-                        .await
                         .iterator()
+                        .await
                         .expect("Blockchain iterator error");
                     loop {
                         let option = block_iterator.next();
                         if option.is_none() {
+                            trace!("No more blocks");
                             break;
                         }
                         let block = option.expect("Block iterator next error");
@@ -340,16 +335,15 @@ pub async fn process_stream(
                                 let pub_key_hash = output.get_pub_key_hash();
                                 let address =
                                     convert_address(pub_key_hash).expect("Convert address error");
-                                trace!("-- Output value = {}, to = {}", output.get_value(), address,)
+                                info!("-- Output value = {}, to = {}", output.get_value(), address,)
                             }
                         }
                     }
                 }
                 AdminNodeQueryType::GetBlockHeight => {
                     let height = blockchain
-                        .read()
-                        .await
                         .get_best_height()
+                        .await
                         .expect("Blockchain read error");
                     trace!("Block height: {}", height);
                 }
@@ -362,9 +356,12 @@ pub async fn process_stream(
                     trace!("Mining empty block");
                 }
                 AdminNodeQueryType::ReindexUtxo => {
-                    let utxo_set = UTXOSet::new(blockchain.read().await.clone());
-                    utxo_set.reindex().expect("UTXO set reindex error");
-                    let count = utxo_set.count_transactions().expect("UTXO set count error");
+                    let utxo_set = UTXOSet::new(blockchain.clone());
+                    utxo_set.reindex().await.expect("UTXO set reindex error");
+                    let count = utxo_set
+                        .count_transactions()
+                        .await
+                        .expect("UTXO set count error");
                     trace!(
                         "Reindexed UTXO set. There are {} transactions in the UTXO set.",
                         count

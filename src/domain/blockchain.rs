@@ -8,7 +8,8 @@ use sled::{Db, IVec, Tree};
 use std::collections::HashMap;
 use std::env;
 use std::env::current_dir;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use tokio::sync::RwLock as TokioRwLock;
 use tracing::info;
 
 const DEFAULT_TIP_BLOCK_HASH_KEY: &str = "tip_block_hash";
@@ -18,15 +19,13 @@ const DEFAULT_TREE_DIR: &str = "data1";
 
 #[derive(Clone, Debug)]
 pub struct Blockchain {
-    tip_hash: Arc<RwLock<String>>, // hash of last block
+    tip_hash: Arc<TokioRwLock<String>>, // hash of last block
     db: Db,
     is_empty: bool,
-    file_system_blocks_tree: String,
-    file_system_tree_dir: String,
 }
 
 impl Blockchain {
-    pub fn create_blockchain(genesis_address: &str) -> Result<Blockchain> {
+    pub async fn create_blockchain(genesis_address: &str) -> Result<Blockchain> {
         let file_system_blocks_tree = env::var("TREE_DIR").unwrap_or(DEFAULT_TREE_DIR.to_string());
         let file_system_tree_dir =
             env::var("BLOCKS_TREE").unwrap_or(DEFAULT_BLOCKS_TREE.to_string());
@@ -41,29 +40,24 @@ impl Blockchain {
         let data = blocks_tree
             .get(DEFAULT_TIP_BLOCK_HASH_KEY)
             .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?;
-        let tip_hash = data.map_or_else(
-            || {
-                let coinbase_tx = Transaction::new_coinbase_tx(genesis_address)?;
-                let block = Block::generate_genesis_block(&coinbase_tx);
-                Self::update_blocks_tree(&blocks_tree, &block)?;
-                Ok(String::from(block.get_hash()))
-            },
-            |data| {
-                String::from_utf8(data.to_vec())
-                    .map_err(|e| BtcError::BlockChainTipHashError(e.to_string()))
-            },
-        )?;
+        let tip_hash = if let Some(data) = data {
+            String::from_utf8(data.to_vec())
+                .map_err(|e| BtcError::BlockChainTipHashError(e.to_string()))?
+        } else {
+            let coinbase_tx = Transaction::new_coinbase_tx(genesis_address)?;
+            let block = Block::generate_genesis_block(&coinbase_tx);
+            Self::update_blocks_tree(&blocks_tree, &block).await?;
+            String::from(block.get_hash())
+        };
 
         Ok(Blockchain {
-            tip_hash: Arc::new(RwLock::new(tip_hash)),
+            tip_hash: Arc::new(TokioRwLock::new(tip_hash)),
             db,
             is_empty: false,
-            file_system_blocks_tree,
-            file_system_tree_dir,
         })
     }
 
-    fn update_blocks_tree(blocks_tree: &Tree, block: &Block) -> Result<()> {
+    async fn update_blocks_tree(blocks_tree: &Tree, block: &Block) -> Result<()> {
         let block_hash = block.get_hash();
         let block_ivec = IVec::try_from(block.clone())?;
         let transaction_result: TransactionResult<(), ()> = blocks_tree.transaction(|tx_db| {
@@ -76,7 +70,7 @@ impl Blockchain {
             .map_err(|e| BtcError::BlockchainDBconnection(format!("{:?}", e)))
     }
 
-    pub fn open_blockchain() -> Result<Blockchain> {
+    pub async fn open_blockchain() -> Result<Blockchain> {
         let file_system_blocks_tree = env::var("TREE_DIR").unwrap_or(DEFAULT_TREE_DIR.to_string());
         let file_system_tree_dir =
             env::var("BLOCKS_TREE").unwrap_or(DEFAULT_BLOCKS_TREE.to_string());
@@ -98,18 +92,14 @@ impl Blockchain {
         let tip_hash = String::from_utf8(tip_bytes.to_vec())
             .map_err(|e| BtcError::BlockChainTipHashError(e.to_string()))?;
         Ok(Blockchain {
-            tip_hash: Arc::new(RwLock::new(tip_hash)),
+            tip_hash: Arc::new(TokioRwLock::new(tip_hash)),
             db,
             is_empty: false,
-            file_system_blocks_tree,
-            file_system_tree_dir,
         })
     }
 
-    pub fn open_blockchain_empty() -> Result<Blockchain> {
+    pub async fn open_blockchain_empty() -> Result<Blockchain> {
         let file_system_blocks_tree = env::var("TREE_DIR").unwrap_or(DEFAULT_TREE_DIR.to_string());
-        let file_system_tree_dir =
-            env::var("BLOCKS_TREE").unwrap_or(DEFAULT_BLOCKS_TREE.to_string());
         let path = current_dir()
             .map(|p| p.join(file_system_blocks_tree.clone()))
             .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
@@ -117,34 +107,27 @@ impl Blockchain {
         let tip_hash = DEFAULT_EMPTY_TIP_BLOCK_HASH_VALUE.to_string();
 
         Ok(Blockchain {
-            tip_hash: Arc::new(RwLock::new(tip_hash)),
+            tip_hash: Arc::new(TokioRwLock::new(tip_hash)),
             db,
             is_empty: true,
-            file_system_blocks_tree,
-            file_system_tree_dir,
         })
     }
 
-    pub fn is_empty(&self) -> bool {
+    fn is_empty(&self) -> bool {
         self.is_empty
     }
 
-    pub fn get_db(&self) -> &Db {
+    fn get_db(&self) -> &Db {
         &self.db
     }
 
-    pub fn get_tip_hash(&self) -> Result<String> {
-        self.tip_hash
-            .read()
-            .map_err(|e| BtcError::BlockchainTipHashPoisonedLockError(e.to_string()))
-            .map(|v| v.clone())
+    async fn get_tip_hash(&self) -> Result<String> {
+        let tip_hash = self.tip_hash.read().await;
+        Ok(tip_hash.clone())
     }
 
-    pub fn set_tip_hash(&self, new_tip_hash: &str) -> Result<()> {
-        let mut tip_hash = self
-            .tip_hash
-            .write()
-            .map_err(|e| BtcError::BlockchainTipHashPoisonedLockError(e.to_string()))?;
+    pub async fn set_tip_hash(&self, new_tip_hash: &str) -> Result<()> {
+        let mut tip_hash = self.tip_hash.write().await;
         *tip_hash = String::from(new_tip_hash);
         Ok(())
     }
@@ -156,16 +139,10 @@ impl Blockchain {
     // The `mine_block` function mines a new block with the transactions in the memory pool.
     // It uses the `blockchain` instance to mine the block which also adds the new block to the blockchain.
     // It returns the new block.
-    pub fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
-        for trasaction in transactions {
-            let is_valid = trasaction.verify(self)?;
-            if !is_valid {
-                return Err(BtcError::InvalidTransaction);
-            }
-        }
-        let best_height = self.get_best_height()?;
+    pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
+        let best_height = self.get_best_height().await?;
 
-        let block = Block::new_block(self.get_tip_hash()?, transactions, best_height + 1);
+        let block = Block::new_block(self.get_tip_hash().await?, transactions, best_height + 1);
         let block_hash = block.get_hash();
 
         let blocks_tree = self
@@ -176,15 +153,18 @@ impl Blockchain {
         // It uses the `blocks_tree` instance to update the blocks tree.
         // It uses the `block` instance to update the blocks tree.
         // It returns the new block.
-        Self::update_blocks_tree(&blocks_tree, &block)?;
-        self.set_tip_hash(block_hash)?;
+        Self::update_blocks_tree(&blocks_tree, &block).await?;
+        self.set_tip_hash(block_hash).await?;
         Ok(block)
     }
 
-    pub fn iterator(&self) -> Result<BlockchainIterator> {
-        self.get_tip_hash().map(|hash| {
-            BlockchainIterator::new(hash, self.db.clone(), self.file_system_blocks_tree.clone())
-        })
+    pub async fn iterator(&self) -> Result<BlockchainIterator> {
+        let hash = self.get_tip_hash().await?;
+        Ok(BlockchainIterator::new(
+            hash,
+            self.db.clone(),
+            self.get_blocks_tree_path(),
+        ))
     }
 
     /// The `find_utxo` function finds all unspent transaction outputs (UTXOs) in the blockchain.
@@ -194,10 +174,10 @@ impl Blockchain {
     ///
     /// A HashMap containing transaction IDs as keys and vectors of TXOutput as values.
     ///
-    pub fn find_utxo(&self) -> Result<HashMap<String, Vec<TXOutput>>> {
+    pub async fn find_utxo(&self) -> Result<HashMap<String, Vec<TXOutput>>> {
         let mut utxo: HashMap<String, Vec<TXOutput>> = HashMap::new();
         let mut spent_txos: HashMap<String, Vec<usize>> = HashMap::new();
-        let mut iterator = self.iterator()?;
+        let mut iterator = self.iterator().await?;
         // Iterate through the blockchain, find all UTXOs, and return them in a HashMap.
         loop {
             match iterator.next() {
@@ -253,8 +233,8 @@ impl Blockchain {
         Ok(utxo)
     }
 
-    pub fn find_transaction(&self, txid: &[u8]) -> Result<Option<Transaction>> {
-        let mut iterator = self.iterator()?;
+    pub async fn find_transaction(&self, txid: &[u8]) -> Result<Option<Transaction>> {
+        let mut iterator = self.iterator().await?;
         loop {
             match iterator.next() {
                 None => break,
@@ -274,7 +254,7 @@ impl Blockchain {
     // It uses the `block_tree` instance to add the block to the blockchain.
     // It uses the `block` instance to add the block to the blockchain.
     // It will not add the block if its height is less than current tip height in the block chain.
-    pub fn add_block(&mut self, new_block: &Block) -> Result<()> {
+    pub async fn add_block(&mut self, new_block: &Block) -> Result<()> {
         let block_tree = self
             .db
             .open_tree(self.get_blocks_tree_path())
@@ -285,9 +265,9 @@ impl Blockchain {
 
             self.set_not_empty();
             info!("Blockchain is now not empty");
-            Self::update_blocks_tree(&block_tree, new_block)?;
-            self.set_tip_hash(new_block.get_hash())?;
-            let best_height = self.get_best_height()?;
+            Self::update_blocks_tree(&block_tree, new_block).await?;
+            self.set_tip_hash(new_block.get_hash()).await?;
+            let best_height = self.get_best_height().await?;
             info!(
                 "Blockchain is now not empty, best height is {}",
                 best_height
@@ -302,7 +282,7 @@ impl Blockchain {
                 return Ok(());
             }
             let block_bytes = new_block.serialize()?;
-            let tip_hash = self.get_tip_hash()?;
+            let tip_hash = self.get_tip_hash().await?;
             let _: TransactionResult<(), ()> = block_tree.transaction(|transaction| {
                 let _ = transaction.insert(new_block.get_hash(), block_bytes.clone())?;
 
@@ -318,8 +298,6 @@ impl Blockchain {
 
                 if self.is_empty() || new_block.get_height() > tip_block.get_height() {
                     let _ = transaction.insert(DEFAULT_TIP_BLOCK_HASH_KEY, new_block.get_hash())?;
-
-                    self.set_tip_hash(new_block.get_hash()).unwrap();
                 } else {
                     info!(
                         "Block {:?} not added because its height is less than mine",
@@ -329,12 +307,17 @@ impl Blockchain {
 
                 Ok(())
             });
+
+            // Update tip hash if block was added
+            if !self.is_empty() && new_block.get_height() > self.get_best_height().await? {
+                self.set_tip_hash(new_block.get_hash()).await?;
+            }
         }
 
         Ok(())
     }
 
-    pub fn get_best_height(&self) -> Result<usize> {
+    pub async fn get_best_height(&self) -> Result<usize> {
         if self.is_empty() {
             info!("Blockchain is empty, returning height 0");
             Ok(0)
@@ -344,7 +327,7 @@ impl Blockchain {
                 .open_tree(self.get_blocks_tree_path())
                 .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
             let tip_block_bytes = block_tree
-                .get(self.get_tip_hash()?)
+                .get(self.get_tip_hash().await?)
                 .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?
                 .ok_or(BtcError::GetBlockchainError("tip is invalid".to_string()))?;
             let tip_block = Block::deserialize(tip_block_bytes.as_ref())?;
@@ -352,7 +335,7 @@ impl Blockchain {
         }
     }
 
-    pub fn get_block(&self, block_hash: &[u8]) -> Result<Option<Block>> {
+    pub async fn get_block(&self, block_hash: &[u8]) -> Result<Option<Block>> {
         let block_tree = self
             .db
             .open_tree(self.get_blocks_tree_path())
@@ -369,8 +352,8 @@ impl Blockchain {
         }
     }
 
-    pub fn get_block_hashes(&self) -> Result<Vec<Vec<u8>>> {
-        let mut iterator = self.iterator()?;
+    pub async fn get_block_hashes(&self) -> Result<Vec<Vec<u8>>> {
+        let mut iterator = self.iterator().await?;
         let mut blocks = vec![];
         loop {
             match iterator.next() {
@@ -384,14 +367,107 @@ impl Blockchain {
     }
 
     pub fn get_db_path(&self) -> String {
-        self.file_system_tree_dir.clone()
+        env::var("TREE_DIR").unwrap_or(DEFAULT_TREE_DIR.to_string())
     }
 
     pub fn get_blocks_tree_path(&self) -> String {
-        self.file_system_blocks_tree.clone()
+        env::var("BLOCKS_TREE").unwrap_or(DEFAULT_BLOCKS_TREE.to_string())
+    }
+
+    pub fn apply_fn<F, T>(&self, f: F) -> Result<T>
+    where
+        F: FnOnce(&Blockchain) -> Result<T>,
+    {
+        f(self)
     }
 }
 
+#[derive(Debug)]
+pub struct BlockchainService(Arc<TokioRwLock<Blockchain>>);
+
+impl Clone for BlockchainService {
+    fn clone(&self) -> Self {
+        BlockchainService(self.0.clone())
+    }
+}
+impl BlockchainService {
+    pub fn new(blockchain: Blockchain) -> BlockchainService {
+        BlockchainService(Arc::new(TokioRwLock::new(blockchain)))
+    }
+
+    // /// Apply a readfunction to a blockchain and return the result
+    // async fn read<F, T>(&self, f: F) -> Result<T>
+    // where
+    //     F: AsyncFnOnce(&Blockchain) -> Result<T>,
+    // {
+    //     let blockchain_guard = self.0.read().await;
+    //     f(&blockchain_guard).await
+    // }
+
+    // /// Apply a write function to a blockchain and return the result
+    // async fn write<F, T>(&self, f: F) -> Result<T>
+    // where
+    //     F: AsyncFnOnce(&mut Blockchain) -> Result<T>,
+    // {
+    //     let mut blockchain_guard = self.0.write().await;
+    //     f(&mut blockchain_guard).await
+    // }
+
+    pub async fn get_db(&self) -> Result<Db> {
+        let blockchain_guard = self.0.read().await;
+        Ok(blockchain_guard.get_db().clone())
+    }
+
+    /// Get the best height of the blockchain
+    pub async fn get_best_height(&self) -> Result<usize> {
+        let blockchain_guard = self.0.read().await;
+        blockchain_guard.get_best_height().await
+    }
+
+    /// Get the block hashes of the blockchain
+    pub async fn get_block_hashes(&self) -> Result<Vec<Vec<u8>>> {
+        let blockchain_guard = self.0.read().await;
+        blockchain_guard.get_block_hashes().await
+    }
+
+    /// Get the block of the blockchain
+    pub async fn get_block(&self, block_hash: &[u8]) -> Result<Option<Block>> {
+        let blockchain_guard = self.0.read().await;
+        blockchain_guard.get_block(block_hash).await
+    }
+
+    /// Add a block to the blockchain
+    pub async fn add_block(&self, block: &Block) -> Result<()> {
+        let mut blockchain_guard = self.0.write().await;
+        blockchain_guard.add_block(block).await
+    }
+
+    /// Mine a block with the transactions in the memory pool
+    pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
+        for trasaction in transactions {
+            let is_valid = trasaction.verify(self).await?;
+            if !is_valid {
+                return Err(BtcError::InvalidTransaction);
+            }
+        }
+        let blockchain_guard = self.0.write().await;
+        blockchain_guard.mine_block(transactions).await
+    }
+
+    /// Find a transaction in the blockchain
+    pub async fn find_transaction(&self, txid: &[u8]) -> Result<Option<Transaction>> {
+        let blockchain_guard = self.0.read().await;
+        blockchain_guard.find_transaction(txid).await
+    }
+    pub async fn find_utxo(&self) -> Result<HashMap<String, Vec<TXOutput>>> {
+        let blockchain_guard = self.0.read().await;
+        blockchain_guard.find_utxo().await
+    }
+    pub async fn iterator(&self) -> Result<BlockchainIterator> {
+        let blockchain_guard = self.0.read().await;
+        blockchain_guard.iterator().await
+    }
+}
 pub struct BlockchainIterator {
     db: Db,
     file_system_blocks_tree: String,
@@ -433,7 +509,7 @@ mod tests {
         wallet.get_address().expect("Failed to get wallet address")
     }
 
-    fn create_test_blockchain() -> (Blockchain, String) {
+    async fn create_test_blockchain() -> (Blockchain, String) {
         use std::time::{SystemTime, UNIX_EPOCH};
         let timestamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -454,6 +530,7 @@ mod tests {
 
         let genesis_address = generate_test_genesis_address();
         let blockchain = Blockchain::create_blockchain(&genesis_address)
+            .await
             .expect("Failed to create test blockchain");
         (blockchain, test_db_path)
     }
@@ -462,31 +539,41 @@ mod tests {
         let _ = fs::remove_dir_all(db_path);
     }
 
-    #[test]
-    fn test_blockchain_creation() {
-        let (blockchain, db_path) = create_test_blockchain();
+    #[tokio::test]
+    async fn test_blockchain_creation() {
+        let (blockchain, db_path) = create_test_blockchain().await;
 
         assert_eq!(
-            blockchain.get_best_height().expect("Failed to get height"),
+            blockchain
+                .get_best_height()
+                .await
+                .expect("Failed to get height"),
             1
         );
         cleanup_test_blockchain(&db_path);
     }
 
-    #[test]
-    fn test_genesis_block_creation() {
-        let (blockchain, db_path) = create_test_blockchain();
+    #[tokio::test]
+    async fn test_genesis_block_creation() {
+        let (blockchain, db_path) = create_test_blockchain().await;
 
         // Genesis block should be created automatically
         assert_eq!(
-            blockchain.get_best_height().expect("Failed to get height"),
+            blockchain
+                .get_best_height()
+                .await
+                .expect("Failed to get height"),
             1
         );
 
         // Get the genesis block using the tip hash
-        let tip_hash = blockchain.get_tip_hash().expect("Failed to get tip hash");
+        let tip_hash = blockchain
+            .get_tip_hash()
+            .await
+            .expect("Failed to get tip hash");
         let genesis_block = blockchain
             .get_block(tip_hash.as_bytes())
+            .await
             .expect("Failed to get genesis block")
             .expect("Genesis block should exist");
         assert_eq!(genesis_block.get_height(), 1);
@@ -495,9 +582,9 @@ mod tests {
         cleanup_test_blockchain(&db_path);
     }
 
-    #[test]
-    fn test_add_block() {
-        let (mut blockchain, db_path) = create_test_blockchain();
+    #[tokio::test]
+    async fn test_add_block() {
+        let (mut blockchain, db_path) = create_test_blockchain().await;
         let genesis_address = generate_test_genesis_address();
 
         // Create a new block
@@ -506,24 +593,29 @@ mod tests {
         let transactions = vec![coinbase_tx];
         let new_block = blockchain
             .mine_block(transactions.as_slice())
+            .await
             .expect("Failed to mine block");
 
         // Add the block
         blockchain
             .add_block(&new_block)
+            .await
             .expect("Failed to add block");
 
         assert_eq!(
-            blockchain.get_best_height().expect("Failed to get height"),
+            blockchain
+                .get_best_height()
+                .await
+                .expect("Failed to get height"),
             2
         );
 
         cleanup_test_blockchain(&db_path);
     }
 
-    #[test]
-    fn test_get_block() {
-        let (mut blockchain, db_path) = create_test_blockchain();
+    #[tokio::test]
+    async fn test_get_block() {
+        let (mut blockchain, db_path) = create_test_blockchain().await;
         let genesis_address = generate_test_genesis_address();
 
         // Create and add a block
@@ -532,14 +624,17 @@ mod tests {
         let transactions = vec![coinbase_tx];
         let new_block = blockchain
             .mine_block(transactions.as_slice())
+            .await
             .expect("Failed to mine block");
         blockchain
             .add_block(&new_block)
+            .await
             .expect("Failed to add block");
 
         // Get the block by hash
         let retrieved_block = blockchain
             .get_block(new_block.get_hash_bytes().as_slice())
+            .await
             .expect("Failed to get block")
             .expect("Block should exist");
 
@@ -549,9 +644,9 @@ mod tests {
         cleanup_test_blockchain(&db_path);
     }
 
-    #[test]
-    fn test_get_block_hashes() {
-        let (mut blockchain, db_path) = create_test_blockchain();
+    #[tokio::test]
+    async fn test_get_block_hashes() {
+        let (mut blockchain, db_path) = create_test_blockchain().await;
         let genesis_address = generate_test_genesis_address();
 
         // Add a few blocks
@@ -561,14 +656,17 @@ mod tests {
             let transactions = vec![coinbase_tx];
             let new_block = blockchain
                 .mine_block(transactions.as_slice())
+                .await
                 .expect("Failed to mine block");
             blockchain
                 .add_block(&new_block)
+                .await
                 .expect("Failed to add block");
         }
 
         let block_hashes = blockchain
             .get_block_hashes()
+            .await
             .expect("Failed to get block hashes");
 
         // Should have genesis block + 3 new blocks = 4 total
@@ -577,9 +675,9 @@ mod tests {
         cleanup_test_blockchain(&db_path);
     }
 
-    #[test]
-    fn test_blockchain_iterator() {
-        let (mut blockchain, db_path) = create_test_blockchain();
+    #[tokio::test]
+    async fn test_blockchain_iterator() {
+        let (mut blockchain, db_path) = create_test_blockchain().await;
 
         // Add a block
         let genesis_address = generate_test_genesis_address();
@@ -588,12 +686,17 @@ mod tests {
         let transactions = vec![coinbase_tx];
         let new_block = blockchain
             .mine_block(transactions.as_slice())
+            .await
             .expect("Failed to mine block");
         blockchain
             .add_block(&new_block)
+            .await
             .expect("Failed to add block");
 
-        let mut iterator = blockchain.iterator().expect("Failed to create iterator");
+        let mut iterator = blockchain
+            .iterator()
+            .await
+            .expect("Failed to create iterator");
         let mut block_count = 0;
 
         while iterator.next().is_some() {
@@ -606,8 +709,8 @@ mod tests {
         cleanup_test_blockchain(&db_path);
     }
 
-    #[test]
-    fn test_blockchain_persistence() {
+    #[tokio::test]
+    async fn test_blockchain_persistence() {
         use std::time::{SystemTime, UNIX_EPOCH};
         let timestamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -628,6 +731,7 @@ mod tests {
 
         {
             let mut blockchain = Blockchain::create_blockchain(&genesis_address)
+                .await
                 .expect("Failed to create blockchain");
 
             // Add a block
@@ -636,28 +740,34 @@ mod tests {
             let transactions = vec![coinbase_tx];
             let new_block = blockchain
                 .mine_block(transactions.as_slice())
+                .await
                 .expect("Failed to mine block");
             blockchain
                 .add_block(&new_block)
+                .await
                 .expect("Failed to add block");
         } // blockchain goes out of scope here
 
         // Create a new blockchain instance with the same database
         let blockchain = Blockchain::create_blockchain(&genesis_address)
+            .await
             .expect("Failed to create new blockchain");
 
         // Should still have the block we added
         assert_eq!(
-            blockchain.get_best_height().expect("Failed to get height"),
+            blockchain
+                .get_best_height()
+                .await
+                .expect("Failed to get height"),
             2
         );
 
         cleanup_test_blockchain(&db_path);
     }
 
-    #[test]
-    fn test_mine_block() {
-        let (blockchain, db_path) = create_test_blockchain();
+    #[tokio::test]
+    async fn test_mine_block() {
+        let (blockchain, db_path) = create_test_blockchain().await;
 
         let genesis_address = generate_test_genesis_address();
         let coinbase_tx =
@@ -666,6 +776,7 @@ mod tests {
 
         let new_block = blockchain
             .mine_block(transactions.as_slice())
+            .await
             .expect("Failed to mine block");
 
         // Check that the block was mined correctly

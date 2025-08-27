@@ -1,59 +1,73 @@
-use blockchain::{Blockchain, ConnectNode, GLOBAL_CONFIG, Transaction, UTXOSet, Wallets};
+use blockchain::{Blockchain, BlockchainService, ConnectNode, GLOBAL_CONFIG, Transaction, UTXOSet, Wallets};
 use std::str::FromStr;
-use std::sync::Arc;
-use tokio::sync::RwLock;
+
 mod test_helpers;
 
+/// Generate a unique genesis address for testing
 fn generate_test_genesis_address() -> String {
-    // Create a wallet to get a valid Bitcoin address
-    let wallet = blockchain::Wallet::new().expect("Failed to create test wallet");
-    wallet.get_address().expect("Failed to get wallet address")
+    blockchain::Wallet::new()
+        .and_then(|wallet| wallet.get_address())
+        .expect("Failed to create test wallet address")
 }
 
-fn create_test_blockchain() -> (Blockchain, String) {
+/// Create a unique database path with timestamp and UUID
+fn create_unique_db_path() -> String {
     use std::time::{SystemTime, UNIX_EPOCH};
     let timestamp = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_nanos();
-    let test_db_path = format!("test_integration_db_{}_{}", timestamp, uuid::Uuid::new_v4());
-    let _ = std::fs::remove_dir_all(&test_db_path);
-
-    unsafe {
-        std::env::set_var("TREE_DIR", &test_db_path);
-        std::env::set_var("BLOCKS_TREE", &test_db_path);
-    }
-
-    let genesis_address = generate_test_genesis_address();
-    let blockchain =
-        Blockchain::create_blockchain(&genesis_address).expect("Failed to create test blockchain");
-    (blockchain, test_db_path)
+    format!("test_integration_db_{}_{}", timestamp, uuid::Uuid::new_v4())
 }
 
+/// Set environment variables for blockchain database
+fn set_blockchain_env_vars(db_path: &str) {
+    unsafe {
+        std::env::set_var("TREE_DIR", db_path);
+        std::env::set_var("BLOCKS_TREE", db_path);
+    }
+}
+
+/// Create a blockchain with given genesis address and database path
+async fn create_blockchain_with_config(genesis_address: &str, db_path: &str) -> Blockchain {
+    set_blockchain_env_vars(db_path);
+    Blockchain::create_blockchain(genesis_address).await.expect("Failed to create test blockchain")
+}
+
+/// Create a blockchain with given genesis address and database path (clears existing data)
+async fn create_blockchain_with_config_clean(genesis_address: &str, db_path: &str) -> Blockchain {
+    let _ = std::fs::remove_dir_all(db_path);
+    set_blockchain_env_vars(db_path);
+    Blockchain::create_blockchain(genesis_address).await.expect("Failed to create test blockchain")
+}
+
+/// Create a test blockchain with automatic cleanup
+async fn create_test_blockchain() -> (Blockchain, String) {
+    let db_path = create_unique_db_path();
+    let genesis_address = generate_test_genesis_address();
+    let blockchain = create_blockchain_with_config_clean(&genesis_address, &db_path).await;
+    (blockchain, db_path)
+}
+
+/// Clean up test blockchain database
 fn cleanup_test_blockchain(db_path: &str) {
     let _ = std::fs::remove_dir_all(db_path);
 }
 
+/// Database guard with automatic cleanup via Drop trait
 struct TestDatabaseGuard {
     db_path: String,
 }
 
 impl TestDatabaseGuard {
-    fn new() -> Self {
-        use std::time::{SystemTime, UNIX_EPOCH};
-        let timestamp = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let db_path = format!("test_integration_db_{}_{}", timestamp, uuid::Uuid::new_v4());
-        let _ = std::fs::remove_dir_all(&db_path);
-
-        unsafe {
-            std::env::set_var("TREE_DIR", &db_path);
-            std::env::set_var("BLOCKS_TREE", &db_path);
-        }
-
+    fn new_with_cleanup() -> Self {
+        let db_path = create_unique_db_path();
+        set_blockchain_env_vars(&db_path);
         TestDatabaseGuard { db_path }
+    }
+
+    fn get_path(&self) -> &str {
+        &self.db_path
     }
 }
 
@@ -63,33 +77,69 @@ impl Drop for TestDatabaseGuard {
     }
 }
 
+/// Create a coinbase transaction for given address
+fn create_coinbase_transaction(address: &str) -> Transaction {
+    Transaction::new_coinbase_tx(address).expect("Failed to create coinbase transaction")
+}
+
+/// Mine a block with given transactions
+async fn mine_block(blockchain: &mut Blockchain, transactions: &[Transaction]) -> blockchain::Block {
+    blockchain
+        .mine_block(transactions)
+        .await
+        .expect("Failed to mine block")
+}
+
+/// Add a block to the blockchain
+async fn add_block(blockchain: &mut Blockchain, block: &blockchain::Block) {
+    blockchain.add_block(block).await.expect("Failed to add block");
+}
+
+/// Create and add a single block with coinbase transaction
+async fn create_and_add_block(blockchain: &mut Blockchain, address: &str) -> blockchain::Block {
+    let coinbase_tx = create_coinbase_transaction(address);
+    let transactions = vec![coinbase_tx];
+    let block = mine_block(blockchain, &transactions).await;
+    add_block(blockchain, &block).await;
+    block
+}
+
+/// Create a UTXO set and reindex it
+async fn create_and_reindex_utxo_set(blockchain: Blockchain) -> UTXOSet {
+    let utxo_set = UTXOSet::new(BlockchainService::new(blockchain));
+    utxo_set.reindex().await.expect("Failed to reindex UTXO set");
+    utxo_set
+}
+
+/// Validate blockchain height
+async fn validate_blockchain_height(blockchain: &Blockchain, expected_height: usize) -> bool {
+    blockchain.get_best_height().await.expect("Failed to get height") == expected_height
+}
+
+/// Create a wallet with unique path
+fn create_wallet_with_temp_path() -> (Wallets, tempfile::TempDir) {
+    let temp_dir = tempfile::TempDir::new().expect("Failed to create temp directory");
+    let wallet_path = temp_dir.path().join("test_wallets.dat");
+
+    unsafe {
+        std::env::set_var("WALLET_FILE", wallet_path.to_str().unwrap());
+    }
+
+    let wallets = Wallets::new().expect("Failed to create wallets");
+    (wallets, temp_dir)
+}
+
 #[tokio::test]
 async fn test_blockchain_integration() {
-    let (mut blockchain, db_path) = create_test_blockchain();
+    let (mut blockchain, db_path) = create_test_blockchain().await;
     let genesis_address = generate_test_genesis_address();
 
     // Test creating a new blockchain
-    assert_eq!(
-        blockchain.get_best_height().expect("Failed to get height"),
-        1
-    );
+    assert!(validate_blockchain_height(&blockchain, 1).await);
 
     // Test mining a block with the same blockchain instance
-    let coinbase_tx =
-        Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
-    let transactions = vec![coinbase_tx];
-    let new_block = blockchain
-        .mine_block(transactions.as_slice())
-        .expect("Failed to mine block");
-
-    // Test adding the block
-    blockchain
-        .add_block(&new_block)
-        .expect("Failed to add block");
-    assert_eq!(
-        blockchain.get_best_height().expect("Failed to get height"),
-        2
-    );
+    let _new_block = create_and_add_block(&mut blockchain, &genesis_address).await;
+    assert!(validate_blockchain_height(&blockchain, 2).await);
 
     // Cleanup
     cleanup_test_blockchain(&db_path);
@@ -97,16 +147,7 @@ async fn test_blockchain_integration() {
 
 #[tokio::test]
 async fn test_wallet_integration() {
-    // Test wallet creation with unique path
-    let temp_dir = tempfile::TempDir::new().expect("Failed to create temp directory");
-    let wallet_path = temp_dir.path().join("test_wallets.dat");
-
-    // Set environment variable for unique wallet path
-    unsafe {
-        std::env::set_var("WALLET_FILE", wallet_path.to_str().unwrap());
-    }
-
-    let mut wallets = Wallets::new().expect("Failed to create wallets");
+    let (mut wallets, _temp_dir) = create_wallet_with_temp_path();
     let address = wallets.create_wallet().expect("Failed to create wallet");
     assert!(!address.is_empty());
 
@@ -120,25 +161,17 @@ async fn test_wallet_integration() {
 
 #[tokio::test]
 async fn test_utxo_set_integration() {
-    let (mut blockchain, db_path) = create_test_blockchain();
+    let (mut blockchain, db_path) = create_test_blockchain().await;
     let genesis_address = generate_test_genesis_address();
 
     // Create blockchain and add a block
-    let coinbase_tx =
-        Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
-    let transactions = vec![coinbase_tx];
-    let new_block = blockchain
-        .mine_block(transactions.as_slice())
-        .expect("Failed to mine block");
-    blockchain
-        .add_block(&new_block)
-        .expect("Failed to add block");
+    create_and_add_block(&mut blockchain, &genesis_address).await;
 
     // Test UTXO set - need to reindex first
-    let utxo_set = UTXOSet::new(blockchain);
-    utxo_set.reindex().expect("Failed to reindex UTXO set");
+    let utxo_set = create_and_reindex_utxo_set(blockchain).await;
     let count = utxo_set
         .count_transactions()
+        .await
         .expect("Failed to count transactions");
     assert!(count > 0);
 
@@ -148,11 +181,11 @@ async fn test_utxo_set_integration() {
 
 #[tokio::test]
 async fn test_server_creation() {
-    let (blockchain, db_path) = create_test_blockchain();
-    let blockchain_arc = Arc::new(RwLock::new(blockchain));
+    let (blockchain, db_path) = create_test_blockchain().await;
+    let blockchain_service = BlockchainService::new(blockchain);
 
     // Test that we can create a server (the blockchain field is private, so we can't test it directly)
-    let _server = blockchain::server::Server::new(blockchain_arc);
+    let _server = blockchain::server::Server::new(blockchain_service);
     // If we get here without panicking, the server was created successfully
 
     // Cleanup
@@ -189,8 +222,7 @@ async fn test_global_config() {
 async fn test_transaction_creation_and_validation() {
     // Test coinbase transaction
     let genesis_address = generate_test_genesis_address();
-    let coinbase_tx =
-        Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
+    let coinbase_tx = create_coinbase_transaction(&genesis_address);
     assert!(coinbase_tx.is_coinbase());
     assert_eq!(coinbase_tx.get_vout().len(), 1);
     assert_eq!(coinbase_tx.get_vin().len(), 1);
@@ -203,56 +235,35 @@ async fn test_transaction_creation_and_validation() {
 
 #[tokio::test]
 async fn test_blockchain_persistence() {
-    let _guard = TestDatabaseGuard::new();
+    let _guard = TestDatabaseGuard::new_with_cleanup();
     let genesis_address = generate_test_genesis_address();
 
     // Create blockchain and add a block
     {
         let mut blockchain =
-            Blockchain::create_blockchain(&genesis_address).expect("Failed to create blockchain");
-        let coinbase_tx =
-            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
-        let transactions = vec![coinbase_tx];
-        let new_block = blockchain
-            .mine_block(transactions.as_slice())
-            .expect("Failed to mine block");
-        blockchain
-            .add_block(&new_block)
-            .expect("Failed to add block");
+            create_blockchain_with_config_clean(&genesis_address, _guard.get_path()).await;
+        create_and_add_block(&mut blockchain, &genesis_address).await;
     }
 
     // Create new blockchain instance and verify persistence
-    let blockchain =
-        Blockchain::create_blockchain(&genesis_address).expect("Failed to create new blockchain");
-    assert_eq!(
-        blockchain.get_best_height().expect("Failed to get height"),
-        2
-    );
+    let blockchain = create_blockchain_with_config(&genesis_address, _guard.get_path()).await;
+    assert!(validate_blockchain_height(&blockchain, 2).await);
     // Guard will automatically clean up when it goes out of scope
 }
 
 #[tokio::test]
 async fn test_blockchain_iterator() {
-    let (mut blockchain, db_path) = create_test_blockchain();
+    let (mut blockchain, db_path) = create_test_blockchain().await;
     let genesis_address = generate_test_genesis_address();
 
-    // Add multiple blocks
-    for _i in 0..3 {
-        let coinbase_tx =
-            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
-        let transactions = vec![coinbase_tx];
-        let new_block = blockchain
-            .mine_block(transactions.as_slice())
-            .expect("Failed to mine block");
-        blockchain
-            .add_block(&new_block)
-            .expect("Failed to add block");
+    // Add multiple blocks using functional approach
+    for _ in 0..3 {
+        create_and_add_block(&mut blockchain, &genesis_address).await;
     }
 
     // Test iterator
-    let mut iterator = blockchain.iterator().expect("Failed to create iterator");
+    let mut iterator = blockchain.iterator().await.expect("Failed to create iterator");
     let mut block_count = 0;
-
     while let Some(block) = iterator.next() {
         block_count += 1;
         assert!(block.get_height() > 0); // Fixed: height should be > 0, not >= 0
@@ -268,38 +279,22 @@ async fn test_blockchain_iterator() {
 
 #[tokio::test]
 async fn test_wallet_transaction_creation() {
-    let (mut blockchain, db_path) = create_test_blockchain();
+    let (mut blockchain, db_path) = create_test_blockchain().await;
 
     // Create wallets with unique path
-    let temp_dir = tempfile::TempDir::new().expect("Failed to create temp directory");
-    let wallet_path = temp_dir.path().join("test_wallets.dat");
-
-    // Set environment variable for unique wallet path
-    unsafe {
-        std::env::set_var("WALLET_FILE", wallet_path.to_str().unwrap());
-    }
-
-    let mut wallets = Wallets::new().expect("Failed to create wallets");
+    let (mut wallets, _temp_dir) = create_wallet_with_temp_path();
     let address1 = wallets.create_wallet().expect("Failed to create wallet 1");
     let address2 = wallets.create_wallet().expect("Failed to create wallet 2");
 
     // Create blockchain with some initial balance to address1
-    let coinbase_tx =
-        Transaction::new_coinbase_tx(&address1).expect("Failed to create coinbase tx");
-    let transactions = vec![coinbase_tx];
-    let new_block = blockchain
-        .mine_block(transactions.as_slice())
-        .expect("Failed to mine block");
-    blockchain
-        .add_block(&new_block)
-        .expect("Failed to add block");
+    create_and_add_block(&mut blockchain, &address1).await;
 
     // Create UTXO set and reindex
-    let utxo_set = UTXOSet::new(blockchain);
-    utxo_set.reindex().expect("Failed to reindex UTXO set");
+    let utxo_set = create_and_reindex_utxo_set(blockchain).await;
 
     // Test creating a transaction between wallets
-    let transaction = Transaction::new_utxo_transaction(&address1, &address2, 5, &utxo_set);
+    let transaction_result = Transaction::new_utxo_transaction(&address1, &address2, 5, &utxo_set);
+    let transaction = transaction_result.await;
     assert!(transaction.is_ok());
 
     let tx = transaction.expect("Failed to create transaction");

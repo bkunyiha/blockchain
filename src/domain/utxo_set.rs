@@ -1,5 +1,5 @@
 use super::block::Block;
-use super::blockchain::Blockchain;
+use super::blockchain::BlockchainService;
 use super::transaction::TXOutput;
 use super::transaction::Transaction;
 use crate::domain::error::{BtcError, Result};
@@ -9,15 +9,15 @@ use std::collections::HashMap;
 const UTXO_TREE: &str = "chainstate";
 
 pub struct UTXOSet {
-    blockchain: Blockchain,
+    blockchain: BlockchainService,
 }
 
 impl UTXOSet {
-    pub fn new(blockchain: Blockchain) -> UTXOSet {
+    pub fn new(blockchain: BlockchainService) -> UTXOSet {
         UTXOSet { blockchain }
     }
 
-    pub fn get_blockchain(&self) -> &Blockchain {
+    pub fn get_blockchain(&self) -> &BlockchainService {
         &self.blockchain
     }
 
@@ -34,14 +34,14 @@ impl UTXOSet {
     /// # Returns
     ///
     /// A tuple containing the accumulated amount and a HashMap of transaction IDs to output indices for spendable outputs.
-    pub fn find_spendable_outputs(
+    pub async fn find_spendable_outputs(
         &self,
         pub_key_hash: &[u8],
         amount: i32,
     ) -> Result<(i32, HashMap<String, Vec<usize>>)> {
         let mut unspent_outputs: HashMap<String, Vec<usize>> = HashMap::new();
         let mut accmulated = 0;
-        let db = self.blockchain.get_db();
+        let db = self.blockchain.get_db().await?;
         let utxo_tree = db
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
@@ -74,8 +74,8 @@ impl UTXOSet {
         Ok((accmulated, unspent_outputs))
     }
 
-    pub fn find_utxo(&self, pub_key_hash: &[u8]) -> Result<Vec<TXOutput>> {
-        let db = self.blockchain.get_db();
+    pub async fn find_utxo(&self, pub_key_hash: &[u8]) -> Result<Vec<TXOutput>> {
+        let db = self.blockchain.get_db().await?;
         let utxo_tree = db
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
@@ -93,8 +93,8 @@ impl UTXOSet {
         Ok(utxos)
     }
 
-    pub fn count_transactions(&self) -> Result<i32> {
-        let db = self.blockchain.get_db();
+    pub async fn count_transactions(&self) -> Result<i32> {
+        let db = self.blockchain.get_db().await?;
         let utxo_tree = db
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
@@ -112,8 +112,8 @@ impl UTXOSet {
     ///
     /// * `blockchain` - A reference to the blockchain.
     ///
-    pub fn reindex(&self) -> Result<()> {
-        let db = self.blockchain.get_db();
+    pub async fn reindex(&self) -> Result<()> {
+        let db = self.blockchain.get_db().await?;
         let utxo_tree = db
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
@@ -121,7 +121,7 @@ impl UTXOSet {
             .clear()
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
 
-        let utxo_map = self.blockchain.find_utxo()?;
+        let utxo_map = self.blockchain.find_utxo().await?;
         for (txid_hex, outs) in &utxo_map {
             let txid = HEXLOWER
                 .decode(txid_hex.as_bytes())
@@ -135,8 +135,8 @@ impl UTXOSet {
         Ok(())
     }
 
-    pub fn update(&self, block: &Block) -> Result<()> {
-        let db = self.blockchain.get_db();
+    pub async fn update(&self, block: &Block) -> Result<()> {
+        let db = self.blockchain.get_db().await?;
         let utxo_tree = db
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
@@ -189,8 +189,8 @@ impl UTXOSet {
         Ok(())
     }
 
-    pub fn set_global_mem_pool_flag(&self, tx: &Transaction, flag: bool) -> Result<()> {
-        let db = self.blockchain.get_db();
+    pub async fn set_global_mem_pool_flag(&self, tx: &Transaction, flag: bool) -> Result<()> {
+        let db = self.blockchain.get_db().await?;
         let utxo_tree = db
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;

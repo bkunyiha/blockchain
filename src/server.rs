@@ -6,15 +6,13 @@ pub mod process_messages;
 pub use operations::{send_known_nodes, send_version};
 pub use process_messages::process_stream;
 
-use crate::{BlockInTransit, Blockchain, MemoryPool, Nodes};
+use crate::{BlockInTransit, BlockchainService, MemoryPool, Nodes};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::env;
 use std::net::{SocketAddr, TcpListener};
 use std::str::FromStr;
-use std::sync::Arc;
-use tokio::sync::RwLock;
 use tracing::{error, info, instrument};
 
 pub const NODE_VERSION: usize = 1;
@@ -77,7 +75,7 @@ impl ConnectNode {
 impl FromStr for ConnectNode {
     type Err = std::net::AddrParseError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> core::result::Result<Self, Self::Err> {
         if s == "local" {
             Ok(ConnectNode::Local)
         } else {
@@ -87,13 +85,13 @@ impl FromStr for ConnectNode {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Server {
-    blockchain: Arc<RwLock<Blockchain>>,
+    blockchain: BlockchainService,
 }
 
 impl Server {
-    pub fn new(blockchain: Arc<RwLock<Blockchain>>) -> Server {
+    pub fn new(blockchain: BlockchainService) -> Server {
         Server { blockchain }
     }
 
@@ -109,9 +107,8 @@ impl Server {
         if !addrs.eq(&CENTERAL_NODE) {
             let best_height = self
                 .blockchain
-                .read()
-                .await
                 .get_best_height()
+                .await
                 .expect("Blockchain read error");
             send_version(&CENTERAL_NODE, best_height).await;
         } else {
@@ -149,7 +146,7 @@ impl Server {
             tokio::spawn(async move {
                 match stream {
                     Ok(stream) => {
-                        process_stream(blockchain.clone(), stream)
+                        process_stream(blockchain, stream)
                             .await
                             .expect("Serve error");
                     }
