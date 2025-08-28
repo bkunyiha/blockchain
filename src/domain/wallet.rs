@@ -44,8 +44,10 @@ impl Wallet {
         // and converts it to a byte vector.
         let pkcs8 = crate::new_key_pair()?;
         // Generate public key from private key.
-        let key_pair = EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, pkcs8.as_ref())
-            .map_err(|e| BtcError::WalletKeyPairError(e.to_string()))?;
+        let rng = ring::rand::SystemRandom::new();
+        let key_pair =
+            EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, pkcs8.as_ref(), &rng)
+                .map_err(|e| BtcError::WalletKeyPairError(e.to_string()))?;
         let public_key = key_pair.public_key().as_ref().to_vec();
         Ok(Wallet { pkcs8, public_key })
     }

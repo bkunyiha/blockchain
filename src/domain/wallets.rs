@@ -63,8 +63,9 @@ impl Wallets {
         let _ = file
             .read(&mut buf)
             .map_err(|e| BtcError::WalletsFileReadError(e.to_string()))?;
-        let wallets = bincode::deserialize(&buf[..])
-            .map_err(|e| BtcError::WalletsDeserializationError(e.to_string()))?;
+        let wallets = bincode::serde::decode_from_slice(&buf[..], bincode::config::standard())
+            .map_err(|e| BtcError::WalletsDeserializationError(e.to_string()))?
+            .0;
         self.wallets = wallets;
         Ok(())
     }
@@ -80,8 +81,9 @@ impl Wallets {
             .open(&path)
             .map_err(|e| BtcError::SavingWalletsError(e.to_string()))?;
         let mut writer = BufWriter::new(file);
-        let wallets_bytes = bincode::serialize(&self.wallets)
-            .map_err(|e| BtcError::WalletsSerializationError(e.to_string()))?;
+        let wallets_bytes =
+            bincode::serde::encode_to_vec(&self.wallets, bincode::config::standard())
+                .map_err(|e| BtcError::WalletsSerializationError(e.to_string()))?;
         writer
             .write_all(wallets_bytes.as_slice())
             .map_err(|e| BtcError::SavingWalletsError(e.to_string()))?;

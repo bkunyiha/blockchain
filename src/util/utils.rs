@@ -109,9 +109,9 @@ pub fn new_key_pair() -> Result<Vec<u8>> {
 /// * `pkcs8` - A reference to the PKCS#8 document.
 /// * `message` - A reference to the message.
 pub fn ecdsa_p256_sha256_sign_digest(pkcs8: &[u8], message: &[u8]) -> Result<Vec<u8>> {
-    let key_pair = EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, pkcs8)
-        .map_err(|e| BtcError::TransactionSignatureError(e.to_string()))?;
     let rng = ring::rand::SystemRandom::new();
+    let key_pair = EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, pkcs8, &rng)
+        .map_err(|e| BtcError::TransactionSignatureError(e.to_string()))?;
     key_pair
         .sign(&rng, message)
         .map(|signature| signature.as_ref().to_vec())

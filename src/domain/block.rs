@@ -64,13 +64,14 @@ impl Block {
     }
 
     pub fn deserialize(bytes: &[u8]) -> Result<Block> {
-        bincode::deserialize(bytes).map_err(|e| BtcError::BlockDeserializationError(e.to_string()))
+        bincode::serde::decode_from_slice(bytes, bincode::config::standard())
+            .map_err(|e| BtcError::BlockDeserializationError(e.to_string()))
+            .map(|(block, _)| block)
     }
 
     pub fn serialize(&self) -> Result<Vec<u8>> {
-        bincode::serialize(self)
+        bincode::serde::encode_to_vec(self, bincode::config::standard())
             .map_err(|e| BtcError::BlockSerializationError(e.to_string()))
-            .map(|v| v.to_vec())
     }
 
     pub fn get_transactions(&self) -> &[Transaction] {
@@ -114,8 +115,8 @@ impl Block {
 impl TryFrom<Block> for IVec {
     type Error = BtcError;
     fn try_from(b: Block) -> Result<Self> {
-        let bytes =
-            bincode::serialize(&b).map_err(|e| BtcError::BlockSerializationError(e.to_string()))?;
+        let bytes = bincode::serde::encode_to_vec(&b, bincode::config::standard())
+            .map_err(|e| BtcError::BlockSerializationError(e.to_string()))?;
         Ok(Self::from(bytes))
     }
 }

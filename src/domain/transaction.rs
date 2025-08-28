@@ -342,14 +342,14 @@ impl Transaction {
     }
 
     pub fn serialize(&self) -> Result<Vec<u8>> {
-        bincode::serialize(self)
-            .map(|t| t.to_vec())
+        bincode::serde::encode_to_vec(self, bincode::config::standard())
             .map_err(|e| BtcError::TransactionSerializationError(e.to_string()))
     }
 
     pub fn deserialize(bytes: &[u8]) -> Result<Transaction> {
-        bincode::deserialize(bytes)
+        bincode::serde::decode_from_slice(bytes, bincode::config::standard())
             .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))
+            .map(|(transaction, _)| transaction)
     }
 }
 
