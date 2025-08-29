@@ -5,6 +5,7 @@ use super::transaction::Transaction;
 use crate::domain::error::{BtcError, Result};
 use data_encoding::HEXLOWER;
 use std::collections::HashMap;
+use tracing::{debug, trace};
 
 const UTXO_TREE: &str = "chainstate";
 
@@ -230,19 +231,17 @@ impl UTXOSet {
                         if utxo_curr_utxo_idx == curr_tx_inpt.get_vout() {
                             // Flag the TXOutput as in global mem pool
                             db_curr_utxo.set_in_global_mem_pool(flag);
-                            log::info!(
-                                "\n\n ------------------------------------------------------"
-                            );
-                            log::info!("Set TXOUT to Intransit");
-                            log::info!("utxo_curr_utxo_idx: {:?}", utxo_curr_utxo_idx);
-                            log::info!("db_curr_utxo.get_value(): {:?}", db_curr_utxo.get_value());
+                            trace!("\n\n ------------------------------------------------------");
+                            debug!("Set TXOUT to Intransit");
+                            trace!("utxo_curr_utxo_idx: {:?}", utxo_curr_utxo_idx);
+                            trace!("db_curr_utxo.get_value(): {:?}", db_curr_utxo.get_value());
                             for tx_out in tx.get_vout() {
-                                log::info!("tx_out.get_value(): {:?}", tx_out.get_value());
+                                trace!("tx_out.get_value(): {:?}", tx_out.get_value());
                             }
-                            log::info!("------------------------------------------------------");
+                            trace!("------------------------------------------------------");
                         }
                     }
-                    log::info!("Update UTXO in DB");
+                    trace!("Update UTXO in DB");
                     let outs_bytes = bincode::serde::encode_to_vec(
                         &curr_tx_inpt_utxo_list,
                         bincode::config::standard(),
@@ -252,7 +251,7 @@ impl UTXOSet {
                         .insert(curr_tx_inpt.get_txid(), outs_bytes)
                         .map_err(|e| BtcError::SavingUTXOError(e.to_string()))?;
                 } else {
-                    log::info!("TXOUT not found in DB");
+                    debug!("TXOUT not found in DB");
                 }
             }
         }

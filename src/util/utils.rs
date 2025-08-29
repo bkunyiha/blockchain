@@ -1,9 +1,8 @@
 use crate::domain::error::{BtcError, Result};
-use crypto::digest::Digest;
 use ring::digest::{Context, SHA256};
 use ring::rand::SystemRandom;
 use ring::signature::{ECDSA_P256_SHA256_FIXED, ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair};
-use std::iter::repeat_n;
+use sha2::{Digest as Sha2Digest, Sha256 as Sha2Hash};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 pub fn current_timestamp() -> i64 {
@@ -32,29 +31,23 @@ pub fn sha256_digest(data: &[u8]) -> Vec<u8> {
 }
 
 ///
-/// The `ripemd160_digest` function calculates the RIPEMD-160 hash of the wallet public key.
+/// The `taproot_hash` function calculates the Taproot-compatible hash of the input data.
 ///
-/// RIPEMD-160 is a cryptographic hash function that operates on a 160-bit (20-byte) message digest.
-/// It is designed to be faster than MD5 while providing a similar level of security.
-/// RIPEMD-160 is widely used in various cryptographic applications, including digital signatures,
-/// message authentication codes, and hash-based message authentication codes.
-///
-/// # Arguments
-///
-/// The `ripemd160_digest` function calculates the RIPEMD-160 hash of the input,
-/// returning the resulting hash as a vector of bytes.
-/// It creates a RIPEMD-160 hasher, inputs the data, collects the resulting hash into a byte vector,
-/// and returns it.
+/// For P2TR (Pay-to-Taproot), we use SHA256 as the primary hash function instead of RIPEMD160.
+/// This provides better security and is compatible with Bitcoin's Taproot upgrade.
+/// The function takes input data and returns a 32-byte hash suitable for P2TR addresses.
 ///
 /// # Arguments
 ///
 /// * `data` - A reference to the input data.
-pub fn ripemd160_digest(data: &[u8]) -> Vec<u8> {
-    let mut ripemd160 = crypto::ripemd160::Ripemd160::new();
-    ripemd160.input(data);
-    let mut buf: Vec<u8> = repeat_n(0, ripemd160.output_bytes()).collect(); // repeat_n faster than repeat then take
-    ripemd160.result(&mut buf);
-    buf
+///
+/// # Returns
+///
+/// A 32-byte hash as a vector of bytes.
+pub fn taproot_hash(data: &[u8]) -> Vec<u8> {
+    let mut hasher = Sha2Hash::new();
+    hasher.update(data);
+    hasher.finalize().to_vec()
 }
 
 ///

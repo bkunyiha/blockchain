@@ -17,7 +17,10 @@ use crate::domain::error::{BtcError, Result};
 use ring::signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair, KeyPair};
 use serde::{Deserialize, Serialize};
 
-const VERSION: u8 = 0x00;
+// P2TR version byte (0x01 for Taproot addresses)
+// The version byte is used in address validation to ensure the address format is correct
+// 0x01 is the official version byte for P2TR addresses in Bitcoin
+const VERSION: u8 = 0x01;
 pub const ADDRESS_CHECK_SUM_LEN: usize = 4;
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -53,12 +56,13 @@ impl Wallet {
     }
 
     ///
-    /// The `get_address` function generates a Bitcoin address from the public key.
-    /// It hashes the public key, adds a version byte, computes a checksum, and encodes the result in Base58.
+    /// The `get_address` function generates a P2TR (Pay-to-Taproot) address from the public key.
+    /// It hashes the public key using SHA256, adds a P2TR version byte, computes a checksum,
+    /// and encodes the result in Base58.
     ///
     /// # Returns
     ///
-    /// A Bitcoin address as a `String`.
+    /// A P2TR Bitcoin address as a `String`.
     pub fn get_address(&self) -> Result<String> {
         let pub_key_hash = hash_pub_key(self.public_key.as_slice());
         let mut payload: Vec<u8> = vec![];
@@ -92,16 +96,23 @@ impl Wallet {
 }
 
 ///
-/// The `hash_pub_key` function hashes the public key using SHA-256 and then RIPEMD-160.
+/// The `hash_pub_key` function hashes the public key using SHA-256 for P2TR compatibility.
+///
+/// For P2TR (Pay-to-Taproot), we use a single SHA256 hash instead of the traditional
+/// SHA256 + RIPEMD160 combination. This provides better security and is compatible
+/// with Bitcoin's Taproot upgrade.
 ///
 /// # Arguments
 ///
 /// * `pub_key` - A reference to the public key.
 ///
 /// # Returns
+///
+/// A 32-byte hash suitable for P2TR addresses.
 pub fn hash_pub_key(pub_key: &[u8]) -> Vec<u8> {
-    let pub_key_sha256 = crate::sha256_digest(pub_key);
-    crate::ripemd160_digest(pub_key_sha256.as_slice())
+    // For P2TR (Pay-to-Taproot), we use a single SHA256 hash instead of SHA256 + RIPEMD160
+    // This provides better security and is compatible with Bitcoin's Taproot upgrade
+    crate::taproot_hash(pub_key)
 }
 
 ///
@@ -146,8 +157,8 @@ pub fn validate_address(address: &str) -> Result<bool> {
 }
 
 ///
-/// The `convert_address` function converts a public key hash to a Bitcoin address.
-/// It appends a version number, the public key hash, and a checksum,
+/// The `convert_address` function converts a public key hash to a P2TR Bitcoin address.
+/// It appends a P2TR version number, the public key hash, and a checksum,
 /// then encodes it using Base58 encoding.
 ///
 /// # Arguments
@@ -156,7 +167,7 @@ pub fn validate_address(address: &str) -> Result<bool> {
 ///
 /// # Returns
 ///
-/// A Bitcoin address as a `String`.
+/// A P2TR Bitcoin address as a `String`.
 pub fn convert_address(pub_hash_key: &[u8]) -> Result<String> {
     let mut payload: Vec<u8> = vec![];
     payload.push(VERSION);

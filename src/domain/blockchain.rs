@@ -133,57 +133,81 @@ mod tests {
         wallet.get_address().expect("Failed to get wallet address")
     }
 
-    async fn create_test_blockchain() -> (BlockchainService, String) {
-        use std::time::{SystemTime, UNIX_EPOCH};
-        let timestamp = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let test_db_path = format!("test_blockchain_db_{}_{}", timestamp, uuid::Uuid::new_v4());
-
-        // Clean up any existing test database
-        let _ = fs::remove_dir_all(&test_db_path);
-
-        // Set environment variable for unique database path
-        unsafe {
-            std::env::set_var("TREE_DIR", &test_db_path);
-        }
-        unsafe {
-            std::env::set_var("BLOCKS_TREE", &test_db_path);
-        }
-
-        let genesis_address = generate_test_genesis_address();
-        let blockchain = BlockchainService::initialize(&genesis_address)
-            .await
-            .expect("Failed to create test blockchain");
-        (blockchain, test_db_path)
+    /// Test fixture that automatically cleans up the test database
+    struct TestBlockchain {
+        blockchain: BlockchainService,
+        db_path: String,
     }
 
-    fn cleanup_test_blockchain(db_path: &str) {
-        let _ = fs::remove_dir_all(db_path);
+    impl TestBlockchain {
+        async fn new() -> Self {
+            use std::time::{SystemTime, UNIX_EPOCH};
+            let timestamp = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos();
+            let test_db_path = format!("test_blockchain_db_{}_{}", timestamp, uuid::Uuid::new_v4());
+
+            // Clean up any existing test database
+            let _ = fs::remove_dir_all(&test_db_path);
+
+            // Create a unique subdirectory for this test
+            let unique_db_path = format!("{}/db", test_db_path);
+            let _ = fs::create_dir_all(&unique_db_path);
+
+            // Set environment variable for unique database path
+            unsafe {
+                std::env::set_var("TREE_DIR", &unique_db_path);
+            }
+            unsafe {
+                std::env::set_var("BLOCKS_TREE", &unique_db_path);
+            }
+
+            let genesis_address = generate_test_genesis_address();
+            let blockchain = BlockchainService::initialize(&genesis_address)
+                .await
+                .expect("Failed to create test blockchain");
+
+            TestBlockchain {
+                blockchain,
+                db_path: test_db_path,
+            }
+        }
+
+        fn blockchain(&self) -> &BlockchainService {
+            &self.blockchain
+        }
+    }
+
+    impl Drop for TestBlockchain {
+        fn drop(&mut self) {
+            // Ensure cleanup happens even if test panics
+            let _ = fs::remove_dir_all(&self.db_path);
+        }
     }
 
     #[tokio::test]
     async fn test_blockchain_creation() {
-        let (blockchain, db_path) = create_test_blockchain().await;
+        let test_blockchain = TestBlockchain::new().await;
 
         assert_eq!(
-            blockchain
+            test_blockchain
+                .blockchain()
                 .get_best_height()
                 .await
                 .expect("Failed to get height"),
             1
         );
-        cleanup_test_blockchain(&db_path);
     }
 
     #[tokio::test]
     async fn test_genesis_block_creation() {
-        let (blockchain, db_path) = create_test_blockchain().await;
+        let test_blockchain = TestBlockchain::new().await;
 
         // Genesis block should be created automatically
         assert_eq!(
-            blockchain
+            test_blockchain
+                .blockchain()
                 .get_best_height()
                 .await
                 .expect("Failed to get height"),
@@ -191,68 +215,71 @@ mod tests {
         );
 
         // Get the genesis block using the iterator
-        let mut iterator = blockchain
+        let mut iterator = test_blockchain
+            .blockchain()
             .iterator()
             .await
             .expect("Failed to create iterator");
         let genesis_block = iterator.next().expect("Genesis block should exist");
         assert_eq!(genesis_block.get_height(), 1);
         assert_eq!(genesis_block.get_pre_block_hash(), "None");
-
-        cleanup_test_blockchain(&db_path);
     }
 
     #[tokio::test]
     async fn test_add_block() {
-        let (blockchain, db_path) = create_test_blockchain().await;
+        let test_blockchain = TestBlockchain::new().await;
         let genesis_address = generate_test_genesis_address();
 
         // Create a new block
         let coinbase_tx =
             Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
         let transactions = vec![coinbase_tx];
-        let new_block = blockchain
+        let new_block = test_blockchain
+            .blockchain()
             .mine_block(transactions.as_slice())
             .await
             .expect("Failed to mine block");
 
         // Add the block
-        blockchain
+        test_blockchain
+            .blockchain()
             .add_block(&new_block)
             .await
             .expect("Failed to add block");
 
         assert_eq!(
-            blockchain
+            test_blockchain
+                .blockchain()
                 .get_best_height()
                 .await
                 .expect("Failed to get height"),
             2
         );
-
-        cleanup_test_blockchain(&db_path);
     }
 
     #[tokio::test]
     async fn test_get_block() {
-        let (blockchain, db_path) = create_test_blockchain().await;
+        let test_blockchain = TestBlockchain::new().await;
         let genesis_address = generate_test_genesis_address();
 
         // Create and add a block
         let coinbase_tx =
             Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
         let transactions = vec![coinbase_tx];
-        let new_block = blockchain
+        let new_block = test_blockchain
+            .blockchain()
             .mine_block(transactions.as_slice())
             .await
             .expect("Failed to mine block");
-        blockchain
+        test_blockchain
+            .blockchain()
             .add_block(&new_block)
             .await
             .expect("Failed to add block");
 
         // Get the block by hash
-        let retrieved_block = blockchain
+        let retrieved_block = test_blockchain
+            .blockchain()
             .get_block(new_block.get_hash_bytes().as_slice())
             .await
             .expect("Failed to get block")
@@ -260,13 +287,11 @@ mod tests {
 
         assert_eq!(retrieved_block.get_hash(), new_block.get_hash());
         assert_eq!(retrieved_block.get_height(), 2);
-
-        cleanup_test_blockchain(&db_path);
     }
 
     #[tokio::test]
     async fn test_get_block_hashes() {
-        let (blockchain, db_path) = create_test_blockchain().await;
+        let test_blockchain = TestBlockchain::new().await;
         let genesis_address = generate_test_genesis_address();
 
         // Add a few blocks
@@ -274,46 +299,50 @@ mod tests {
             let coinbase_tx = Transaction::new_coinbase_tx(&genesis_address)
                 .expect("Failed to create coinbase tx");
             let transactions = vec![coinbase_tx];
-            let new_block = blockchain
+            let new_block = test_blockchain
+                .blockchain()
                 .mine_block(transactions.as_slice())
                 .await
                 .expect("Failed to mine block");
-            blockchain
+            test_blockchain
+                .blockchain()
                 .add_block(&new_block)
                 .await
                 .expect("Failed to add block");
         }
 
-        let block_hashes = blockchain
+        let block_hashes = test_blockchain
+            .blockchain()
             .get_block_hashes()
             .await
             .expect("Failed to get block hashes");
 
         // Should have genesis block + 3 new blocks = 4 total
         assert_eq!(block_hashes.len(), 4);
-
-        cleanup_test_blockchain(&db_path);
     }
 
     #[tokio::test]
     async fn test_blockchain_iterator() {
-        let (blockchain, db_path) = create_test_blockchain().await;
+        let test_blockchain = TestBlockchain::new().await;
 
         // Add a block
         let genesis_address = generate_test_genesis_address();
         let coinbase_tx =
             Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
         let transactions = vec![coinbase_tx];
-        let new_block = blockchain
+        let new_block = test_blockchain
+            .blockchain()
             .mine_block(transactions.as_slice())
             .await
             .expect("Failed to mine block");
-        blockchain
+        test_blockchain
+            .blockchain()
             .add_block(&new_block)
             .await
             .expect("Failed to add block");
 
-        let mut iterator = blockchain
+        let mut iterator = test_blockchain
+            .blockchain()
             .iterator()
             .await
             .expect("Failed to create iterator");
@@ -325,8 +354,6 @@ mod tests {
 
         // Should have genesis block + 1 new block = 2 total
         assert_eq!(block_count, 2);
-
-        cleanup_test_blockchain(&db_path);
     }
 
     #[tokio::test]
@@ -337,6 +364,8 @@ mod tests {
             .unwrap()
             .as_nanos();
         let db_path = format!("test_persistence_db_{}_{}", timestamp, uuid::Uuid::new_v4());
+
+        // Clean up any existing test database
         let _ = fs::remove_dir_all(&db_path);
 
         // Set environment variable for unique database path
@@ -382,19 +411,21 @@ mod tests {
             2
         );
 
-        cleanup_test_blockchain(&db_path);
+        // Clean up the test database
+        let _ = fs::remove_dir_all(&db_path);
     }
 
     #[tokio::test]
     async fn test_mine_block() {
-        let (blockchain, db_path) = create_test_blockchain().await;
+        let test_blockchain = TestBlockchain::new().await;
 
         let genesis_address = generate_test_genesis_address();
         let coinbase_tx =
             Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
         let transactions = vec![coinbase_tx];
 
-        let new_block = blockchain
+        let new_block = test_blockchain
+            .blockchain()
             .mine_block(transactions.as_slice())
             .await
             .expect("Failed to mine block");
@@ -403,7 +434,5 @@ mod tests {
         assert_eq!(new_block.get_height(), 2); // Height 2 because genesis block is height 1
         assert!(!new_block.get_hash().is_empty());
         assert!(new_block.get_transactions().len() > 0);
-
-        cleanup_test_blockchain(&db_path);
     }
 }
