@@ -459,10 +459,11 @@ pub async fn mine_empty_block(blockchain: &BlockchainService) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::blockchain::BlockchainService;
-    use crate::domain::transaction::Transaction;
+    use std::fs;
     use std::net::SocketAddr;
     use std::str::FromStr;
+    use crate::domain::blockchain::BlockchainService;
+    use crate::domain::transaction::Transaction;
 
     fn generate_test_genesis_address() -> String {
         // Create a wallet to get a valid Bitcoin address
@@ -470,37 +471,56 @@ mod tests {
         wallet.get_address().expect("Failed to get wallet address")
     }
 
-    async fn create_test_blockchain() -> (BlockchainService, String) {
-        use std::time::{SystemTime, UNIX_EPOCH};
-        let timestamp = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let test_db_path = format!("test_blockchain_db_{}_{}", timestamp, uuid::Uuid::new_v4());
-
-        // Clean up any existing test database
-        let _ = std::fs::remove_dir_all(&test_db_path);
-
-        // Set environment variable for unique database path
-        unsafe {
-            std::env::set_var("TREE_DIR", &test_db_path);
-        }
-        unsafe {
-            std::env::set_var("BLOCKS_TREE", &test_db_path);
-        }
-
-        let genesis_address = generate_test_genesis_address();
-
-        (
-            BlockchainService::initialize(&genesis_address)
-                .await
-                .expect("Failed to initialize blockchain"),
-            test_db_path,
-        )
+    struct TestBlockchain {
+        blockchain: BlockchainService,
+        db_path: String,
     }
 
-    fn cleanup_test_blockchain(db_path: &str) {
-        let _ = std::fs::remove_dir_all(db_path);
+    impl TestBlockchain {
+        async fn new() -> Self {
+            use std::time::{SystemTime, UNIX_EPOCH};
+            let timestamp = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos();
+            let test_db_path = format!("test_blockchain_db_{}_{}", timestamp, uuid::Uuid::new_v4());
+
+            // Clean up any existing test database
+            let _ = fs::remove_dir_all(&test_db_path);
+
+            // Create a unique subdirectory for this test
+            let unique_db_path = format!("{}/db", test_db_path);
+            let _ = fs::create_dir_all(&unique_db_path);
+
+            // Set environment variable for unique database path
+            unsafe {
+                std::env::set_var("TREE_DIR", &unique_db_path);
+            }
+            unsafe {
+                std::env::set_var("BLOCKS_TREE", &unique_db_path);
+            }
+
+            let genesis_address = generate_test_genesis_address();
+            let blockchain = BlockchainService::initialize(&genesis_address)
+                .await
+                .expect("Failed to create test blockchain");
+
+            TestBlockchain {
+                blockchain,
+                db_path: test_db_path,
+            }
+        }
+
+        fn blockchain(&self) -> &BlockchainService {
+            &self.blockchain
+        }
+    }
+
+    impl Drop for TestBlockchain {
+        fn drop(&mut self) {
+            // Ensure cleanup happens even if test panics
+            let _ = fs::remove_dir_all(&self.db_path);
+        }
     }
 
     #[tokio::test]
@@ -516,8 +536,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_send_block() {
-        let (blockchain, db_path) = create_test_blockchain().await;
-        let block = blockchain
+        let test_blockchain = TestBlockchain::new().await;
+        let block = test_blockchain
+            .blockchain()
             .mine_block(&[])
             .await
             .expect("Failed to mine block");
@@ -525,9 +546,6 @@ mod tests {
 
         // This should not panic even if the connection fails
         send_block(&addr, &block).await;
-
-        // Cleanup
-        cleanup_test_blockchain(&db_path);
     }
 
     #[tokio::test]
@@ -594,22 +612,19 @@ mod tests {
 
     #[tokio::test]
     async fn test_process_transaction() {
-        let (blockchain, db_path) = create_test_blockchain().await;
+        let test_blockchain = TestBlockchain::new().await;
         let genesis_address = generate_test_genesis_address();
         let tx =
             Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create transaction");
         let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
 
         // This should not panic
-        process_transaction(&addr, tx, &blockchain).await;
-
-        // Cleanup
-        cleanup_test_blockchain(&db_path);
+        process_transaction(&addr, tx, test_blockchain.blockchain()).await;
     }
 
     #[tokio::test]
     async fn test_process_known_nodes() {
-        let (blockchain, db_path) = create_test_blockchain().await;
+        let test_blockchain = TestBlockchain::new().await;
         let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
         let nodes = vec![
             SocketAddr::from_str("127.0.0.1:8081").expect("Failed to parse address"),
@@ -617,19 +632,15 @@ mod tests {
         ];
 
         // This should not panic
-        process_known_nodes(blockchain, &addr, nodes).await;
-        cleanup_test_blockchain(&db_path);
+        process_known_nodes(test_blockchain.blockchain().clone(), &addr, nodes).await;
     }
 
     #[tokio::test]
     async fn test_mine_empty_block() {
-        let (blockchain, db_path) = create_test_blockchain().await;
+        let test_blockchain = TestBlockchain::new().await;
 
         // This should not panic
-        mine_empty_block(&blockchain).await;
-
-        // Cleanup
-        cleanup_test_blockchain(&db_path);
+        mine_empty_block(test_blockchain.blockchain()).await;
     }
 
     #[test]

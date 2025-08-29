@@ -635,23 +635,75 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_mine_block() {
+        let (blockchain, db_path) = create_test_blockchain().await;
+
+        let genesis_address = generate_test_genesis_address();
+        let coinbase_tx =
+            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
+        let transactions = vec![coinbase_tx];
+
+        let new_block = blockchain
+            .mine_block(transactions.as_slice())
+            .await
+            .expect("Failed to mine block");
+
+        // Check that the block was mined correctly
+        assert_eq!(new_block.get_height(), 2); // Height 2 because genesis block is height 1
+        assert!(!new_block.get_hash().is_empty());
+        assert!(new_block.get_transactions().len() > 0);
+
+        cleanup_test_blockchain(&db_path);
+    }
+
+    struct TestPersistenceBlockchain {
+        db_path: String,
+    }
+
+    impl TestPersistenceBlockchain {
+        async fn new() -> Self {
+            use std::time::{SystemTime, UNIX_EPOCH};
+            let timestamp = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos();
+            let test_db_path = format!("test_persistence_db_{}_{}", timestamp, uuid::Uuid::new_v4());
+
+            // Clean up any existing test database
+            let _ = fs::remove_dir_all(&test_db_path);
+
+            // Create a unique subdirectory for this test
+            let unique_db_path = format!("{}/db", test_db_path);
+            let _ = fs::create_dir_all(&unique_db_path);
+
+            // Set environment variable for unique database path
+            unsafe {
+                std::env::set_var("TREE_DIR", &unique_db_path);
+            }
+            unsafe {
+                std::env::set_var("BLOCKS_TREE", &unique_db_path);
+            }
+
+            TestPersistenceBlockchain {
+                db_path: test_db_path,
+            }
+        }
+
+        fn db_path(&self) -> &str {
+            &self.db_path
+        }
+    }
+
+    impl Drop for TestPersistenceBlockchain {
+        fn drop(&mut self) {
+            // Ensure cleanup happens even if test panics
+            let _ = fs::remove_dir_all(&self.db_path);
+        }
+    }
+
+    #[tokio::test]
     async fn test_blockchain_persistence() {
-        use std::time::{SystemTime, UNIX_EPOCH};
-        let timestamp = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let db_path = format!("test_persistence_db_{}_{}", timestamp, uuid::Uuid::new_v4());
-        let _ = fs::remove_dir_all(&db_path);
-
-        // Set environment variable for unique database path
-        unsafe {
-            std::env::set_var("TREE_DIR", &db_path);
-        }
-        unsafe {
-            std::env::set_var("BLOCKS_TREE", &db_path);
-        }
-
+        let test_persistence = TestPersistenceBlockchain::new().await;
         let genesis_address = generate_test_genesis_address();
 
         {
@@ -686,29 +738,5 @@ mod tests {
                 .expect("Failed to get height"),
             2
         );
-
-        cleanup_test_blockchain(&db_path);
-    }
-
-    #[tokio::test]
-    async fn test_mine_block() {
-        let (blockchain, db_path) = create_test_blockchain().await;
-
-        let genesis_address = generate_test_genesis_address();
-        let coinbase_tx =
-            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
-        let transactions = vec![coinbase_tx];
-
-        let new_block = blockchain
-            .mine_block(transactions.as_slice())
-            .await
-            .expect("Failed to mine block");
-
-        // Check that the block was mined correctly
-        assert_eq!(new_block.get_height(), 2); // Height 2 because genesis block is height 1
-        assert!(!new_block.get_hash().is_empty());
-        assert!(new_block.get_transactions().len() > 0);
-
-        cleanup_test_blockchain(&db_path);
     }
 }

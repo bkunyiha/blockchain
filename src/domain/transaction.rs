@@ -3,9 +3,7 @@ use super::error::{BtcError, Result};
 use super::utxo_set::UTXOSet;
 use super::wallet::{ADDRESS_CHECK_SUM_LEN, hash_pub_key};
 use super::wallets::Wallets;
-use crate::util::utils::{
-    base58_decode, ecdsa_p256_sha256_sign_digest, ecdsa_p256_sha256_sign_verify, sha256_digest,
-};
+use crate::util::utils::{base58_decode, schnorr_sign_digest, schnorr_sign_verify, sha256_digest};
 use data_encoding::HEXLOWER;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -219,19 +217,20 @@ impl Transaction {
     }
 
     ///
-    /// The `sign` function signs the transaction inputs using the Elliptic Curve Digital Signature Algorithm
-    /// (ECDSA). It retrieves previous transactions, prepares a copy for signature verification,
-    /// signs inputs with the corresponding private keys, and updates the transaction with signatures:
+    /// The `sign` function signs the transaction inputs using Schnorr signatures with secp256k1.
+    /// This is the signature scheme used by P2TR (Pay-to-Taproot) addresses.
+    /// It retrieves previous transactions, prepares a copy for signature verification,
+    /// signs inputs with the corresponding private keys, and updates the transaction with signatures.
     ///
     /// # Arguments
     ///
     /// * `blockchain` - A reference to the blockchain.
-    /// * `pkcs8` - A reference to the private key.
+    /// * `private_key` - A reference to the private key.
     ///
     /// # Returns
     ///
     /// A signed transaction.
-    async fn sign(&mut self, blockchain: &BlockchainService, pkcs8: &[u8]) -> Result<()> {
+    async fn sign(&mut self, blockchain: &BlockchainService, private_key: &[u8]) -> Result<()> {
         let mut tx_copy = self.trimmed_copy();
 
         for (idx, vin) in self.vin.iter_mut().enumerate() {
@@ -250,16 +249,16 @@ impl Transaction {
             tx_copy.id = tx_copy.hash()?;
             tx_copy.vin[idx].pub_key = vec![];
 
-            let signature = ecdsa_p256_sha256_sign_digest(pkcs8, tx_copy.get_id())?;
+            let signature = schnorr_sign_digest(private_key, tx_copy.get_id())?;
             vin.signature = signature;
         }
         Ok(())
     }
 
     ///
-    /// This function verifies transaction signatures against corresponding public keys.
+    /// This function verifies transaction signatures against corresponding public keys using Schnorr signatures.
     /// It checks for Coinbase transactions, prepares a trimmed copy,
-    /// validates signatures against public keys, and ensures the transaction is valid.
+    /// validates Schnorr signatures against public keys, and ensures the transaction is valid.
     ///
     /// # Arguments
     ///
@@ -288,7 +287,7 @@ impl Transaction {
             trimmed_self_copy.id = trimmed_self_copy.hash()?;
             trimmed_self_copy.vin[idx].pub_key = vec![];
 
-            let verify = ecdsa_p256_sha256_sign_verify(
+            let verify = schnorr_sign_verify(
                 vin.pub_key.as_slice(),
                 vin.signature.as_slice(),
                 trimmed_self_copy.get_id(),

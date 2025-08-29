@@ -13,8 +13,8 @@
 //! let address = wallet.get_address().expect("Failed to get address");
 //! ```
 
-use crate::domain::error::{BtcError, Result};
-use ring::signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair, KeyPair};
+use crate::domain::error::Result;
+use crate::util::utils::{get_schnorr_public_key, new_schnorr_key_pair};
 use serde::{Deserialize, Serialize};
 
 // P2TR version byte (0x01 for Taproot addresses)
@@ -25,34 +25,29 @@ pub const ADDRESS_CHECK_SUM_LEN: usize = 4;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Wallet {
-    // The pkcs8 field stores the private key in PKCS#8 format:
-    pkcs8: Vec<u8>,
+    // The private_key field stores the private key as a byte slice for Schnorr signatures:
+    private_key: Vec<u8>,
     // The public_key field stores the public key as a byte slice:
     public_key: Vec<u8>,
 }
 
 impl Wallet {
     ///
-    /// The `new` function creates a new wallet by generating a new key pair and returning a `Wallet` instance.
-    /// It uses ECDSA (Elliptic Curve Digital Signature Algorithm) by parsing an unencrypted PKCS#8 key
-    /// to generate a new key pair.
+    /// The `new` function creates a new wallet by generating a new Schnorr key pair and returning a `Wallet` instance.
+    /// It uses secp256k1 for Schnorr signature generation, which is the signature scheme used by P2TR (Pay-to-Taproot).
     ///
     /// # Returns
     ///
-    /// A new `Wallet` instance.
+    /// A new `Wallet` instance with Schnorr key pair.
     pub fn new() -> Result<Wallet> {
-        // Generates new key pair.
-        // The `new_key_pair` function generates a new ECDSA key pair and returns the private key as a byte vector.
-        // It utilizes EcdsaKeyPair and SystemRandom from the ring crate to generate a private key in PKCS#8 format
-        // and converts it to a byte vector.
-        let pkcs8 = crate::new_key_pair()?;
-        // Generate public key from private key.
-        let rng = ring::rand::SystemRandom::new();
-        let key_pair =
-            EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, pkcs8.as_ref(), &rng)
-                .map_err(|e| BtcError::WalletKeyPairError(e.to_string()))?;
-        let public_key = key_pair.public_key().as_ref().to_vec();
-        Ok(Wallet { pkcs8, public_key })
+        // Generates new Schnorr key pair using secp256k1
+        let private_key = new_schnorr_key_pair()?;
+        // Generate public key from private key using secp256k1
+        let public_key = get_schnorr_public_key(&private_key)?;
+        Ok(Wallet {
+            private_key,
+            public_key,
+        })
     }
 
     ///
@@ -85,13 +80,24 @@ impl Wallet {
     }
 
     ///
-    /// The `get_pkcs8` function returns the private key as a byte slice.
+    /// The `get_private_key` function returns the private key as a byte slice.
+    ///
+    /// # Returns
+    ///
+    /// A reference to the private key.
+    pub fn get_private_key(&self) -> &[u8] {
+        self.private_key.as_slice()
+    }
+
+    ///
+    /// The `get_pkcs8` function returns the private key as a byte slice (for backward compatibility).
+    /// This is maintained for compatibility with existing transaction signing code.
     ///
     /// # Returns
     ///
     /// A reference to the private key.
     pub fn get_pkcs8(&self) -> &[u8] {
-        self.pkcs8.as_slice()
+        self.private_key.as_slice()
     }
 }
 
