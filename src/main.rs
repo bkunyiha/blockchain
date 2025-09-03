@@ -2,10 +2,10 @@ use blockchain::{
     BtcError, ConnectNode, GLOBAL_CONFIG, Result, Server, UTXOSet, Wallets,
     blockchain::BlockchainService, convert_address, hash_pub_key, validate_address,
 };
+use clap::{Parser, Subcommand};
 use data_encoding::HEXLOWER;
 use std::collections::HashSet;
 use std::str::FromStr;
-use structopt::StructOpt;
 
 use tracing::info;
 use tracing_subscriber::{
@@ -14,7 +14,7 @@ use tracing_subscriber::{
     prelude::*,
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum IsMiner {
     Yes,
     No,
@@ -32,34 +32,34 @@ impl FromStr for IsMiner {
     }
 }
 
-#[derive(Debug, StructOpt)]
-#[structopt(name = "blockchain")]
+#[derive(Debug, Parser)]
+#[command(name = "blockchain")]
 struct Opt {
-    #[structopt(subcommand)]
+    #[command(subcommand)]
     command: Command,
 }
 
-#[derive(StructOpt, Debug)]
+#[derive(Subcommand, Debug)]
 enum Command {
-    #[structopt(name = "createwallet", about = "Create a new wallet")]
+    #[command(name = "createwallet", about = "Create a new wallet")]
     Createwallet,
-    #[structopt(
+    #[command(
         name = "getbalance",
         about = "Get the wallet balance of the target address"
     )]
-    #[structopt(name = "listaddresses", about = "Print local wallet addres")]
+    #[command(name = "listaddresses", about = "Print local wallet addres")]
     ListAddresses,
-    #[structopt(name = "send", about = "Add new block to chain")]
-    #[structopt(name = "printchain", about = "Print blockchain all block")]
+    #[command(name = "send", about = "Add new block to chain")]
+    #[command(name = "printchain", about = "Print blockchain all block")]
     Printchain,
-    #[structopt(name = "reindexutxo", about = "rebuild UTXO index set")]
-    #[structopt(name = "startnode", about = "Start a node")]
+    #[command(name = "reindexutxo", about = "rebuild UTXO index set")]
+    #[command(name = "startnode", about = "Start a node")]
     StartNode {
-        #[structopt(name = "wlt_addr", help = "Wallet Address")]
+        #[arg(name = "wlt_addr", help = "Wallet Address")]
         wlt_addr: String,
-        #[structopt(name = "is_miner", help = "Is Node a Miner?")]
+        #[arg(name = "is_miner", help = "Is Node a Miner?")]
         is_miner: IsMiner,
-        #[structopt(name = "connect_nodes", help = "Connect to a node")]
+        #[arg(name = "connect_nodes", help = "Connect to a node")]
         connect_nodes: Vec<ConnectNode>,
     },
 }
@@ -257,7 +257,7 @@ async fn main() {
     initialize_logging();
 
     // Parse command line arguments
-    let opt = Opt::from_args();
+    let opt = Opt::parse();
 
     // Process command with error handling
     if let Err(e) = process_command(opt.command).await {

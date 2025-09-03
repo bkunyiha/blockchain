@@ -440,10 +440,20 @@ mod tests {
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        let test_db_path = format!("test_blockchain_db_{}_{}", timestamp, uuid::Uuid::new_v4());
 
-        // Clean up any existing test database
-        let _ = fs::remove_dir_all(&test_db_path);
+        // Use process ID and random number for better isolation
+        let process_id = std::process::id();
+        let random_num = rand::random::<u32>();
+        let test_db_path = format!(
+            "test_blockchain_db_{}_{}_{}_{}",
+            timestamp,
+            process_id,
+            random_num,
+            uuid::Uuid::new_v4()
+        );
+
+        // Clean up any existing test database with retry logic
+        let _ = cleanup_test_blockchain_with_retry(&test_db_path);
 
         // Set environment variable for unique database path
         unsafe {
@@ -460,8 +470,28 @@ mod tests {
         (blockchain, test_db_path)
     }
 
+    /// Clean up test database with retry logic to handle lock issues
+    fn cleanup_test_blockchain_with_retry(db_path: &str) -> std::io::Result<()> {
+        for attempt in 1..=3 {
+            match fs::remove_dir_all(db_path) {
+                Ok(_) => return Ok(()),
+                Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                    if attempt < 3 {
+                        std::thread::sleep(std::time::Duration::from_millis(100 * attempt));
+                        continue;
+                    }
+                }
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                    return Ok(()); // Directory doesn't exist, that's fine
+                }
+                Err(e) => return Err(e),
+            }
+        }
+        Ok(())
+    }
+
     fn cleanup_test_blockchain(db_path: &str) {
-        let _ = fs::remove_dir_all(db_path);
+        let _ = cleanup_test_blockchain_with_retry(db_path);
     }
 
     #[tokio::test]
@@ -667,7 +697,8 @@ mod tests {
                 .duration_since(UNIX_EPOCH)
                 .unwrap()
                 .as_nanos();
-            let test_db_path = format!("test_persistence_db_{}_{}", timestamp, uuid::Uuid::new_v4());
+            let test_db_path =
+                format!("test_persistence_db_{}_{}", timestamp, uuid::Uuid::new_v4());
 
             // Clean up any existing test database
             let _ = fs::remove_dir_all(&test_db_path);
@@ -688,10 +719,6 @@ mod tests {
                 db_path: test_db_path,
             }
         }
-
-        fn db_path(&self) -> &str {
-            &self.db_path
-        }
     }
 
     impl Drop for TestPersistenceBlockchain {
@@ -703,7 +730,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_blockchain_persistence() {
-        let test_persistence = TestPersistenceBlockchain::new().await;
+        let _ = TestPersistenceBlockchain::new().await;
         let genesis_address = generate_test_genesis_address();
 
         {

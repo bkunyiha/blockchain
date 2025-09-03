@@ -329,3 +329,24 @@ async fn test_wallet_transaction_creation() {
     // Cleanup
     cleanup_test_blockchain(&db_path);
 }
+
+/// Global cleanup function to remove any remaining test directories
+/// This can be called manually or used in test teardown
+pub fn cleanup_all_test_directories() {
+    use std::fs;
+    use std::path::Path;
+
+    let current_dir = std::env::current_dir().unwrap_or_else(|_| Path::new(".").to_path_buf());
+
+    if let Ok(entries) = fs::read_dir(current_dir) {
+        for entry in entries.filter_map(Result::ok) {
+            let path = entry.path();
+            if let Some(name) = path.file_name() {
+                let name_str = name.to_string_lossy();
+                if name_str.starts_with("test_") && name_str.contains("db_") {
+                    let _ = std::fs::remove_dir_all(&path);
+                }
+            }
+        }
+    }
+}

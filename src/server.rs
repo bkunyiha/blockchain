@@ -53,7 +53,7 @@ pub static GLOBAL_BLOCKS_IN_TRANSIT: Lazy<BlockInTransit> = Lazy::new(BlockInTra
 
 pub const TCP_WRITE_TIMEOUT: u64 = 1000;
 
-#[derive(PartialEq, Eq, Hash, Debug)]
+#[derive(PartialEq, Eq, Hash, Debug, Clone)]
 pub enum ConnectNode {
     Local,
     Remote(SocketAddr),

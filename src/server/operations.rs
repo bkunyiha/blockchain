@@ -459,11 +459,11 @@ pub async fn mine_empty_block(blockchain: &BlockchainService) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::domain::blockchain::BlockchainService;
+    use crate::domain::transaction::Transaction;
     use std::fs;
     use std::net::SocketAddr;
     use std::str::FromStr;
-    use crate::domain::blockchain::BlockchainService;
-    use crate::domain::transaction::Transaction;
 
     fn generate_test_genesis_address() -> String {
         // Create a wallet to get a valid Bitcoin address
@@ -483,10 +483,20 @@ mod tests {
                 .duration_since(UNIX_EPOCH)
                 .unwrap()
                 .as_nanos();
-            let test_db_path = format!("test_blockchain_db_{}_{}", timestamp, uuid::Uuid::new_v4());
 
-            // Clean up any existing test database
-            let _ = fs::remove_dir_all(&test_db_path);
+            // Use process ID and random number for better isolation
+            let process_id = std::process::id();
+            let random_num = rand::random::<u32>();
+            let test_db_path = format!(
+                "test_blockchain_db_{}_{}_{}_{}",
+                timestamp,
+                process_id,
+                random_num,
+                uuid::Uuid::new_v4()
+            );
+
+            // Clean up any existing test database with retry logic
+            let _ = Self::cleanup_with_retry(&test_db_path);
 
             // Create a unique subdirectory for this test
             let unique_db_path = format!("{}/db", test_db_path);
@@ -511,6 +521,26 @@ mod tests {
             }
         }
 
+        /// Clean up test database with retry logic to handle lock issues
+        fn cleanup_with_retry(db_path: &str) -> std::io::Result<()> {
+            for attempt in 1..=3 {
+                match fs::remove_dir_all(db_path) {
+                    Ok(_) => return Ok(()),
+                    Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                        if attempt < 3 {
+                            std::thread::sleep(std::time::Duration::from_millis(100 * attempt));
+                            continue;
+                        }
+                    }
+                    Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                        return Ok(()); // Directory doesn't exist, that's fine
+                    }
+                    Err(e) => return Err(e),
+                }
+            }
+            Ok(())
+        }
+
         fn blockchain(&self) -> &BlockchainService {
             &self.blockchain
         }
@@ -519,7 +549,7 @@ mod tests {
     impl Drop for TestBlockchain {
         fn drop(&mut self) {
             // Ensure cleanup happens even if test panics
-            let _ = fs::remove_dir_all(&self.db_path);
+            let _ = Self::cleanup_with_retry(&self.db_path);
         }
     }
 

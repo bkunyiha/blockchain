@@ -43,7 +43,9 @@ ring = "0.17.13"
 # Usage: Replaces RIPEMD160 with secure SHA256 for modern Bitcoin addresses
 sha2 = "0.10.8"
 
-# Elliptic curve cryptography for P2TR support
+# Elliptic curve cryptography for Bitcoin operations
+# Used in: src/util/utils.rs for Schnorr signature operations
+# Purpose: Implement Schnorr signatures for P2TR (Pay-to-Taproot)
 # Features: rand - for secure random number generation
 # Note: Currently added for future Schnorr signature support
 secp256k1 = { version = "0.29.0", features = ["rand"] }
@@ -98,11 +100,12 @@ tracing-subscriber = { version = "0.3", default-features = false, features = ["f
 # Command Line Interface
 # =============================================================================
 
-# Command-line argument parsing (legacy)
+# Modern command-line argument parsing
 # Used in: src/main.rs for CLI argument parsing
 # Purpose: Parse command-line arguments for blockchain operations
 # Usage: Create wallet, send transactions, start nodes, etc.
-structopt = "0.3.26"
+# Features: derive - automatic trait implementation, env - environment variable support
+clap = { version = "4.5", features = ["derive", "env"] }
 
 # =============================================================================
 # Error Handling

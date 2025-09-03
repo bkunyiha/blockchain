@@ -148,10 +148,22 @@ mod tests {
                 .duration_since(UNIX_EPOCH)
                 .unwrap()
                 .as_nanos();
-            let test_db_path = format!("test_blockchain_db_{}_{}", timestamp, uuid::Uuid::new_v4());
 
-            // Clean up any existing test database
-            let _ = fs::remove_dir_all(&test_db_path);
+            // Use process ID and multiple random numbers for better isolation
+            let process_id = std::process::id();
+            let random_num1 = rand::random::<u32>();
+            let random_num2 = rand::random::<u32>();
+            let test_db_path = format!(
+                "test_blockchain_db_{}_{}_{}_{}_{}",
+                timestamp,
+                process_id,
+                random_num1,
+                random_num2,
+                uuid::Uuid::new_v4()
+            );
+
+            // Clean up any existing test database with retry logic
+            let _ = Self::cleanup_with_retry(&test_db_path);
 
             // Create a unique subdirectory for this test
             let unique_db_path = format!("{}/db", test_db_path);
@@ -166,14 +178,79 @@ mod tests {
             }
 
             let genesis_address = generate_test_genesis_address();
-            let blockchain = BlockchainService::initialize(&genesis_address)
-                .await
-                .expect("Failed to create test blockchain");
+
+            // Try to create blockchain with retry logic
+            let blockchain = match Self::create_blockchain_with_retry(&genesis_address).await {
+                Ok(bc) => bc,
+                Err(_) => {
+                    // If creation fails, clean up and retry once more
+                    let _ = Self::cleanup_with_retry(&test_db_path);
+                    Self::create_blockchain_with_retry(&genesis_address)
+                        .await
+                        .expect("Failed to create test blockchain after retry")
+                }
+            };
 
             TestBlockchain {
                 blockchain,
                 db_path: test_db_path,
             }
+        }
+
+        /// Create blockchain with retry logic to handle database lock issues
+        async fn create_blockchain_with_retry(genesis_address: &str) -> Result<BlockchainService> {
+            for attempt in 1..=3 {
+                match BlockchainService::initialize(genesis_address).await {
+                    Ok(bc) => return Ok(bc),
+                    Err(e) if e.to_string().contains("could not acquire lock") => {
+                        if attempt < 3 {
+                            std::thread::sleep(std::time::Duration::from_millis(200 * attempt));
+                            continue;
+                        }
+                    }
+                    Err(e) => return Err(e),
+                }
+            }
+            Err(BtcError::BlockchainDBconnection(
+                "Failed to create blockchain after retries".to_string(),
+            ))
+        }
+
+        /// Clean up test database with retry logic to handle lock issues
+        fn cleanup_with_retry(db_path: &str) -> std::io::Result<()> {
+            for attempt in 1..=5 {
+                match fs::remove_dir_all(db_path) {
+                    Ok(_) => return Ok(()),
+                    Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                        if attempt < 5 {
+                            // Exponential backoff with longer delays
+                            let delay =
+                                std::time::Duration::from_millis(200 * (1 << (attempt - 1)));
+                            std::thread::sleep(delay);
+                            continue;
+                        }
+                    }
+                    Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                        return Ok(()); // Directory doesn't exist, that's fine
+                    }
+                    Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
+                        if attempt < 5 {
+                            // Wait longer for permission issues
+                            std::thread::sleep(std::time::Duration::from_millis(500 * attempt));
+                            continue;
+                        }
+                    }
+                    Err(e) => {
+                        // Log the error but continue trying
+                        eprintln!("Cleanup attempt {} failed: {}", attempt, e);
+                        if attempt < 5 {
+                            std::thread::sleep(std::time::Duration::from_millis(300 * attempt));
+                            continue;
+                        }
+                    }
+                }
+            }
+            Ok(())
         }
 
         fn blockchain(&self) -> &BlockchainService {
@@ -184,12 +261,15 @@ mod tests {
     impl Drop for TestBlockchain {
         fn drop(&mut self) {
             // Ensure cleanup happens even if test panics
-            let _ = fs::remove_dir_all(&self.db_path);
+            let _ = Self::cleanup_with_retry(&self.db_path);
         }
     }
 
     #[tokio::test]
     async fn test_blockchain_creation() {
+        // Setup test environment
+        crate::setup_test_environment();
+
         let test_blockchain = TestBlockchain::new().await;
 
         assert_eq!(
@@ -200,6 +280,9 @@ mod tests {
                 .expect("Failed to get height"),
             1
         );
+
+        // Teardown test environment
+        crate::teardown_test_environment();
     }
 
     #[tokio::test]
@@ -369,7 +452,8 @@ mod tests {
                 .duration_since(UNIX_EPOCH)
                 .unwrap()
                 .as_nanos();
-            let test_db_path = format!("test_persistence_db_{}_{}", timestamp, uuid::Uuid::new_v4());
+            let test_db_path =
+                format!("test_persistence_db_{}_{}", timestamp, uuid::Uuid::new_v4());
 
             // Clean up any existing test database
             let _ = fs::remove_dir_all(&test_db_path);
@@ -390,10 +474,6 @@ mod tests {
                 db_path: test_db_path,
             }
         }
-
-        fn db_path(&self) -> &str {
-            &self.db_path
-        }
     }
 
     impl Drop for TestPersistenceBlockchain {
@@ -405,7 +485,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_blockchain_persistence() {
-        let test_persistence = TestPersistenceBlockchain::new().await;
+        let _ = TestPersistenceBlockchain::new().await;
         let genesis_address = generate_test_genesis_address();
 
         {
