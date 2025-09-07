@@ -1,5 +1,5 @@
-use super::blockchain::Blockchain;
 use crate::domain::block::Block;
+use crate::domain::blockchain::Blockchain;
 use crate::domain::error::{BtcError, Result};
 use crate::domain::transaction::TXOutput;
 use crate::domain::transaction::Transaction;

@@ -59,7 +59,9 @@ impl Wallet {
     ///
     /// A P2TR Bitcoin address as a `String`.
     pub fn get_address(&self) -> Result<String> {
+        // hash the public key using SHA256 which is the same as the P2TR address format
         let pub_key_hash = hash_pub_key(self.public_key.as_slice());
+        // add the P2TR version byte
         let mut payload: Vec<u8> = vec![];
         payload.push(VERSION);
         payload.extend(pub_key_hash.as_slice());

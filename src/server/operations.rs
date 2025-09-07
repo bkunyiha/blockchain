@@ -459,8 +459,8 @@ pub async fn mine_empty_block(blockchain: &BlockchainService) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::blockchain::BlockchainService;
     use crate::domain::transaction::Transaction;
+    use crate::service::blockchain_service::BlockchainService;
     use std::fs;
     use std::net::SocketAddr;
     use std::str::FromStr;

@@ -1,6 +1,9 @@
 pub mod domain;
 pub use domain::*;
 
+pub mod service;
+pub use service::*;
+
 pub mod server;
 pub use server::*;
 
@@ -10,6 +13,9 @@ pub use config::GLOBAL_CONFIG;
 
 pub mod util;
 pub use util::*;
+
+pub mod store;
+pub use store::*;
 
 #[cfg(test)]
 mod test_utils {

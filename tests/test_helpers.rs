@@ -1,4 +1,4 @@
-use blockchain::{BlockchainService, Transaction, Wallets};
+use blockchain::{BlockchainService, Transaction, WalletService};
 use std::path::PathBuf;
 use tempfile::TempDir;
 
@@ -90,8 +90,8 @@ pub async fn create_blockchain_with_blocks(num_blocks: usize) -> (BlockchainServ
 }
 
 /// Helper function to create test wallets
-pub fn create_test_wallets() -> Wallets {
-    Wallets::new().expect("Failed to create test wallets")
+pub fn create_test_wallets() -> WalletService {
+    WalletService::new().expect("Failed to create test wallets")
 }
 
 /// Collect blocks from iterator into a sorted vector
@@ -136,7 +136,7 @@ pub async fn verify_blockchain_integrity(blockchain: &BlockchainService) -> bool
 }
 
 /// Create a single test address
-pub fn create_single_test_address(wallets: &mut Wallets) -> String {
+pub fn create_single_test_address(wallets: &mut WalletService) -> String {
     wallets.create_wallet().expect("Failed to create wallet")
 }
 

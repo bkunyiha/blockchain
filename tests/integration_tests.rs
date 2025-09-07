@@ -1,4 +1,6 @@
-use blockchain::{BlockchainService, ConnectNode, GLOBAL_CONFIG, Transaction, UTXOSet, Wallets};
+use blockchain::{
+    BlockchainService, ConnectNode, GLOBAL_CONFIG, Transaction, UTXOSet, WalletService,
+};
 use std::str::FromStr;
 
 mod test_helpers;
@@ -140,7 +142,7 @@ async fn validate_blockchain_height(
 }
 
 /// Create a wallet with unique path
-fn create_wallet_with_temp_path() -> (Wallets, tempfile::TempDir) {
+fn create_wallet_with_temp_path() -> (WalletService, tempfile::TempDir) {
     let temp_dir = tempfile::TempDir::new().expect("Failed to create temp directory");
     let wallet_path = temp_dir.path().join("test_wallets.dat");
 
@@ -148,7 +150,7 @@ fn create_wallet_with_temp_path() -> (Wallets, tempfile::TempDir) {
         std::env::set_var("WALLET_FILE", wallet_path.to_str().unwrap());
     }
 
-    let wallets = Wallets::new().expect("Failed to create wallets");
+    let wallets = WalletService::new().expect("Failed to create wallets");
     (wallets, temp_dir)
 }
 

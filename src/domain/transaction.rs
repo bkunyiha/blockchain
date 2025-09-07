@@ -1,8 +1,8 @@
-use super::blockchain::BlockchainService;
 use super::error::{BtcError, Result};
 use super::utxo_set::UTXOSet;
 use super::wallet::{ADDRESS_CHECK_SUM_LEN, hash_pub_key};
-use super::wallets::Wallets;
+use crate::service::blockchain_service::BlockchainService;
+use crate::service::wallet_service::WalletService;
 use crate::util::utils::{base58_decode, schnorr_sign_digest, schnorr_sign_verify, sha256_digest};
 use data_encoding::HEXLOWER;
 use serde::{Deserialize, Serialize};
@@ -146,7 +146,7 @@ impl Transaction {
         amount: i32,
         utxo_set: &UTXOSet,
     ) -> Result<Transaction> {
-        let wallets = Wallets::new()?;
+        let wallets = WalletService::new()?;
         let from_wallet = wallets.get_wallet(from).expect("unable to find wallet");
         let public_key_hash = hash_pub_key(from_wallet.get_public_key());
 

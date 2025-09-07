@@ -1,6 +1,6 @@
 use blockchain::{
-    BtcError, ConnectNode, GLOBAL_CONFIG, Result, Server, UTXOSet, Wallets,
-    blockchain::BlockchainService, convert_address, hash_pub_key, validate_address,
+    BtcError, ConnectNode, GLOBAL_CONFIG, Result, Server, UTXOSet, WalletService, convert_address,
+    hash_pub_key, service::blockchain_service::BlockchainService, validate_address,
 };
 use clap::{Parser, Subcommand};
 use data_encoding::HEXLOWER;
@@ -77,7 +77,7 @@ fn initialize_logging() {
 
 /// Create a new wallet and return the address
 fn create_wallet() -> Result<String> {
-    Wallets::new()
+    WalletService::new()
         .and_then(|mut wallets| wallets.create_wallet())
         .map(|address| {
             info!("Your new address: {}", address);
@@ -87,7 +87,7 @@ fn create_wallet() -> Result<String> {
 
 /// List all wallet addresses
 fn list_addresses() -> Result<()> {
-    Wallets::new().map(|wallets| {
+    WalletService::new().map(|wallets| {
         wallets
             .get_addresses()
             .iter()
