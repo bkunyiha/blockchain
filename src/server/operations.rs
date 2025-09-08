@@ -187,11 +187,17 @@ async fn send_data(addr_to: &SocketAddr, pkg: Package) {
 
 /// Add transaction to memory pool functionally
 async fn add_to_memory_pool(tx: Transaction, blockchain_service: &BlockchainService) {
-
     info!("\n");
-    info!("******************************************************************************************************");
-    info!("Adding transaction to memory pool: {:?}", tx.get_tx_id_hex());
-    info!("******************************************************************************************************\n");
+    info!(
+        "******************************************************************************************************"
+    );
+    info!(
+        "Adding transaction to memory pool: {:?}",
+        tx.get_tx_id_hex()
+    );
+    info!(
+        "******************************************************************************************************\n"
+    );
     GLOBAL_MEMORY_POOL
         .add(tx.clone())
         .expect("Memory pool add error");
@@ -288,10 +294,7 @@ pub async fn process_transaction(
         send_message(
             addr_from,
             MessageType::Error,
-            format!(
-                "Transaction: {} already exists",
-                tx.get_tx_id_hex()
-            ),
+            format!("Transaction: {} already exists", tx.get_tx_id_hex()),
         )
         .await;
         return;
@@ -331,7 +334,10 @@ async fn process_mine_block(txs: Vec<Transaction>, blockchain: &BlockchainServic
 
     // Reindex UTXO set to ensure it's in sync
     let utxo_set = UTXOSet::new(blockchain.clone());
-    utxo_set.reindex().await.expect("Failed to reindex UTXO set");
+    utxo_set
+        .reindex()
+        .await
+        .expect("Failed to reindex UTXO set");
     info!("New block {} is mined!", new_block.get_hash());
 
     // Remove transactions from memory pool functionally

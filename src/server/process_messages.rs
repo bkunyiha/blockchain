@@ -1,7 +1,7 @@
 use crate::domain::error::BtcError;
 use crate::server::operations::{
-    mine_empty_block, process_known_nodes, process_transaction, remove_from_memory_pool, send_block, send_get_blocks,
-    send_get_data, send_inv, send_message, send_tx, send_version,
+    mine_empty_block, process_known_nodes, process_transaction, remove_from_memory_pool,
+    send_block, send_get_blocks, send_get_data, send_inv, send_message, send_tx, send_version,
 };
 use crate::server::{
     AdminNodeQueryType, GLOBAL_BLOCKS_IN_TRANSIT, GLOBAL_MEMORY_POOL, GLOBAL_NODES, MessageType,

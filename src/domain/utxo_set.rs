@@ -71,8 +71,7 @@ impl UTXOSet {
                 if out.not_in_global_mem_pool()
                     && out.get_value() > 0
                     && out.is_locked_with_key(pub_key_hash)
-                {
-                    if accmulated < amount {
+                    && accmulated < amount {
                         accmulated += out.get_value();
                         debug!(
                             "Adding spendable output: tx={}, idx={}, value={}, accumulated={}",
@@ -92,7 +91,7 @@ impl UTXOSet {
                         } else {
                             unspent_outputs.insert(txid_hex.clone(), vec![original_idx]);
                         }
-                    }
+                    
                 }
             }
         }
@@ -285,7 +284,8 @@ impl UTXOSet {
                         if utxo_curr_utxo_idx == curr_tx_inpt.get_vout() {
                             // Flag the TXOutput as in global mem pool
                             db_curr_utxo.set_in_global_mem_pool(flag);
-                            trace!("\n\n ------------------------------------------------------");
+                            trace!("\n");
+                            trace!("------------------------------------------------------");
                             debug!("Set TXOUT to Intransit");
                             trace!("utxo_curr_utxo_idx: {:?}", utxo_curr_utxo_idx);
                             trace!("db_curr_utxo.get_value(): {:?}", db_curr_utxo.get_value());

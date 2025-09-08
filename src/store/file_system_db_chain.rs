@@ -254,8 +254,8 @@ impl BlockchainFileSystem {
             // If the transaction doesn't exist, we skip it (it was already fully spent)
             if let Some(outputs) = utxo.get_mut(&txid_hex) {
                 // Remove spent outputs in reverse order to maintain indices
-                // Why reverse order? Because when we remove elements from a vector, 
-                // the indices of subsequent elements shift down. 
+                // Why reverse order? Because when we remove elements from a vector,
+                // the indices of subsequent elements shift down.
                 // By removing from the end first, we don't affect the indices of elements we haven't processed yet.
                 // We dont want to mess the indices of spent outputs since they are used to identify the outputs in the transaction.
                 for &spent_idx in spent_indices.iter().rev() {

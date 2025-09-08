@@ -13,8 +13,8 @@
 //! let address = wallet.get_address().expect("Failed to get address");
 //! ```
 
+use crate::crypto::keypair::{get_schnorr_public_key, new_schnorr_key_pair};
 use crate::domain::error::Result;
-use crate::util::utils::{get_schnorr_public_key, new_schnorr_key_pair};
 use serde::{Deserialize, Serialize};
 
 // P2TR version byte (0x01 for Taproot addresses)
