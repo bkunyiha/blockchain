@@ -5,7 +5,6 @@ use crate::server::{
 };
 use crate::{Block, BlockchainService, GLOBAL_CONFIG, Transaction, UTXOSet};
 
-use data_encoding::HEXLOWER;
 use std::collections::HashSet;
 use std::io::Write;
 use std::net::{SocketAddr, TcpStream};
@@ -188,6 +187,11 @@ async fn send_data(addr_to: &SocketAddr, pkg: Package) {
 
 /// Add transaction to memory pool functionally
 async fn add_to_memory_pool(tx: Transaction, blockchain_service: &BlockchainService) {
+
+    info!("\n");
+    info!("******************************************************************************************************");
+    info!("Adding transaction to memory pool: {:?}", tx.get_tx_id_hex());
+    info!("******************************************************************************************************\n");
     GLOBAL_MEMORY_POOL
         .add(tx.clone())
         .expect("Memory pool add error");
@@ -200,10 +204,9 @@ async fn add_to_memory_pool(tx: Transaction, blockchain_service: &BlockchainServ
 }
 
 /// Remove transaction from memory pool functionally
-async fn remove_from_memory_pool(tx: Transaction, blockchain: &BlockchainService) {
-    let txid_hex = HEXLOWER.encode(tx.get_id());
+pub async fn remove_from_memory_pool(tx: Transaction, blockchain: &BlockchainService) {
     GLOBAL_MEMORY_POOL
-        .remove(txid_hex.as_str())
+        .remove(tx.clone())
         .expect("Memory pool remove error");
 
     let utxo_set = UTXOSet::new(blockchain.clone());
@@ -279,7 +282,7 @@ pub async fn process_transaction(
     tx: Transaction,
     blockchain: &BlockchainService,
 ) {
-    // Check if transaction exists using functional approach
+    // Check if transaction exists
     if transaction_exists_in_pool(&tx) {
         info!("Transaction: {:?} already exists", tx.get_id());
         send_message(
@@ -287,7 +290,7 @@ pub async fn process_transaction(
             MessageType::Error,
             format!(
                 "Transaction: {} already exists",
-                HEXLOWER.encode(tx.get_id())
+                tx.get_tx_id_hex()
             ),
         )
         .await;
@@ -326,9 +329,9 @@ async fn process_mine_block(txs: Vec<Transaction>, blockchain: &BlockchainServic
         .await
         .expect("Blockchain mine block error");
 
-    // Reindex UTXO set functionally
+    // Reindex UTXO set to ensure it's in sync
     let utxo_set = UTXOSet::new(blockchain.clone());
-    utxo_set.reindex().await.expect("Failed to get blockchain");
+    utxo_set.reindex().await.expect("Failed to reindex UTXO set");
     info!("New block {} is mined!", new_block.get_hash());
 
     // Remove transactions from memory pool functionally

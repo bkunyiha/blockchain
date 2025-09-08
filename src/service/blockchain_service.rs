@@ -1,7 +1,6 @@
 use crate::domain::block::Block;
 use crate::domain::error::{BtcError, Result};
-use crate::domain::transaction::TXOutput;
-use crate::domain::transaction::Transaction;
+use crate::domain::transaction::{TXOutput, Transaction, TxSummary};
 
 use sled::Db;
 use std::collections::HashMap;
@@ -110,10 +109,19 @@ impl BlockchainService {
         })
         .await
     }
+
+    pub async fn find_all_transactions(&self) -> Result<HashMap<String, TxSummary>> {
+        self.read(|blockchain: BlockchainFileSystem| async move {
+            blockchain.find_all_transactions().await
+        })
+        .await
+    }
+
     pub async fn find_utxo(&self) -> Result<HashMap<String, Vec<TXOutput>>> {
         self.read(|blockchain: BlockchainFileSystem| async move { blockchain.find_utxo().await })
             .await
     }
+
     pub async fn iterator(&self) -> Result<BlockchainIterator> {
         self.read(|blockchain: BlockchainFileSystem| async move { blockchain.iterator().await })
             .await

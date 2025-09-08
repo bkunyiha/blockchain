@@ -1,9 +1,10 @@
 use crate::domain::block::Block;
 use crate::domain::blockchain::Blockchain;
 use crate::domain::error::{BtcError, Result};
-use crate::domain::transaction::TXOutput;
-use crate::domain::transaction::Transaction;
-use data_encoding::HEXLOWER;
+use crate::domain::transaction::{
+    TXOutput, Transaction, TxInputSummary, TxOutputSummary, TxSummary,
+};
+use crate::{convert_address, hash_pub_key};
 use sled::transaction::{TransactionResult, UnabortableTransactionError};
 use sled::{Db, IVec, Tree};
 use std::collections::HashMap;
@@ -190,22 +191,17 @@ impl BlockchainFileSystem {
         let mut utxo: HashMap<String, Vec<TXOutput>> = HashMap::new();
         let mut spent_txos: HashMap<String, Vec<usize>> = HashMap::new();
         let mut iterator = self.iterator().await?;
-        // Iterate through the blockchain, find all UTXOs, and return them in a HashMap.
+
+        // First pass: collect all outputs from all transactions
         loop {
             match iterator.next() {
-                None => break, // if no more blocks, break the loop
+                None => break,
                 Some(block) => {
-                    'outer: for tx in block.get_transactions() {
-                        let txid_hex = HEXLOWER.encode(tx.get_id());
-                        for (idx, tx_out) in tx.get_vout().iter().enumerate() {
-                            if let Some(outs) = spent_txos.get(txid_hex.as_str()) {
-                                for spend_out_idx in outs {
-                                    // If the output is spent(ie output of a previous transaction in-input), continue to the next output
-                                    if idx.eq(spend_out_idx) {
-                                        continue 'outer;
-                                    }
-                                }
-                            }
+                    for tx in block.get_transactions() {
+                        let txid_hex = tx.get_tx_id_hex();
+
+                        // Add all outputs to UTXO set
+                        for tx_out in tx.get_vout() {
                             if utxo.contains_key(txid_hex.as_str()) {
                                 utxo.get_mut(txid_hex.as_str())
                                     .ok_or(BtcError::UTXONotFoundError(format!(
@@ -217,31 +213,65 @@ impl BlockchainFileSystem {
                                 utxo.insert(txid_hex.clone(), vec![tx_out.clone()]);
                             }
                         }
+                    }
+                }
+            }
+        }
 
-                        // Coinbase transactions dont have inputs
-                        if tx.is_coinbase() {
-                            continue;
-                        }
-
-                        // Add the spend transaction(ie inputs) to the spent_txos map
-                        for tx_in in tx.get_vin() {
-                            let tx_in_id_hex = HEXLOWER.encode(tx_in.get_txid());
-                            if spent_txos.contains_key(tx_in_id_hex.as_str()) {
-                                spent_txos
-                                    .get_mut(tx_in_id_hex.as_str())
-                                    .ok_or(BtcError::UTXONotFoundError(format!(
-                                        "UTXO not found for transaction {}",
-                                        tx_in_id_hex
-                                    )))?
-                                    .push(tx_in.get_vout());
-                            } else {
-                                spent_txos.insert(tx_in_id_hex, vec![tx_in.get_vout()]);
+        // Second pass: mark outputs as spent when we encounter transactions that reference them
+        let mut iterator = self.iterator().await?;
+        loop {
+            match iterator.next() {
+                None => break,
+                Some(block) => {
+                    for tx in block.get_transactions() {
+                        // Mark inputs as spent (only for non-coinbase transactions)
+                        if tx.not_coinbase() {
+                            for tx_in in tx.get_vin() {
+                                let tx_in_id_hex = tx_in.get_input_tx_id_hex();
+                                if spent_txos.contains_key(tx_in_id_hex.as_str()) {
+                                    spent_txos
+                                        .get_mut(tx_in_id_hex.as_str())
+                                        .ok_or(BtcError::UTXONotFoundError(format!(
+                                            "UTXO not found for transaction {}",
+                                            tx_in_id_hex
+                                        )))?
+                                        .push(tx_in.get_vout());
+                                } else {
+                                    spent_txos.insert(tx_in_id_hex, vec![tx_in.get_vout()]);
+                                }
                             }
                         }
                     }
                 }
             }
         }
+
+        // Third pass: remove spent outputs from UTXO set
+        for (txid_hex, spent_indices) in spent_txos {
+            // Checks if this transaction still exists in the UTXO set
+            // Gets a mutable reference to the outputs vector
+            // If the transaction doesn't exist, we skip it (it was already fully spent)
+            if let Some(outputs) = utxo.get_mut(&txid_hex) {
+                // Remove spent outputs in reverse order to maintain indices
+                // Why reverse order? Because when we remove elements from a vector, 
+                // the indices of subsequent elements shift down. 
+                // By removing from the end first, we don't affect the indices of elements we haven't processed yet.
+                // We dont want to mess the indices of spent outputs since they are used to identify the outputs in the transaction.
+                for &spent_idx in spent_indices.iter().rev() {
+                    // The check here is just a safety check to ensure the index is valid
+                    // Prevents panic if there's a mismatch between tracked spent outputs and actual outputs
+                    if spent_idx < outputs.len() {
+                        outputs.remove(spent_idx);
+                    }
+                }
+                // Remove empty transaction entries
+                if outputs.is_empty() {
+                    utxo.remove(&txid_hex);
+                }
+            }
+        }
+
         Ok(utxo)
     }
 
@@ -260,6 +290,47 @@ impl BlockchainFileSystem {
             }
         }
         Ok(None)
+    }
+
+    pub async fn find_all_transactions(&self) -> Result<HashMap<String, TxSummary>> {
+        let mut transactions = HashMap::new();
+        let mut iterator = self.iterator().await?;
+        loop {
+            match iterator.next() {
+                None => break,
+                Some(block) => {
+                    for tx in block.get_transactions() {
+                        let cur_txid_hex = tx.get_tx_id_hex();
+                        let mut current_transactions_summary = TxSummary::new(cur_txid_hex.clone());
+
+                        // Containbase transactions dont have inputs.
+                        if tx.not_coinbase() {
+                            for input in tx.get_vin() {
+                                let input_txid_hex = input.get_input_tx_id_hex();
+                                let pub_key_hash = hash_pub_key(input.get_pub_key());
+                                let address = convert_address(pub_key_hash.as_slice())
+                                    .expect("Convert address error");
+                                current_transactions_summary.add_input(TxInputSummary::new(
+                                    input_txid_hex,
+                                    input.get_vout(),
+                                    address,
+                                ));
+                            }
+                        }
+
+                        for output in tx.get_vout() {
+                            let pub_key_hash = output.get_pub_key_hash();
+                            let address =
+                                convert_address(pub_key_hash).expect("Convert address error");
+                            current_transactions_summary
+                                .add_output(TxOutputSummary::new(address, output.get_value()));
+                        }
+                        transactions.insert(cur_txid_hex, current_transactions_summary);
+                    }
+                }
+            }
+        }
+        Ok(transactions)
     }
 
     // The `add_block` function adds a block to the blockchain.

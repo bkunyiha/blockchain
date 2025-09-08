@@ -3,6 +3,7 @@ use super::transaction::TXOutput;
 use super::transaction::Transaction;
 use crate::domain::error::{BtcError, Result};
 use crate::service::blockchain_service::BlockchainService;
+use crate::service::wallet_service::get_pub_key_hash;
 use data_encoding::HEXLOWER;
 use std::collections::HashMap;
 use tracing::{debug, trace};
@@ -40,12 +41,14 @@ impl UTXOSet {
         pub_key_hash: &[u8],
         amount: i32,
     ) -> Result<(i32, HashMap<String, Vec<usize>>)> {
+        debug!("Finding spendable outputs for amount: {}", amount);
         let mut unspent_outputs: HashMap<String, Vec<usize>> = HashMap::new();
         let mut accmulated = 0;
         let db = self.blockchain.get_db().await?;
         let utxo_tree = db
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
+        let mut total_checked = 0;
         for item in utxo_tree.iter() {
             let (k, v) = item.map_err(|e| BtcError::GettingUTXOError(e.to_string()))?;
             let txid_hex = HEXLOWER.encode(k.to_vec().as_slice());
@@ -55,27 +58,50 @@ impl UTXOSet {
             )
             .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))?
             .0;
-            for (idx, out) in tx_out
-                .iter()
-                .filter(|out| out.not_in_global_mem_pool())
-                .enumerate()
-            {
-                if out.is_locked_with_key(pub_key_hash) && accmulated < amount {
-                    accmulated += out.get_value();
-                    if unspent_outputs.contains_key(txid_hex.as_str()) {
-                        unspent_outputs
-                            .get_mut(txid_hex.as_str())
-                            .ok_or(BtcError::UTXONotFoundError(format!(
-                                "(find_spendable_outputs) UTXO {} not found",
-                                txid_hex
-                            )))?
-                            .push(idx);
-                    } else {
-                        unspent_outputs.insert(txid_hex.clone(), vec![idx]);
+            for (original_idx, out) in tx_out.iter().enumerate() {
+                total_checked += 1;
+                debug!(
+                    "Checking output {} in tx {}: value={}, in_mempool={}, locked_with_key={}",
+                    original_idx,
+                    txid_hex,
+                    out.get_value(),
+                    out.is_in_global_mem_pool(),
+                    out.is_locked_with_key(pub_key_hash)
+                );
+                if out.not_in_global_mem_pool()
+                    && out.get_value() > 0
+                    && out.is_locked_with_key(pub_key_hash)
+                {
+                    if accmulated < amount {
+                        accmulated += out.get_value();
+                        debug!(
+                            "Adding spendable output: tx={}, idx={}, value={}, accumulated={}",
+                            txid_hex,
+                            original_idx,
+                            out.get_value(),
+                            accmulated
+                        );
+                        if unspent_outputs.contains_key(txid_hex.as_str()) {
+                            unspent_outputs
+                                .get_mut(txid_hex.as_str())
+                                .ok_or(BtcError::UTXONotFoundError(format!(
+                                    "(find_spendable_outputs) UTXO {} not found",
+                                    txid_hex
+                                )))?
+                                .push(original_idx);
+                        } else {
+                            unspent_outputs.insert(txid_hex.clone(), vec![original_idx]);
+                        }
                     }
                 }
             }
         }
+        debug!(
+            "find_spendable_outputs completed: checked {} outputs, accumulated={}, found {} spendable transactions",
+            total_checked,
+            accmulated,
+            unspent_outputs.len()
+        );
         Ok((accmulated, unspent_outputs))
     }
 
@@ -85,20 +111,39 @@ impl UTXOSet {
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
         let mut utxos = vec![];
+        let mut total_items = 0;
+
         for item in utxo_tree.iter() {
-            let (_, v) = item.map_err(|e| BtcError::GettingUTXOError(e.to_string()))?;
+            let (k, v) = item.map_err(|e| BtcError::GettingUTXOError(e.to_string()))?;
+            total_items += 1;
+            let txid_hex = HEXLOWER.encode(&k);
+            debug!("Checking UTXO tree item: {}", txid_hex);
+
             let outs: Vec<TXOutput> = bincode::serde::decode_from_slice(
                 v.to_vec().as_slice(),
                 bincode::config::standard(),
             )
             .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))?
             .0;
-            for out in outs.iter() {
+
+            debug!("Transaction {} has {} outputs", txid_hex, outs.len());
+            for (idx, out) in outs.iter().enumerate() {
+                debug!(
+                    "Output {}: value = {}, checking if locked with key",
+                    idx,
+                    out.get_value()
+                );
                 if out.is_locked_with_key(pub_key_hash) {
+                    debug!("Found matching UTXO: value = {}", out.get_value());
                     utxos.push(out.clone())
                 }
             }
         }
+        debug!(
+            "UTXO tree has {} total items, found {} matching UTXOs",
+            total_items,
+            utxos.len()
+        );
         Ok(utxos)
     }
 
@@ -122,6 +167,7 @@ impl UTXOSet {
     /// * `blockchain` - A reference to the blockchain.
     ///
     pub async fn reindex(&self) -> Result<()> {
+        debug!("Starting UTXOSet reindex...");
         let db = self.blockchain.get_db().await?;
         let utxo_tree = db
             .open_tree(UTXO_TREE)
@@ -131,7 +177,14 @@ impl UTXOSet {
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
 
         let utxo_map = self.blockchain.find_utxo().await?;
+        debug!("Found {} transactions with UTXOs", utxo_map.len());
+
         for (txid_hex, outs) in &utxo_map {
+            debug!(
+                "Processing transaction {} with {} outputs",
+                txid_hex,
+                outs.len()
+            );
             let txid = HEXLOWER
                 .decode(txid_hex.as_bytes())
                 .map_err(|e| BtcError::TransactionIdHexDecodingError(e.to_string()))?;
@@ -141,6 +194,7 @@ impl UTXOSet {
                 .insert(txid.as_slice(), value)
                 .map_err(|e| BtcError::SavingUTXOError(e.to_string()))?;
         }
+        debug!("UTXOSet reindex completed");
         Ok(())
     }
 
@@ -159,7 +213,7 @@ impl UTXOSet {
                         .map_err(|e| BtcError::GettingUTXOError(e.to_string()))?
                         .ok_or(BtcError::UTXONotFoundError(format!(
                             "(update) UTXO {} not found",
-                            HEXLOWER.encode(curr_blc_tx_inpt.get_txid())
+                            curr_blc_tx_inpt.get_input_tx_id_hex()
                         )))?;
                     let curr_blc_tx_inpt_utxo_list: Vec<TXOutput> =
                         bincode::serde::decode_from_slice(
@@ -256,5 +310,22 @@ impl UTXOSet {
             }
         }
         Ok(())
+    }
+
+    pub async fn get_balance(&self, wlt_address: &str) -> Result<i32> {
+        let pub_key_hash = get_pub_key_hash(wlt_address).expect("Base58 decode error");
+        debug!("Getting balance for address: {}", wlt_address);
+        debug!("Public key hash: {:?}", pub_key_hash);
+
+        let utxos = self.find_utxo(pub_key_hash.as_slice()).await?;
+        debug!("Found {} UTXOs for address {}", utxos.len(), wlt_address);
+
+        let mut balance = 0;
+        for (idx, utxo) in utxos.iter().enumerate() {
+            debug!("UTXO {}: value = {}", idx, utxo.get_value());
+            balance += utxo.get_value();
+        }
+        debug!("Total balance for {}: {}", wlt_address, balance);
+        Ok(balance)
     }
 }

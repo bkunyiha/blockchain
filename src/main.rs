@@ -3,7 +3,6 @@ use blockchain::{
     hash_pub_key, service::blockchain_service::BlockchainService, validate_address,
 };
 use clap::{Parser, Subcommand};
-use data_encoding::HEXLOWER;
 use std::collections::HashSet;
 use std::str::FromStr;
 
@@ -97,7 +96,7 @@ fn list_addresses() -> Result<()> {
 
 /// Format transaction input information
 fn format_transaction_input(input: &blockchain::TXInput) -> String {
-    let txid_hex = HEXLOWER.encode(input.get_txid());
+    let txid_hex = input.get_input_tx_id_hex();
     let pub_key_hash = hash_pub_key(input.get_pub_key());
     let address =
         convert_address(pub_key_hash.as_slice()).unwrap_or_else(|_| "Unknown".to_string());
@@ -120,7 +119,7 @@ fn format_transaction_output(output: &blockchain::TXOutput) -> String {
 
 /// Process a single transaction and log its details
 fn process_transaction(tx: &blockchain::Transaction) {
-    let cur_txid_hex = HEXLOWER.encode(tx.get_id());
+    let cur_txid_hex = tx.get_tx_id_hex();
     info!("- Transaction txid_hex: {}", cur_txid_hex);
 
     // Process inputs if not coinbase
@@ -193,7 +192,12 @@ async fn open_or_create_blockchain(
     connect_nodes: &[ConnectNode],
 ) -> Result<BlockchainService> {
     match BlockchainService::default().await {
-        Ok(blockchain) => Ok(blockchain),
+        Ok(blockchain) => {
+            // Reindex UTXOSet when opening existing blockchain
+            let utxo_set = UTXOSet::new(blockchain.clone());
+            utxo_set.reindex().await?;
+            Ok(blockchain)
+        }
         Err(BtcError::BlockchainNotFoundError(_)) => {
             if connect_nodes.contains(&ConnectNode::Local) {
                 create_seed_blockchain(wlt_addr).await

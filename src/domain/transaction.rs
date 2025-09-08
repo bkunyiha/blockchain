@@ -1,11 +1,12 @@
 use super::error::{BtcError, Result};
 use super::utxo_set::UTXOSet;
-use super::wallet::{ADDRESS_CHECK_SUM_LEN, hash_pub_key};
+use crate::convert_address;
 use crate::service::blockchain_service::BlockchainService;
-use crate::service::wallet_service::WalletService;
-use crate::util::utils::{base58_decode, schnorr_sign_digest, schnorr_sign_verify, sha256_digest};
+use crate::service::wallet_service::{WalletService, get_pub_key_hash, hash_pub_key};
+use crate::util::utils::{schnorr_sign_digest, schnorr_sign_verify, sha256_digest};
 use data_encoding::HEXLOWER;
 use serde::{Deserialize, Serialize};
+use tracing::debug;
 use uuid::Uuid;
 
 const SUBSIDY: i32 = 10;
@@ -30,6 +31,10 @@ impl TXInput {
 
     pub fn get_txid(&self) -> &[u8] {
         self.txid.as_slice()
+    }
+
+    pub fn get_input_tx_id_hex(&self) -> String {
+        HEXLOWER.encode(self.txid.as_slice())
     }
 
     pub fn get_vout(&self) -> usize {
@@ -78,8 +83,7 @@ impl TXOutput {
     // It uses the `pub_key_hash` field to store the public key hash.
     // It returns the new output.
     fn lock(&mut self, address: &str) -> Result<()> {
-        let payload = base58_decode(address)?;
-        let pub_key_hash = payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN].to_vec();
+        let pub_key_hash = get_pub_key_hash(address)?;
         self.pub_key_hash = pub_key_hash;
         Ok(())
     }
@@ -153,6 +157,14 @@ impl Transaction {
         let (accumulated, valid_outputs) = utxo_set
             .find_spendable_outputs(public_key_hash.as_slice(), amount)
             .await?;
+        debug!(
+            "Transaction creation: from={}, to={}, amount={}",
+            from, to, amount
+        );
+        debug!(
+            "Found spendable outputs: accumulated={}, valid_outputs={:?}",
+            accumulated, valid_outputs
+        );
         if accumulated < amount {
             return Err(BtcError::NotEnoughFunds);
         }
@@ -176,7 +188,9 @@ impl Transaction {
         let mut outputs = vec![TXOutput::new(amount, to)?];
 
         if accumulated > amount {
-            outputs.push(TXOutput::new(accumulated - amount, from)?); // to: Return change to the sender
+            let change = accumulated - amount;
+            debug!("Creating change output: {} to {}", change, from);
+            outputs.push(TXOutput::new(change, from)?); // to: Return change to the sender
         }
 
         // Create a new transaction with the spent inputs and unspent outputs
@@ -186,6 +200,20 @@ impl Transaction {
             vout: outputs,
         };
         tx.id = tx.hash()?;
+        debug!(
+            "Created transaction with {} inputs and {} outputs",
+            tx.get_vin().len(),
+            tx.get_vout().len()
+        );
+        for (idx, output) in tx.get_vout().iter().enumerate() {
+            debug!(
+                "Output {}: value={}, address={}",
+                idx,
+                output.get_value(),
+                convert_address(output.get_pub_key_hash())
+                    .unwrap_or_else(|_| "invalid".to_string())
+            );
+        }
         tx.sign(utxo_set.get_blockchain(), from_wallet.get_pkcs8())
             .await?;
         Ok(tx)
@@ -308,6 +336,10 @@ impl Transaction {
                 .any(|tx_in| tx_in.get_pub_key().is_empty())
     }
 
+    pub fn not_coinbase(&self) -> bool {
+        !self.is_coinbase()
+    }
+
     ///
     /// The `hash` function generates the transaction's hash by creating a copy without the ID,
     /// serializing it, and computing its SHA-256 digest
@@ -326,6 +358,10 @@ impl Transaction {
 
     pub fn get_id(&self) -> &[u8] {
         self.id.as_slice()
+    }
+
+    pub fn get_tx_id_hex(&self) -> String {
+        HEXLOWER.encode(self.get_id())
     }
 
     pub fn get_id_bytes(&self) -> Vec<u8> {
@@ -349,6 +385,79 @@ impl Transaction {
         bincode::serde::decode_from_slice(bytes, bincode::config::standard())
             .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))
             .map(|(transaction, _)| transaction)
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct TxInputSummary {
+    txid_hex: String,
+    output_idx: usize,
+    wlt_addr: String,
+}
+impl TxInputSummary {
+    pub fn new(txid_hex: String, output_idx: usize, wlt_addr: String) -> TxInputSummary {
+        TxInputSummary {
+            txid_hex,
+            output_idx,
+            wlt_addr,
+        }
+    }
+    pub fn get_txid_hex(&self) -> &str {
+        &self.txid_hex
+    }
+    pub fn get_output_idx(&self) -> usize {
+        self.output_idx
+    }
+    pub fn get_wlt_addr(&self) -> &str {
+        &self.wlt_addr
+    }
+}
+#[derive(Clone, Serialize, Deserialize)]
+pub struct TxOutputSummary {
+    wlt_addr: String,
+    value: i32,
+}
+impl TxOutputSummary {
+    pub fn new(wlt_addr: String, value: i32) -> TxOutputSummary {
+        TxOutputSummary { wlt_addr, value }
+    }
+    pub fn get_wlt_addr(&self) -> &str {
+        &self.wlt_addr
+    }
+    pub fn get_value(&self) -> i32 {
+        self.value
+    }
+}
+#[derive(Clone, Serialize, Deserialize)]
+pub struct TxSummary {
+    transaction_id: String,
+    inputs: Vec<TxInputSummary>,
+    outputs: Vec<TxOutputSummary>,
+}
+impl TxSummary {
+    pub fn new(transaction_id: String) -> TxSummary {
+        TxSummary {
+            transaction_id,
+            inputs: Vec::new(),
+            outputs: Vec::new(),
+        }
+    }
+    pub fn add_input(&mut self, input: TxInputSummary) {
+        self.inputs.push(input);
+    }
+    pub fn add_output(&mut self, output: TxOutputSummary) {
+        self.outputs.push(output);
+    }
+    pub fn get_transaction_id(&self) -> &str {
+        &self.transaction_id
+    }
+    pub fn get_inputs(&mut self) -> &[TxInputSummary] {
+        let _ = &self.inputs.reverse();
+        &self.inputs
+    }
+    pub fn get_outputs(&mut self) -> &[TxOutputSummary] {
+        let _ = &self.outputs.reverse();
+        &self.outputs
     }
 }
 

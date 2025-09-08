@@ -61,13 +61,17 @@ impl Wallet {
     pub fn get_address(&self) -> Result<String> {
         // hash the public key using SHA256 which is the same as the P2TR address format
         let pub_key_hash = hash_pub_key(self.public_key.as_slice());
-        // add the P2TR version byte
+
         let mut payload: Vec<u8> = vec![];
+        // add the P2TR version byte
         payload.push(VERSION);
+        // add the public key hash
         payload.extend(pub_key_hash.as_slice());
+        // add the checksum
         let checksum = checksum(payload.as_slice());
         payload.extend(checksum.as_slice());
         // version + pub_key_hash + checksum
+        // encode the payload using Base58
         crate::base58_encode(payload.as_slice())
     }
 
@@ -153,10 +157,23 @@ fn checksum(payload: &[u8]) -> Vec<u8> {
 /// A boolean indicating whether the address is valid.
 pub fn validate_address(address: &str) -> Result<bool> {
     let payload = crate::base58_decode(address)?;
+    // This is part of Bitcoin address validation. Bitcoin addresses have a specific structure:
+    // Version byte (1 byte)
+    // Hash (20 bytes)
+    // Checksum (4 bytes) - this is what's being extracted
+    // The checksum is used to verify the address integrity - if any part of the address is corrupted, the checksum won't match and the address will be considered invalid.
+    // Example:
+    // If payload is 25 bytes long and ADDRESS_CHECK_SUM_LEN is 4:
+    // payload.len() - ADDRESS_CHECK_SUM_LEN = 25 - 4 = 21
+    // payload[21..] takes bytes 21, 22, 23, 24 (the last 4 bytes)
+    // These 4 bytes are the checksum for validation
     let actual_checksum = payload[payload.len() - ADDRESS_CHECK_SUM_LEN..].to_vec();
+    // The version byte is the first byte of the payload which is 0x01 for P2TR addresses
     let version = payload[0];
+    // The public key hash is the bytes from the second to the second-to-last byte of the payload
     let pub_key_hash = payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN].to_vec();
 
+    // The target checksum is the last 4 bytes of the payload
     let mut target_vec = vec![];
     target_vec.push(version);
     target_vec.extend(pub_key_hash);
@@ -183,4 +200,21 @@ pub fn convert_address(pub_hash_key: &[u8]) -> Result<String> {
     let checksum = checksum(payload.as_slice());
     payload.extend(checksum.as_slice());
     crate::base58_encode(payload.as_slice())
+}
+
+///
+/// The `get_pub_key_hash` function returns the public key hash from an address.
+///
+/// # Arguments
+///
+/// * `address` - A reference to the address.
+///
+/// # Returns
+///
+/// A vector of bytes representing the public key hash.
+pub fn get_pub_key_hash(address: &str) -> Result<Vec<u8>> {
+    // The public key hash is the bytes from the second to the second-to-last byte of the payload
+    let payload = crate::base58_decode(address)?;
+    let pub_key_hash = payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN].to_vec();
+    Ok(pub_key_hash)
 }

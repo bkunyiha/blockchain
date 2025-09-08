@@ -1,6 +1,5 @@
 use super::error::{BtcError, Result};
 use super::transaction::Transaction;
-use data_encoding::HEXLOWER;
 use std::collections::HashMap;
 use std::sync::RwLock;
 
@@ -30,12 +29,12 @@ impl MemoryPool {
     }
 
     pub fn contains_transaction(&self, tx: &Transaction) -> Result<bool> {
-        let txid_hex = HEXLOWER.encode(tx.get_id());
+        let txid_hex = tx.get_tx_id_hex();
         self.contains(&txid_hex)
     }
 
     pub fn add(&self, tx: Transaction) -> Result<()> {
-        let txid_hex = HEXLOWER.encode(tx.get_id());
+        let txid_hex = tx.get_tx_id_hex();
         self.inner_tx
             .write()
             .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?
@@ -51,12 +50,13 @@ impl MemoryPool {
         Ok(inner.get(txid_hex).cloned())
     }
 
-    pub fn remove(&self, txid_hex: &str) -> Result<Option<Transaction>> {
+    pub fn remove(&self, tx: Transaction) -> Result<Option<Transaction>> {
+        let txid_hex = tx.get_tx_id_hex();
         let mut inner = self
             .inner_tx
             .write()
             .map_err(|e| BtcError::MemoryPoolInnerPoisonedLockError(e.to_string()))?;
-        let rem_trx_op = inner.remove(txid_hex);
+        let rem_trx_op = inner.remove(txid_hex.as_str());
         Ok(rem_trx_op)
     }
 

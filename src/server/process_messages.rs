@@ -1,16 +1,13 @@
 use crate::domain::error::BtcError;
 use crate::server::operations::{
-    mine_empty_block, process_known_nodes, process_transaction, send_block, send_get_blocks,
+    mine_empty_block, process_known_nodes, process_transaction, remove_from_memory_pool, send_block, send_get_blocks,
     send_get_data, send_inv, send_message, send_tx, send_version,
 };
 use crate::server::{
     AdminNodeQueryType, GLOBAL_BLOCKS_IN_TRANSIT, GLOBAL_MEMORY_POOL, GLOBAL_NODES, MessageType,
     OpType, Package,
 };
-use crate::{
-    ADDRESS_CHECK_SUM_LEN, Block, BlockchainService, GLOBAL_CONFIG, Transaction, UTXOSet,
-    base58_decode, convert_address, hash_pub_key, validate_address,
-};
+use crate::{Block, BlockchainService, GLOBAL_CONFIG, Transaction, UTXOSet, validate_address};
 use data_encoding::HEXLOWER;
 use serde_json::Deserializer;
 use std::error::Error;
@@ -57,6 +54,18 @@ pub async fn process_stream(
                 let added_block_hash = block.get_hash_bytes();
                 info!("Added block {:?}", added_block_hash.as_slice());
 
+                // Remove transactions in block from memory pool functionally, since they have already been mined by other nodes
+                for tx in block.get_transactions() {
+                    remove_from_memory_pool(tx.clone(), &blockchain).await;
+                }
+
+                // Reindex UTXO set to ensure it's in sync
+                let utxo_set = UTXOSet::new(blockchain.clone());
+                utxo_set
+                    .reindex()
+                    .await
+                    .expect("Failed to reindex UTXO set");
+
                 let removed_block_hash = GLOBAL_BLOCKS_IN_TRANSIT
                     .remove(added_block_hash.as_ref())
                     .expect("Block removal error");
@@ -77,20 +86,11 @@ pub async fn process_stream(
                 {
                     let block_hash = GLOBAL_BLOCKS_IN_TRANSIT
                         .first()
-                        .expect("Bloc  ks in transit error")
+                        .expect("Blocks in transit error")
                         .expect("Blocks in transit error");
                     send_get_data(&addr_from, OpType::Block, &block_hash).await;
 
                     //GLOBAL_BLOCKS_IN_TRANSIT.remove(block_hash.as_slice());
-                } else {
-                    let utxo_set = UTXOSet::new(blockchain.clone());
-                    // The `reindex` function reindexes the UTXO set by clearing the existing UTXO tree and rebuilding it from the blockchain.
-                    // It iterates through the blockchain, finds all UTXOs, and inserts them into the UTXO tree.
-                    //
-                    // # Arguments
-                    //
-                    // * `blockchain` - A reference to the blockchain.
-                    utxo_set.reindex().await.expect("UTXO set reindex error");
                 }
             }
             // Retrieves all block hashes from the blockchain and sends an
@@ -127,6 +127,9 @@ pub async fn process_stream(
                         .expect("Memory pool get error")
                     {
                         send_tx(&addr_from, &tx).await;
+                    } else {
+                        info!("Received request to forward a Transaction that is not found in memory pool. 
+                        Most likely it has been mined!!!: {:?}", txid_hex);
                     }
                 }
             },
@@ -284,61 +287,79 @@ pub async fn process_stream(
                         error!("Invalid address: {}", wlt_address);
                         return Err(Box::new(BtcError::InvalidAddress(wlt_address.clone())));
                     }
-                    let payload = base58_decode(wlt_address.as_str()).expect("Base58 decode error");
-                    let pub_key_hash = &payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN];
 
                     let utxo_set = UTXOSet::new(blockchain.clone());
-                    let utxos = utxo_set
-                        .find_utxo(pub_key_hash)
+                    let balance = utxo_set
+                        .get_balance(wlt_address.as_str())
                         .await
-                        .expect("UTXO set find error");
-                    let mut balance = 0;
-                    for utxo in utxos {
-                        balance += utxo.get_value();
-                    }
+                        .expect("UTXO set get balance error");
                     debug!("Balance of {}: {}", addr_from, balance);
                 }
                 AdminNodeQueryType::GetAllTransactions => {
-                    let mut block_iterator = blockchain
-                        .iterator()
+                    let transactions_summary = blockchain
+                        .find_all_transactions()
                         .await
-                        .expect("Blockchain iterator error");
-                    loop {
-                        let option = block_iterator.next();
-                        if option.is_none() {
-                            trace!("No more blocks");
-                            break;
-                        }
-                        let block = option.expect("Block iterator next error");
-                        trace!("Pre block hash: {}", block.get_pre_block_hash());
-                        trace!("Cur block hash: {}", block.get_hash());
-                        trace!("Cur block Timestamp: {}", block.get_timestamp());
-                        for tx in block.get_transactions() {
-                            let cur_txid_hex = HEXLOWER.encode(tx.get_id());
-                            trace!("- Transaction txid_hex: {}", cur_txid_hex);
+                        .expect("Blockchain find all transactions error");
 
-                            if !tx.is_coinbase() {
-                                for input in tx.get_vin() {
-                                    let txid_hex = HEXLOWER.encode(input.get_txid());
-                                    let pub_key_hash = hash_pub_key(input.get_pub_key());
-                                    let address = convert_address(pub_key_hash.as_slice())
-                                        .expect("Convert address error");
-                                    trace!(
-                                        "-- Input txid = {}, vout = {}, from = {}",
-                                        txid_hex,
-                                        input.get_vout(),
-                                        address,
-                                    )
-                                }
+                    info!("═══════════════════════════════════════════════════════════════");
+                    info!("                    BLOCKCHAIN TRANSACTIONS");
+                    info!("═══════════════════════════════════════════════════════════════");
+
+                    for (idx, (cur_txid_hex, tx_summary)) in transactions_summary.iter().enumerate()
+                    {
+                        let mut tx_summary_input = tx_summary.clone();
+                        let mut tx_summary_output = tx_summary.clone();
+                        let tx_summary_inputs = tx_summary_input.get_inputs();
+                        let tx_summary_outputs = tx_summary_output.get_outputs();
+                        info!("");
+                        info!("┌─ Transaction #{}", idx + 1);
+                        info!("│  ID: {}", cur_txid_hex);
+                        info!(
+                            "│  Type: {}",
+                            if tx_summary_inputs.is_empty() {
+                                "Coinbase"
+                            } else {
+                                "Regular"
                             }
-                            for output in tx.get_vout() {
-                                let pub_key_hash = output.get_pub_key_hash();
-                                let address =
-                                    convert_address(pub_key_hash).expect("Convert address error");
-                                info!("-- Output value = {}, to = {}", output.get_value(), address,)
+                        );
+
+                        if !tx_summary_inputs.is_empty() {
+                            info!("│  ┌─ Inputs ({}):", tx_summary_inputs.len());
+                            for (input_idx, input_summary) in tx_summary_inputs.iter().enumerate() {
+                                info!(
+                                    "│  │  {} └─ From: {} (txid: {}, vout: {})",
+                                    if input_idx == tx_summary_inputs.len() - 1 {
+                                        "└"
+                                    } else {
+                                        "├"
+                                    },
+                                    input_summary.get_wlt_addr(),
+                                    input_summary.get_txid_hex(),
+                                    input_summary.get_output_idx()
+                                );
                             }
                         }
+
+                        info!("│  ┌─ Outputs ({}):", tx_summary_outputs.len());
+                        for (output_idx, output_summary) in tx_summary_outputs.iter().enumerate() {
+                            info!(
+                                "│  │  {} └─ To: {} (value: {} BTC)",
+                                if output_idx == tx_summary_outputs.len() - 1 {
+                                    "└"
+                                } else {
+                                    "├"
+                                },
+                                output_summary.get_wlt_addr(),
+                                output_summary.get_value()
+                            );
+                        }
+                        info!("└─────────────────────────────────────────────────────────────");
                     }
+
+                    info!("");
+                    info!("═══════════════════════════════════════════════════════════════");
+                    info!("Total Transactions: {}", transactions_summary.len());
+                    info!("═══════════════════════════════════════════════════════════════");
                 }
                 AdminNodeQueryType::GetBlockHeight => {
                     let height = blockchain
