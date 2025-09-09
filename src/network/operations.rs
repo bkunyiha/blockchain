@@ -476,7 +476,7 @@ mod tests {
 
     fn generate_test_genesis_address() -> String {
         // Create a wallet to get a valid Bitcoin address
-        let wallet = crate::domain::wallet::Wallet::new().expect("Failed to create test wallet");
+        let wallet = crate::Wallet::new().expect("Failed to create test wallet");
         wallet.get_address().expect("Failed to get wallet address")
     }
 

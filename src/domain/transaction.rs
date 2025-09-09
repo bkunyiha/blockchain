@@ -4,7 +4,7 @@ use crate::convert_address;
 use crate::crypto::hash::sha256_digest;
 use crate::crypto::signature::{schnorr_sign_digest, schnorr_sign_verify};
 use crate::service::blockchain_service::BlockchainService;
-use crate::service::wallet_service::{WalletService, get_pub_key_hash, hash_pub_key};
+use crate::wallet::wallet_service::{WalletService, get_pub_key_hash, hash_pub_key};
 use data_encoding::HEXLOWER;
 use serde::{Deserialize, Serialize};
 use tracing::debug;
@@ -468,7 +468,7 @@ mod tests {
 
     fn generate_test_genesis_address() -> String {
         // Create a wallet to get a valid Bitcoin address
-        let wallet = crate::domain::wallet::Wallet::new().expect("Failed to create test wallet");
+        let wallet = crate::wallet::Wallet::new().expect("Failed to create test wallet");
         wallet.get_address().expect("Failed to get wallet address")
     }
 

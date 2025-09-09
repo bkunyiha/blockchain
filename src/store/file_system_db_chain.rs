@@ -4,7 +4,7 @@ use crate::domain::error::{BtcError, Result};
 use crate::domain::transaction::{
     TXOutput, Transaction, TxInputSummary, TxOutputSummary, TxSummary,
 };
-use crate::{convert_address, hash_pub_key};
+use crate::wallet::{convert_address, hash_pub_key};
 use sled::transaction::{TransactionResult, UnabortableTransactionError};
 use sled::{Db, IVec, Tree};
 use std::collections::HashMap;
@@ -501,7 +501,7 @@ mod tests {
 
     fn generate_test_genesis_address() -> String {
         // Create a wallet to get a valid Bitcoin address
-        let wallet = crate::domain::wallet::Wallet::new().expect("Failed to create test wallet");
+        let wallet = crate::wallet::Wallet::new().expect("Failed to create test wallet");
         wallet.get_address().expect("Failed to get wallet address")
     }
 

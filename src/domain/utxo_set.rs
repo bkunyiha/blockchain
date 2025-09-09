@@ -3,7 +3,7 @@ use super::transaction::TXOutput;
 use super::transaction::Transaction;
 use crate::domain::error::{BtcError, Result};
 use crate::service::blockchain_service::BlockchainService;
-use crate::service::wallet_service::get_pub_key_hash;
+use crate::wallet::wallet_service::get_pub_key_hash;
 use data_encoding::HEXLOWER;
 use std::collections::HashMap;
 use tracing::{debug, trace};

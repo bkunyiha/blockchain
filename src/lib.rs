@@ -20,6 +20,9 @@ pub use util::*;
 pub mod store;
 pub use store::*;
 
+pub mod wallet;
+pub use wallet::*;
+
 #[cfg(test)]
 mod test_utils {
     use std::sync::Once;
