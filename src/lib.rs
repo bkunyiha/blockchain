@@ -7,8 +7,8 @@ pub use crypto::*;
 pub mod service;
 pub use service::*;
 
-pub mod server;
-pub use server::*;
+pub mod network;
+pub use network::*;
 
 mod config;
 pub use config::Config;

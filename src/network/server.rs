@@ -1,12 +1,6 @@
-// Declare and defines a module for the domain layer
-pub mod operations;
-pub mod process_messages;
-
-// Re-export the  modules
-pub use operations::{send_known_nodes, send_version};
-pub use process_messages::process_stream;
-
 use crate::{BlockInTransit, BlockchainService, MemoryPool, Nodes};
+use crate::network::operations::{send_known_nodes, send_version};
+use crate::network::message_handler::process_stream;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
