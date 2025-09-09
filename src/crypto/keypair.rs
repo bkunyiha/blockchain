@@ -18,12 +18,12 @@ use secp256k1::{PublicKey, Secp256k1, SecretKey};
 /// # Usage Locations
 ///
 /// ### Direct Usage:
-/// - **`src/domain/wallet.rs`**: Used in `Wallet::new()` for generating new wallet key pairs
+/// - **`src/wallet/wallet_impl.rs`**: Used in `Wallet::new()` for generating new wallet key pairs
 /// - **`src/service/wallet_service.rs`**: Used in wallet service for key pair generation
 ///
 /// ### Indirect Usage via Wallet Creation:
 /// - **`src/main.rs`**: Used indirectly through wallet creation in CLI commands
-/// - **`src/server.rs`**: Used indirectly through wallet operations in server functionality
+/// - **`src/network/server.rs`**: Used indirectly through wallet operations in server functionality
 ///
 /// # Returns
 ///
@@ -55,12 +55,12 @@ pub fn new_key_pair() -> Result<Vec<u8>> {
 /// # Usage Locations
 ///
 /// ### Direct Usage:
-/// - **`src/domain/wallet.rs`**: Used in `Wallet::new()` for generating new Schnorr-based wallet key pairs
+/// - **`src/wallet/wallet_impl.rs`**: Used in `Wallet::new()` for generating new Schnorr-based wallet key pairs
 /// - **`src/service/wallet_service.rs`**: Used in wallet service for Schnorr key pair generation
 ///
 /// ### Indirect Usage via Wallet Creation:
 /// - **`src/main.rs`**: Used indirectly through wallet creation in CLI commands
-/// - **`src/server.rs`**: Used indirectly through wallet operations in server functionality
+/// - **`src/network/server.rs`**: Used indirectly through wallet operations in server functionality
 ///
 /// # Returns
 ///
@@ -95,12 +95,12 @@ pub fn new_schnorr_key_pair() -> Result<Vec<u8>> {
 /// # Usage Locations
 ///
 /// ### Direct Usage:
-/// - **`src/domain/wallet.rs`**: Used in `Wallet::new()` for deriving public keys from private keys
+/// - **`src/wallet/wallet_impl.rs`**: Used in `Wallet::new()` for deriving public keys from private keys
 /// - **`src/service/wallet_service.rs`**: Used in wallet service for public key derivation
 ///
 /// ### Indirect Usage via Wallet Operations:
 /// - **`src/main.rs`**: Used indirectly through wallet operations in CLI commands
-/// - **`src/server.rs`**: Used indirectly through wallet operations in server functionality
+/// - **`src/network/server.rs`**: Used indirectly through wallet operations in server functionality
 ///
 /// # Arguments
 ///
@@ -126,6 +126,7 @@ pub fn get_schnorr_public_key(private_key: &[u8]) -> Result<Vec<u8>> {
 mod tests {
     use super::*;
     use crate::crypto::signature::{schnorr_sign_digest, schnorr_sign_verify};
+    use ring::signature::KeyPair;
 
     #[test]
     fn test_schnorr_signature_roundtrip() {
@@ -181,5 +182,237 @@ mod tests {
             public_key[0] == 0x02 || public_key[0] == 0x03,
             "Public key should be in compressed format"
         );
+    }
+
+    #[test]
+    fn test_ecdsa_key_pair_generation() {
+        // Generate multiple ECDSA key pairs to ensure randomness
+        let key1 = new_key_pair().expect("Failed to generate first ECDSA key pair");
+        let key2 = new_key_pair().expect("Failed to generate second ECDSA key pair");
+
+        // Keys should be different (random)
+        assert_ne!(key1, key2, "Generated ECDSA keys should be different");
+
+        // Keys should be valid PKCS#8 format
+        assert!(!key1.is_empty(), "ECDSA private key should not be empty");
+        assert!(!key2.is_empty(), "ECDSA private key should not be empty");
+
+        // Keys should be valid PKCS#8 format (can be parsed)
+        let _key_pair1 = ring::signature::EcdsaKeyPair::from_pkcs8(
+            &ring::signature::ECDSA_P256_SHA256_FIXED_SIGNING,
+            &key1,
+            &ring::rand::SystemRandom::new(),
+        ).expect("Failed to parse first ECDSA key pair");
+
+        let _key_pair2 = ring::signature::EcdsaKeyPair::from_pkcs8(
+            &ring::signature::ECDSA_P256_SHA256_FIXED_SIGNING,
+            &key2,
+            &ring::rand::SystemRandom::new(),
+        ).expect("Failed to parse second ECDSA key pair");
+    }
+
+    #[test]
+    fn test_ecdsa_key_pair_consistency() {
+        // Test that key generation is consistent
+        let key = new_key_pair().expect("Failed to generate ECDSA key pair");
+        
+        // Should be able to create key pair from the generated key multiple times
+        for _ in 0..10 {
+            let _key_pair = ring::signature::EcdsaKeyPair::from_pkcs8(
+                &ring::signature::ECDSA_P256_SHA256_FIXED_SIGNING,
+                &key,
+                &ring::rand::SystemRandom::new(),
+            ).expect("Failed to create ECDSA key pair from PKCS#8");
+        }
+    }
+
+    #[test]
+    fn test_ecdsa_key_pair_public_key_extraction() {
+        let private_key = new_key_pair().expect("Failed to generate ECDSA key pair");
+        let key_pair = ring::signature::EcdsaKeyPair::from_pkcs8(
+            &ring::signature::ECDSA_P256_SHA256_FIXED_SIGNING,
+            &private_key,
+            &ring::rand::SystemRandom::new(),
+        ).expect("Failed to create ECDSA key pair from PKCS#8");
+
+        let public_key = key_pair.public_key();
+        
+        // Public key should not be empty
+        assert!(!public_key.as_ref().is_empty(), "Public key should not be empty");
+        
+        // Public key should be valid length for P-256 (65 bytes uncompressed or 33 bytes compressed)
+        let pub_key_len = public_key.as_ref().len();
+        assert!(pub_key_len == 65 || pub_key_len == 33, 
+            "Public key should be 65 bytes (uncompressed) or 33 bytes (compressed), got {}", pub_key_len);
+    }
+
+    #[test]
+    fn test_schnorr_key_pair_consistency() {
+        // Test that Schnorr key generation is consistent
+        let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        
+        // Should be able to derive public key multiple times with same result
+        let public_key1 = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+        let public_key2 = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+        
+        assert_eq!(public_key1, public_key2, "Public key derivation should be consistent");
+    }
+
+    #[test]
+    fn test_schnorr_key_pair_deterministic() {
+        // Test that the same private key always produces the same public key
+        let private_key = vec![1u8; 32]; // Fixed private key for testing
+        
+        let public_key1 = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+        let public_key2 = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+        
+        assert_eq!(public_key1, public_key2, "Same private key should produce same public key");
+    }
+
+    #[test]
+    fn test_schnorr_key_pair_invalid_private_key() {
+        // Test with invalid private key lengths
+        let invalid_keys = vec![
+            vec![0u8; 31], // Too short
+            vec![0u8; 33], // Too long
+            vec![0u8; 0],  // Empty
+        ];
+
+        for invalid_key in invalid_keys {
+            let result = get_schnorr_public_key(&invalid_key);
+            assert!(result.is_err(), "Should fail with invalid private key length: {}", invalid_key.len());
+        }
+    }
+
+    #[test]
+    fn test_schnorr_key_pair_edge_cases() {
+        // Test with edge case private keys (excluding invalid ones)
+        let edge_cases = vec![
+            {
+                let mut key = vec![0u8; 32];
+                key[0] = 1;
+                key[31] = 255;
+                key
+            },
+            {
+                let mut key = vec![1u8; 32];
+                key[0] = 0;
+                key
+            },
+        ];
+
+        for private_key in edge_cases {
+            let result = get_schnorr_public_key(&private_key);
+            assert!(result.is_ok(), "Should succeed with edge case private key");
+            
+            let public_key = result.expect("Failed to get public key");
+            assert_eq!(public_key.len(), 33, "Public key should be 33 bytes");
+            assert!(public_key[0] == 0x02 || public_key[0] == 0x03, 
+                "Public key should be in compressed format");
+        }
+    }
+
+    #[test]
+    fn test_key_pair_performance() {
+        // Test performance with repeated key generation
+        for _ in 0..100 {
+            let ecdsa_key = new_key_pair().expect("Failed to generate ECDSA key pair");
+            let schnorr_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+            
+            assert!(!ecdsa_key.is_empty(), "ECDSA key should not be empty");
+            assert_eq!(schnorr_key.len(), 32, "Schnorr key should be 32 bytes");
+        }
+    }
+
+    #[test]
+    fn test_key_pair_randomness() {
+        // Test that key generation produces different keys
+        let mut ecdsa_keys = Vec::new();
+        let mut schnorr_keys = Vec::new();
+        
+        for _ in 0..50 {
+            ecdsa_keys.push(new_key_pair().expect("Failed to generate ECDSA key pair"));
+            schnorr_keys.push(new_schnorr_key_pair().expect("Failed to generate Schnorr key pair"));
+        }
+        
+        // All ECDSA keys should be different
+        for i in 0..ecdsa_keys.len() {
+            for j in (i + 1)..ecdsa_keys.len() {
+                assert_ne!(ecdsa_keys[i], ecdsa_keys[j], "ECDSA keys should be different");
+            }
+        }
+        
+        // All Schnorr keys should be different
+        for i in 0..schnorr_keys.len() {
+            for j in (i + 1)..schnorr_keys.len() {
+                assert_ne!(schnorr_keys[i], schnorr_keys[j], "Schnorr keys should be different");
+            }
+        }
+    }
+
+    #[test]
+    fn test_key_pair_public_key_uniqueness() {
+        // Test that different private keys produce different public keys
+        let mut public_keys = Vec::new();
+        
+        for _ in 0..20 {
+            let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+            let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+            public_keys.push(public_key);
+        }
+        
+        // All public keys should be different
+        for i in 0..public_keys.len() {
+            for j in (i + 1)..public_keys.len() {
+                assert_ne!(public_keys[i], public_keys[j], "Public keys should be different");
+            }
+        }
+    }
+
+    #[test]
+    fn test_key_pair_error_handling() {
+        // Test proper error handling
+        let invalid_private_key = vec![0u8; 31]; // Wrong length
+        
+        let result = get_schnorr_public_key(&invalid_private_key);
+        assert!(result.is_err(), "Should fail with invalid private key");
+        
+        if let Err(BtcError::WalletKeyPairError(msg)) = result {
+            assert!(!msg.is_empty(), "Error message should not be empty");
+        } else {
+            panic!("Expected WalletKeyPairError");
+        }
+    }
+
+    #[test]
+    fn test_key_pair_integration_with_signatures() {
+        // Test that generated keys work with signature functions
+        let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+        
+        let message = b"Integration test message";
+        
+        // Sign with the private key
+        let signature = schnorr_sign_digest(&private_key, message).expect("Failed to sign message");
+        
+        // Verify with the public key
+        let is_valid = schnorr_sign_verify(&public_key, &signature, message);
+        assert!(is_valid, "Signature should be valid");
+    }
+
+    #[test]
+    fn test_key_pair_secp256k1_compatibility() {
+        // Test that generated keys are compatible with secp256k1
+        let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+        
+        // Test that we can create secp256k1 objects from our keys
+        let secp = Secp256k1::new();
+        let secret_key = SecretKey::from_slice(&private_key).expect("Failed to create SecretKey");
+        let public_key_obj = PublicKey::from_slice(&public_key).expect("Failed to create PublicKey");
+        
+        // Test that the public key matches what secp256k1 would generate
+        let expected_public_key = PublicKey::from_secret_key(&secp, &secret_key);
+        assert_eq!(public_key_obj, expected_public_key, "Public key should match secp256k1 derivation");
     }
 }

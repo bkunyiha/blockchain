@@ -1,7 +1,7 @@
 [package]
 name = "blockchain"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
 # =============================================================================
@@ -184,3 +184,9 @@ assert_cmd = "2.0.17"
 # Purpose: Create temporary files and directories for testing
 # Usage: Test database creation, temporary blockchain data
 tempfile = "3.20"
+
+# Hexadecimal encoding/decoding for tests
+# Used in: src/crypto/ tests for hex encoding/decoding
+# Purpose: Convert binary data to/from hexadecimal strings in tests
+# Usage: Test hash functions with known hex values
+hex = "0.4.3"

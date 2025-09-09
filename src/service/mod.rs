@@ -1,4 +1,4 @@
-// Declare and defines a module for the domain layer
+// Declare and defines a module for the service layer
 pub mod blockchain_service;
 pub mod wallet_service;
 

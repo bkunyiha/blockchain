@@ -1,4 +1,4 @@
-// Declare and defines a module for the domain layer
+// Declare and defines a module for the core layer
 pub mod block;
 pub mod blockchain;
 pub mod memory_pool;

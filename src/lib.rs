@@ -43,6 +43,9 @@ mod test_utils {
             // Clean up any existing test directories from previous runs
             cleanup_existing_test_directories();
         });
+
+        // Also clean up on every call (not just once) to be more aggressive
+        cleanup_existing_test_directories();
     }
 
     /// Global test teardown - runs after tests complete
@@ -61,7 +64,10 @@ mod test_utils {
                 let path = entry.path();
                 if let Some(name) = path.file_name() {
                     let name_str = name.to_string_lossy();
-                    if name_str.starts_with("test_") && name_str.contains("db_") {
+                    if (name_str.starts_with("test_") && name_str.contains("db_"))
+                        || name_str.starts_with("test_persistence_db_")
+                    {
+                        println!("Cleaning up test directory: {}", name_str);
                         let _ = cleanup_test_directory_with_retry(&path.to_string_lossy());
                     }
                 }

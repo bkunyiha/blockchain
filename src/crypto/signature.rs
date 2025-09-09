@@ -46,9 +46,9 @@
 //! ## Usage Locations
 //!
 //! ### **Schnorr Functions (Primary)**:
-//! - **`src/domain/transaction.rs`**: Used in `Transaction::sign()` and `Transaction::verify()`
+//! - **`src/core/transaction.rs`**: Used in `Transaction::sign()` and `Transaction::verify()`
 //! - **`src/service/blockchain_service.rs`**: Used indirectly through transaction verification in `mine_block()`
-//! - **`src/server/operations.rs`**: Used indirectly through transaction validation
+//! - **`src/network/operations.rs`**: Used indirectly through transaction validation
 //! - **`src/main.rs`**: Used indirectly through transaction operations in CLI commands
 //!
 //! ### **ECDSA Functions (Legacy/Alternative)**:
@@ -233,11 +233,11 @@ pub fn ecdsa_p256_sha256_sign_verify(public_key: &[u8], signature: &[u8], messag
 /// # Usage Locations
 ///
 /// ### Direct Usage:
-/// - **`src/domain/transaction.rs`**: Used in `Transaction::sign()` method for signing transaction inputs
+/// - **`src/core/transaction.rs`**: Used in `Transaction::sign()` method for signing transaction inputs
 ///
 /// ### Indirect Usage via Transaction Signing:
-/// - **`src/domain/transaction.rs`**: Used in `Transaction::new_utxo_transaction()` for signing new transactions
-/// - **`src/server/operations.rs`**: Used indirectly through transaction creation and signing
+/// - **`src/core/transaction.rs`**: Used in `Transaction::new_utxo_transaction()` for signing new transactions
+/// - **`src/network/operations.rs`**: Used indirectly through transaction creation and signing
 /// - **`src/main.rs`**: Used indirectly through transaction operations in CLI commands
 ///
 /// # Arguments
@@ -282,11 +282,11 @@ pub fn schnorr_sign_digest(private_key: &[u8], message: &[u8]) -> Result<Vec<u8>
 /// # Usage Locations
 ///
 /// ### Direct Usage:
-/// - **`src/domain/transaction.rs`**: Used in `Transaction::verify()` method for verifying transaction input signatures
+/// - **`src/core/transaction.rs`**: Used in `Transaction::verify()` method for verifying transaction input signatures
 ///
 /// ### Indirect Usage via Transaction Verification:
 /// - **`src/service/blockchain_service.rs`**: Used indirectly through transaction verification in `mine_block()`
-/// - **`src/server/operations.rs`**: Used indirectly through transaction validation
+/// - **`src/network/operations.rs`**: Used indirectly through transaction validation
 /// - **`src/main.rs`**: Used indirectly through transaction operations in CLI commands
 ///
 /// # Arguments
@@ -330,4 +330,324 @@ pub fn schnorr_sign_verify(public_key: &[u8], signature: &[u8], message: &[u8]) 
     // Verify the Schnorr signature
     secp.verify_schnorr(&signature_obj, &message_obj, &xonly_public_key)
         .is_ok()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::new_key_pair;
+    use ring::signature::KeyPair;
+
+    #[test]
+    fn test_ecdsa_signature_roundtrip() {
+        // Generate an ECDSA key pair
+        let private_key = new_key_pair().expect("Failed to generate ECDSA key pair");
+        let key_pair = ring::signature::EcdsaKeyPair::from_pkcs8(
+            &ring::signature::ECDSA_P256_SHA256_FIXED_SIGNING,
+            &private_key,
+            &ring::rand::SystemRandom::new(),
+        ).expect("Failed to create ECDSA key pair from PKCS#8");
+        let public_key = key_pair.public_key();
+
+        // Create a test message
+        let message = b"Hello, ECDSA signatures!";
+
+        // Sign the message
+        let signature = ecdsa_p256_sha256_sign_digest(&private_key, message)
+            .expect("Failed to sign message");
+
+        // Verify the signature
+        let is_valid = ecdsa_p256_sha256_sign_verify(public_key.as_ref(), &signature, message);
+
+        assert!(is_valid, "ECDSA signature verification failed");
+
+        // Test with wrong message
+        let wrong_message = b"Wrong message";
+        let is_invalid = ecdsa_p256_sha256_sign_verify(public_key.as_ref(), &signature, wrong_message);
+
+        assert!(
+            !is_invalid,
+            "ECDSA signature should be invalid for wrong message"
+        );
+    }
+
+    #[test]
+    fn test_ecdsa_key_generation() {
+        // Generate multiple key pairs to ensure randomness
+        let key1 = new_key_pair().expect("Failed to generate first ECDSA key pair");
+        let key2 = new_key_pair().expect("Failed to generate second ECDSA key pair");
+
+        // Keys should be different (random)
+        assert_ne!(key1, key2, "Generated ECDSA keys should be different");
+
+        // Keys should be valid PKCS#8 format
+        assert!(!key1.is_empty(), "ECDSA private key should not be empty");
+        assert!(!key2.is_empty(), "ECDSA private key should not be empty");
+    }
+
+    #[test]
+    fn test_ecdsa_signature_different_messages() {
+        let private_key = new_key_pair().expect("Failed to generate ECDSA key pair");
+        let key_pair = ring::signature::EcdsaKeyPair::from_pkcs8(
+            &ring::signature::ECDSA_P256_SHA256_FIXED_SIGNING,
+            &private_key,
+            &ring::rand::SystemRandom::new(),
+        ).expect("Failed to create ECDSA key pair from PKCS#8");
+        let public_key = key_pair.public_key();
+
+        let messages = vec![
+            b"Message 1".as_slice(),
+            b"Message 2".as_slice(),
+            b"Different message".as_slice(),
+            b"".as_slice(),
+            &[0u8; 100],
+        ];
+
+        for message in messages {
+            let signature = ecdsa_p256_sha256_sign_digest(&private_key, message)
+                .expect("Failed to sign message");
+            
+            let is_valid = ecdsa_p256_sha256_sign_verify(public_key.as_ref(), &signature, message);
+            assert!(is_valid, "ECDSA signature should be valid for message: {:?}", message);
+        }
+    }
+
+    #[test]
+    fn test_ecdsa_signature_invalid_key() {
+        let invalid_key = vec![0u8; 32]; // Invalid key format
+        let message = b"Test message";
+
+        let result = ecdsa_p256_sha256_sign_digest(&invalid_key, message);
+        assert!(result.is_err(), "Should fail with invalid key");
+    }
+
+    #[test]
+    fn test_schnorr_signature_roundtrip() {
+        // Generate a Schnorr key pair
+        let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+
+        // Create a test message
+        let message = b"Hello, P2TR Schnorr signatures!";
+
+        // Sign the message
+        let signature = schnorr_sign_digest(&private_key, message).expect("Failed to sign message");
+
+        // Verify the signature
+        let is_valid = schnorr_sign_verify(&public_key, &signature, message);
+
+        assert!(is_valid, "Schnorr signature verification failed");
+
+        // Test with wrong message
+        let wrong_message = b"Wrong message";
+        let is_invalid = schnorr_sign_verify(&public_key, &signature, wrong_message);
+
+        assert!(
+            !is_invalid,
+            "Schnorr signature should be invalid for wrong message"
+        );
+    }
+
+    #[test]
+    fn test_schnorr_key_generation() {
+        // Generate multiple key pairs to ensure randomness
+        let key1 = new_schnorr_key_pair().expect("Failed to generate first Schnorr key pair");
+        let key2 = new_schnorr_key_pair().expect("Failed to generate second Schnorr key pair");
+
+        // Keys should be different (random)
+        assert_ne!(key1, key2, "Generated Schnorr keys should be different");
+
+        // Keys should be 32 bytes
+        assert_eq!(key1.len(), 32, "Schnorr private key should be 32 bytes");
+        assert_eq!(key2.len(), 32, "Schnorr private key should be 32 bytes");
+    }
+
+    #[test]
+    fn test_schnorr_public_key_derivation() {
+        let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+
+        // Public key should be 33 bytes (compressed format)
+        assert_eq!(public_key.len(), 33, "Schnorr public key should be 33 bytes");
+
+        // Public key should start with 0x02 or 0x03 (compressed format)
+        assert!(
+            public_key[0] == 0x02 || public_key[0] == 0x03,
+            "Schnorr public key should be in compressed format"
+        );
+    }
+
+    #[test]
+    fn test_schnorr_signature_different_messages() {
+        let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+
+        let messages = vec![
+            b"Message 1".as_slice(),
+            b"Message 2".as_slice(),
+            b"Different message".as_slice(),
+            b"".as_slice(),
+            &[0u8; 100],
+        ];
+
+        for message in messages {
+            let signature = schnorr_sign_digest(&private_key, message)
+                .expect("Failed to sign message");
+            
+            let is_valid = schnorr_sign_verify(&public_key, &signature, message);
+            assert!(is_valid, "Schnorr signature should be valid for message: {:?}", message);
+        }
+    }
+
+    #[test]
+    fn test_schnorr_signature_invalid_key() {
+        let invalid_key = vec![0u8; 31]; // Invalid key length
+        let message = b"Test message";
+
+        let result = schnorr_sign_digest(&invalid_key, message);
+        assert!(result.is_err(), "Should fail with invalid key length");
+    }
+
+    #[test]
+    fn test_schnorr_signature_invalid_public_key() {
+        let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let message = b"Test message";
+        let signature = schnorr_sign_digest(&private_key, message).expect("Failed to sign message");
+
+        // Test with invalid public key
+        let invalid_public_key = vec![0u8; 32]; // Wrong length
+        let is_invalid = schnorr_sign_verify(&invalid_public_key, &signature, message);
+        assert!(!is_invalid, "Should fail with invalid public key");
+    }
+
+    #[test]
+    fn test_schnorr_signature_invalid_signature() {
+        let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+        let message = b"Test message";
+
+        // Test with invalid signature
+        let invalid_signature = vec![0u8; 63]; // Wrong length
+        let is_invalid = schnorr_sign_verify(&public_key, &invalid_signature, message);
+        assert!(!is_invalid, "Should fail with invalid signature");
+    }
+
+    #[test]
+    fn test_signature_consistency() {
+        // Test that signatures are consistent across multiple calls
+        let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+        let message = b"Consistency test message";
+
+        // Sign the same message multiple times
+        let signatures: Vec<Vec<u8>> = (0..10)
+            .map(|_| schnorr_sign_digest(&private_key, message).expect("Failed to sign"))
+            .collect();
+
+        // All signatures should be valid
+        for signature in &signatures {
+            let is_valid = schnorr_sign_verify(&public_key, signature, message);
+            assert!(is_valid, "All signatures should be valid");
+        }
+
+        // Signatures should be different (due to randomness)
+        for i in 0..signatures.len() {
+            for j in (i + 1)..signatures.len() {
+                assert_ne!(signatures[i], signatures[j], "Signatures should be different due to randomness");
+            }
+        }
+    }
+
+    #[test]
+    fn test_signature_performance() {
+        // Test performance with repeated operations
+        let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+        let message = b"Performance test message";
+
+        for _ in 0..100 {
+            let signature = schnorr_sign_digest(&private_key, message).expect("Failed to sign");
+            let is_valid = schnorr_sign_verify(&public_key, &signature, message);
+            assert!(is_valid, "Signature should be valid");
+        }
+    }
+
+    #[test]
+    fn test_ecdsa_vs_schnorr_comparison() {
+        // Test that both signature schemes work independently
+        let ecdsa_private_key = new_key_pair().expect("Failed to generate ECDSA key pair");
+        let schnorr_private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let schnorr_public_key = get_schnorr_public_key(&schnorr_private_key).expect("Failed to get Schnorr public key");
+
+        let message = b"Comparison test message";
+
+        // ECDSA signing
+        let ecdsa_signature = ecdsa_p256_sha256_sign_digest(&ecdsa_private_key, message)
+            .expect("Failed to sign with ECDSA");
+
+        // Schnorr signing
+        let schnorr_signature = schnorr_sign_digest(&schnorr_private_key, message)
+            .expect("Failed to sign with Schnorr");
+
+        // Signatures should be different
+        assert_ne!(ecdsa_signature, schnorr_signature, "ECDSA and Schnorr signatures should be different");
+
+        // Both should be valid for their respective schemes
+        let ecdsa_key_pair = ring::signature::EcdsaKeyPair::from_pkcs8(
+            &ring::signature::ECDSA_P256_SHA256_FIXED_SIGNING,
+            &ecdsa_private_key,
+            &ring::rand::SystemRandom::new(),
+        ).expect("Failed to create ECDSA key pair from PKCS#8");
+        let ecdsa_public_key = ecdsa_key_pair.public_key();
+
+        let ecdsa_valid = ecdsa_p256_sha256_sign_verify(ecdsa_public_key.as_ref(), &ecdsa_signature, message);
+        let schnorr_valid = schnorr_sign_verify(&schnorr_public_key, &schnorr_signature, message);
+
+        assert!(ecdsa_valid, "ECDSA signature should be valid");
+        assert!(schnorr_valid, "Schnorr signature should be valid");
+    }
+
+    #[test]
+    fn test_signature_error_handling() {
+        // Test proper error handling for invalid inputs
+        let invalid_private_key = vec![0u8; 31]; // Wrong length
+        let message = b"Test message";
+
+        let result = schnorr_sign_digest(&invalid_private_key, message);
+        assert!(result.is_err(), "Should fail with invalid private key");
+
+        if let Err(BtcError::TransactionSignatureError(msg)) = result {
+            assert!(!msg.is_empty(), "Error message should not be empty");
+        } else {
+            panic!("Expected TransactionSignatureError");
+        }
+    }
+
+    #[test]
+    fn test_signature_with_large_messages() {
+        // Test signatures with large messages
+        let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+
+        let large_message = vec![0u8; 10000]; // 10KB message
+        let signature = schnorr_sign_digest(&private_key, &large_message)
+            .expect("Failed to sign large message");
+
+        let is_valid = schnorr_sign_verify(&public_key, &signature, &large_message);
+        assert!(is_valid, "Signature should be valid for large message");
+    }
+
+    #[test]
+    fn test_signature_with_empty_message() {
+        // Test signatures with empty messages
+        let private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
+
+        let empty_message = b"";
+        let signature = schnorr_sign_digest(&private_key, empty_message)
+            .expect("Failed to sign empty message");
+
+        let is_valid = schnorr_sign_verify(&public_key, &signature, empty_message);
+        assert!(is_valid, "Signature should be valid for empty message");
+    }
 }

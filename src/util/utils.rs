@@ -15,7 +15,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 /// # Usage Locations
 ///
 /// ### Direct Usage:
-/// - **`src/domain/block.rs`**: Used in `Block::new_block()` to set the block timestamp
+/// - **`src/core/block.rs`**: Used in `Block::new_block()` to set the block timestamp
 ///
 /// # Returns
 ///

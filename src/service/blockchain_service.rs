@@ -485,12 +485,48 @@ mod tests {
     impl Drop for TestPersistenceBlockchain {
         fn drop(&mut self) {
             // Ensure cleanup happens even if test panics
-            let _ = fs::remove_dir_all(&self.db_path);
+            let _ = cleanup_test_directory_with_retry(&self.db_path);
         }
+    }
+
+    /// Clean up test directory with retry logic to handle lock issues
+    fn cleanup_test_directory_with_retry(db_path: &str) -> std::io::Result<()> {
+        for attempt in 1..=5 {
+            match fs::remove_dir_all(db_path) {
+                Ok(_) => return Ok(()),
+                Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                    if attempt < 5 {
+                        let delay = std::time::Duration::from_millis(200 * attempt);
+                        std::thread::sleep(delay);
+                        continue;
+                    }
+                }
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                    return Ok(()); // Directory doesn't exist, that's fine
+                }
+                Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
+                    if attempt < 5 {
+                        std::thread::sleep(std::time::Duration::from_millis(500 * attempt));
+                        continue;
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Cleanup attempt {} failed for {}: {}", attempt, db_path, e);
+                    if attempt < 5 {
+                        std::thread::sleep(std::time::Duration::from_millis(300 * attempt));
+                        continue;
+                    }
+                }
+            }
+        }
+        Ok(())
     }
 
     #[tokio::test]
     async fn test_blockchain_persistence() {
+        // Setup test environment
+        crate::setup_test_environment();
+
         let _ = TestPersistenceBlockchain::new().await;
         let genesis_address = generate_test_genesis_address();
 
@@ -526,6 +562,9 @@ mod tests {
                 .expect("Failed to get height"),
             2
         );
+
+        // Teardown test environment
+        crate::teardown_test_environment();
     }
 
     #[tokio::test]

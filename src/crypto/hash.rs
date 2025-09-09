@@ -25,20 +25,20 @@
 //! ## Usage Locations
 //!
 //! ### `sha256_digest` Usage:
-//! - **`src/domain/transaction.rs`**: Transaction ID generation (`hash()` method)
-//! - **`src/domain/block.rs`**: Merkle tree root calculation
-//! - **`src/domain/proof_of_work.rs`**: Block hash calculation for mining
-//! - **`src/util/utils.rs`**: Message hashing for Schnorr signatures
+//! - **`src/core/transaction.rs`**: Transaction ID generation (`hash()` method)
+//! - **`src/core/block.rs`**: Merkle tree root calculation
+//! - **`src/core/proof_of_work.rs`**: Block hash calculation for mining
+//! - **`src/crypto/signature.rs`**: Message hashing for Schnorr signatures
 //! - **`src/crypto/hash.rs`**: Core hashing infrastructure
 //!
 //! ### `taproot_hash` Usage:
-//! - **`src/domain/wallet.rs`**: Public key hashing for P2TR addresses (`hash_pub_key()`)
+//! - **`src/wallet/wallet_impl.rs`**: Public key hashing for P2TR addresses (`hash_pub_key()`)
 //! - **`src/service/wallet_service.rs`**: Wallet service public key hashing
 //! - **`src/crypto/hash.rs`**: Core Taproot hashing infrastructure
 //!
 //! ### Indirect Usage via `hash_pub_key`:
-//! - **`src/domain/transaction.rs`**: Transaction input validation (`uses_key()` method)
-//! - **`src/domain/transaction.rs`**: UTXO transaction creation
+//! - **`src/core/transaction.rs`**: Transaction input validation (`uses_key()` method)
+//! - **`src/core/transaction.rs`**: UTXO transaction creation
 //! - **`src/store/file_system_db_chain.rs`**: Transaction summary generation
 //! - **`src/main.rs`**: Address validation and transaction processing
 //!
@@ -117,4 +117,205 @@ pub fn taproot_hash(data: &[u8]) -> Vec<u8> {
     let mut hasher = Sha2Hash::new();
     hasher.update(data);
     hasher.finalize().to_vec()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sha256_digest_basic() {
+        let data = b"Block Chain Project";
+        let hash = sha256_digest(data);
+        
+        // SHA-256 should always produce 32 bytes
+        assert_eq!(hash.len(), 32);
+        
+        // Hash should be deterministic
+        let hash2 = sha256_digest(data);
+        assert_eq!(hash, hash2);
+    }
+
+    #[test]
+    fn test_sha256_digest_empty() {
+        let data = b"";
+        let hash = sha256_digest(data);
+        
+        // Empty input should still produce 32-byte hash
+        assert_eq!(hash.len(), 32);
+        
+        // Known empty string SHA-256 hash
+        let expected = hex::decode("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
+            .expect("Failed to decode expected hash");
+        assert_eq!(hash, expected);
+    }
+
+    #[test]
+    fn test_sha256_digest_different_inputs() {
+        let data1 = b"Rust";
+        let data2 = b"CPlusPlus";
+        let data3 = b"Block Chain Project";
+        
+        let hash1 = sha256_digest(data1);
+        let hash2 = sha256_digest(data2);
+        let hash3 = sha256_digest(data3);
+        
+        // Different inputs should produce different hashes
+        assert_ne!(hash1, hash2);
+        assert_ne!(hash1, hash3);
+        assert_ne!(hash2, hash3);
+        
+        // All hashes should be 32 bytes
+        assert_eq!(hash1.len(), 32);
+        assert_eq!(hash2.len(), 32);
+        assert_eq!(hash3.len(), 32);
+    }
+
+    #[test]
+    fn test_sha256_digest_large_input() {
+        let data = vec![0u8; 10000]; // 10KB of zeros
+        let hash = sha256_digest(&data);
+        
+        assert_eq!(hash.len(), 32);
+        
+        // Hash should be deterministic even for large inputs
+        let hash2 = sha256_digest(&data);
+        assert_eq!(hash, hash2);
+    }
+
+    #[test]
+    fn test_sha256_digest_known_values() {
+        // Test with known SHA-256 values
+        let test_cases = vec![
+            (b"abc".as_slice(), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"),
+            (b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq".as_slice(), "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"),
+        ];
+        
+        for (input, expected_hex) in test_cases {
+            let hash = sha256_digest(input);
+            let expected = hex::decode(expected_hex).expect("Failed to decode expected hash");
+            assert_eq!(hash, expected, "Hash mismatch for input: {:?}", input);
+        }
+    }
+
+    #[test]
+    fn test_taproot_hash_basic() {
+        let data = b"Hello, Taproot!";
+        let hash = taproot_hash(data);
+        
+        // Taproot hash should always produce 32 bytes
+        assert_eq!(hash.len(), 32);
+        
+        // Hash should be deterministic
+        let hash2 = taproot_hash(data);
+        assert_eq!(hash, hash2);
+    }
+
+    #[test]
+    fn test_taproot_hash_empty() {
+        let data = b"";
+        let hash = taproot_hash(data);
+        
+        // Empty input should still produce 32-byte hash
+        assert_eq!(hash.len(), 32);
+        
+        // Known empty string SHA-256 hash (same as sha256_digest)
+        let expected = hex::decode("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
+            .expect("Failed to decode expected hash");
+        assert_eq!(hash, expected);
+    }
+
+    #[test]
+    fn test_taproot_hash_consistency_with_sha256() {
+        // Both functions should produce identical results for the same input
+        let test_data = vec![
+            b"Block Chain Project".as_slice(),
+            b"Bitcoin Taproot".as_slice(),
+            b"P2TR Address".as_slice(),
+            b"".as_slice(),
+            &[0u8; 100],
+        ];
+        
+        for data in test_data {
+            let sha256_result = sha256_digest(data);
+            let taproot_result = taproot_hash(data);
+            
+            assert_eq!(sha256_result, taproot_result, 
+                "sha256_digest and taproot_hash should produce identical results for input: {:?}", data);
+        }
+    }
+
+    #[test]
+    fn test_taproot_hash_different_inputs() {
+        let data1 = b"Public Key 1";
+        let data2 = b"Public Key 2";
+        let data3 = b"Different Key";
+        
+        let hash1 = taproot_hash(data1);
+        let hash2 = taproot_hash(data2);
+        let hash3 = taproot_hash(data3);
+        
+        // Different inputs should produce different hashes
+        assert_ne!(hash1, hash2);
+        assert_ne!(hash1, hash3);
+        assert_ne!(hash2, hash3);
+        
+        // All hashes should be 32 bytes
+        assert_eq!(hash1.len(), 32);
+        assert_eq!(hash2.len(), 32);
+        assert_eq!(hash3.len(), 32);
+    }
+
+    #[test]
+    fn test_taproot_hash_public_key_simulation() {
+        // Simulate hashing public keys (33 bytes for compressed secp256k1)
+        let pub_key1 = vec![0x02u8; 33]; // Compressed public key starting with 0x02
+        let pub_key2 = vec![0x03u8; 33]; // Compressed public key starting with 0x03
+        
+        let hash1 = taproot_hash(&pub_key1);
+        let hash2 = taproot_hash(&pub_key2);
+        
+        assert_eq!(hash1.len(), 32);
+        assert_eq!(hash2.len(), 32);
+        assert_ne!(hash1, hash2);
+    }
+
+    #[test]
+    fn test_hash_avalanche_effect() {
+        // Test that small changes in input produce completely different hashes
+        let data1 = b"Block Chain Project";
+        let data2 = b"Hello, World?";
+        let data3 = b"Hello, World.";
+        
+        let hash1 = sha256_digest(data1);
+        let hash2 = sha256_digest(data2);
+        let hash3 = sha256_digest(data3);
+        
+        // Count how many bits are different
+        let diff_bits_1_2 = hash1.iter().zip(hash2.iter())
+            .map(|(a, b)| (a ^ b).count_ones())
+            .sum::<u32>();
+        let diff_bits_1_3 = hash1.iter().zip(hash3.iter())
+            .map(|(a, b)| (a ^ b).count_ones())
+            .sum::<u32>();
+        
+        // Should have significant differences (avalanche effect)
+        assert!(diff_bits_1_2 > 100, "Hash should show avalanche effect");
+        assert!(diff_bits_1_3 > 100, "Hash should show avalanche effect");
+    }
+
+    #[test]
+    fn test_hash_performance_consistency() {
+        // Test that hash functions are consistent under repeated calls
+        let data = b"Performance test data";
+        
+        for _ in 0..100 {
+            let hash1 = sha256_digest(data);
+            let hash2 = taproot_hash(data);
+            
+            assert_eq!(hash1.len(), 32);
+            assert_eq!(hash2.len(), 32);
+            assert_eq!(hash1, hash2);
+        }
+    }
 }
