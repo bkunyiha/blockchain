@@ -1,4 +1,4 @@
-use crate::node::Node;
+use crate::network::node::Node;
 use crate::server::{
     CENTERAL_NODE, GLOBAL_MEMORY_POOL, GLOBAL_NODES, MessageType, NODE_VERSION, OpType, Package,
     TCP_WRITE_TIMEOUT, TRANSACTION_THRESHOLD,
@@ -468,7 +468,7 @@ pub async fn mine_empty_block(blockchain: &BlockchainService) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::transaction::Transaction;
+    use crate::core::transaction::Transaction;
     use crate::service::blockchain_service::BlockchainService;
     use std::fs;
     use std::net::SocketAddr;

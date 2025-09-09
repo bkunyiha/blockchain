@@ -4,9 +4,9 @@
 //!
 
 extern crate bincode;
-use super::error::{BtcError, Result};
-use super::proof_of_work::ProofOfWork;
-use super::transaction::Transaction;
+use crate::core::proof_of_work::ProofOfWork;
+use crate::core::transaction::Transaction;
+use crate::error::{BtcError, Result};
 use serde::{Deserialize, Serialize};
 use sled::IVec;
 
@@ -124,7 +124,7 @@ impl TryFrom<Block> for IVec {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::transaction::Transaction;
+    use crate::core::transaction::Transaction;
 
     fn generate_test_genesis_address() -> String {
         // Create a wallet to get a valid Bitcoin address

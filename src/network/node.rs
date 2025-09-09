@@ -1,4 +1,4 @@
-use super::error::{BtcError, Result};
+use crate::error::{BtcError, Result};
 use std::collections::HashSet;
 use std::net::SocketAddr;
 use std::sync::RwLock;

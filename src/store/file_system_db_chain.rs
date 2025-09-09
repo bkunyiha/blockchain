@@ -1,9 +1,7 @@
-use crate::domain::block::Block;
-use crate::domain::blockchain::Blockchain;
-use crate::domain::error::{BtcError, Result};
-use crate::domain::transaction::{
-    TXOutput, Transaction, TxInputSummary, TxOutputSummary, TxSummary,
-};
+use crate::core::block::Block;
+use crate::core::blockchain::Blockchain;
+use crate::core::transaction::{TXOutput, Transaction, TxInputSummary, TxOutputSummary, TxSummary};
+use crate::error::{BtcError, Result};
 use crate::wallet::{convert_address, hash_pub_key};
 use sled::transaction::{TransactionResult, UnabortableTransactionError};
 use sled::{Db, IVec, Tree};
@@ -495,7 +493,7 @@ impl BlockchainIterator {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::transaction::Transaction;
+    use crate::core::transaction::Transaction;
 
     use std::fs;
 

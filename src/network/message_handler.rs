@@ -1,4 +1,4 @@
-use crate::domain::error::BtcError;
+use crate::error::BtcError;
 use crate::network::operations::{
     mine_empty_block, process_known_nodes, process_transaction, remove_from_memory_pool,
     send_block, send_get_blocks, send_get_data, send_inv, send_message, send_tx, send_version,

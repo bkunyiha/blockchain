@@ -1,8 +1,11 @@
-pub mod domain;
-pub use domain::*;
+pub mod core;
+pub use core::*;
 
 pub mod crypto;
 pub use crypto::*;
+
+pub mod error;
+pub use error::*;
 
 pub mod service;
 pub use service::*;

@@ -1,6 +1,6 @@
-use crate::{BlockInTransit, BlockchainService, MemoryPool, Nodes};
-use crate::network::operations::{send_known_nodes, send_version};
 use crate::network::message_handler::process_stream;
+use crate::network::operations::{send_known_nodes, send_version};
+use crate::{BlockInTransit, BlockchainService, MemoryPool, Nodes};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;

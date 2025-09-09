@@ -1,6 +1,6 @@
-use crate::domain::block::Block;
-use crate::domain::error::{BtcError, Result};
-use crate::domain::transaction::{TXOutput, Transaction, TxSummary};
+use crate::core::block::Block;
+use crate::core::transaction::{TXOutput, Transaction, TxSummary};
+use crate::error::{BtcError, Result};
 
 use sled::Db;
 use std::collections::HashMap;
@@ -131,7 +131,7 @@ impl BlockchainService {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::transaction::Transaction;
+    use crate::core::transaction::Transaction;
 
     use std::fs;
 

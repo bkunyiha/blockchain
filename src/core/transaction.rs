@@ -1,10 +1,10 @@
-use super::error::{BtcError, Result};
-use super::utxo_set::UTXOSet;
 use crate::convert_address;
+use crate::core::utxo_set::UTXOSet;
 use crate::crypto::hash::sha256_digest;
 use crate::crypto::signature::{schnorr_sign_digest, schnorr_sign_verify};
+use crate::error::{BtcError, Result};
 use crate::service::blockchain_service::BlockchainService;
-use crate::wallet::wallet_service::{WalletService, get_pub_key_hash, hash_pub_key};
+use crate::service::wallet_service::{WalletService, get_pub_key_hash, hash_pub_key};
 use data_encoding::HEXLOWER;
 use serde::{Deserialize, Serialize};
 use tracing::debug;

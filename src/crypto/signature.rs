@@ -70,7 +70,7 @@
 //! - **ECDSA**: Traditional Bitcoin signatures
 //! - **Schnorr**: Modern Bitcoin Taproot signatures (P2TR addresses)
 
-use crate::domain::error::{BtcError, Result};
+use crate::error::{BtcError, Result};
 use rand::SeedableRng;
 use rand::rngs::StdRng;
 use ring::rand::SecureRandom;

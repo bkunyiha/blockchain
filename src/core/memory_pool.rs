@@ -1,5 +1,5 @@
-use super::error::{BtcError, Result};
-use super::transaction::Transaction;
+use crate::core::transaction::Transaction;
+use crate::error::{BtcError, Result};
 use std::collections::HashMap;
 use std::sync::RwLock;
 

@@ -1,4 +1,4 @@
-use crate::domain::error::{BtcError, Result};
+use crate::error::{BtcError, Result};
 use ring::rand::{SecureRandom, SystemRandom};
 use ring::signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair};
 use secp256k1::{PublicKey, Secp256k1, SecretKey};

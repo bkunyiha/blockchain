@@ -1,4 +1,4 @@
-use crate::domain::error::Result;
+use crate::error::{BtcError, Result};
 
 ///
 /// The `base58_encode` function encodes the given byte slice using the Base58 encoding scheme
@@ -69,5 +69,5 @@ pub fn base58_encode(data: &[u8]) -> Result<String> {
 pub fn base58_decode(data: &str) -> Result<Vec<u8>> {
     bs58::decode(data)
         .into_vec()
-        .map_err(|e| crate::domain::error::BtcError::AddressDecodingError(e.to_string()))
+        .map_err(|e| BtcError::AddressDecodingError(e.to_string()))
 }

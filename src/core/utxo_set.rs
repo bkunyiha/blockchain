@@ -1,9 +1,9 @@
 use super::block::Block;
 use super::transaction::TXOutput;
 use super::transaction::Transaction;
-use crate::domain::error::{BtcError, Result};
+use crate::error::{BtcError, Result};
 use crate::service::blockchain_service::BlockchainService;
-use crate::wallet::wallet_service::get_pub_key_hash;
+use crate::service::wallet_service::get_pub_key_hash;
 use data_encoding::HEXLOWER;
 use std::collections::HashMap;
 use tracing::{debug, trace};
@@ -71,27 +71,27 @@ impl UTXOSet {
                 if out.not_in_global_mem_pool()
                     && out.get_value() > 0
                     && out.is_locked_with_key(pub_key_hash)
-                    && accmulated < amount {
-                        accmulated += out.get_value();
-                        debug!(
-                            "Adding spendable output: tx={}, idx={}, value={}, accumulated={}",
-                            txid_hex,
-                            original_idx,
-                            out.get_value(),
-                            accmulated
-                        );
-                        if unspent_outputs.contains_key(txid_hex.as_str()) {
-                            unspent_outputs
-                                .get_mut(txid_hex.as_str())
-                                .ok_or(BtcError::UTXONotFoundError(format!(
-                                    "(find_spendable_outputs) UTXO {} not found",
-                                    txid_hex
-                                )))?
-                                .push(original_idx);
-                        } else {
-                            unspent_outputs.insert(txid_hex.clone(), vec![original_idx]);
-                        }
-                    
+                    && accmulated < amount
+                {
+                    accmulated += out.get_value();
+                    debug!(
+                        "Adding spendable output: tx={}, idx={}, value={}, accumulated={}",
+                        txid_hex,
+                        original_idx,
+                        out.get_value(),
+                        accmulated
+                    );
+                    if unspent_outputs.contains_key(txid_hex.as_str()) {
+                        unspent_outputs
+                            .get_mut(txid_hex.as_str())
+                            .ok_or(BtcError::UTXONotFoundError(format!(
+                                "(find_spendable_outputs) UTXO {} not found",
+                                txid_hex
+                            )))?
+                            .push(original_idx);
+                    } else {
+                        unspent_outputs.insert(txid_hex.clone(), vec![original_idx]);
+                    }
                 }
             }
         }

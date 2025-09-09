@@ -1,4 +1,4 @@
-use crate::domain::Transaction;
+use crate::core::transaction::Transaction;
 
 /// Functional utilities for transaction operations
 pub mod transaction {
@@ -45,9 +45,9 @@ pub mod transaction {
 pub mod error_handling {
     /// Execute a function and map the result to a different type
     pub fn map_result<T, U, F>(
-        result: crate::domain::Result<T>,
+        result: crate::error::Result<T>,
         mapper: F,
-    ) -> crate::domain::Result<U>
+    ) -> crate::error::Result<U>
     where
         F: FnOnce(T) -> U,
     {
@@ -55,22 +55,22 @@ pub mod error_handling {
     }
 
     /// Execute a function and map the error to a different type
-    pub fn map_err<T, F>(result: crate::domain::Result<T>, mapper: F) -> crate::domain::Result<T>
+    pub fn map_err<T, F>(result: crate::error::Result<T>, mapper: F) -> crate::error::Result<T>
     where
-        F: FnOnce(crate::domain::BtcError) -> crate::domain::BtcError,
+        F: FnOnce(crate::error::BtcError) -> crate::error::BtcError,
     {
         result.map_err(mapper)
     }
 
     /// Execute a function and handle the result with a handler
     pub fn handle_result<T, F, G>(
-        result: crate::domain::Result<T>,
+        result: crate::error::Result<T>,
         handler: F,
         error_handler: G,
     ) -> T
     where
         F: FnOnce(T) -> T,
-        G: FnOnce(crate::domain::BtcError) -> T,
+        G: FnOnce(crate::error::BtcError) -> T,
     {
         result.map(handler).unwrap_or_else(error_handler)
     }
