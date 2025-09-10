@@ -71,8 +71,8 @@
 //! - **Schnorr**: Modern Bitcoin Taproot signatures (P2TR addresses)
 
 use crate::error::{BtcError, Result};
-use rand::SeedableRng;
-use rand::rngs::StdRng;
+// use rand::SeedableRng; // Not needed in current implementation
+use rand::rng;
 use ring::rand::SecureRandom;
 use ring::signature::{ECDSA_P256_SHA256_FIXED, ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair};
 use secp256k1::{Keypair, Message, PublicKey, Secp256k1, SecretKey, XOnlyPublicKey, schnorr};
@@ -105,7 +105,7 @@ pub fn new_schnorr_key_pair() -> Result<Vec<u8>> {
         .fill(&mut secret_key_bytes)
         .map_err(|e| BtcError::WalletKeyPairError(e.to_string()))?;
     let _secp = Secp256k1::new();
-    let secret_key = SecretKey::from_slice(&secret_key_bytes)
+    let secret_key = SecretKey::from_byte_array(secret_key_bytes)
         .map_err(|e| BtcError::WalletKeyPairError(e.to_string()))?;
     Ok(secret_key.secret_bytes().to_vec())
 }
@@ -135,7 +135,10 @@ pub fn new_schnorr_key_pair() -> Result<Vec<u8>> {
 ///
 pub fn get_schnorr_public_key(private_key: &[u8]) -> Result<Vec<u8>> {
     let secp = Secp256k1::new();
-    let secret_key = SecretKey::from_slice(private_key)
+    let secret_key_array: [u8; 32] = private_key
+        .try_into()
+        .map_err(|_| BtcError::WalletKeyPairError("Invalid private key length".to_string()))?;
+    let secret_key = SecretKey::from_byte_array(secret_key_array)
         .map_err(|e| BtcError::WalletKeyPairError(e.to_string()))?;
     let public_key = PublicKey::from_secret_key(&secp, &secret_key);
     Ok(public_key.serialize().to_vec())
@@ -255,16 +258,21 @@ pub fn ecdsa_p256_sha256_sign_verify(public_key: &[u8], signature: &[u8], messag
 ///
 pub fn schnorr_sign_digest(private_key: &[u8], message: &[u8]) -> Result<Vec<u8>> {
     let secp = Secp256k1::new();
-    let secret_key = SecretKey::from_slice(private_key)
+    let secret_key_array: [u8; 32] = private_key.try_into().map_err(|_| {
+        BtcError::TransactionSignatureError("Invalid private key length".to_string())
+    })?;
+    let secret_key = SecretKey::from_byte_array(secret_key_array)
         .map_err(|e| BtcError::TransactionSignatureError(e.to_string()))?;
 
     let message_hash = sha256_digest(message);
-    let message_obj = Message::from_digest_slice(&message_hash)
-        .map_err(|e| BtcError::TransactionSignatureError(e.to_string()))?;
+    let message_hash_array: [u8; 32] = message_hash.clone().try_into().map_err(|_| {
+        BtcError::TransactionSignatureError("Invalid message hash length".to_string())
+    })?;
+    let _message_obj = Message::from_digest(message_hash_array);
 
     let keypair = Keypair::from_secret_key(&secp, &secret_key);
-    let mut rng = StdRng::from_entropy();
-    let signature = secp.sign_schnorr_with_rng(&message_obj, &keypair, &mut rng);
+    let mut rng = rng();
+    let signature = secp.sign_schnorr_with_rng(&message_hash, &keypair, &mut rng);
     Ok(signature.as_ref().to_vec())
 }
 
@@ -303,32 +311,42 @@ pub fn schnorr_sign_verify(public_key: &[u8], signature: &[u8], message: &[u8]) 
     let secp = Secp256k1::new();
 
     // Parse the public key
-    let public_key_obj = match PublicKey::from_slice(public_key) {
+    let public_key_array: [u8; 33] = match public_key.try_into() {
+        Ok(arr) => arr,
+        Err(_) => return false,
+    };
+    let public_key_obj = match PublicKey::from_byte_array_compressed(public_key_array) {
         Ok(pk) => pk,
         Err(_) => return false,
     };
 
     // Convert to XOnlyPublicKey for Schnorr verification
-    let xonly_public_key = match XOnlyPublicKey::from_slice(&public_key_obj.serialize()[1..33]) {
+    let xonly_array: [u8; 32] = match public_key_obj.serialize()[1..33].try_into() {
+        Ok(arr) => arr,
+        Err(_) => return false,
+    };
+    let xonly_public_key = match XOnlyPublicKey::from_byte_array(xonly_array) {
         Ok(pk) => pk,
         Err(_) => return false,
     };
 
     // Hash the message
     let message_hash = sha256_digest(message);
-    let message_obj = match Message::from_digest_slice(&message_hash) {
-        Ok(msg) => msg,
+    let message_hash_array: [u8; 32] = match message_hash.clone().try_into() {
+        Ok(arr) => arr,
         Err(_) => return false,
     };
+    let _message_obj = Message::from_digest(message_hash_array);
 
     // Parse the signature
-    let signature_obj = match schnorr::Signature::from_slice(signature) {
-        Ok(sig) => sig,
+    let signature_array: [u8; 64] = match signature.try_into() {
+        Ok(arr) => arr,
         Err(_) => return false,
     };
+    let signature_obj = schnorr::Signature::from_byte_array(signature_array);
 
     // Verify the Schnorr signature
-    secp.verify_schnorr(&signature_obj, &message_obj, &xonly_public_key)
+    secp.verify_schnorr(&signature_obj, &message_hash, &xonly_public_key)
         .is_ok()
 }
 
@@ -346,15 +364,16 @@ mod tests {
             &ring::signature::ECDSA_P256_SHA256_FIXED_SIGNING,
             &private_key,
             &ring::rand::SystemRandom::new(),
-        ).expect("Failed to create ECDSA key pair from PKCS#8");
+        )
+        .expect("Failed to create ECDSA key pair from PKCS#8");
         let public_key = key_pair.public_key();
 
         // Create a test message
         let message = b"Hello, ECDSA signatures!";
 
         // Sign the message
-        let signature = ecdsa_p256_sha256_sign_digest(&private_key, message)
-            .expect("Failed to sign message");
+        let signature =
+            ecdsa_p256_sha256_sign_digest(&private_key, message).expect("Failed to sign message");
 
         // Verify the signature
         let is_valid = ecdsa_p256_sha256_sign_verify(public_key.as_ref(), &signature, message);
@@ -363,7 +382,8 @@ mod tests {
 
         // Test with wrong message
         let wrong_message = b"Wrong message";
-        let is_invalid = ecdsa_p256_sha256_sign_verify(public_key.as_ref(), &signature, wrong_message);
+        let is_invalid =
+            ecdsa_p256_sha256_sign_verify(public_key.as_ref(), &signature, wrong_message);
 
         assert!(
             !is_invalid,
@@ -392,7 +412,8 @@ mod tests {
             &ring::signature::ECDSA_P256_SHA256_FIXED_SIGNING,
             &private_key,
             &ring::rand::SystemRandom::new(),
-        ).expect("Failed to create ECDSA key pair from PKCS#8");
+        )
+        .expect("Failed to create ECDSA key pair from PKCS#8");
         let public_key = key_pair.public_key();
 
         let messages = vec![
@@ -406,9 +427,13 @@ mod tests {
         for message in messages {
             let signature = ecdsa_p256_sha256_sign_digest(&private_key, message)
                 .expect("Failed to sign message");
-            
+
             let is_valid = ecdsa_p256_sha256_sign_verify(public_key.as_ref(), &signature, message);
-            assert!(is_valid, "ECDSA signature should be valid for message: {:?}", message);
+            assert!(
+                is_valid,
+                "ECDSA signature should be valid for message: {:?}",
+                message
+            );
         }
     }
 
@@ -468,7 +493,11 @@ mod tests {
         let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
 
         // Public key should be 33 bytes (compressed format)
-        assert_eq!(public_key.len(), 33, "Schnorr public key should be 33 bytes");
+        assert_eq!(
+            public_key.len(),
+            33,
+            "Schnorr public key should be 33 bytes"
+        );
 
         // Public key should start with 0x02 or 0x03 (compressed format)
         assert!(
@@ -491,11 +520,15 @@ mod tests {
         ];
 
         for message in messages {
-            let signature = schnorr_sign_digest(&private_key, message)
-                .expect("Failed to sign message");
-            
+            let signature =
+                schnorr_sign_digest(&private_key, message).expect("Failed to sign message");
+
             let is_valid = schnorr_sign_verify(&public_key, &signature, message);
-            assert!(is_valid, "Schnorr signature should be valid for message: {:?}", message);
+            assert!(
+                is_valid,
+                "Schnorr signature should be valid for message: {:?}",
+                message
+            );
         }
     }
 
@@ -553,7 +586,10 @@ mod tests {
         // Signatures should be different (due to randomness)
         for i in 0..signatures.len() {
             for j in (i + 1)..signatures.len() {
-                assert_ne!(signatures[i], signatures[j], "Signatures should be different due to randomness");
+                assert_ne!(
+                    signatures[i], signatures[j],
+                    "Signatures should be different due to randomness"
+                );
             }
         }
     }
@@ -576,8 +612,10 @@ mod tests {
     fn test_ecdsa_vs_schnorr_comparison() {
         // Test that both signature schemes work independently
         let ecdsa_private_key = new_key_pair().expect("Failed to generate ECDSA key pair");
-        let schnorr_private_key = new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
-        let schnorr_public_key = get_schnorr_public_key(&schnorr_private_key).expect("Failed to get Schnorr public key");
+        let schnorr_private_key =
+            new_schnorr_key_pair().expect("Failed to generate Schnorr key pair");
+        let schnorr_public_key =
+            get_schnorr_public_key(&schnorr_private_key).expect("Failed to get Schnorr public key");
 
         let message = b"Comparison test message";
 
@@ -590,17 +628,22 @@ mod tests {
             .expect("Failed to sign with Schnorr");
 
         // Signatures should be different
-        assert_ne!(ecdsa_signature, schnorr_signature, "ECDSA and Schnorr signatures should be different");
+        assert_ne!(
+            ecdsa_signature, schnorr_signature,
+            "ECDSA and Schnorr signatures should be different"
+        );
 
         // Both should be valid for their respective schemes
         let ecdsa_key_pair = ring::signature::EcdsaKeyPair::from_pkcs8(
             &ring::signature::ECDSA_P256_SHA256_FIXED_SIGNING,
             &ecdsa_private_key,
             &ring::rand::SystemRandom::new(),
-        ).expect("Failed to create ECDSA key pair from PKCS#8");
+        )
+        .expect("Failed to create ECDSA key pair from PKCS#8");
         let ecdsa_public_key = ecdsa_key_pair.public_key();
 
-        let ecdsa_valid = ecdsa_p256_sha256_sign_verify(ecdsa_public_key.as_ref(), &ecdsa_signature, message);
+        let ecdsa_valid =
+            ecdsa_p256_sha256_sign_verify(ecdsa_public_key.as_ref(), &ecdsa_signature, message);
         let schnorr_valid = schnorr_sign_verify(&schnorr_public_key, &schnorr_signature, message);
 
         assert!(ecdsa_valid, "ECDSA signature should be valid");
@@ -644,8 +687,8 @@ mod tests {
         let public_key = get_schnorr_public_key(&private_key).expect("Failed to get public key");
 
         let empty_message = b"";
-        let signature = schnorr_sign_digest(&private_key, empty_message)
-            .expect("Failed to sign empty message");
+        let signature =
+            schnorr_sign_digest(&private_key, empty_message).expect("Failed to sign empty message");
 
         let is_valid = schnorr_sign_verify(&public_key, &signature, empty_message);
         assert!(is_valid, "Signature should be valid for empty message");

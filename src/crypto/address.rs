@@ -80,10 +80,10 @@ mod tests {
     fn test_base58_encode_basic() {
         let data = b"Block Chain Project";
         let encoded = base58_encode(data).expect("Failed to encode");
-        
+
         // Should not be empty
         assert!(!encoded.is_empty());
-        
+
         // Should be deterministic
         let encoded2 = base58_encode(data).expect("Failed to encode");
         assert_eq!(encoded, encoded2);
@@ -93,7 +93,7 @@ mod tests {
     fn test_base58_encode_empty() {
         let data = b"";
         let encoded = base58_encode(data).expect("Failed to encode empty data");
-        
+
         // Empty input should produce empty output
         assert_eq!(encoded, "");
     }
@@ -103,11 +103,11 @@ mod tests {
         let data1 = b"Block";
         let data2 = b"Chain";
         let data3 = b"Block Chain Project";
-        
+
         let encoded1 = base58_encode(data1).expect("Failed to encode data1");
         let encoded2 = base58_encode(data2).expect("Failed to encode data2");
         let encoded3 = base58_encode(data3).expect("Failed to encode data3");
-        
+
         // Different inputs should produce different encodings
         assert_ne!(encoded1, encoded2);
         assert_ne!(encoded1, encoded3);
@@ -123,10 +123,14 @@ mod tests {
             (b"a".as_slice(), "2g"),
             (b"ab".as_slice(), "8Qq"),
         ];
-        
+
         for (input, expected) in test_cases {
             let encoded = base58_encode(input).expect("Failed to encode");
-            assert_eq!(encoded, expected, "Encoding mismatch for input: {:?}", input);
+            assert_eq!(
+                encoded, expected,
+                "Encoding mismatch for input: {:?}",
+                input
+            );
         }
     }
 
@@ -134,10 +138,10 @@ mod tests {
     fn test_base58_encode_large_data() {
         let data = vec![0u8; 1000]; // 1KB of zeros
         let encoded = base58_encode(&data).expect("Failed to encode large data");
-        
+
         // Should not be empty
         assert!(!encoded.is_empty());
-        
+
         // Should be deterministic
         let encoded2 = base58_encode(&data).expect("Failed to encode large data");
         assert_eq!(encoded, encoded2);
@@ -147,7 +151,7 @@ mod tests {
     fn test_base58_encode_special_characters() {
         let data = b"\x00\x01\x02\xff\xfe\xfd";
         let encoded = base58_encode(data).expect("Failed to encode special characters");
-        
+
         // Should not contain ambiguous characters (0, O, I, l)
         assert!(!encoded.contains('0'));
         assert!(!encoded.contains('O'));
@@ -160,7 +164,7 @@ mod tests {
         let original = b"Block Chain Project";
         let encoded = base58_encode(original).expect("Failed to encode");
         let decoded = base58_decode(&encoded).expect("Failed to decode");
-        
+
         assert_eq!(decoded, original);
     }
 
@@ -168,7 +172,7 @@ mod tests {
     fn test_base58_decode_empty() {
         let encoded = "";
         let decoded = base58_decode(encoded).expect("Failed to decode empty string");
-        
+
         assert_eq!(decoded, b"");
     }
 
@@ -181,10 +185,14 @@ mod tests {
             ("2g", b"a".as_slice()),
             ("8Qq", b"ab".as_slice()),
         ];
-        
+
         for (encoded, expected) in test_cases {
             let decoded = base58_decode(encoded).expect("Failed to decode");
-            assert_eq!(decoded, expected, "Decoding mismatch for input: {}", encoded);
+            assert_eq!(
+                decoded, expected,
+                "Decoding mismatch for input: {}",
+                encoded
+            );
         }
     }
 
@@ -192,33 +200,36 @@ mod tests {
     fn test_base58_decode_invalid_characters() {
         // Test with invalid Base58 characters
         let invalid_encodings = vec![
-            "0", // Contains '0' which is ambiguous
-            "O", // Contains 'O' which is ambiguous
-            "I", // Contains 'I' which is ambiguous
-            "l", // Contains 'l' which is ambiguous
+            "0",      // Contains '0' which is ambiguous
+            "O",      // Contains 'O' which is ambiguous
+            "I",      // Contains 'I' which is ambiguous
+            "l",      // Contains 'l' which is ambiguous
             "Hello0", // Contains invalid character
             "WorldO", // Contains invalid character
         ];
-        
+
         for invalid in invalid_encodings {
             let result = base58_decode(invalid);
-            assert!(result.is_err(), "Should fail to decode invalid Base58: {}", invalid);
+            assert!(
+                result.is_err(),
+                "Should fail to decode invalid Base58: {}",
+                invalid
+            );
         }
     }
 
     #[test]
     fn test_base58_decode_invalid_strings() {
         // Test with completely invalid strings
-        let invalid_strings = vec![
-            "!@#$%^&*()",
-            "Hello World!",
-            "1234567890-=",
-            "qwertyuiop[]",
-        ];
-        
+        let invalid_strings = vec!["!@#$%^&*()", "Hello World!", "1234567890-=", "qwertyuiop[]"];
+
         for invalid in invalid_strings {
             let result = base58_decode(invalid);
-            assert!(result.is_err(), "Should fail to decode invalid string: {}", invalid);
+            assert!(
+                result.is_err(),
+                "Should fail to decode invalid string: {}",
+                invalid
+            );
         }
     }
 
@@ -234,7 +245,7 @@ mod tests {
             &[255u8; 50],
             b"\x00\x01\x02\x03\x04\x05".as_slice(),
         ];
-        
+
         for data in test_data {
             let encoded = base58_encode(data).expect("Failed to encode");
             let decoded = base58_decode(&encoded).expect("Failed to decode");
@@ -246,12 +257,12 @@ mod tests {
     fn test_base58_roundtrip_random_data() {
         // Test roundtrip with random data
         use rand::Rng;
-        let mut rng = rand::thread_rng();
-        
+        let mut rng = rand::rng();
+
         for _ in 0..100 {
-            let len = rng.gen_range(1..=100);
-            let data: Vec<u8> = (0..len).map(|_| rng.gen()).collect();
-            
+            let len = rng.random_range(1..=100);
+            let data: Vec<u8> = (0..len).map(|_| rng.random()).collect();
+
             let encoded = base58_encode(&data).expect("Failed to encode random data");
             let decoded = base58_decode(&encoded).expect("Failed to decode random data");
             assert_eq!(decoded, data, "Roundtrip failed for random data");
@@ -262,12 +273,12 @@ mod tests {
     fn test_base58_consistency() {
         // Test that encoding/decoding is consistent across multiple calls
         let data = b"Consistency test data";
-        
+
         for _ in 0..50 {
             let encoded1 = base58_encode(data).expect("Failed to encode");
             let encoded2 = base58_encode(data).expect("Failed to encode");
             assert_eq!(encoded1, encoded2, "Encoding should be consistent");
-            
+
             let decoded1 = base58_decode(&encoded1).expect("Failed to decode");
             let decoded2 = base58_decode(&encoded2).expect("Failed to decode");
             assert_eq!(decoded1, decoded2, "Decoding should be consistent");
@@ -281,14 +292,14 @@ mod tests {
         let version_byte = 0x00; // Mainnet P2PKH
         let hash160 = vec![0x12; 20]; // 20-byte hash
         let checksum = vec![0x34, 0x56, 0x78, 0x9a]; // 4-byte checksum
-        
+
         let mut address_data = vec![version_byte];
         address_data.extend_from_slice(&hash160);
         address_data.extend_from_slice(&checksum);
-        
+
         let encoded = base58_encode(&address_data).expect("Failed to encode address");
         let decoded = base58_decode(&encoded).expect("Failed to decode address");
-        
+
         assert_eq!(decoded, address_data);
         assert_eq!(decoded.len(), 25); // 1 + 20 + 4 = 25 bytes
     }
@@ -297,7 +308,7 @@ mod tests {
     fn test_base58_performance() {
         // Test performance with repeated operations
         let data = b"Performance test data for Base58 encoding and decoding";
-        
+
         for _ in 0..1000 {
             let encoded = base58_encode(data).expect("Failed to encode");
             let decoded = base58_decode(&encoded).expect("Failed to decode");
@@ -310,7 +321,7 @@ mod tests {
         // Test proper error handling
         let result = base58_decode("InvalidBase58StringWithSpecialChars!@#");
         assert!(result.is_err());
-        
+
         if let Err(BtcError::AddressDecodingError(msg)) = result {
             assert!(!msg.is_empty(), "Error message should not be empty");
         } else {

@@ -1,7 +1,7 @@
 [package]
 name = "blockchain"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 # =============================================================================
@@ -35,26 +35,26 @@ data-encoding = "2.9.0"
 # Used in: src/util/utils.rs, src/domain/wallet.rs for cryptographic operations
 # Purpose: ECDSA key generation, signing, verification, and SHA256 hashing
 # Features: ECDSA P-256, SHA256, secure random number generation
-ring = "0.17.13"
+ring = "0.17.14"
 
 # SHA256 hashing library for P2TR support
 # Used in: src/util/utils.rs for taproot_hash function
 # Purpose: SHA256 hashing for P2TR address generation
 # Usage: Replaces RIPEMD160 with secure SHA256 for modern Bitcoin addresses
-sha2 = "0.10.8"
+sha2 = "0.10.9"
 
 # Elliptic curve cryptography for Bitcoin operations
 # Used in: src/util/utils.rs for Schnorr signature operations
 # Purpose: Implement Schnorr signatures for P2TR (Pay-to-Taproot)
 # Features: rand - for secure random number generation
 # Note: Currently added for future Schnorr signature support
-secp256k1 = { version = "0.29.0", features = ["rand"] }
+secp256k1 = { version = "0.31.1", features = ["rand"] }
 
 # Random number generation for cryptographic operations
 # Used in: src/util/utils.rs for Schnorr signature generation
 # Purpose: Provide CryptoRng trait implementation for secp256k1
-# Features: getrandom - for secure random number generation
-rand = { version = "0.8.5", features = ["getrandom"] }
+# Features: std - for standard library support
+rand = { version = "0.9.2", features = ["std"] }
 
 # =============================================================================
 # Database and Storage
@@ -76,7 +76,7 @@ sled = "0.34.7"
 # Purpose: Asynchronous I/O and concurrent operations
 # Features: full - complete async runtime with all features
 # Usage: Network operations, database I/O, concurrent blockchain operations
-tokio = { version = "1.46.1", features = ["full"] }
+tokio = { version = "1.47.1", features = ["full"] }
 
 # =============================================================================
 # Logging and Diagnostics
@@ -115,7 +115,7 @@ clap = { version = "4.5", features = ["derive", "env"] }
 # Used in: src/domain/error.rs for custom error types
 # Purpose: Define custom error types with automatic error conversion
 # Usage: Blockchain-specific error handling and propagation
-thiserror = "2.0.12"
+thiserror = "2.0.16"
 
 # =============================================================================
 # Serialization Framework
@@ -132,7 +132,7 @@ serde = { version = "1.0.219", features = ["derive"] }
 # Used in: src/server/operations.rs, src/server/process_messages.rs
 # Purpose: JSON message serialization for network communication
 # Usage: Serialize/deserialize network messages and API responses
-serde_json = "1.0.141"
+serde_json = "1.0.143"
 
 # =============================================================================
 # Utilities
@@ -156,7 +156,7 @@ num-bigint = "0.4.6"
 # Purpose: Generate unique identifiers for transactions and test databases
 # Features: v4 - random UUID generation
 # Usage: Transaction IDs, test database naming, unique resource identification
-uuid = { version = "1.17.0", features = ["v4"]}
+uuid = { version = "1.18.1", features = ["v4"]}
 
 # =============================================================================
 # Removed Dependencies (for reference)
@@ -183,7 +183,7 @@ assert_cmd = "2.0.17"
 # Used in: tests/ for temporary test data
 # Purpose: Create temporary files and directories for testing
 # Usage: Test database creation, temporary blockchain data
-tempfile = "3.20"
+tempfile = "3.22"
 
 # Hexadecimal encoding/decoding for tests
 # Used in: src/crypto/ tests for hex encoding/decoding
