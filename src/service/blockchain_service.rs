@@ -84,10 +84,45 @@ impl BlockchainService {
         .await
     }
 
+    /// Get blocks by its height in the blockchain
+    pub async fn get_blocks_by_height(
+        &self,
+        initial_height: usize,
+        height: usize,
+    ) -> Result<Vec<Block>> {
+        let mut blocks = Vec::new();
+        let mut iterator = self.iterator().await?;
+        while let Some(block) = iterator.next() {
+            if block.get_height() <= height && block.get_height() >= initial_height {
+                blocks.push(block.clone());
+            }
+            if block.get_height() > height || block.get_height() < initial_height {
+                break;
+            }
+        }
+        Ok(blocks)
+    }
+
     /// Add a block to the blockchain
     pub async fn add_block(&self, block: &Block) -> Result<()> {
         let mut blockchain_guard = self.0.write().await;
         blockchain_guard.add_block(block).await
+    }
+
+    /// Get the last block in the blockchain
+    pub async fn get_last_block(&self) -> Result<Option<Block>> {
+        self.read(
+            |blockchain: BlockchainFileSystem| async move { blockchain.get_last_block().await },
+        )
+        .await
+    }
+
+    /// Get a block by its hash
+    pub async fn get_block_by_hash(&self, block_hash: &[u8]) -> Result<Option<Block>> {
+        self.read(|blockchain: BlockchainFileSystem| async move {
+            blockchain.get_block_by_hash(block_hash).await
+        })
+        .await
     }
 
     /// Mine a block with the transactions in the memory pool

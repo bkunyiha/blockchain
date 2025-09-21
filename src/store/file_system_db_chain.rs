@@ -142,6 +142,17 @@ impl BlockchainFileSystem {
         Ok(())
     }
 
+    pub async fn get_last_block(&self) -> Result<Option<Block>> {
+        let tip_hash = self.get_tip_hash().await?;
+        let block = self.get_block(tip_hash.as_bytes()).await?;
+        Ok(block)
+    }
+
+    pub async fn get_block_by_hash(&self, block_hash: &[u8]) -> Result<Option<Block>> {
+        let block = self.get_block(block_hash).await?;
+        Ok(block)
+    }
+
     fn set_not_empty(&mut self) {
         self.blockchain.is_empty = false;
     }

@@ -26,6 +26,10 @@ pub use store::*;
 pub mod wallet;
 pub use wallet::*;
 
+pub mod web;
+// Don't re-export web to avoid naming conflicts.
+// Use Explicit Dependencies ie When you use web types, it's clear they're from the web layer
+
 #[cfg(test)]
 mod test_utils {
     use std::sync::Once;

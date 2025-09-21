@@ -6,7 +6,7 @@ pub enum BtcError {
     #[error("Blockchain not found error: {0}")]
     BlockchainNotFoundError(String),
 
-    #[error("Invalid value for miner. Must be yes or no.")]
+    #[error("Invalid value:{0} for miner. Must be yes or no.")]
     InvalidValueForMiner(String),
 
     // Unrecoverable errors

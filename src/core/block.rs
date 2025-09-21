@@ -98,6 +98,12 @@ impl Block {
         self.header.height
     }
 
+    pub fn get_difficulty(&self) -> u32 {
+        // For now, return a constant difficulty
+        // In a real implementation, this would be calculated based on the block's proof-of-work
+        1
+    }
+
     pub fn hash_transactions(&self) -> Vec<u8> {
         let mut txhashs = vec![];
         for transaction in &self.transactions {

@@ -9,7 +9,7 @@ use std::collections::HashSet;
 use std::io::Write;
 use std::net::{SocketAddr, TcpStream};
 use std::time::Duration;
-use tracing::{error, info};
+use tracing::{error, info, debug};
 
 /// The `send_get_data` function sends a get_data request to a specified address.
 ///
@@ -187,15 +187,15 @@ async fn send_data(addr_to: &SocketAddr, pkg: Package) {
 
 /// Add transaction to memory pool functionally
 async fn add_to_memory_pool(tx: Transaction, blockchain_service: &BlockchainService) {
-    info!("\n");
-    info!(
+    debug!("\n");
+    debug!(
         "******************************************************************************************************"
     );
-    info!(
+    debug!(
         "Adding transaction to memory pool: {:?}",
         tx.get_tx_id_hex()
     );
-    info!(
+    debug!(
         "******************************************************************************************************\n"
     );
     GLOBAL_MEMORY_POOL
