@@ -18,7 +18,7 @@ pub static CENTERAL_NODE: Lazy<SocketAddr> = Lazy::new(|| {
         .expect("CENTERAL_NODE environment variable is not a valid socket address")
 });
 
-pub const TRANSACTION_THRESHOLD: usize = 2;
+pub const TRANSACTION_THRESHOLD: usize = 3;
 
 pub static GLOBAL_NODES: Lazy<Nodes> = Lazy::new(|| {
     let nodes = Nodes::new();

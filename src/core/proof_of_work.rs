@@ -16,12 +16,23 @@ const MAX_NONCE: i64 = i64::MAX;
 
 impl ProofOfWork {
     pub fn new_proof_of_work(block: Block) -> ProofOfWork {
+        // Target: This is a 256-bit number that all miners aim to find a hash value below.
         let mut target = BigInt::from(1);
 
-        // The target is a 256-bit number.
         // Left shifting a number by n bits is equivalent to multiplying that number by 2^n.
         // For example, x << 3 is the same as x * 8 (since 2^3 = 8).
+        // TARGET_BITS is the difficulty of the block.
         // So, target << 256 - TARGET_BITS is the same as target * 2^(256 - TARGET_BITS).
+        // This is because the target is a 256-bit number and TARGET_BITS is the difficulty of the block.
+        // Here is a breakdown of the formula: (2^{256}):
+        // This represents the total range of possible outcomes for a 256-bit hash.
+        // Bitcoin uses the SHA-256 algorithm, which produces a 256-bit hash value, or a number between 0 and (2^{256}-1).
+        // TARGET_BITS: This term is a bit misleading.
+        // The formula doesn't use TARGET_BITS directly but rather the exponent from the compact nBits format in the block header.
+        // The nBits(TARGET_BITS) field is a compact, 32-bit representation of the full 256-bit target.
+        // The exponent is the first byte of nBits, which indicates how many zeroes are at the end of the target.
+        // The calculation: The formula (2^{256-TARGET_BITS}) essentially approximates the number of hashes required, on average, to find a valid block.
+        // It expresses the mining difficulty relative to the maximum possible target.
         target.shl_assign(256 - TARGET_BITS);
         ProofOfWork { block, target }
     }

@@ -8,7 +8,7 @@ pub mod transaction;
 pub mod utxo_set;
 
 // Re-export the  modules
-pub use block::Block;
+pub use block::{Block, GENESIS_BLOCK_PRE_BLOCK_HASH};
 pub use blockchain::Blockchain;
 pub use memory_pool::BlockInTransit;
 pub use memory_pool::MemoryPool;

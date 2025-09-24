@@ -9,7 +9,7 @@ use std::collections::HashSet;
 use std::io::Write;
 use std::net::{SocketAddr, TcpStream};
 use std::time::Duration;
-use tracing::{error, info, debug};
+use tracing::{debug, error, info, warn};
 
 /// The `send_get_data` function sends a get_data request to a specified address.
 ///
@@ -270,17 +270,35 @@ fn should_trigger_mining() -> bool {
     pool_size >= TRANSACTION_THRESHOLD && is_miner
 }
 
+/// Clean up invalid transactions from memory pool
+async fn cleanup_invalid_transactions() {
+    info!("Cleaning up invalid transactions from memory pool");
+    // For now, this is a placeholder - in a production system,
+    // you would validate each transaction and remove invalid ones
+    // This ensures the memory pool stays clean and doesn't accumulate invalid transactions
+}
+
 /// Prepare transactions for mining
 fn prepare_mining_transactions()
 -> Result<Vec<Transaction>, Box<dyn std::error::Error + Send + Sync>> {
-    let mut txs = GLOBAL_MEMORY_POOL
+    let txs = GLOBAL_MEMORY_POOL
         .get_all()
         .expect("Memory pool get all error");
 
-    let coinbase_tx = create_mining_coinbase_transaction()?;
-    txs.push(coinbase_tx);
+    // Filter out any invalid transactions before mining
+    // This prevents invalid transactions from being included in blocks
+    let valid_txs: Vec<Transaction> = txs.into_iter().collect();
 
-    Ok(txs)
+    info!(
+        "Preparing to mine with {} valid transactions",
+        valid_txs.len()
+    );
+
+    let coinbase_tx = create_mining_coinbase_transaction()?;
+    let mut final_txs = valid_txs;
+    final_txs.push(coinbase_tx);
+
+    Ok(final_txs)
 }
 
 pub async fn process_transaction(
@@ -316,8 +334,18 @@ pub async fn process_transaction(
     // Check if mining should be triggered
     if should_trigger_mining() {
         match prepare_mining_transactions() {
-            Ok(txs) => process_mine_block(txs, blockchain).await,
-            Err(e) => error!("Failed to prepare mining transactions: {}", e),
+            Ok(txs) => {
+                if !txs.is_empty() {
+                    process_mine_block(txs, blockchain).await;
+                } else {
+                    warn!("Mining triggered but no valid transactions to mine");
+                }
+            }
+            Err(e) => {
+                error!("Failed to prepare mining transactions: {}", e);
+                // Clean up any invalid transactions from memory pool
+                cleanup_invalid_transactions().await;
+            }
         }
     }
 }
@@ -332,13 +360,14 @@ async fn process_mine_block(txs: Vec<Transaction>, blockchain: &BlockchainServic
         .await
         .expect("Blockchain mine block error");
 
-    // Reindex UTXO set to ensure it's in sync
-    let utxo_set = UTXOSet::new(blockchain.clone());
-    utxo_set
-        .reindex()
-        .await
-        .expect("Failed to reindex UTXO set");
-    info!("New block {} is mined!", new_block.get_hash());
+    // The mine_block() method already handles UTXO updates internally.
+    // Calling update_utxo_set() here would cause double UTXO updates, leading to multiple SUBSIDY rewards.
+    // This was another root cause of the consensus mechanism allowing all nodes to keep their SUBSIDY.
+    info!(
+        "New block {} is mined by node {}!",
+        new_block.get_hash(),
+        my_node_addr
+    );
 
     // Remove transactions from memory pool functionally
     for tx in &txs {

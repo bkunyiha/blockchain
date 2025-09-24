@@ -33,6 +33,7 @@ pub mod web;
 #[cfg(test)]
 mod test_utils {
     use std::sync::Once;
+    use tracing::info;
 
     static INIT: Once = Once::new();
 
@@ -71,7 +72,7 @@ mod test_utils {
                     if (name_str.starts_with("test_") && name_str.contains("db_"))
                         || name_str.starts_with("test_persistence_db_")
                     {
-                        println!("Cleaning up test directory: {}", name_str);
+                        info!("Cleaning up test directory: {}", name_str);
                         let _ = cleanup_test_directory_with_retry(&path.to_string_lossy());
                     }
                 }

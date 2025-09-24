@@ -54,12 +54,12 @@ enum Command {
     #[command(name = "reindexutxo", about = "rebuild UTXO index set")]
     #[command(name = "startnode", about = "Start a node")]
     StartNode {
-        #[arg(name = "wlt_addr", help = "Wallet Address")]
-        wlt_addr: String,
         #[arg(name = "is_miner", help = "Is Node a Miner?")]
         is_miner: IsMiner,
-        #[arg(name = "connect_nodes", help = "Connect to a node")]
+        #[arg(name = "connect_nodes", required(true), help = "Connect to a node")]
         connect_nodes: Vec<ConnectNode>,
+        #[arg(name = "wlt_mining_addr", help = "Wallet Address", last(true))]
+        wlt_mining_addr: Option<String>,
     },
 }
 
@@ -160,27 +160,39 @@ async fn print_blockchain() -> Result<()> {
 }
 
 /// Validate miner configuration
-fn validate_miner_config(wlt_addr: &str, is_miner: &IsMiner) -> Result<()> {
+fn validate_miner_config(wlt_mining_addr: Option<&str>, is_miner: &IsMiner) -> Result<()> {
     match is_miner {
-        IsMiner::Yes => validate_address(wlt_addr).and_then(|is_valid| {
-            if is_valid {
-                info!("Mining is on. Address to receive rewards: {}", wlt_addr);
-                GLOBAL_CONFIG.set_mining_addr(wlt_addr.parse().unwrap());
-                Ok(())
+        IsMiner::Yes => {
+            if let Some(wlt_mining_addr) = wlt_mining_addr {
+                validate_address(wlt_mining_addr).and_then(|is_valid| {
+                    if is_valid {
+                        info!(
+                            "Mining is on. Address to receive rewards: {}",
+                            wlt_mining_addr
+                        );
+                        GLOBAL_CONFIG.set_mining_addr(wlt_mining_addr.parse().unwrap());
+                        Ok(())
+                    } else {
+                        Err(BtcError::InvalidValueForMiner(
+                            "Wrong miner address!".to_string(),
+                        ))
+                    }
+                })
             } else {
-                Err(BtcError::InvalidValueForMiner(
-                    "Wrong miner address!".to_string(),
-                ))
+                Ok(())
             }
-        }),
+        }
         IsMiner::No => Ok(()),
     }
 }
 
 /// Create blockchain for seed node
-async fn create_seed_blockchain(wlt_addr: &str) -> Result<BlockchainService> {
-    info!("Seed Node, Creating BlockChain With Address: {}", wlt_addr);
-    let blockchain = BlockchainService::initialize(wlt_addr).await?;
+async fn create_seed_blockchain(wlt_mining_addr: &str) -> Result<BlockchainService> {
+    info!(
+        "Seed Node, Creating BlockChain With Address: {}",
+        wlt_mining_addr
+    );
+    let blockchain = BlockchainService::initialize(wlt_mining_addr).await?;
     let utxo_set = UTXOSet::new(blockchain.clone());
     utxo_set.reindex().await?;
     Ok(blockchain)
@@ -188,7 +200,7 @@ async fn create_seed_blockchain(wlt_addr: &str) -> Result<BlockchainService> {
 
 /// Handle blockchain opening with fallback logic
 async fn open_or_create_blockchain(
-    wlt_addr: &str,
+    wlt_mining_addr: Option<&str>,
     connect_nodes: &[ConnectNode],
 ) -> Result<BlockchainService> {
     match BlockchainService::default().await {
@@ -200,7 +212,7 @@ async fn open_or_create_blockchain(
         }
         Err(BtcError::BlockchainNotFoundError(_)) => {
             if connect_nodes.contains(&ConnectNode::Local) {
-                create_seed_blockchain(wlt_addr).await
+                create_seed_blockchain(wlt_mining_addr.unwrap()).await
             } else {
                 BlockchainService::empty().await
             }
@@ -214,15 +226,15 @@ async fn open_or_create_blockchain(
 
 /// Start the node with functional configuration
 async fn start_node(
-    wlt_addr: String,
     is_miner: IsMiner,
     connect_nodes: Vec<ConnectNode>,
+    wlt_mining_addr: Option<String>,
 ) -> Result<()> {
     // Validate miner configuration
-    validate_miner_config(&wlt_addr, &is_miner)?;
+    validate_miner_config(wlt_mining_addr.as_deref(), &is_miner)?;
 
     // Open or create blockchain
-    let blockchain = open_or_create_blockchain(&wlt_addr, &connect_nodes).await?;
+    let blockchain = open_or_create_blockchain(wlt_mining_addr.as_deref(), &connect_nodes).await?;
 
     // Get node configuration
     let socket_addr = GLOBAL_CONFIG.get_node_addr();
@@ -247,10 +259,10 @@ async fn process_command(command: Command) -> Result<()> {
         Command::ListAddresses => list_addresses(),
         Command::Printchain => print_blockchain().await,
         Command::StartNode {
-            wlt_addr,
             is_miner,
             connect_nodes,
-        } => start_node(wlt_addr, is_miner, connect_nodes).await,
+            wlt_mining_addr,
+        } => start_node(is_miner, connect_nodes, wlt_mining_addr).await,
     }
 }
 

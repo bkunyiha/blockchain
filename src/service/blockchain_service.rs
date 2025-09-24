@@ -1,5 +1,6 @@
 use crate::core::block::Block;
 use crate::core::transaction::{TXOutput, Transaction, TxSummary};
+use crate::core::utxo_set::UTXOSet;
 use crate::error::{BtcError, Result};
 
 use sled::Db;
@@ -34,6 +35,11 @@ impl BlockchainService {
         Ok(BlockchainService(Arc::new(TokioRwLock::new(blockchain))))
     }
 
+    /// Create a BlockchainService from an existing BlockchainFileSystem (for testing)
+    pub fn from_blockchain_file_system(blockchain: BlockchainFileSystem) -> BlockchainService {
+        BlockchainService(Arc::new(TokioRwLock::new(blockchain)))
+    }
+
     /// Apply a readfunction to a blockchain and return the result
     async fn read<F, Fut, T>(&self, f: F) -> Result<T>
     where
@@ -66,6 +72,12 @@ impl BlockchainService {
             |blockchain: BlockchainFileSystem| async move { blockchain.get_best_height().await },
         )
         .await
+    }
+
+    /// Get the tip hash of the blockchain
+    pub async fn get_tip_hash(&self) -> Result<String> {
+        self.read(|blockchain: BlockchainFileSystem| async move { blockchain.get_tip_hash().await })
+            .await
     }
 
     /// Get the block hashes of the blockchain
@@ -160,6 +172,30 @@ impl BlockchainService {
     pub async fn iterator(&self) -> Result<BlockchainIterator> {
         self.read(|blockchain: BlockchainFileSystem| async move { blockchain.iterator().await })
             .await
+    }
+
+    /// Update UTXO set incrementally with a new block
+    pub async fn update_utxo_set(&self, block: &Block) -> Result<()> {
+        let utxo_set = UTXOSet::new(self.clone());
+        utxo_set.update(block).await
+    }
+
+    /// Rollback UTXO set for chain reorganization
+    pub async fn rollback_utxo_set(&self, block: &Block) -> Result<()> {
+        let utxo_set = UTXOSet::new(self.clone());
+        utxo_set.rollback_block(block).await
+    }
+
+    /// Add block with tie-breaking support
+    pub async fn add_block_with_tie_breaking(&self, block: &Block) -> Result<()> {
+        let mut blockchain_guard = self.0.write().await;
+        blockchain_guard.add_block(block).await
+    }
+
+    /// Reorganize the blockchain to handle forks
+    pub async fn reorganize_chain(&self, new_tip_hash: &str) -> Result<()> {
+        let mut blockchain_guard = self.0.write().await;
+        blockchain_guard.reorganize_chain(new_tip_hash).await
     }
 }
 

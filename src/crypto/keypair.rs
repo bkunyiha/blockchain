@@ -353,7 +353,7 @@ mod tests {
     #[test]
     fn test_schnorr_key_pair_deterministic() {
         // Test that the same private key always produces the same public key
-        let private_key = vec![1u8; 32]; // Fixed private key for testing
+        let private_key = vec![1u8; 32];
 
         let public_key1 = get_schnorr_public_key(&private_key).expect("Failed to get public key");
         let public_key2 = get_schnorr_public_key(&private_key).expect("Failed to get public key");

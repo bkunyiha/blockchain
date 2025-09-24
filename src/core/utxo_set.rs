@@ -258,6 +258,86 @@ impl UTXOSet {
         Ok(())
     }
 
+    /// Rollback UTXO set by removing transactions from a block (for chain reorganization)
+    ///
+    /// This method reverses the effects of a block on the UTXO set:
+    /// 1. Removes all outputs created by transactions in the block
+    /// 2. Restores all inputs that were spent by those transactions
+    /// 3. Processes transactions in reverse order to maintain consistency
+    pub async fn rollback_block(&self, block: &Block) -> Result<()> {
+        let db = self.blockchain.get_db().await?;
+        let utxo_tree = db
+            .open_tree(UTXO_TREE)
+            .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
+
+        // Process transactions in reverse order (newest first)
+        for curr_block_tx in block.get_transactions().iter().rev() {
+            // Step 1: Remove this transaction's outputs from UTXO set
+            utxo_tree
+                .remove(curr_block_tx.get_id())
+                .map_err(|e| BtcError::RemovingUTXOError(e.to_string()))?;
+
+            // Step 2: Restore the inputs that this transaction spent (unless coinbase)
+            // When a transaction is processed, its inputs are removed from UTXO set.
+            // When rolling back, we need to restore those inputs as unspent outputs.
+            if !curr_block_tx.is_coinbase() {
+                for curr_blc_tx_inpt in curr_block_tx.get_vin() {
+                    // Get the transaction that this input references
+                    if let Some(input_tx) = self
+                        .blockchain
+                        .find_transaction(curr_blc_tx_inpt.get_txid())
+                        .await?
+                    {
+                        // Find the specific output that was spent and restore it
+                        if let Some(output) = input_tx.get_vout().get(curr_blc_tx_inpt.get_vout()) {
+                            // Prepare to restore this output as a UTXO
+                            let mut outs_to_restore = vec![];
+
+                            // Check if this transaction already has other unspent outputs
+                            // If so, we need to merge the `outs_to_restore` with existing ones
+                            // This is because when a transaction is processed, its outputs are removed from UTXO set.
+                            // When rolling back, we need to restore those outputs as unspent outputs.
+                            // If the transaction already has other unspent outputs, we need to merge the restored output with existing ones.
+                            // This is because the restored output is the same as the existing output.
+                            if let Some(existing_outs_bytes) = utxo_tree
+                                .get(curr_blc_tx_inpt.get_txid())
+                                .map_err(|e| BtcError::GettingUTXOError(e.to_string()))?
+                            {
+                                // Deserialize existing outputs for this transaction
+                                let mut existing_outs: Vec<TXOutput> =
+                                    bincode::serde::decode_from_slice(
+                                        existing_outs_bytes.as_ref(),
+                                        bincode::config::standard(),
+                                    )
+                                    .map_err(|e| {
+                                        BtcError::TransactionDeserializationError(e.to_string())
+                                    })?
+                                    .0;
+
+                                // Insert the restored output at the correct position (vout index)
+                                existing_outs.insert(curr_blc_tx_inpt.get_vout(), output.clone());
+                                outs_to_restore = existing_outs;
+                            }
+
+                            // Save the restored UTXOs back to the database
+                            let outs_bytes = bincode::serde::encode_to_vec(
+                                &outs_to_restore,
+                                bincode::config::standard(),
+                            )
+                            .map_err(|e| BtcError::TransactionSerializationError(e.to_string()))?;
+
+                            utxo_tree
+                                .insert(curr_blc_tx_inpt.get_txid(), outs_bytes)
+                                .map_err(|e| BtcError::SavingUTXOError(e.to_string()))?;
+                        }
+                    }
+                }
+            }
+        }
+
+        Ok(())
+    }
+
     pub async fn set_global_mem_pool_flag(&self, tx: &Transaction, flag: bool) -> Result<()> {
         let db = self.blockchain.get_db().await?;
         let utxo_tree = db

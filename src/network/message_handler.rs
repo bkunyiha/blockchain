@@ -59,12 +59,9 @@ pub async fn process_stream(
                     remove_from_memory_pool(tx.clone(), &blockchain).await;
                 }
 
-                // Reindex UTXO set to ensure it's in sync
-                let utxo_set = UTXOSet::new(blockchain.clone());
-                utxo_set
-                    .reindex()
-                    .await
-                    .expect("Failed to reindex UTXO set");
+                // The add_block() method already handles UTXO updates internally through the reorganization process.
+                // Calling update_utxo_set() here would cause double UTXO updates, leading to multiple SUBSIDY rewards.
+                // This was the root cause of the consensus mechanism allowing all nodes to keep their SUBSIDY.
 
                 let removed_block_hash = GLOBAL_BLOCKS_IN_TRANSIT
                     .remove(added_block_hash.as_ref())
@@ -209,14 +206,51 @@ pub async fn process_stream(
                 } else {
                     let utxo_set = UTXOSet::new(blockchain.clone());
 
-                    let transaction = Transaction::new_utxo_transaction(
+                    match Transaction::new_utxo_transaction(
                         wlt_frm_addr.as_str(),
                         wlt_to_addr.as_str(),
                         amount,
                         &utxo_set,
                     )
-                    .await?;
-                    process_transaction(&addr_from, transaction, &blockchain).await;
+                    .await
+                    {
+                        Ok(transaction) => {
+                            process_transaction(&addr_from, transaction, &blockchain).await;
+                        }
+                        Err(BtcError::NotEnoughFunds) => {
+                            // Get current balance for detailed error message
+                            let current_balance = utxo_set
+                                .get_balance(wlt_frm_addr.as_str())
+                                .await
+                                .unwrap_or(0);
+
+                            send_message(
+                                &addr_from,
+                                MessageType::Error,
+                                format!(
+                                    "Insufficient funds: cannot send {} bitcoin. Current balance: {} bitcoin",
+                                    amount, current_balance
+                                ),
+                            )
+                            .await;
+
+                            // Log the error for debugging
+                            error!(
+                                "Transaction rejected: insufficient funds. From: {}, To: {}, Amount: {}, Balance: {}",
+                                wlt_frm_addr, wlt_to_addr, amount, current_balance
+                            );
+                        }
+                        Err(e) => {
+                            send_message(
+                                &addr_from,
+                                MessageType::Error,
+                                format!("Transaction creation failed: {}", e),
+                            )
+                            .await;
+
+                            error!("Transaction creation failed: {}", e);
+                        }
+                    }
                 }
             }
             Package::Version {
