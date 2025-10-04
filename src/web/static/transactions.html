@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions - Blockchain Explorer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .nav {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .nav a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        .nav a:hover {
+            color: #3498db;
+        }
+        .transaction-list {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .transaction-item {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        .txid {
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #2c3e50;
+            word-break: break-all;
+        }
+        .tx-value {
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .tx-timestamp {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Transactions</h1>
+            <p>Explore blockchain transactions</p>
+        </div>
+        
+        <div class="nav">
+            <a href="/">Dashboard</a>
+            <a href="/blocks">Blocks</a>
+            <a href="/transactions">Transactions</a>
+            <a href="/wallet">Wallet</a>
+            <a href="/mining">Mining</a>
+            <a href="/network">Network</a>
+        </div>
+        
+        <div class="transaction-list">
+            <div class="loading" id="loading">Loading transactions...</div>
+            <div id="transactions-container"></div>
+        </div>
+    </div>
+
+    <script>
+        async function loadTransactions() {
+            try {
+                const response = await fetch('/api/v1/transactions');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const container = document.getElementById('transactions-container');
+                    const loading = document.getElementById('loading');
+                    
+                    loading.style.display = 'none';
+                    
+                    if (data.data.items.length === 0) {
+                        container.innerHTML = '<div class="loading">No transactions found</div>';
+                        return;
+                    }
+                    
+                    container.innerHTML = data.data.items.map(tx => `
+                        <div class="transaction-item">
+                            <div class="txid">${tx.txid}</div>
+                            <div class="tx-value">Value: ${tx.total_output_value}</div>
+                            <div class="tx-timestamp">${new Date(tx.timestamp).toLocaleString()}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                document.getElementById('loading').textContent = 'Error loading transactions';
+            }
+        }
+
+        loadTransactions();
+    </script>
+</body>
+</html>
