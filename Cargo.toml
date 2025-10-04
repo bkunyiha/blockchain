@@ -135,6 +135,51 @@ serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.143"
 
 # =============================================================================
+# Web Framework and HTTP
+# =============================================================================
+
+# Modern web framework built on top of Tower and Hyper
+# Used in: src/web/ for HTTP API endpoints
+# Purpose: REST API and web server functionality
+# Features: ws - WebSocket support, macros - derive macros
+axum = { version = "0.7", features = ["ws", "macros"] }
+
+# Tower middleware and services
+# Used in: src/web/ for middleware and service composition
+# Purpose: Middleware stack for web requests
+tower = "0.4"
+
+# HTTP-specific Tower middleware
+# Used in: src/web/ for CORS, tracing, and other HTTP middleware
+# Purpose: CORS handling, request tracing, compression
+tower-http = { version = "0.5", features = ["cors", "trace", "compression-gzip"] }
+
+# Rate limiting middleware
+# Used in: src/web/middleware/ for API rate limiting
+# Purpose: Prevent API abuse and ensure fair usage
+tower_governor = "0.2"
+
+# HTTP client and server library
+# Used in: src/web/ for low-level HTTP operations
+# Purpose: HTTP protocol implementation
+hyper = { version = "1.0", features = ["full"] }
+
+# WebSocket support
+# Used in: src/web/ for real-time blockchain updates
+# Purpose: WebSocket connections for live data streaming
+tokio-tungstenite = "0.24"
+
+# Request validation
+# Used in: src/web/ for validating API requests
+# Purpose: Input validation and sanitization
+validator = { version = "0.18", features = ["derive"] }
+
+# Date and time handling
+# Used in: src/web/ for timestamp formatting
+# Purpose: Human-readable timestamps in API responses
+chrono = { version = "0.4", features = ["serde"] }
+
+# =============================================================================
 # Utilities
 # =============================================================================
 

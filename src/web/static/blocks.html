@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blocks - Blockchain Explorer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .nav {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .nav a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        .nav a:hover {
+            color: #3498db;
+        }
+        .block-list {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .block-item {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .block-item:last-child {
+            border-bottom: none;
+        }
+        .block-hash {
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #2c3e50;
+            word-break: break-all;
+        }
+        .block-height {
+            font-weight: bold;
+            color: #3498db;
+        }
+        .block-timestamp {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Blocks</h1>
+            <p>Explore the blockchain blocks</p>
+        </div>
+        
+        <div class="nav">
+            <a href="/">Dashboard</a>
+            <a href="/blocks">Blocks</a>
+            <a href="/transactions">Transactions</a>
+            <a href="/wallet">Wallet</a>
+            <a href="/mining">Mining</a>
+            <a href="/network">Network</a>
+        </div>
+        
+        <div class="block-list">
+            <div class="loading" id="loading">Loading blocks...</div>
+            <div id="blocks-container"></div>
+        </div>
+    </div>
+
+    <script>
+        async function loadBlocks() {
+            try {
+                const response = await fetch('/api/v1/blockchain/blocks/latest?limit=20');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const container = document.getElementById('blocks-container');
+                    const loading = document.getElementById('loading');
+                    
+                    loading.style.display = 'none';
+                    
+                    if (data.data.length === 0) {
+                        container.innerHTML = '<div class="loading">No blocks found</div>';
+                        return;
+                    }
+                    
+                    container.innerHTML = data.data.map(block => `
+                        <div class="block-item">
+                            <div class="block-height">Block #${block.height}</div>
+                            <div class="block-hash">${block.hash}</div>
+                            <div class="block-timestamp">${new Date(block.timestamp).toLocaleString()}</div>
+                            <div class="block-timestamp">${block.transaction_count} transactions</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading blocks:', error);
+                document.getElementById('loading').textContent = 'Error loading blocks';
+            }
+        }
+
+        loadBlocks();
+    </script>
+</body>
+</html>
