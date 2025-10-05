@@ -1,4 +1,5 @@
 use crate::service::blockchain_service::BlockchainService;
+use crate::web::openapi::create_swagger_ui;
 use axum::{Router, response::Html, routing::get};
 use std::sync::Arc;
 
@@ -12,6 +13,7 @@ pub fn create_web_routes() -> Router<Arc<BlockchainService>> {
         .route("/wallet", get(wallet_page))
         .route("/mining", get(mining_page))
         .route("/network", get(network_page))
+        .merge(create_swagger_ui())
 }
 
 /// Dashboard page

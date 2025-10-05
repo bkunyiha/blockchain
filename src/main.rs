@@ -1,3 +1,4 @@
+use blockchain::web::server::create_web_server;
 use blockchain::{
     BtcError, ConnectNode, GLOBAL_CONFIG, Result, Server, UTXOSet, WalletService, convert_address,
     hash_pub_key, service::blockchain_service::BlockchainService, validate_address,
@@ -6,7 +7,7 @@ use clap::{Parser, Subcommand};
 use std::collections::HashSet;
 use std::str::FromStr;
 
-use tracing::info;
+use tracing::{error, info};
 use tracing_subscriber::{
     filter::{EnvFilter, LevelFilter},
     fmt,
@@ -42,16 +43,14 @@ struct Opt {
 enum Command {
     #[command(name = "createwallet", about = "Create a new wallet")]
     Createwallet,
-    #[command(
-        name = "getbalance",
-        about = "Get the wallet balance of the target address"
-    )]
+    // #[command(
+    //     name = "getbalance",
+    //     about = "Get the wallet balance of the target address"
+    // )]
     #[command(name = "listaddresses", about = "Print local wallet addres")]
     ListAddresses,
-    #[command(name = "send", about = "Add new block to chain")]
     #[command(name = "printchain", about = "Print blockchain all block")]
     Printchain,
-    #[command(name = "reindexutxo", about = "rebuild UTXO index set")]
     #[command(name = "startnode", about = "Start a node")]
     StartNode {
         #[arg(name = "is_miner", help = "Is Node a Miner?")]
@@ -244,10 +243,38 @@ async fn start_node(
     // Convert connect nodes to HashSet
     let connect_nodes_set: HashSet<ConnectNode> = connect_nodes.into_iter().collect();
 
-    // Start server
-    Server::new(blockchain)
-        .run(&socket_addr, connect_nodes_set)
-        .await;
+    // Start both servers concurrently using tokio::spawn
+    let network_server = Server::new(blockchain.clone());
+    let web_server = create_web_server(blockchain);
+
+    info!("Starting both network and web servers...");
+
+    // Spawn both servers as separate tasks
+    let network_handle = tokio::spawn(async move {
+        network_server.run(&socket_addr, connect_nodes_set).await;
+    });
+
+    let web_handle = tokio::spawn(async move {
+        match web_server.start_with_shutdown().await {
+            Ok(_) => info!("Web server stopped gracefully"),
+            Err(e) => error!("Web server error: {}", e),
+        }
+    });
+
+    // Wait for either server to complete
+    // When You Press Ctrl+C:
+    // Web server receives the signal and exits gracefully
+    // tokio::select! completes because the web server task finished.
+    // Main function returns and the process exits.
+    // Network server is automatically cancelled when the process exits.
+    tokio::select! {
+        _ = network_handle => {
+            info!("Network server stopped");
+        }
+        _ = web_handle => {
+            info!("Web server stopped");
+        }
+    }
 
     Ok(())
 }

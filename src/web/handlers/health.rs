@@ -6,6 +6,18 @@ use crate::service::blockchain_service::BlockchainService;
 use crate::web::models::{ApiResponse, HealthResponse};
 
 /// Health check endpoint
+///
+/// Returns the current health status of the blockchain node including
+/// system metrics, blockchain height, and operational status.
+#[utoipa::path(
+    get,
+    path = "/health",
+    tag = "Health",
+    responses(
+        (status = 200, description = "Health check successful", body = ApiResponse<HealthResponse>),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn health_check(
     State(blockchain): State<Arc<BlockchainService>>,
 ) -> Result<Json<ApiResponse<HealthResponse>>, StatusCode> {
@@ -36,11 +48,34 @@ pub async fn health_check(
 }
 
 /// Liveness probe endpoint
+///
+/// Simple endpoint to check if the service is alive.
+/// Used by container orchestration systems for health monitoring.
+#[utoipa::path(
+    get,
+    path = "/health/live",
+    tag = "Health",
+    responses(
+        (status = 200, description = "Service is alive", body = ApiResponse<String>)
+    )
+)]
 pub async fn liveness() -> Result<Json<ApiResponse<String>>, StatusCode> {
     Ok(Json(ApiResponse::success("alive".to_string())))
 }
 
 /// Readiness probe endpoint
+///
+/// Checks if the service is ready to accept requests.
+/// Verifies blockchain connectivity and system readiness.
+#[utoipa::path(
+    get,
+    path = "/health/ready",
+    tag = "Health",
+    responses(
+        (status = 200, description = "Service is ready", body = ApiResponse<String>),
+        (status = 503, description = "Service not ready")
+    )
+)]
 pub async fn readiness(
     State(blockchain): State<Arc<BlockchainService>>,
 ) -> Result<Json<ApiResponse<String>>, StatusCode> {

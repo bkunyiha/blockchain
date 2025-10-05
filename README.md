@@ -234,6 +234,97 @@ Here's how this verification process unfolds:
 
 This multi-step process, combined with the built-in economic incentives for miners and the decentralized nature of the network, ensures that Bitcoin nodes, even when starting fresh, can establish a trustworthy and accurate view of the blockchain without relying on any central authority.
 
+## 🌐 **Web API & Documentation:**
+
+### Swagger/OpenAPI Integration
+- **✅ Interactive API Documentation** with Swagger UI at `http://localhost:8080/swagger-ui/`
+- **✅ OpenAPI 3.0 Specification** available at `http://localhost:8080/api-docs/openapi.json`
+- **✅ Health Check Endpoints** with comprehensive system metrics
+- **✅ RESTful API Design** following industry best practices
+- **✅ Auto-generated Documentation** from code annotations
+
+### API Endpoints
+
+#### Health & Monitoring
+- `GET /health` - Comprehensive health check with system metrics
+- `GET /health/live` - Liveness probe for container orchestration
+- `GET /health/ready` - Readiness probe for service availability
+
+#### Blockchain Operations
+- `GET /api/v1/blockchain` - Get blockchain information and statistics
+- `GET /api/v1/blockchain/blocks` - List blockchain blocks
+- `GET /api/v1/blockchain/blocks/latest` - Get latest blocks
+- `GET /api/v1/blockchain/blocks/{hash}` - Get specific block by hash
+
+#### Wallet Management
+- `POST /api/v1/wallet` - Create new wallet
+- `GET /api/v1/wallet/addresses` - List wallet addresses
+- `GET /api/v1/wallet/{address}` - Get wallet information
+- `GET /api/v1/wallet/{address}/balance` - Get wallet balance
+
+#### Transaction Operations
+- `POST /api/v1/transactions` - Send transaction
+- `GET /api/v1/transactions` - List transactions
+- `GET /api/v1/transactions/{txid}` - Get specific transaction
+- `GET /api/v1/transactions/mempool` - Get mempool transactions
+- `GET /api/v1/transactions/address/{address}` - Get address transactions
+
+#### Mining Operations
+- `POST /api/v1/mining/start` - Start mining
+- `POST /api/v1/mining/stop` - Stop mining
+- `GET /api/v1/mining/status` - Get mining status
+- `POST /api/v1/mining/mine` - Mine a block
+
+### Web Interface
+- **Dashboard**: `http://localhost:8080/` - Main blockchain dashboard
+- **Blocks View**: `http://localhost:8080/blocks` - Block explorer interface
+- **Transactions**: `http://localhost:8080/transactions` - Transaction history
+- **Wallet**: `http://localhost:8080/wallet` - Wallet management interface
+- **Mining**: `http://localhost:8080/mining` - Mining control panel
+- **Network**: `http://localhost:8080/network` - Network status and peers
+
+### API Usage Examples
+
+#### Start a Node with Web API
+```bash
+# Start node with web server
+# See Steps Above In  Section: "Steps to Run a Node"
+
+# Access Swagger UI
+open http://localhost:8080/swagger-ui/
+
+# Test health endpoint
+curl http://localhost:8080/health
+
+# Get blockchain info
+curl http://localhost:8080/api/v1/blockchain
+```
+
+#### Health Check Response
+```json
+{
+  "success": true,
+  "data": {
+    "status": "healthy",
+    "version": "0.1.0",
+    "uptime_seconds": 3600,
+    "blockchain_height": 42,
+    "connected_peers": 3,
+    "memory_usage_mb": 128.5
+  },
+  "error": null,
+  "timestamp": "2025-10-04T22:31:31.028091Z"
+}
+```
+
+### API Documentation Features
+- **Interactive Testing**: Test endpoints directly from the Swagger UI
+- **Request/Response Examples**: Comprehensive examples for all endpoints
+- **Schema Documentation**: Detailed data models and validation rules
+- **Error Handling**: Complete error response documentation
+- **Authentication**: API key authentication support
+- **Rate Limiting**: Built-in rate limiting for API protection
+
 ## 🚀 **Future Enhancements:**
 
 ### Advanced P2TR Features

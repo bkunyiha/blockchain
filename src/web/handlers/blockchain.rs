@@ -12,6 +12,18 @@ use crate::web::models::{
 };
 
 /// Get blockchain information
+///
+/// Returns comprehensive blockchain statistics including height, difficulty,
+/// total blocks, transactions, and mempool status.
+#[utoipa::path(
+    get,
+    path = "/api/v1/blockchain",
+    tag = "Blockchain",
+    responses(
+        (status = 200, description = "Blockchain information retrieved successfully", body = ApiResponse<BlockchainInfoResponse>),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn get_blockchain_info(
     State(blockchain): State<Arc<BlockchainService>>,
 ) -> Result<Json<ApiResponse<BlockchainInfoResponse>>, StatusCode> {
@@ -44,6 +56,21 @@ pub async fn get_blockchain_info(
 }
 
 /// Get block by hash
+///
+/// Retrieves a specific block from the blockchain using its hash.
+#[utoipa::path(
+    get,
+    path = "/api/v1/blockchain/blocks/{hash}",
+    tag = "Blockchain",
+    params(
+        ("hash" = String, Path, description = "Block hash")
+    ),
+    responses(
+        (status = 200, description = "Block retrieved successfully", body = ApiResponse<BlockResponse>),
+        (status = 404, description = "Block not found"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn get_block_by_hash(
     State(blockchain): State<Arc<BlockchainService>>,
     Path(hash): Path<String>,
@@ -61,6 +88,21 @@ pub async fn get_block_by_hash(
 }
 
 /// Get blocks with pagination
+///
+/// Retrieves a paginated list of blocks from the blockchain.
+#[utoipa::path(
+    get,
+    path = "/api/v1/blockchain/blocks",
+    tag = "Blockchain",
+    params(
+        ("page" = Option<u32>, Query, description = "Page number (default: 1)"),
+        ("limit" = Option<u32>, Query, description = "Items per page (default: 10)")
+    ),
+    responses(
+        (status = 200, description = "Blocks retrieved successfully", body = ApiResponse<PaginatedResponse<BlockResponse>>),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn get_blocks(
     State(blockchain): State<Arc<BlockchainService>>,
     Query(query): Query<BlockQuery>,
@@ -94,6 +136,20 @@ pub async fn get_blocks(
 }
 
 /// Get latest blocks
+///
+/// Retrieves the most recent blocks from the blockchain.
+#[utoipa::path(
+    get,
+    path = "/api/v1/blockchain/blocks/latest",
+    tag = "Blockchain",
+    params(
+        ("limit" = Option<u32>, Query, description = "Number of blocks to retrieve (default: 10)")
+    ),
+    responses(
+        (status = 200, description = "Latest blocks retrieved successfully", body = ApiResponse<Vec<BlockResponse>>),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn get_latest_blocks(
     State(blockchain): State<Arc<BlockchainService>>,
     Query(query): Query<BlockQuery>,

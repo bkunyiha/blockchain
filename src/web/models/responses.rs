@@ -1,8 +1,9 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 /// Generic API response wrapper
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct ApiResponse<T> {
     pub success: bool,
     pub data: Option<T>,
@@ -31,7 +32,7 @@ impl<T> ApiResponse<T> {
 }
 
 /// Blockchain information response
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct BlockchainInfoResponse {
     pub height: usize,
     pub difficulty: u32,
@@ -43,7 +44,7 @@ pub struct BlockchainInfoResponse {
 }
 
 /// Block response model
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct BlockResponse {
     pub hash: String,
     pub previous_hash: String,
@@ -57,7 +58,7 @@ pub struct BlockResponse {
 }
 
 /// Transaction response model
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct TransactionResponse {
     pub txid: String,
     pub is_coinbase: bool,
@@ -71,7 +72,7 @@ pub struct TransactionResponse {
 }
 
 /// Wallet response model
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct WalletResponse {
     pub address: String,
     pub public_key: String,
@@ -79,7 +80,7 @@ pub struct WalletResponse {
 }
 
 /// Balance response model
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct BalanceResponse {
     pub address: String,
     pub balance: i32,
@@ -89,7 +90,7 @@ pub struct BalanceResponse {
 }
 
 /// Mining status response
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct MiningStatusResponse {
     pub is_mining: bool,
     pub mining_address: Option<String>,
@@ -99,7 +100,7 @@ pub struct MiningStatusResponse {
 }
 
 /// Health check response
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct HealthResponse {
     pub status: String,
     pub version: String,
@@ -110,7 +111,7 @@ pub struct HealthResponse {
 }
 
 /// Paginated response wrapper
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct PaginatedResponse<T> {
     pub items: Vec<T>,
     pub page: u32,

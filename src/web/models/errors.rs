@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use utoipa::ToSchema;
 
 /// Web-specific error types
 #[derive(Debug, Serialize, Deserialize)]
@@ -45,7 +46,7 @@ impl WebError {
 }
 
 /// Error response model
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct ErrorResponse {
     pub error: String,
     pub message: String,

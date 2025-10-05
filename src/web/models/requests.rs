@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 use validator::Validate;
 
 /// Request model for creating a new wallet
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate, ToSchema)]
 pub struct CreateWalletRequest {
     #[validate(length(
         min = 1,
@@ -13,7 +14,7 @@ pub struct CreateWalletRequest {
 }
 
 /// Request model for sending a transaction
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate, ToSchema)]
 pub struct SendTransactionRequest {
     #[validate(length(min = 26, max = 35, message = "Invalid from address format"))]
     pub from_address: String,
@@ -26,7 +27,7 @@ pub struct SendTransactionRequest {
 }
 
 /// Request model for mining operations
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate, ToSchema)]
 pub struct MiningRequest {
     #[validate(length(min = 26, max = 35, message = "Invalid mining address format"))]
     pub mining_address: String,
@@ -36,7 +37,7 @@ pub struct MiningRequest {
 }
 
 /// Request model for querying blocks
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate, ToSchema)]
 pub struct BlockQuery {
     #[validate(range(min = 0, message = "Page must be 0 or greater"))]
     pub page: Option<u32>,
@@ -48,7 +49,7 @@ pub struct BlockQuery {
 }
 
 /// Request model for querying transactions
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate, ToSchema)]
 pub struct TransactionQuery {
     #[validate(range(min = 0, message = "Page must be 0 or greater"))]
     pub page: Option<u32>,
@@ -60,7 +61,7 @@ pub struct TransactionQuery {
 }
 
 /// Request model for balance queries
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate, ToSchema)]
 pub struct BalanceQuery {
     #[validate(length(min = 26, max = 35, message = "Invalid address format"))]
     pub address: String,

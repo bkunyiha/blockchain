@@ -18,21 +18,21 @@ pub fn create_api_routes() -> Router<Arc<BlockchainService>> {
             get(blockchain::get_latest_blocks),
         )
         .route(
-            "/blockchain/blocks/:hash",
+            "/blockchain/blocks/{hash}",
             get(blockchain::get_block_by_hash),
         )
         // Wallet endpoints
         .route("/wallet", post(wallet::create_wallet))
         .route("/wallet/addresses", get(wallet::get_addresses))
-        .route("/wallet/:address", get(wallet::get_wallet_info))
-        .route("/wallet/:address/balance", get(wallet::get_balance))
+        .route("/wallet/{address}", get(wallet::get_wallet_info))
+        .route("/wallet/{address}/balance", get(wallet::get_balance))
         // Transaction endpoints
         .route("/transactions", post(transaction::send_transaction))
         .route("/transactions", get(transaction::get_transactions))
-        .route("/transactions/:txid", get(transaction::get_transaction))
+        .route("/transactions/{txid}", get(transaction::get_transaction))
         .route("/transactions/mempool", get(transaction::get_mempool))
         .route(
-            "/transactions/address/:address",
+            "/transactions/address/{address}",
             get(transaction::get_address_transactions),
         )
         // Mining endpoints

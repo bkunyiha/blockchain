@@ -5,6 +5,19 @@ use crate::service::blockchain_service::BlockchainService;
 use crate::web::models::{ApiResponse, MiningRequest, MiningStatusResponse};
 
 /// Start mining
+///
+/// Initiates mining operations for the specified address.
+#[utoipa::path(
+    post,
+    path = "/api/v1/mining/start",
+    tag = "Mining",
+    request_body = MiningRequest,
+    responses(
+        (status = 200, description = "Mining started successfully", body = ApiResponse<MiningStatusResponse>),
+        (status = 400, description = "Invalid mining address"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn start_mining(
     State(_blockchain): State<Arc<BlockchainService>>,
     Json(request): Json<MiningRequest>,
@@ -28,6 +41,17 @@ pub async fn start_mining(
 }
 
 /// Stop mining
+///
+/// Stops the current mining operations.
+#[utoipa::path(
+    post,
+    path = "/api/v1/mining/stop",
+    tag = "Mining",
+    responses(
+        (status = 200, description = "Mining stopped successfully", body = ApiResponse<MiningStatusResponse>),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn stop_mining(
     State(_blockchain): State<Arc<BlockchainService>>,
 ) -> Result<Json<ApiResponse<MiningStatusResponse>>, StatusCode> {
@@ -45,6 +69,17 @@ pub async fn stop_mining(
 }
 
 /// Get mining status
+///
+/// Retrieves the current mining status and statistics.
+#[utoipa::path(
+    get,
+    path = "/api/v1/mining/status",
+    tag = "Mining",
+    responses(
+        (status = 200, description = "Mining status retrieved successfully", body = ApiResponse<MiningStatusResponse>),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn get_mining_status(
     State(_blockchain): State<Arc<BlockchainService>>,
 ) -> Result<Json<ApiResponse<MiningStatusResponse>>, StatusCode> {
@@ -62,6 +97,19 @@ pub async fn get_mining_status(
 }
 
 /// Mine a single block (for testing)
+///
+/// Attempts to mine a single block with the specified mining address.
+#[utoipa::path(
+    post,
+    path = "/api/v1/mining/mine",
+    tag = "Mining",
+    request_body = MiningRequest,
+    responses(
+        (status = 200, description = "Block mining initiated successfully", body = ApiResponse<String>),
+        (status = 400, description = "Invalid mining address"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn mine_block(
     State(_blockchain): State<Arc<BlockchainService>>,
     Json(request): Json<MiningRequest>,
