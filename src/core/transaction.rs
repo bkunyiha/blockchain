@@ -152,7 +152,9 @@ impl Transaction {
         utxo_set: &UTXOSet,
     ) -> Result<Transaction> {
         let wallets = WalletService::new()?;
-        let from_wallet = wallets.get_wallet(from).expect("unable to find wallet");
+        let from_wallet = wallets
+            .get_wallet(from)
+            .ok_or_else(|| BtcError::UTXONotFoundError(from.to_string()))?;
         let public_key_hash = hash_pub_key(from_wallet.get_public_key());
 
         let (accumulated, valid_outputs) = utxo_set

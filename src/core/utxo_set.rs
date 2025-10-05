@@ -408,4 +408,15 @@ impl UTXOSet {
         debug!("Total balance for {}: {}", wlt_address, balance);
         Ok(balance)
     }
+
+    pub async fn utxo_count(&self, wlt_address: &str) -> Result<usize> {
+        let pub_key_hash = get_pub_key_hash(wlt_address).expect("Base58 decode error");
+        debug!("Getting balance for address: {}", wlt_address);
+        debug!("Public key hash: {:?}", pub_key_hash);
+
+        let count = self.find_utxo(pub_key_hash.as_slice()).await?.len();
+
+        debug!("Total count for {}: {}", wlt_address, count);
+        Ok(count)
+    }
 }

@@ -88,6 +88,8 @@ pub enum BtcError {
     WalletsSerializationError(String),
     #[error("Wallets deserialization error: {0}")]
     WalletsDeserializationError(String),
+    #[error("Wallet not found error: {0}")]
+    WalletNotFoundError(String),
 
     // Sled errors
     #[error("UTXO DB connection error: {0}")]
