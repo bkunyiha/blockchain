@@ -209,7 +209,7 @@ async fn test_server_creation() {
     let (blockchain, db_path) = create_test_blockchain().await;
 
     // Test that we can create a server (the blockchain field is private, so we can't test it directly)
-    let _server = blockchain::server::Server::new(blockchain);
+    let _server = blockchain::Server::new(blockchain);
     // If we get here without panicking, the server was created successfully
 
     // Cleanup

@@ -7,7 +7,8 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::compression::CompressionLayer;
 
-use crate::service::blockchain_service::BlockchainService;
+use crate::chain::BlockchainService;
+use crate::node::NodeContext;
 use crate::web::middleware::cors;
 use crate::web::models::{ApiResponse, ErrorResponse};
 use crate::web::routes::{create_all_api_routes, create_web_routes};
@@ -39,15 +40,24 @@ impl Default for WebServerConfig {
 /// Web server implementation
 pub struct WebServer {
     config: WebServerConfig,
-    blockchain: Arc<BlockchainService>,
+    node: Arc<NodeContext>,
 }
 
 impl WebServer {
-    /// Create a new web server instance
+    /// Create a new web server instance with NodeContext
     pub fn new(blockchain: BlockchainService, config: WebServerConfig) -> Self {
+        let node = NodeContext::new(blockchain);
         Self {
             config,
-            blockchain: Arc::new(blockchain),
+            node: Arc::new(node),
+        }
+    }
+
+    /// Create web server from NodeContext directly
+    pub fn from_node_context(node: NodeContext, config: WebServerConfig) -> Self {
+        Self {
+            config,
+            node: Arc::new(node),
         }
     }
 
@@ -56,7 +66,7 @@ impl WebServer {
         let app = Router::new()
             .merge(create_all_api_routes())
             .merge(create_web_routes())
-            .with_state(self.blockchain.clone());
+            .with_state(self.node.clone());
 
         // Add basic middleware
         let mut app = app;

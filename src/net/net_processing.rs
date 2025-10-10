@@ -1,15 +1,16 @@
-use crate::network::node::Node;
-use crate::server::{
-    CENTERAL_NODE, GLOBAL_MEMORY_POOL, GLOBAL_NODES, MessageType, NODE_VERSION, OpType, Package,
-    TCP_WRITE_TIMEOUT, TRANSACTION_THRESHOLD,
-};
-use crate::{Block, BlockchainService, GLOBAL_CONFIG, Transaction, UTXOSet};
+//! Network P2P operations (Bitcoin Core: net_processing)
+//!
+//! This module handles peer-to-peer communication operations,
+//! similar to Bitcoin Core's net_processing.cpp
+
+use crate::node::{GLOBAL_NODES, MessageType, NODE_VERSION, OpType, Package, TCP_WRITE_TIMEOUT};
+use crate::{Block, BlockchainService, GLOBAL_CONFIG, Transaction};
 
 use std::collections::HashSet;
 use std::io::Write;
 use std::net::{SocketAddr, TcpStream};
 use std::time::Duration;
-use tracing::{debug, error, info, warn};
+use tracing::{error, info};
 
 /// The `send_get_data` function sends a get_data request to a specified address.
 ///
@@ -90,12 +91,12 @@ pub async fn send_tx(addr_to: &SocketAddr, tx: &Transaction) {
     .await;
 }
 
-/// The `send_block` function sends a block to a specified address.
+/// The `send_known_nodes` function sends known nodes to a specified address.
 ///
 /// # Arguments
 ///
 /// * `addr` - A reference to the address.
-/// * `block` - A reference to the block.
+/// * `nodes` - A vector of socket addresses.
 pub async fn send_known_nodes(addr_to: &SocketAddr, nodes: Vec<SocketAddr>) {
     let node_addr = GLOBAL_CONFIG.get_node_addr();
     send_data(
@@ -185,209 +186,6 @@ async fn send_data(addr_to: &SocketAddr, pkg: Package) {
     let _ = stream.flush();
 }
 
-/// Add transaction to memory pool functionally
-async fn add_to_memory_pool(tx: Transaction, blockchain_service: &BlockchainService) {
-    debug!("\n");
-    debug!(
-        "******************************************************************************************************"
-    );
-    debug!(
-        "Adding transaction to memory pool: {:?}",
-        tx.get_tx_id_hex()
-    );
-    debug!(
-        "******************************************************************************************************\n"
-    );
-    GLOBAL_MEMORY_POOL
-        .add(tx.clone())
-        .expect("Memory pool add error");
-
-    let utxo_set = UTXOSet::new(blockchain_service.clone());
-    utxo_set
-        .set_global_mem_pool_flag(&tx.clone(), true)
-        .await
-        .expect("Failed to get blockchain");
-}
-
-/// Remove transaction from memory pool functionally
-pub async fn remove_from_memory_pool(tx: Transaction, blockchain: &BlockchainService) {
-    GLOBAL_MEMORY_POOL
-        .remove(tx.clone())
-        .expect("Memory pool remove error");
-
-    let utxo_set = UTXOSet::new(blockchain.clone());
-    utxo_set
-        .set_global_mem_pool_flag(&tx.clone(), false)
-        .await
-        .expect("Failed to get blockchain");
-}
-
-/// Check if transaction exists in memory pool
-fn transaction_exists_in_pool(tx: &Transaction) -> bool {
-    GLOBAL_MEMORY_POOL.contains_transaction(tx).unwrap_or(false)
-}
-
-/// Get nodes excluding the sender
-fn get_nodes_excluding_sender(addr_from: &SocketAddr) -> Vec<Node> {
-    GLOBAL_NODES
-        .get_nodes()
-        .expect("Global nodes get error")
-        .into_iter()
-        .filter(|node| {
-            let node_addr = node.get_addr();
-            let my_addr = GLOBAL_CONFIG.get_node_addr();
-            node_addr != *addr_from && node_addr != my_addr
-        })
-        .collect()
-}
-
-/// Broadcast transaction to nodes functionally
-async fn broadcast_transaction_to_nodes(nodes: &[Node], txid: Vec<u8>) {
-    let txid_clone = txid.clone();
-    nodes.iter().for_each(|node| {
-        let node_addr = node.get_addr();
-        let txid = txid_clone.clone();
-        tokio::spawn(async move {
-            send_inv(&node_addr, OpType::Tx, &[txid]).await;
-        });
-    });
-}
-
-/// Create coinbase transaction for mining
-fn create_mining_coinbase_transaction()
--> Result<Transaction, Box<dyn std::error::Error + Send + Sync>> {
-    let mining_address = GLOBAL_CONFIG
-        .get_mining_addr()
-        .expect("Mining address get error");
-    Transaction::new_coinbase_tx(mining_address.as_str())
-        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)
-}
-
-/// Check if mining should be triggered
-fn should_trigger_mining() -> bool {
-    let pool_size = GLOBAL_MEMORY_POOL.len().expect("Memory pool length error");
-    let is_miner = GLOBAL_CONFIG.is_miner();
-    pool_size >= TRANSACTION_THRESHOLD && is_miner
-}
-
-/// Clean up invalid transactions from memory pool
-async fn cleanup_invalid_transactions() {
-    info!("Cleaning up invalid transactions from memory pool");
-    // For now, this is a placeholder - in a production system,
-    // you would validate each transaction and remove invalid ones
-    // This ensures the memory pool stays clean and doesn't accumulate invalid transactions
-}
-
-/// Prepare transactions for mining
-fn prepare_mining_transactions()
--> Result<Vec<Transaction>, Box<dyn std::error::Error + Send + Sync>> {
-    let txs = GLOBAL_MEMORY_POOL
-        .get_all()
-        .expect("Memory pool get all error");
-
-    // Filter out any invalid transactions before mining
-    // This prevents invalid transactions from being included in blocks
-    let valid_txs: Vec<Transaction> = txs.into_iter().collect();
-
-    info!(
-        "Preparing to mine with {} valid transactions",
-        valid_txs.len()
-    );
-
-    let coinbase_tx = create_mining_coinbase_transaction()?;
-    let mut final_txs = valid_txs;
-    final_txs.push(coinbase_tx);
-
-    Ok(final_txs)
-}
-
-pub async fn process_transaction(
-    addr_from: &SocketAddr,
-    tx: Transaction,
-    blockchain: &BlockchainService,
-) {
-    // Check if transaction exists
-    if transaction_exists_in_pool(&tx) {
-        info!("Transaction: {:?} already exists", tx.get_id());
-        send_message(
-            addr_from,
-            MessageType::Error,
-            format!("Transaction: {} already exists", tx.get_tx_id_hex()),
-        )
-        .await;
-        return;
-    }
-
-    let txid = tx.get_id_bytes();
-
-    // Add to Memory Pool
-    add_to_memory_pool(tx, blockchain).await;
-
-    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
-
-    // If the node is the central node, broadcast the transaction to all other nodes
-    if my_node_addr.eq(&CENTERAL_NODE) {
-        let nodes = get_nodes_excluding_sender(addr_from);
-        broadcast_transaction_to_nodes(&nodes, txid).await;
-    }
-
-    // Check if mining should be triggered
-    if should_trigger_mining() {
-        match prepare_mining_transactions() {
-            Ok(txs) => {
-                if !txs.is_empty() {
-                    process_mine_block(txs, blockchain).await;
-                } else {
-                    warn!("Mining triggered but no valid transactions to mine");
-                }
-            }
-            Err(e) => {
-                error!("Failed to prepare mining transactions: {}", e);
-                // Clean up any invalid transactions from memory pool
-                cleanup_invalid_transactions().await;
-            }
-        }
-    }
-}
-
-/// Process mining block functionally
-async fn process_mine_block(txs: Vec<Transaction>, blockchain: &BlockchainService) {
-    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
-
-    // Mine a new block with the transactions in the memory pool
-    let new_block = blockchain
-        .mine_block(&txs)
-        .await
-        .expect("Blockchain mine block error");
-
-    // The mine_block() method already handles UTXO updates internally.
-    // Calling update_utxo_set() here would cause double UTXO updates, leading to multiple SUBSIDY rewards.
-    // This was another root cause of the consensus mechanism allowing all nodes to keep their SUBSIDY.
-    info!(
-        "New block {} is mined by node {}!",
-        new_block.get_hash(),
-        my_node_addr
-    );
-
-    // Remove transactions from memory pool functionally
-    for tx in &txs {
-        remove_from_memory_pool(tx.clone(), blockchain).await;
-    }
-
-    // Broadcast new block to nodes
-    let nodes = GLOBAL_NODES.get_nodes().expect("Global nodes get error");
-    nodes
-        .iter()
-        .filter(|node| !my_node_addr.eq(&node.get_addr()))
-        .for_each(|node| {
-            let node_addr = node.get_addr();
-            let block_hash = new_block.get_hash_bytes();
-            tokio::spawn(async move {
-                send_inv(&node_addr, OpType::Block, &[block_hash]).await;
-            });
-        });
-}
-
 /// The `process_known_nodes` function processes known nodes.
 /// 1) It will add new nodes to the global nodes set and send version to all new nodes plus sender.
 /// 2) If I know nodes not known by sender, then i will
@@ -468,37 +266,11 @@ pub async fn process_known_nodes(
         });
 }
 
-/// Bitcoin mining without including user transactions is possible because the core incentive for
-/// mining is the block reward (or block subsidy), not solely the transaction fees.
-/// Even if there are no transactions waiting in the mempool (the holding area for unconfirmed transactions),
-/// miners can still attempt to find a valid block by performing the necessary computational work.
-/// The block they mine will then include the coinbase transaction,
-/// which generates newly minted bitcoins as a reward to the successful miner.
-///
-/// Here's why miners can mine without user transactions and why it's sometimes done:
-/// - **Block Reward:** This is the primary incentive for mining. Every time a miner successfully adds a block to the blockchain, they receive a fixed amount of newly created Bitcoin. This reward is currently 3.125 BTC and halves approximately every four years.
-/// - **Security:** Even empty blocks (those containing only the coinbase transaction) contribute to the security of the Bitcoin network. They add to the cumulative Proof-of-Work, making it more difficult for an attacker to reverse previous transactions.
-/// - **Early Mining & Network Activity:** In the early days of Bitcoin, there were few user transactions, so mining was primarily driven by the block reward. Even today, empty blocks can occur, especially if a block is found very quickly after the previous one, not giving mining pools enough time to assemble a full block with transactions.
-/// - **Miner Efficiency:** Mining pools sometimes prioritize speed over including every available transaction. To maximize the chances of finding the next block and claiming the block reward, pools may begin hashing an empty block template immediately after a new block is broadcast. A full block template, containing transactions, is then sent shortly after.
-///
-/// In summary, Bitcoin miners can mine without including user transactions because they are rewarded with the
-/// newly minted bitcoins from the coinbase transaction. This process contributes to network security and helps
-/// bring new Bitcoin into circulation, even in the absence of user transactions.
-///
-pub async fn mine_empty_block(blockchain: &BlockchainService) {
-    if GLOBAL_CONFIG.is_miner() {
-        match prepare_mining_transactions() {
-            Ok(txs) => process_mine_block(txs, blockchain).await,
-            Err(e) => error!("Failed to prepare mining transactions: {}", e),
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::transaction::Transaction;
-    use crate::service::blockchain_service::BlockchainService;
+    use crate::chain::BlockchainService;
+    use crate::primitives::transaction::Transaction;
     use std::fs;
     use std::net::SocketAddr;
     use std::str::FromStr;
@@ -679,18 +451,6 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_process_transaction() {
-        let test_blockchain = TestBlockchain::new().await;
-        let genesis_address = generate_test_genesis_address();
-        let tx =
-            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create transaction");
-        let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
-
-        // This should not panic
-        process_transaction(&addr, tx, test_blockchain.blockchain()).await;
-    }
-
-    #[tokio::test]
     async fn test_process_known_nodes() {
         let test_blockchain = TestBlockchain::new().await;
         let addr = SocketAddr::from_str("127.0.0.1:8080").expect("Failed to parse address");
@@ -701,14 +461,6 @@ mod tests {
 
         // This should not panic
         process_known_nodes(test_blockchain.blockchain().clone(), &addr, nodes).await;
-    }
-
-    #[tokio::test]
-    async fn test_mine_empty_block() {
-        let test_blockchain = TestBlockchain::new().await;
-
-        // This should not panic
-        mine_empty_block(test_blockchain.blockchain()).await;
     }
 
     #[test]

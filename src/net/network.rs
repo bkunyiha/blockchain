@@ -1,11 +1,11 @@
 use crate::error::BtcError;
-use crate::network::operations::{
-    mine_empty_block, process_known_nodes, process_transaction, remove_from_memory_pool,
-    send_block, send_get_blocks, send_get_data, send_inv, send_message, send_tx, send_version,
+use crate::net::net_processing::{
+    process_known_nodes, send_block, send_get_blocks, send_get_data, send_inv, send_message,
+    send_tx, send_version,
 };
-use crate::network::server::{
+use crate::node::{
     AdminNodeQueryType, GLOBAL_BLOCKS_IN_TRANSIT, GLOBAL_MEMORY_POOL, GLOBAL_NODES, MessageType,
-    OpType, Package,
+    OpType, Package, mine_empty_block, process_transaction, remove_from_memory_pool,
 };
 use crate::{Block, BlockchainService, GLOBAL_CONFIG, Transaction, UTXOSet, validate_address};
 use data_encoding::HEXLOWER;

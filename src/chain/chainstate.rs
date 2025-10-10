@@ -1,7 +1,7 @@
-use crate::core::block::Block;
-use crate::core::transaction::{TXOutput, Transaction, TxSummary};
-use crate::core::utxo_set::UTXOSet;
+use crate::chain::utxo_set::UTXOSet;
 use crate::error::{BtcError, Result};
+use crate::primitives::block::Block;
+use crate::primitives::transaction::{TXOutput, Transaction, TxSummary};
 
 use sled::Db;
 use std::collections::HashMap;
@@ -202,7 +202,7 @@ impl BlockchainService {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::transaction::Transaction;
+    use crate::primitives::transaction::Transaction;
 
     use std::fs;
 

@@ -1,7 +1,9 @@
-use crate::core::block::{Block, GENESIS_BLOCK_PRE_BLOCK_HASH};
-use crate::core::blockchain::Blockchain;
-use crate::core::transaction::{TXOutput, Transaction, TxInputSummary, TxOutputSummary, TxSummary};
 use crate::error::{BtcError, Result};
+use crate::primitives::block::{Block, GENESIS_BLOCK_PRE_BLOCK_HASH};
+use crate::primitives::blockchain::Blockchain;
+use crate::primitives::transaction::{
+    TXOutput, Transaction, TxInputSummary, TxOutputSummary, TxSummary,
+};
 use crate::wallet::{convert_address, hash_pub_key};
 use sled::transaction::{TransactionResult, UnabortableTransactionError};
 use sled::{Db, IVec, Tree};
@@ -407,7 +409,7 @@ impl BlockchainFileSystem {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use blockchain::core::Block;
+    /// use blockchain::primitives::Block;
     /// use blockchain::store::file_system_db_chain::BlockchainFileSystem;
     ///
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
@@ -1347,10 +1349,10 @@ impl BlockchainIterator {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::transaction::Transaction;
-    use crate::core::utxo_set::UTXOSet;
-    use crate::service::blockchain_service::BlockchainService;
-    use crate::service::wallet_service::get_pub_key_hash;
+    use crate::chain::BlockchainService;
+    use crate::chain::UTXOSet;
+    use crate::primitives::transaction::Transaction;
+    use crate::wallet::get_pub_key_hash;
 
     use std::fs;
 
@@ -2359,7 +2361,7 @@ mod tests {
         // Step 6: Verify no ghost coins exist by checking UTXO set directly
         let utxos = utxo_set_after
             .find_utxo(
-                crate::service::wallet_service::get_pub_key_hash(&genesis_address)
+                crate::wallet::get_pub_key_hash(&genesis_address)
                     .expect("Failed to get pub key hash")
                     .as_slice(),
             )
@@ -2468,7 +2470,7 @@ mod tests {
         // Step 6: Verify no orphaned UTXOs exist
         let utxos = utxo_set_final
             .find_utxo(
-                crate::service::wallet_service::get_pub_key_hash(&genesis_address)
+                crate::wallet::get_pub_key_hash(&genesis_address)
                     .expect("Failed to get pub key hash")
                     .as_slice(),
             )
@@ -2500,8 +2502,8 @@ mod tests {
         let (mut blockchain, db_path) = create_test_blockchain().await;
 
         // Create wallets using the wallet service
-        let mut wallet_service = crate::service::wallet_service::WalletService::new()
-            .expect("Failed to create wallet service");
+        let mut wallet_service =
+            crate::wallet::WalletService::new().expect("Failed to create wallet service");
 
         let genesis_address = wallet_service
             .create_wallet()
@@ -2599,7 +2601,7 @@ mod tests {
         // Step 6: Verify coinbase transaction was removed
         let utxos_after = utxo_set_after
             .find_utxo(
-                crate::service::wallet_service::get_pub_key_hash(&genesis_address)
+                crate::wallet::get_pub_key_hash(&genesis_address)
                     .expect("Failed to get pub key hash")
                     .as_slice(),
             )
@@ -3294,8 +3296,8 @@ mod tests {
         let (blockchain, db_path) = create_test_blockchain().await;
 
         // Create wallets using the wallet service consistently
-        let mut wallet_service = crate::service::wallet_service::WalletService::new()
-            .expect("Failed to create wallet service");
+        let mut wallet_service =
+            crate::wallet::WalletService::new().expect("Failed to create wallet service");
         let genesis_address = wallet_service
             .create_wallet()
             .expect("Failed to create genesis wallet");
@@ -3436,8 +3438,8 @@ mod tests {
         let (blockchain3, db_path3) = create_test_blockchain().await;
 
         // Create wallets using the wallet service consistently
-        let mut wallet_service = crate::service::wallet_service::WalletService::new()
-            .expect("Failed to create wallet service");
+        let mut wallet_service =
+            crate::wallet::WalletService::new().expect("Failed to create wallet service");
 
         let node1_address = wallet_service
             .create_wallet()
@@ -3567,8 +3569,8 @@ mod tests {
         let (blockchain4, db_path4) = create_test_blockchain().await;
 
         // Create wallets using the wallet service consistently
-        let mut wallet_service = crate::service::wallet_service::WalletService::new()
-            .expect("Failed to create wallet service");
+        let mut wallet_service =
+            crate::wallet::WalletService::new().expect("Failed to create wallet service");
 
         let node1_address = wallet_service
             .create_wallet()
@@ -3801,8 +3803,8 @@ mod tests {
         let (mut blockchain4, db_path4) = create_test_blockchain().await;
 
         // Create wallet service for consistent wallet management across all nodes
-        let mut wallet_service = crate::service::wallet_service::WalletService::new()
-            .expect("Failed to create wallet service");
+        let mut wallet_service =
+            crate::wallet::WalletService::new().expect("Failed to create wallet service");
 
         let node1_address = wallet_service
             .create_wallet()

@@ -1,9 +1,8 @@
-use super::block::Block;
-use super::transaction::TXOutput;
-use super::transaction::Transaction;
+use crate::chain::chainstate::BlockchainService;
 use crate::error::{BtcError, Result};
-use crate::service::blockchain_service::BlockchainService;
-use crate::service::wallet_service::get_pub_key_hash;
+use crate::primitives::block::Block;
+use crate::primitives::transaction::{TXOutput, Transaction};
+use crate::wallet::get_pub_key_hash;
 use data_encoding::HEXLOWER;
 use std::collections::HashMap;
 use tracing::{debug, trace};

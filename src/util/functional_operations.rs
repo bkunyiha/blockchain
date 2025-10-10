@@ -1,4 +1,4 @@
-use crate::core::transaction::Transaction;
+use crate::primitives::transaction::Transaction;
 
 /// Functional utilities for transaction operations
 pub mod transaction {

@@ -1,5 +1,5 @@
-pub mod core;
-pub use core::*;
+pub mod primitives;
+pub use primitives::*;
 
 pub mod crypto;
 pub use crypto::*;
@@ -7,11 +7,14 @@ pub use crypto::*;
 pub mod error;
 pub use error::*;
 
-pub mod service;
-pub use service::*;
+pub mod chain;
+pub use chain::{BlockchainService, UTXOSet};
 
-pub mod network;
-pub use network::*;
+pub mod net;
+pub use net::*;
+
+pub mod node;
+pub use node::{ConnectNode, Node, NodeContext, Nodes, Server};
 
 mod config;
 pub use config::Config;
@@ -29,6 +32,13 @@ pub use wallet::*;
 pub mod web;
 // Don't re-export web to avoid naming conflicts.
 // Use Explicit Dependencies ie When you use web types, it's clear they're from the web layer
+
+// Moved from primitives/ to root level (Bitcoin Core alignment)
+pub mod txmempool;
+pub use txmempool::{BlockInTransit, MemoryPool};
+
+pub mod pow;
+pub use pow::ProofOfWork;
 
 #[cfg(test)]
 mod test_utils {

@@ -4,11 +4,11 @@ use axum::{
 };
 use std::sync::Arc;
 
-use crate::service::blockchain_service::BlockchainService;
+use crate::node::NodeContext;
 use crate::web::handlers::{blockchain, health, mining, transaction, wallet};
 
 /// Create the main API router
-pub fn create_api_routes() -> Router<Arc<BlockchainService>> {
+pub fn create_api_routes() -> Router<Arc<NodeContext>> {
     Router::new()
         // Blockchain endpoints
         .route("/blockchain", get(blockchain::get_blockchain_info))
@@ -42,7 +42,7 @@ pub fn create_api_routes() -> Router<Arc<BlockchainService>> {
         .route("/mining/mine", post(mining::mine_block))
 }
 
-pub fn create_monitor_api_routes() -> Router<Arc<BlockchainService>> {
+pub fn create_monitor_api_routes() -> Router<Arc<NodeContext>> {
     Router::new()
         // Health endpoints
         .route("/health", get(health::health_check))
@@ -51,17 +51,17 @@ pub fn create_monitor_api_routes() -> Router<Arc<BlockchainService>> {
 }
 
 /// Create admin API routes
-pub fn create_admin_api_routes() -> Router<Arc<BlockchainService>> {
+pub fn create_admin_api_routes() -> Router<Arc<NodeContext>> {
     Router::new().nest("/api/admin", create_api_routes())
 }
 
 /// Create API v1 router with version prefix
-pub fn create_api_v1_routes() -> Router<Arc<BlockchainService>> {
+pub fn create_api_v1_routes() -> Router<Arc<NodeContext>> {
     Router::new().nest("/api/v1", create_api_routes())
 }
 
 /// Create all API routes (v1 and future versions)
-pub fn create_all_api_routes() -> Router<Arc<BlockchainService>> {
+pub fn create_all_api_routes() -> Router<Arc<NodeContext>> {
     Router::new()
         .merge(create_api_v1_routes())
         .merge(create_monitor_api_routes())

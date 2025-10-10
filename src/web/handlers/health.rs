@@ -2,7 +2,7 @@ use axum::{extract::State, http::StatusCode, response::Json};
 use std::sync::Arc;
 use std::time::Instant;
 
-use crate::service::blockchain_service::BlockchainService;
+use crate::node::NodeContext;
 use crate::web::models::{ApiResponse, HealthResponse};
 
 /// Health check endpoint
@@ -19,13 +19,13 @@ use crate::web::models::{ApiResponse, HealthResponse};
     )
 )]
 pub async fn health_check(
-    State(blockchain): State<Arc<BlockchainService>>,
+    State(node): State<Arc<NodeContext>>,
 ) -> Result<Json<ApiResponse<HealthResponse>>, StatusCode> {
     let start_time = Instant::now();
 
     // Get blockchain information
-    let height = blockchain
-        .get_best_height()
+    let height = node
+        .get_blockchain_height()
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
@@ -35,12 +35,15 @@ pub async fn health_check(
     // Get memory usage (simplified)
     let memory_usage_mb = get_memory_usage();
 
+    // Get connected peers
+    let connected_peers = node.get_peer_count().unwrap_or(0);
+
     let health_response = HealthResponse {
         status: "healthy".to_string(),
         version: env!("CARGO_PKG_VERSION").to_string(),
         uptime_seconds,
         blockchain_height: height,
-        connected_peers: 0, // TODO: Get from network layer
+        connected_peers,
         memory_usage_mb,
     };
 
@@ -77,10 +80,10 @@ pub async fn liveness() -> Result<Json<ApiResponse<String>>, StatusCode> {
     )
 )]
 pub async fn readiness(
-    State(blockchain): State<Arc<BlockchainService>>,
+    State(node): State<Arc<NodeContext>>,
 ) -> Result<Json<ApiResponse<String>>, StatusCode> {
     // Check if blockchain is accessible
-    match blockchain.get_best_height().await {
+    match node.get_blockchain_height().await {
         Ok(_) => Ok(Json(ApiResponse::success("ready".to_string()))),
         Err(_) => Err(StatusCode::SERVICE_UNAVAILABLE),
     }

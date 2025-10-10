@@ -1,7 +1,7 @@
 use blockchain::web::server::create_web_server;
 use blockchain::{
-    BtcError, ConnectNode, GLOBAL_CONFIG, Result, Server, UTXOSet, WalletService, convert_address,
-    hash_pub_key, service::blockchain_service::BlockchainService, validate_address,
+    BlockchainService, BtcError, ConnectNode, GLOBAL_CONFIG, Result, Server, UTXOSet,
+    WalletService, convert_address, hash_pub_key, validate_address,
 };
 use clap::{Parser, Subcommand};
 use std::collections::HashSet;

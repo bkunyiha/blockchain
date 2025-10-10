@@ -1,10 +1,10 @@
-use crate::service::blockchain_service::BlockchainService;
+use crate::node::NodeContext;
 use crate::web::openapi::create_swagger_ui;
 use axum::{Router, response::Html, routing::get};
 use std::sync::Arc;
 
 /// Create web UI routes (for future web interface)
-pub fn create_web_routes() -> Router<Arc<BlockchainService>> {
+pub fn create_web_routes() -> Router<Arc<NodeContext>> {
     Router::new()
         .route("/", get(dashboard))
         .route("/dashboard", get(dashboard))

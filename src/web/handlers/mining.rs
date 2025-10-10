@@ -1,7 +1,7 @@
 use axum::{extract::State, http::StatusCode, response::Json};
 use std::sync::Arc;
 
-use crate::service::blockchain_service::BlockchainService;
+use crate::node::NodeContext;
 use crate::web::models::{ApiResponse, MiningRequest, MiningStatusResponse};
 
 /// Start mining
@@ -19,7 +19,7 @@ use crate::web::models::{ApiResponse, MiningRequest, MiningStatusResponse};
     )
 )]
 pub async fn start_mining(
-    State(_blockchain): State<Arc<BlockchainService>>,
+    State(_node): State<Arc<NodeContext>>,
     Json(request): Json<MiningRequest>,
 ) -> Result<Json<ApiResponse<MiningStatusResponse>>, StatusCode> {
     // Validate mining address
@@ -53,7 +53,7 @@ pub async fn start_mining(
     )
 )]
 pub async fn stop_mining(
-    State(_blockchain): State<Arc<BlockchainService>>,
+    State(_node): State<Arc<NodeContext>>,
 ) -> Result<Json<ApiResponse<MiningStatusResponse>>, StatusCode> {
     // TODO: Implement mining stop logic
     // For now, return a placeholder
@@ -81,7 +81,7 @@ pub async fn stop_mining(
     )
 )]
 pub async fn get_mining_status(
-    State(_blockchain): State<Arc<BlockchainService>>,
+    State(_node): State<Arc<NodeContext>>,
 ) -> Result<Json<ApiResponse<MiningStatusResponse>>, StatusCode> {
     // TODO: Implement mining status retrieval
     // For now, return a placeholder
@@ -111,7 +111,7 @@ pub async fn get_mining_status(
     )
 )]
 pub async fn mine_block(
-    State(_blockchain): State<Arc<BlockchainService>>,
+    State(_node): State<Arc<NodeContext>>,
     Json(request): Json<MiningRequest>,
 ) -> Result<Json<ApiResponse<String>>, StatusCode> {
     // Validate mining address

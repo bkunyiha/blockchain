@@ -5,8 +5,8 @@ use axum::{
 };
 use std::sync::Arc;
 
-use crate::core::Block;
-use crate::service::blockchain_service::BlockchainService;
+use crate::node::NodeContext;
+use crate::primitives::Block;
 use crate::web::models::{
     ApiResponse, BlockQuery, BlockResponse, BlockchainInfoResponse, PaginatedResponse,
 };
@@ -25,15 +25,16 @@ use crate::web::models::{
     )
 )]
 pub async fn get_blockchain_info(
-    State(blockchain): State<Arc<BlockchainService>>,
+    State(node): State<Arc<NodeContext>>,
 ) -> Result<Json<ApiResponse<BlockchainInfoResponse>>, StatusCode> {
-    let height = blockchain
-        .get_best_height()
+    let height = node
+        .get_blockchain_height()
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     // Get the last block by height
-    let last_block = blockchain
+    let last_block = node
+        .blockchain()
         .get_last_block()
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
@@ -42,12 +43,17 @@ pub async fn get_blockchain_info(
         .map(|block| block.get_hash().to_string())
         .unwrap_or_else(|| "genesis".to_string());
 
+    // Get mempool size
+    let mempool_size = node
+        .get_mempool_size()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     let info = BlockchainInfoResponse {
         height,
         difficulty: 1, // TODO: Get actual difficulty
         total_blocks: height + 1,
         total_transactions: 0, // TODO: Calculate total transactions
-        mempool_size: 0,       // TODO: Get from memory pool
+        mempool_size,
         last_block_hash,
         last_block_timestamp: chrono::Utc::now(),
     };
@@ -72,11 +78,11 @@ pub async fn get_blockchain_info(
     )
 )]
 pub async fn get_block_by_hash(
-    State(blockchain): State<Arc<BlockchainService>>,
+    State(node): State<Arc<NodeContext>>,
     Path(hash): Path<String>,
 ) -> Result<Json<ApiResponse<BlockResponse>>, StatusCode> {
-    let block = blockchain
-        .get_block_by_hash(hash.as_bytes())
+    let block = node
+        .get_block(&hash)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
@@ -104,21 +110,22 @@ pub async fn get_block_by_hash(
     )
 )]
 pub async fn get_blocks(
-    State(blockchain): State<Arc<BlockchainService>>,
+    State(node): State<Arc<NodeContext>>,
     Query(query): Query<BlockQuery>,
 ) -> Result<Json<ApiResponse<PaginatedResponse<BlockResponse>>>, StatusCode> {
     let page = query.page.unwrap_or(0);
     let limit = query.limit.unwrap_or(10);
 
-    let height = blockchain
-        .get_best_height()
+    let height = node
+        .get_blockchain_height()
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     let start_height = (page * limit) as usize;
     let end_height = std::cmp::min(start_height + limit as usize, height + 1);
 
-    let blocks = blockchain
+    let blocks = node
+        .blockchain()
         .get_blocks_by_height(start_height, end_height)
         .await
         .map(|blocks| {
@@ -151,24 +158,13 @@ pub async fn get_blocks(
     )
 )]
 pub async fn get_latest_blocks(
-    State(blockchain): State<Arc<BlockchainService>>,
+    State(node): State<Arc<NodeContext>>,
     Query(query): Query<BlockQuery>,
 ) -> Result<Json<ApiResponse<Vec<BlockResponse>>>, StatusCode> {
     let limit = query.limit.unwrap_or(10) as usize;
 
-    let height = blockchain
-        .get_best_height()
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    let start_height = if height >= limit {
-        height - limit + 1
-    } else {
-        0
-    };
-
-    let blocks = blockchain
-        .get_blocks_by_height(start_height, height)
+    let blocks = node
+        .get_latest_blocks(limit)
         .await
         .map(|blocks| {
             blocks
