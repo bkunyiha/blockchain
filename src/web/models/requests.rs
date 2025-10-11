@@ -1,3 +1,4 @@
+use crate::WalletAddress;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
@@ -16,11 +17,11 @@ pub struct CreateWalletRequest {
 /// Request model for sending a transaction
 #[derive(Debug, Serialize, Deserialize, Validate, ToSchema)]
 pub struct SendTransactionRequest {
-    #[validate(length(min = 26, max = 35, message = "Invalid from address format"))]
-    pub from_address: String,
+    /// Already validated via WalletAddress::validate()
+    pub from_address: WalletAddress,
 
-    #[validate(length(min = 26, max = 35, message = "Invalid to address format"))]
-    pub to_address: String,
+    /// Already validated via WalletAddress::validate()
+    pub to_address: WalletAddress,
 
     #[validate(range(min = 1, message = "Amount must be greater than 0"))]
     pub amount: i32,

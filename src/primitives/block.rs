@@ -205,7 +205,7 @@ mod tests {
     use super::*;
     use crate::primitives::transaction::Transaction;
 
-    fn generate_test_genesis_address() -> String {
+    fn generate_test_genesis_address() -> crate::WalletAddress {
         // Create a wallet to get a valid Bitcoin address
         let wallet = crate::wallet::Wallet::new().expect("Failed to create test wallet");
         wallet.get_address().expect("Failed to get wallet address")
@@ -229,8 +229,8 @@ mod tests {
     #[test]
     fn test_block_serialization_deserialization() {
         let genesis_address = generate_test_genesis_address();
-        let coinbase_tx =
-            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
+        let coinbase_tx = Transaction::new_coinbase_tx(&genesis_address.clone())
+            .expect("Failed to create coinbase tx");
         let transactions = vec![coinbase_tx];
         let block = Block::new_block("prev_hash".to_string(), transactions.as_slice(), 1);
 
@@ -261,8 +261,8 @@ mod tests {
     #[test]
     fn test_block_with_transactions() {
         let genesis_address = generate_test_genesis_address();
-        let coinbase_tx =
-            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
+        let coinbase_tx = Transaction::new_coinbase_tx(&genesis_address.clone())
+            .expect("Failed to create coinbase tx");
         let transactions = vec![coinbase_tx];
 
         let block = Block::new_block("prev_hash".to_string(), transactions.as_slice(), 1);

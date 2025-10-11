@@ -22,11 +22,6 @@ pub async fn start_mining(
     State(_node): State<Arc<NodeContext>>,
     Json(request): Json<MiningRequest>,
 ) -> Result<Json<ApiResponse<MiningStatusResponse>>, StatusCode> {
-    // Validate mining address
-    if !crate::validate_address(&request.mining_address).unwrap_or(false) {
-        return Err(StatusCode::BAD_REQUEST);
-    }
-
     // TODO: Implement mining start logic
     // For now, return a placeholder
     let response = MiningStatusResponse {
@@ -112,13 +107,8 @@ pub async fn get_mining_status(
 )]
 pub async fn mine_block(
     State(_node): State<Arc<NodeContext>>,
-    Json(request): Json<MiningRequest>,
+    Json(_request): Json<MiningRequest>,
 ) -> Result<Json<ApiResponse<String>>, StatusCode> {
-    // Validate mining address
-    if !crate::validate_address(&request.mining_address).unwrap_or(false) {
-        return Err(StatusCode::BAD_REQUEST);
-    }
-
     // TODO: Implement single block mining
     // For now, return a placeholder
     Ok(Json(ApiResponse::success(

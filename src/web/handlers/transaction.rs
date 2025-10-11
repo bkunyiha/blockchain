@@ -30,13 +30,6 @@ pub async fn send_transaction(
     State(node): State<Arc<NodeContext>>,
     Json(request): Json<SendTransactionRequest>,
 ) -> Result<Json<ApiResponse<TransactionResponse>>, StatusCode> {
-    // Validate addresses
-    if !crate::validate_address(&request.from_address).unwrap_or(false)
-        || !crate::validate_address(&request.to_address).unwrap_or(false)
-    {
-        return Err(StatusCode::BAD_REQUEST);
-    }
-
     // Create transaction using UTXO set
     let utxo_set = UTXOSet::new(node.blockchain().clone());
 
@@ -53,16 +46,17 @@ pub async fn send_transaction(
     })?;
 
     // Submit transaction through node context (validates, adds to mempool, broadcasts)
-    let txid = node.submit_transaction(tx.clone()).await.map_err(|e| {
+    node.submit_transaction(tx.clone()).await.map_err(|e| {
         error!("Failed to submit transaction: {}", e);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
+    let txid = tx.get_tx_id_hex();
 
     info!("Transaction {} submitted successfully", txid);
 
     // Create response using the actual TransactionResponse structure
     let response = TransactionResponse {
-        txid: txid.clone(),
+        txid,
         is_coinbase: false,
         input_count: tx.get_vin().len(),
         output_count: tx.get_vout().len(),
@@ -231,14 +225,9 @@ pub async fn get_mempool(
 )]
 pub async fn get_address_transactions(
     State(node): State<Arc<NodeContext>>,
-    Path(address): Path<String>,
+    Path(_address): Path<String>,
     Query(query): Query<TransactionQuery>,
 ) -> Result<Json<ApiResponse<PaginatedResponse<TransactionResponse>>>, StatusCode> {
-    // Validate address format
-    if !crate::validate_address(&address).unwrap_or(false) {
-        return Err(StatusCode::BAD_REQUEST);
-    }
-
     // Get all mempool transactions and filter by address
     let transactions = node.get_mempool_transactions().map_err(|e| {
         error!("Failed to get transactions: {}", e);

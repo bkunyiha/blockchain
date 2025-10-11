@@ -1,3 +1,4 @@
+use crate::wallet::WalletAddress;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::env;
@@ -19,7 +20,7 @@ const MINING_ADDRESS_KEY: &str = "MINING_ADDRESS";
 ///
 pub struct Config {
     node_addresses: RwLock<HashMap<String, SocketAddr>>,
-    minner_addresses: RwLock<HashMap<String, String>>,
+    minner_addresses: RwLock<HashMap<String, WalletAddress>>,
 }
 
 impl Config {
@@ -45,12 +46,12 @@ impl Config {
     /// # Arguments
     ///
     /// * `addr` - A reference to the mining address.
-    pub fn set_mining_addr(&self, addr: String) {
+    pub fn set_mining_addr(&self, addr: &WalletAddress) {
         let mut miners = self.minner_addresses.write().unwrap();
-        let _ = miners.insert(String::from(MINING_ADDRESS_KEY), addr);
+        let _ = miners.insert(String::from(MINING_ADDRESS_KEY), addr.clone());
     }
 
-    pub fn get_mining_addr(&self) -> Option<String> {
+    pub fn get_mining_addr(&self) -> Option<WalletAddress> {
         let miners = self.minner_addresses.read().unwrap();
         miners.get(MINING_ADDRESS_KEY).cloned()
     }

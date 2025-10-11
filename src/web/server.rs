@@ -7,7 +7,6 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::compression::CompressionLayer;
 
-use crate::chain::BlockchainService;
 use crate::node::NodeContext;
 use crate::web::middleware::cors;
 use crate::web::models::{ApiResponse, ErrorResponse};
@@ -45,11 +44,10 @@ pub struct WebServer {
 
 impl WebServer {
     /// Create a new web server instance with NodeContext
-    pub fn new(blockchain: BlockchainService, config: WebServerConfig) -> Self {
-        let node = NodeContext::new(blockchain);
+    pub fn new(node_context: NodeContext, config: WebServerConfig) -> Self {
         Self {
             config,
-            node: Arc::new(node),
+            node: Arc::new(node_context),
         }
     }
 
@@ -136,14 +134,14 @@ async fn handle_errors(
 }
 
 /// Create a web server with default configuration
-pub fn create_web_server(blockchain: BlockchainService) -> WebServer {
-    WebServer::new(blockchain, WebServerConfig::default())
+pub fn create_web_server(node_context: NodeContext) -> WebServer {
+    WebServer::new(node_context, WebServerConfig::default())
 }
 
 /// Create a web server with custom configuration
 pub fn create_web_server_with_config(
-    blockchain: BlockchainService,
+    node_context: NodeContext,
     config: WebServerConfig,
 ) -> WebServer {
-    WebServer::new(blockchain, config)
+    WebServer::new(node_context, config)
 }

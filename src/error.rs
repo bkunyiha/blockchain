@@ -9,6 +9,9 @@ pub enum BtcError {
     #[error("Invalid value:{0} for miner. Must be yes or no.")]
     InvalidValueForMiner(String),
 
+    #[error("Node is not a miner")]
+    NotAMiner,
+
     // Unrecoverable errors
     #[error("Invalid transaction")]
     InvalidTransaction,
@@ -53,6 +56,8 @@ pub enum BtcError {
     TransactionIdHexDecodingError(String),
     #[error("Transaction not found error: {0}")]
     TransactionNotFoundError(String),
+    #[error("Transaction Already Exists In Memory Pool: {0}")]
+    TransactionAlreadyExistsInMemoryPool(String),
 
     #[error("Address encoding error: {0}")]
     AddressEncodingError(String),

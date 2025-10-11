@@ -2,6 +2,7 @@ use crate::chain::chainstate::BlockchainService;
 use crate::error::{BtcError, Result};
 use crate::primitives::block::Block;
 use crate::primitives::transaction::{TXOutput, Transaction};
+use crate::wallet::WalletAddress;
 use crate::wallet::get_pub_key_hash;
 use data_encoding::HEXLOWER;
 use std::collections::HashMap;
@@ -391,31 +392,35 @@ impl UTXOSet {
         Ok(())
     }
 
-    pub async fn get_balance(&self, wlt_address: &str) -> Result<i32> {
-        let pub_key_hash = get_pub_key_hash(wlt_address).expect("Base58 decode error");
-        debug!("Getting balance for address: {}", wlt_address);
+    pub async fn get_balance(&self, wlt_address: &WalletAddress) -> Result<i32> {
+        let pub_key_hash = get_pub_key_hash(wlt_address)?;
+        debug!("Getting balance for address: {}", wlt_address.as_str());
         debug!("Public key hash: {:?}", pub_key_hash);
 
         let utxos = self.find_utxo(pub_key_hash.as_slice()).await?;
-        debug!("Found {} UTXOs for address {}", utxos.len(), wlt_address);
+        debug!(
+            "Found {} UTXOs for address {}",
+            utxos.len(),
+            wlt_address.as_str()
+        );
 
         let mut balance = 0;
         for (idx, utxo) in utxos.iter().enumerate() {
             debug!("UTXO {}: value = {}", idx, utxo.get_value());
             balance += utxo.get_value();
         }
-        debug!("Total balance for {}: {}", wlt_address, balance);
+        debug!("Total balance for {}: {}", wlt_address.as_str(), balance);
         Ok(balance)
     }
 
-    pub async fn utxo_count(&self, wlt_address: &str) -> Result<usize> {
-        let pub_key_hash = get_pub_key_hash(wlt_address).expect("Base58 decode error");
-        debug!("Getting balance for address: {}", wlt_address);
+    pub async fn utxo_count(&self, wlt_address: &WalletAddress) -> Result<usize> {
+        let pub_key_hash = get_pub_key_hash(wlt_address)?;
+        debug!("Getting balance for address: {}", wlt_address.as_str());
         debug!("Public key hash: {:?}", pub_key_hash);
 
         let count = self.find_utxo(pub_key_hash.as_slice()).await?.len();
 
-        debug!("Total count for {}: {}", wlt_address, count);
+        debug!("Total count for {}: {}", wlt_address.as_str(), count);
         Ok(count)
     }
 }

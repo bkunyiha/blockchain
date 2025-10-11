@@ -202,12 +202,10 @@ This project follows **Bitcoin Core's proven architecture** for maximum compatib
 | `node/context.rs` | `node/context.cpp` | Node coordination | ✅ |
 | `node/txmempool.rs` | `txmempool.cpp` | Mempool operations | ✅ |
 | `node/miner.rs` | `miner.cpp` | Mining & block assembly | ✅ |
-| `node/validation.rs` | `validation.cpp` | Transaction validation | ⚠️ Needs central validation |
 | `node/peers.rs` | `addrman.cpp` | Peer address management | ⚠️ Needs enhancement |
 | `node/server.rs` | `node/*.cpp` | Node server coordination | ✅ |
 | **`src/net/`** | **`src/net/`** | P2P networking layer | ✅ |
 | `net/net_processing.rs` | `net_processing.cpp` | P2P protocol operations | ✅ |
-| `net/net.rs` | `net.cpp` | Connection & message handling | ⚠️ Needs connection manager |
 | **`src/wallet/`** | **`src/wallet/`** | Wallet functionality | ✅ |
 | `wallet/wallet_impl.rs` | `wallet/wallet.cpp` | Core wallet implementation | ✅  |
 | `wallet/wallet_service.rs` | `wallet/walletdb.cpp` | Wallet persistence | ✅  |
@@ -251,7 +249,7 @@ The blockchain implements Bitcoin's **Nakamoto Consensus** with the following me
                          │
 ┌────────────────────────┴────────────────────────────────────────┐
 │                       Node Layer                                 │
-│   (Context, Mempool, Miner, Validation, Peers, Server)         │
+│        (Context, Mempool, Miner, Peers, Server)                │
 └──────┬──────────────────┬──────────────────┬────────────────────┘
        │                  │                  │
 ┌──────┴──────┐  ┌───────┴───────┐  ┌──────┴──────────┐

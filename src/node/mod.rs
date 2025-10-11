@@ -8,7 +8,6 @@ pub mod miner;
 pub mod peers;
 pub mod server;
 pub mod txmempool;
-pub mod validation;
 
 pub use context::NodeContext;
 pub use miner::{
@@ -17,4 +16,3 @@ pub use miner::{
 pub use peers::{Node, Nodes};
 pub use server::*;
 pub use txmempool::{add_to_memory_pool, remove_from_memory_pool, transaction_exists_in_pool};
-pub use validation::process_transaction;

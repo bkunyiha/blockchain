@@ -1,7 +1,8 @@
+use blockchain::node::NodeContext;
 use blockchain::web::server::create_web_server;
 use blockchain::{
     BlockchainService, BtcError, ConnectNode, GLOBAL_CONFIG, Result, Server, UTXOSet,
-    WalletService, convert_address, hash_pub_key, validate_address,
+    WalletAddress, WalletService, convert_address, hash_pub_key,
 };
 use clap::{Parser, Subcommand};
 use std::collections::HashSet;
@@ -74,13 +75,10 @@ fn initialize_logging() {
 }
 
 /// Create a new wallet and return the address
-fn create_wallet() -> Result<String> {
+fn create_wallet() -> Result<WalletAddress> {
     WalletService::new()
         .and_then(|mut wallets| wallets.create_wallet())
-        .map(|address| {
-            info!("Your new address: {}", address);
-            address
-        })
+        .inspect(|address| info!("Your new address: {}", address.as_str()))
 }
 
 /// List all wallet addresses
@@ -89,7 +87,7 @@ fn list_addresses() -> Result<()> {
         wallets
             .get_addresses()
             .iter()
-            .for_each(|address| info!("{}", address));
+            .for_each(|address| info!("{}", address.as_str()));
     })
 }
 
@@ -97,21 +95,24 @@ fn list_addresses() -> Result<()> {
 fn format_transaction_input(input: &blockchain::TXInput) -> String {
     let txid_hex = input.get_input_tx_id_hex();
     let pub_key_hash = hash_pub_key(input.get_pub_key());
-    let address =
-        convert_address(pub_key_hash.as_slice()).unwrap_or_else(|_| "Unknown".to_string());
+    let address = convert_address(pub_key_hash.as_slice())
+        .map(|a| a.as_string())
+        .unwrap_or_else(|_| "Unknown".to_string());
 
     format!(
         "-- Input txid = {}, vout = {}, from = {}",
         txid_hex,
         input.get_vout(),
-        address,
+        address.as_str(),
     )
 }
 
 /// Format transaction output information
 fn format_transaction_output(output: &blockchain::TXOutput) -> String {
     let pub_key_hash = output.get_pub_key_hash();
-    let address = convert_address(pub_key_hash).unwrap_or_else(|_| "Unknown".to_string());
+    let address = convert_address(pub_key_hash)
+        .map(|a| a.as_string())
+        .unwrap_or_else(|_| "Unknown".to_string());
 
     format!("-- Output value = {}, to = {}", output.get_value(), address)
 }
@@ -159,37 +160,26 @@ async fn print_blockchain() -> Result<()> {
 }
 
 /// Validate miner configuration
-fn validate_miner_config(wlt_mining_addr: Option<&str>, is_miner: &IsMiner) -> Result<()> {
+fn validate_miner_config(
+    wlt_mining_addr: Option<&WalletAddress>,
+    is_miner: &IsMiner,
+) -> Result<()> {
     match is_miner {
         IsMiner::Yes => {
             if let Some(wlt_mining_addr) = wlt_mining_addr {
-                validate_address(wlt_mining_addr).and_then(|is_valid| {
-                    if is_valid {
-                        info!(
-                            "Mining is on. Address to receive rewards: {}",
-                            wlt_mining_addr
-                        );
-                        GLOBAL_CONFIG.set_mining_addr(wlt_mining_addr.parse().unwrap());
-                        Ok(())
-                    } else {
-                        Err(BtcError::InvalidValueForMiner(
-                            "Wrong miner address!".to_string(),
-                        ))
-                    }
-                })
-            } else {
-                Ok(())
+                GLOBAL_CONFIG.set_mining_addr(wlt_mining_addr);
             }
+            Ok(())
         }
         IsMiner::No => Ok(()),
     }
 }
 
 /// Create blockchain for seed node
-async fn create_seed_blockchain(wlt_mining_addr: &str) -> Result<BlockchainService> {
+async fn create_seed_blockchain(wlt_mining_addr: &WalletAddress) -> Result<BlockchainService> {
     info!(
         "Seed Node, Creating BlockChain With Address: {}",
-        wlt_mining_addr
+        wlt_mining_addr.as_str()
     );
     let blockchain = BlockchainService::initialize(wlt_mining_addr).await?;
     let utxo_set = UTXOSet::new(blockchain.clone());
@@ -199,7 +189,7 @@ async fn create_seed_blockchain(wlt_mining_addr: &str) -> Result<BlockchainServi
 
 /// Handle blockchain opening with fallback logic
 async fn open_or_create_blockchain(
-    wlt_mining_addr: Option<&str>,
+    wlt_mining_addr: Option<&WalletAddress>,
     connect_nodes: &[ConnectNode],
 ) -> Result<BlockchainService> {
     match BlockchainService::default().await {
@@ -227,13 +217,14 @@ async fn open_or_create_blockchain(
 async fn start_node(
     is_miner: IsMiner,
     connect_nodes: Vec<ConnectNode>,
-    wlt_mining_addr: Option<String>,
+    wlt_mining_addr: Option<WalletAddress>,
 ) -> Result<()> {
     // Validate miner configuration
-    validate_miner_config(wlt_mining_addr.as_deref(), &is_miner)?;
+    validate_miner_config(wlt_mining_addr.as_ref(), &is_miner)?;
 
     // Open or create blockchain
-    let blockchain = open_or_create_blockchain(wlt_mining_addr.as_deref(), &connect_nodes).await?;
+    let blockchain = open_or_create_blockchain(wlt_mining_addr.as_ref(), &connect_nodes).await?;
+    let node_context = NodeContext::new(blockchain);
 
     // Get node configuration
     let socket_addr = GLOBAL_CONFIG.get_node_addr();
@@ -244,8 +235,8 @@ async fn start_node(
     let connect_nodes_set: HashSet<ConnectNode> = connect_nodes.into_iter().collect();
 
     // Start both servers concurrently using tokio::spawn
-    let network_server = Server::new(blockchain.clone());
-    let web_server = create_web_server(blockchain);
+    let network_server = Server::new(node_context.clone());
+    let web_server = create_web_server(node_context);
 
     info!("Starting both network and web servers...");
 
@@ -289,7 +280,10 @@ async fn process_command(command: Command) -> Result<()> {
             is_miner,
             connect_nodes,
             wlt_mining_addr,
-        } => start_node(is_miner, connect_nodes, wlt_mining_addr).await,
+        } => {
+            let validated_addr = wlt_mining_addr.map(WalletAddress::validate).transpose()?;
+            start_node(is_miner, connect_nodes, validated_addr).await
+        }
     }
 }
 

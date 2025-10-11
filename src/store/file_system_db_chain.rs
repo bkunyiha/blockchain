@@ -4,6 +4,7 @@ use crate::primitives::blockchain::Blockchain;
 use crate::primitives::transaction::{
     TXOutput, Transaction, TxInputSummary, TxOutputSummary, TxSummary,
 };
+use crate::wallet::WalletAddress;
 use crate::wallet::{convert_address, hash_pub_key};
 use sled::transaction::{TransactionResult, UnabortableTransactionError};
 use sled::{Db, IVec, Tree};
@@ -27,7 +28,7 @@ pub struct BlockchainFileSystem {
 }
 
 impl BlockchainFileSystem {
-    pub async fn create_blockchain(genesis_address: &str) -> Result<Self> {
+    pub async fn create_blockchain(genesis_address: &WalletAddress) -> Result<Self> {
         let file_system_blocks_tree = env::var("TREE_DIR").unwrap_or(DEFAULT_TREE_DIR.to_string());
         let file_system_tree_dir =
             env::var("BLOCKS_TREE").unwrap_or(DEFAULT_BLOCKS_TREE.to_string());
@@ -411,9 +412,11 @@ impl BlockchainFileSystem {
     /// ```rust,no_run
     /// use blockchain::primitives::Block;
     /// use blockchain::store::file_system_db_chain::BlockchainFileSystem;
+    /// use blockchain::WalletAddress;
     ///
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut blockchain = BlockchainFileSystem::create_blockchain("test_address").await?;
+    /// let wallet_address = WalletAddress::validate("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa".to_string())?;
+    /// let mut blockchain = BlockchainFileSystem::create_blockchain(&wallet_address).await?;
     /// let block = Block::new_block("prev_hash".to_string(), &[], 1);
     /// blockchain.add_block(&block).await?;
     /// # Ok(())
@@ -1356,7 +1359,7 @@ mod tests {
 
     use std::fs;
 
-    fn generate_test_genesis_address() -> String {
+    fn generate_test_genesis_address() -> WalletAddress {
         // Create a wallet to get a valid Bitcoin address
         let wallet = crate::wallet::Wallet::new().expect("Failed to create test wallet");
         wallet.get_address().expect("Failed to get wallet address")
@@ -1544,8 +1547,8 @@ mod tests {
         let genesis_address = generate_test_genesis_address();
 
         // Create a new block
-        let coinbase_tx =
-            Transaction::new_coinbase_tx(&genesis_address).expect("Failed to create coinbase tx");
+        let coinbase_tx = Transaction::new_coinbase_tx(&genesis_address.clone())
+            .expect("Failed to create coinbase tx");
         let transactions = vec![coinbase_tx];
         let new_block = blockchain
             .mine_block(transactions.as_slice())
@@ -2998,9 +3001,12 @@ mod tests {
         for i in 1..=6 {
             // Each node creates a block with the same parent (genesis block) but different content
             // Use different addresses to ensure different work values
-            let node_address = format!("{}Node{}", genesis_address, i);
-            let coinbase_tx =
-                Transaction::new_coinbase_tx(&node_address).expect("Failed to create coinbase tx");
+            // Create a unique wallet for each competing node
+            let node_wallet =
+                crate::Wallet::new().expect(&format!("Failed to create wallet for node {}", i));
+            let node_wallet_address = node_wallet.get_address().expect("Failed to get address");
+            let coinbase_tx = Transaction::new_coinbase_tx(&node_wallet_address)
+                .expect("Failed to create coinbase tx");
             // All competing blocks should have the same height (2) but different content
             // to ensure different work values through different transaction hashes
             let block = Block::new_block(genesis_hash.to_string(), &[coinbase_tx], 2);
@@ -4114,7 +4120,8 @@ mod tests {
 
         // Create two competing blocks with same height but different content
         // Block B will have a different recipient address to ensure different work
-        let recipient_b = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2".to_string();
+        let wallet_b = crate::Wallet::new().expect("Failed to create wallet");
+        let recipient_b = wallet_b.get_address().expect("Failed to get address");
         let coinbase_tx_b = Transaction::new_coinbase_tx(&recipient_b)
             .expect("Failed to create block B coinbase tx");
         let block_b = blockchain
@@ -4127,7 +4134,8 @@ mod tests {
             .rollback_to_block(&block_a.get_hash())
             .await
             .expect("Failed to rollback to block A");
-        let recipient_c = "1CvBMSEYstWetqTFn5Au4m4GFg7xJaNVN3".to_string();
+        let wallet_c = crate::Wallet::new().expect("Failed to create wallet");
+        let recipient_c = wallet_c.get_address().expect("Failed to get address");
         let coinbase_tx_c = Transaction::new_coinbase_tx(&recipient_c)
             .expect("Failed to create block C coinbase tx");
         let block_c = blockchain
@@ -4357,7 +4365,9 @@ mod tests {
 
         if initial_height == 0 {
             // Create and add genesis block if blockchain is empty
-            let genesis_tx = Transaction::new_coinbase_tx(node1_address)
+            let node1_wallet =
+                WalletAddress::validate(node1_address.to_string()).expect("Invalid address");
+            let genesis_tx = Transaction::new_coinbase_tx(&node1_wallet)
                 .expect("Failed to create genesis coinbase transaction");
             let _genesis_block = blockchain
                 .mine_block(&[genesis_tx])
@@ -4372,9 +4382,11 @@ mod tests {
         }
 
         // Create coinbase transactions for empty blocks
-        let coinbase_tx1 = Transaction::new_coinbase_tx(node1_address)
+        let node1_wallet =
+            WalletAddress::validate(node1_address.to_string()).expect("Invalid address");
+        let coinbase_tx1 = Transaction::new_coinbase_tx(&node1_wallet)
             .expect("Failed to create coinbase transaction 1");
-        let coinbase_tx2 = Transaction::new_coinbase_tx(node1_address)
+        let coinbase_tx2 = Transaction::new_coinbase_tx(&node1_wallet)
             .expect("Failed to create coinbase transaction 2");
 
         // Mine 2 empty blocks

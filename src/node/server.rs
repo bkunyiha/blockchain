@@ -1,6 +1,7 @@
+use crate::net::net_processing;
 use crate::net::net_processing::{send_known_nodes, send_version};
-use crate::net::network::process_stream;
-use crate::{BlockInTransit, BlockchainService, MemoryPool, Nodes};
+use crate::node::NodeContext;
+use crate::{BlockInTransit, MemoryPool, Nodes};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -81,12 +82,14 @@ impl FromStr for ConnectNode {
 
 #[derive(Debug, Clone)]
 pub struct Server {
-    blockchain: BlockchainService,
+    node_context: NodeContext,
 }
 
 impl Server {
-    pub fn new(blockchain: BlockchainService) -> Server {
-        Server { blockchain }
+    pub fn new(blockchain: NodeContext) -> Server {
+        Server {
+            node_context: blockchain,
+        }
     }
 
     #[instrument(skip(self, addrs, connect_nodes))]
@@ -100,8 +103,8 @@ impl Server {
         // If the node is not the central node, send the version message to the central node.
         if !addrs.eq(&CENTERAL_NODE) {
             let best_height = self
-                .blockchain
-                .get_best_height()
+                .node_context
+                .get_blockchain_height()
                 .await
                 .expect("Blockchain read error");
             send_version(&CENTERAL_NODE, best_height).await;
@@ -135,12 +138,12 @@ impl Server {
 
         // Serve the incoming connections.
         for stream in listener.incoming() {
-            let blockchain = self.blockchain.clone();
+            let blockchain = self.node_context.clone();
 
             tokio::spawn(async move {
                 match stream {
                     Ok(stream) => {
-                        process_stream(blockchain, stream)
+                        net_processing::process_stream(blockchain, stream)
                             .await
                             .expect("Serve error");
                     }

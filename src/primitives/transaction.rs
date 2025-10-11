@@ -1,6 +1,6 @@
+use crate::WalletAddress;
 use crate::chain::BlockchainService;
 use crate::chain::UTXOSet;
-use crate::convert_address;
 use crate::crypto::hash::sha256_digest;
 use crate::crypto::signature::{schnorr_sign_digest, schnorr_sign_verify};
 use crate::error::{BtcError, Result};
@@ -60,7 +60,7 @@ pub struct TXOutput {
 }
 
 impl TXOutput {
-    pub fn new(value: i32, address: &str) -> Result<TXOutput> {
+    pub fn new(value: i32, address: &WalletAddress) -> Result<TXOutput> {
         let mut output = TXOutput {
             value,
             in_global_mem_pool: false,
@@ -83,7 +83,7 @@ impl TXOutput {
     // It uses the `ADDRESS_CHECK_SUM_LEN` constant to get the length of the address check sum.
     // It uses the `pub_key_hash` field to store the public key hash.
     // It returns the new output.
-    fn lock(&mut self, address: &str) -> Result<()> {
+    fn lock(&mut self, address: &WalletAddress) -> Result<()> {
         let pub_key_hash = get_pub_key_hash(address)?;
         self.pub_key_hash = pub_key_hash;
         Ok(())
@@ -117,7 +117,7 @@ impl Transaction {
     // It uses the `SUBSIDY` constant to set the value of the transaction.
     // It uses the `to` parameter to set the address of the recipient.
     // It returns the new transaction.
-    pub fn new_coinbase_tx(to: &str) -> Result<Transaction> {
+    pub fn new_coinbase_tx(to: &WalletAddress) -> Result<Transaction> {
         let txout = TXOutput::new(SUBSIDY, to)?;
         let tx_input = TXInput {
             signature: Uuid::new_v4().as_bytes().to_vec(),
@@ -146,15 +146,15 @@ impl Transaction {
     /// * `from` - The address of the sender.
     /// * `to` - The address of the recipient.
     pub async fn new_utxo_transaction(
-        from: &str,
-        to: &str,
+        from: &WalletAddress,
+        to: &WalletAddress,
         amount: i32,
         utxo_set: &UTXOSet,
     ) -> Result<Transaction> {
         let wallets = WalletService::new()?;
         let from_wallet = wallets
             .get_wallet(from)
-            .ok_or_else(|| BtcError::UTXONotFoundError(from.to_string()))?;
+            .ok_or_else(|| BtcError::UTXONotFoundError(from.as_string()))?;
         let public_key_hash = hash_pub_key(from_wallet.get_public_key());
 
         let (accumulated, valid_outputs) = utxo_set
@@ -162,7 +162,9 @@ impl Transaction {
             .await?;
         debug!(
             "Transaction creation: from={}, to={}, amount={}",
-            from, to, amount
+            from.as_str(),
+            to.as_str(),
+            amount
         );
         debug!(
             "Found spendable outputs: accumulated={}, valid_outputs={:?}",
@@ -192,7 +194,7 @@ impl Transaction {
 
         if accumulated > amount {
             let change = accumulated - amount;
-            debug!("Creating change output: {} to {}", change, from);
+            debug!("Creating change output: {} to {}", change, from.as_str());
             outputs.push(TXOutput::new(change, from)?); // to: Return change to the sender
         }
 
@@ -208,15 +210,6 @@ impl Transaction {
             tx.get_vin().len(),
             tx.get_vout().len()
         );
-        for (idx, output) in tx.get_vout().iter().enumerate() {
-            debug!(
-                "Output {}: value={}, address={}",
-                idx,
-                output.get_value(),
-                convert_address(output.get_pub_key_hash())
-                    .unwrap_or_else(|_| "invalid".to_string())
-            );
-        }
         tx.sign(utxo_set.get_blockchain(), from_wallet.get_pkcs8())
             .await?;
         Ok(tx)
@@ -395,10 +388,10 @@ impl Transaction {
 pub struct TxInputSummary {
     txid_hex: String,
     output_idx: usize,
-    wlt_addr: String,
+    wlt_addr: WalletAddress,
 }
 impl TxInputSummary {
-    pub fn new(txid_hex: String, output_idx: usize, wlt_addr: String) -> TxInputSummary {
+    pub fn new(txid_hex: String, output_idx: usize, wlt_addr: WalletAddress) -> TxInputSummary {
         TxInputSummary {
             txid_hex,
             output_idx,
@@ -411,20 +404,20 @@ impl TxInputSummary {
     pub fn get_output_idx(&self) -> usize {
         self.output_idx
     }
-    pub fn get_wlt_addr(&self) -> &str {
+    pub fn get_wlt_addr(&self) -> &WalletAddress {
         &self.wlt_addr
     }
 }
 #[derive(Clone, Serialize, Deserialize)]
 pub struct TxOutputSummary {
-    wlt_addr: String,
+    wlt_addr: WalletAddress,
     value: i32,
 }
 impl TxOutputSummary {
-    pub fn new(wlt_addr: String, value: i32) -> TxOutputSummary {
+    pub fn new(wlt_addr: WalletAddress, value: i32) -> TxOutputSummary {
         TxOutputSummary { wlt_addr, value }
     }
-    pub fn get_wlt_addr(&self) -> &str {
+    pub fn get_wlt_addr(&self) -> &WalletAddress {
         &self.wlt_addr
     }
     pub fn get_value(&self) -> i32 {
@@ -468,7 +461,7 @@ impl TxSummary {
 mod tests {
     use super::*;
 
-    fn generate_test_genesis_address() -> String {
+    fn generate_test_genesis_address() -> crate::WalletAddress {
         // Create a wallet to get a valid Bitcoin address
         let wallet = crate::wallet::Wallet::new().expect("Failed to create test wallet");
         wallet.get_address().expect("Failed to get wallet address")
@@ -477,8 +470,8 @@ mod tests {
     #[test]
     fn test_coinbase_transaction_creation() {
         let address = generate_test_genesis_address(); // Valid Bitcoin address
-        let tx =
-            Transaction::new_coinbase_tx(&address).expect("Failed to create coinbase transaction");
+        let tx = Transaction::new_coinbase_tx(&address.clone())
+            .expect("Failed to create coinbase transaction");
 
         assert!(tx.is_coinbase());
         assert_eq!(tx.get_vout().len(), 1);
@@ -563,7 +556,7 @@ mod tests {
         let value = 100;
         let address = generate_test_genesis_address();
 
-        let tx_output = TXOutput::new(value, &address).expect("Failed to create output");
+        let tx_output = TXOutput::new(value, &address.clone()).expect("Failed to create output");
 
         assert_eq!(tx_output.get_value(), value);
         assert!(!tx_output.get_pub_key_hash().is_empty());
@@ -573,7 +566,7 @@ mod tests {
     fn test_transaction_output_lock_unlock() {
         let value = 100;
         let address = generate_test_genesis_address();
-        let tx_output = TXOutput::new(value, &address).expect("Failed to create output");
+        let tx_output = TXOutput::new(value, &address.clone()).expect("Failed to create output");
 
         // Test locking with pub_key_hash
         let pub_key_hash = tx_output.get_pub_key_hash();

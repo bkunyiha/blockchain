@@ -27,7 +27,7 @@ pub mod store;
 pub use store::*;
 
 pub mod wallet;
-pub use wallet::*;
+pub use wallet::{Wallet, WalletAddress, WalletService, convert_address, hash_pub_key};
 
 pub mod web;
 // Don't re-export web to avoid naming conflicts.

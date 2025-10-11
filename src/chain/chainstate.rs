@@ -1,3 +1,4 @@
+use crate::WalletAddress;
 use crate::chain::utxo_set::UTXOSet;
 use crate::error::{BtcError, Result};
 use crate::primitives::block::Block;
@@ -22,7 +23,7 @@ impl Clone for BlockchainService {
     }
 }
 impl BlockchainService {
-    pub async fn initialize(genesis_address: &str) -> Result<BlockchainService> {
+    pub async fn initialize(genesis_address: &WalletAddress) -> Result<BlockchainService> {
         let blockchain = BlockchainFileSystem::create_blockchain(genesis_address).await?;
         Ok(BlockchainService(Arc::new(TokioRwLock::new(blockchain))))
     }
@@ -206,7 +207,7 @@ mod tests {
 
     use std::fs;
 
-    fn generate_test_genesis_address() -> String {
+    fn generate_test_genesis_address() -> WalletAddress {
         // Create a wallet to get a valid Bitcoin address
         let wallet = crate::wallet::Wallet::new().expect("Failed to create test wallet");
         wallet.get_address().expect("Failed to get wallet address")
@@ -275,7 +276,9 @@ mod tests {
         }
 
         /// Create blockchain with retry logic to handle database lock issues
-        async fn create_blockchain_with_retry(genesis_address: &str) -> Result<BlockchainService> {
+        async fn create_blockchain_with_retry(
+            genesis_address: &WalletAddress,
+        ) -> Result<BlockchainService> {
             for attempt in 1..=3 {
                 match BlockchainService::initialize(genesis_address).await {
                     Ok(bc) => return Ok(bc),

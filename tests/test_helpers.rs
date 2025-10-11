@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use tempfile::TempDir;
 
 /// Generate a unique genesis address for testing
-pub fn generate_test_genesis_address() -> String {
+pub fn generate_test_genesis_address() -> blockchain::WalletAddress {
     blockchain::Wallet::new()
         .and_then(|wallet| wallet.get_address())
         .expect("Failed to create test wallet address")
@@ -24,7 +24,7 @@ pub fn set_blockchain_env_vars(db_path: &PathBuf) {
 
 /// Create a blockchain with given genesis address
 pub async fn create_blockchain_with_address(
-    genesis_address: &str,
+    genesis_address: &blockchain::WalletAddress,
     db_path: &PathBuf,
 ) -> BlockchainService {
     set_blockchain_env_vars(db_path);
@@ -43,7 +43,7 @@ pub async fn create_temp_blockchain() -> (BlockchainService, TempDir) {
 }
 
 /// Create a coinbase transaction for given address
-pub fn create_coinbase_transaction(address: &str) -> Transaction {
+pub fn create_coinbase_transaction(address: &blockchain::WalletAddress) -> Transaction {
     Transaction::new_coinbase_tx(address).expect("Failed to create coinbase transaction")
 }
 
@@ -69,7 +69,7 @@ pub async fn add_block(blockchain: &BlockchainService, block: &blockchain::Block
 /// Create a single block with coinbase transaction
 pub async fn create_single_block(
     blockchain: &BlockchainService,
-    address: &str,
+    address: &blockchain::WalletAddress,
 ) -> blockchain::Block {
     let coinbase_tx = create_coinbase_transaction(address);
     let transactions = vec![coinbase_tx];
@@ -136,12 +136,12 @@ pub async fn verify_blockchain_integrity(blockchain: &BlockchainService) -> bool
 }
 
 /// Create a single test address
-pub fn create_single_test_address(wallets: &mut WalletService) -> String {
+pub fn create_single_test_address(wallets: &mut WalletService) -> blockchain::WalletAddress {
     wallets.create_wallet().expect("Failed to create wallet")
 }
 
 /// Create multiple test addresses using functional approach
-pub fn create_test_addresses(count: usize) -> Vec<String> {
+pub fn create_test_addresses(count: usize) -> Vec<blockchain::WalletAddress> {
     let mut wallets = create_test_wallets();
     (0..count)
         .map(|_| create_single_test_address(&mut wallets))
@@ -149,8 +149,8 @@ pub fn create_test_addresses(count: usize) -> Vec<String> {
 }
 
 /// Validate that all addresses are non-empty
-pub fn validate_addresses(addresses: &[String]) -> bool {
-    addresses.iter().all(|addr| !addr.is_empty())
+pub fn validate_addresses(addresses: &[blockchain::WalletAddress]) -> bool {
+    addresses.iter().all(|addr| !addr.as_str().is_empty())
 }
 
 /// Compose blockchain creation with validation
@@ -208,7 +208,7 @@ mod tests {
     fn test_create_test_wallets() {
         let mut wallets = create_test_wallets();
         let address = create_single_test_address(&mut wallets);
-        assert!(!address.is_empty());
+        assert!(!address.as_str().is_empty());
     }
 
     #[tokio::test]

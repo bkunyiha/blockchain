@@ -82,7 +82,7 @@ pub async fn get_block_by_hash(
     Path(hash): Path<String>,
 ) -> Result<Json<ApiResponse<BlockResponse>>, StatusCode> {
     let block = node
-        .get_block(&hash)
+        .get_block_by_hash(&hash)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 

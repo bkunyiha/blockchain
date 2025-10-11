@@ -6,7 +6,7 @@ use std::str::FromStr;
 mod test_helpers;
 
 /// Generate a unique genesis address for testing
-fn generate_test_genesis_address() -> String {
+fn generate_test_genesis_address() -> blockchain::WalletAddress {
     blockchain::Wallet::new()
         .and_then(|wallet| wallet.get_address())
         .expect("Failed to create test wallet address")
@@ -31,7 +31,10 @@ fn set_blockchain_env_vars(db_path: &str) {
 }
 
 /// Create a blockchain with given genesis address and database path
-async fn create_blockchain_with_config(genesis_address: &str, db_path: &str) -> BlockchainService {
+async fn create_blockchain_with_config(
+    genesis_address: &blockchain::WalletAddress,
+    db_path: &str,
+) -> BlockchainService {
     set_blockchain_env_vars(db_path);
     BlockchainService::initialize(genesis_address)
         .await
@@ -40,7 +43,7 @@ async fn create_blockchain_with_config(genesis_address: &str, db_path: &str) -> 
 
 /// Create a blockchain with given genesis address and database path (clears existing data)
 async fn create_blockchain_with_config_clean(
-    genesis_address: &str,
+    genesis_address: &blockchain::WalletAddress,
     db_path: &str,
 ) -> BlockchainService {
     let _ = std::fs::remove_dir_all(db_path);
@@ -87,7 +90,7 @@ impl Drop for TestDatabaseGuard {
 }
 
 /// Create a coinbase transaction for given address
-fn create_coinbase_transaction(address: &str) -> Transaction {
+fn create_coinbase_transaction(address: &blockchain::WalletAddress) -> Transaction {
     Transaction::new_coinbase_tx(address).expect("Failed to create coinbase transaction")
 }
 
@@ -111,7 +114,10 @@ async fn add_block(blockchain: &BlockchainService, block: &blockchain::Block) {
 }
 
 /// Create and add a single block with coinbase transaction
-async fn create_and_add_block(blockchain: &BlockchainService, address: &str) -> blockchain::Block {
+async fn create_and_add_block(
+    blockchain: &BlockchainService,
+    address: &blockchain::WalletAddress,
+) -> blockchain::Block {
     let coinbase_tx = create_coinbase_transaction(address);
     let transactions = vec![coinbase_tx];
     let block = mine_block(blockchain, &transactions).await;
@@ -174,7 +180,7 @@ async fn test_blockchain_integration() {
 async fn test_wallet_integration() {
     let (mut wallets, _temp_dir) = create_wallet_with_temp_path();
     let address = wallets.create_wallet().expect("Failed to create wallet");
-    assert!(!address.is_empty());
+    assert!(!address.as_str().is_empty());
 
     // Test getting wallet
     let wallet = wallets.get_wallet(&address).expect("Failed to get wallet");
@@ -209,7 +215,8 @@ async fn test_server_creation() {
     let (blockchain, db_path) = create_test_blockchain().await;
 
     // Test that we can create a server (the blockchain field is private, so we can't test it directly)
-    let _server = blockchain::Server::new(blockchain);
+    let node_context = blockchain::node::NodeContext::new(blockchain);
+    let _server = blockchain::Server::new(node_context);
     // If we get here without panicking, the server was created successfully
 
     // Cleanup

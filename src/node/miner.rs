@@ -3,23 +3,21 @@
 //! This module handles block creation and mining operations, similar to
 //! Bitcoin Core's miner.cpp (BlockAssembler, CreateNewBlock)
 
+use super::txmempool::remove_from_memory_pool;
+use crate::error::{BtcError, Result};
 use crate::net::net_processing::send_inv;
 use crate::node::{GLOBAL_MEMORY_POOL, GLOBAL_NODES, OpType};
-use crate::{BlockchainService, GLOBAL_CONFIG, Transaction};
+use crate::{Block, BlockchainService, GLOBAL_CONFIG, Transaction};
 use tracing::{error, info};
-
-use super::txmempool::remove_from_memory_pool;
 
 const TRANSACTION_THRESHOLD: usize = 3;
 
 /// Create coinbase transaction for mining
-fn create_mining_coinbase_transaction()
--> Result<Transaction, Box<dyn std::error::Error + Send + Sync>> {
+fn create_mining_coinbase_transaction() -> Result<Transaction> {
     let mining_address = GLOBAL_CONFIG
         .get_mining_addr()
         .expect("Mining address get error");
-    Transaction::new_coinbase_tx(mining_address.as_str())
-        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)
+    Transaction::new_coinbase_tx(&mining_address)
 }
 
 /// Check if mining should be triggered
@@ -30,8 +28,7 @@ pub fn should_trigger_mining() -> bool {
 }
 
 /// Prepare transactions for mining
-pub fn prepare_mining_transactions()
--> Result<Vec<Transaction>, Box<dyn std::error::Error + Send + Sync>> {
+pub fn prepare_mining_transactions() -> Result<Vec<Transaction>> {
     let txs = GLOBAL_MEMORY_POOL
         .get_all()
         .expect("Memory pool get all error");
@@ -53,14 +50,14 @@ pub fn prepare_mining_transactions()
 }
 
 /// Process mining block functionally
-pub async fn process_mine_block(txs: Vec<Transaction>, blockchain: &BlockchainService) {
+pub async fn process_mine_block(
+    txs: Vec<Transaction>,
+    blockchain: &BlockchainService,
+) -> Result<Block> {
     let my_node_addr = GLOBAL_CONFIG.get_node_addr();
 
     // Mine a new block with the transactions in the memory pool
-    let new_block = blockchain
-        .mine_block(&txs)
-        .await
-        .expect("Blockchain mine block error");
+    let new_block = blockchain.mine_block(&txs).await?;
 
     // The mine_block() method already handles UTXO updates internally.
     // Calling update_utxo_set() here would cause double UTXO updates, leading to multiple SUBSIDY rewards.
@@ -88,6 +85,7 @@ pub async fn process_mine_block(txs: Vec<Transaction>, blockchain: &BlockchainSe
                 send_inv(&node_addr, OpType::Block, &[block_hash]).await;
             });
         });
+    Ok(new_block)
 }
 
 /// Bitcoin mining without including user transactions is possible because the core incentive for
@@ -107,19 +105,25 @@ pub async fn process_mine_block(txs: Vec<Transaction>, blockchain: &BlockchainSe
 /// newly minted bitcoins from the coinbase transaction. This process contributes to network security and helps
 /// bring new Bitcoin into circulation, even in the absence of user transactions.
 ///
-pub async fn mine_empty_block(blockchain: &BlockchainService) {
+pub async fn mine_empty_block(blockchain: &BlockchainService) -> Result<Block> {
     if GLOBAL_CONFIG.is_miner() {
         match prepare_mining_transactions() {
             Ok(txs) => process_mine_block(txs, blockchain).await,
-            Err(e) => error!("Failed to prepare mining transactions: {}", e),
+            Err(e) => {
+                error!("Failed to prepare mining transactions: {}", e);
+                Err(e)
+            }
         }
+    } else {
+        Err(BtcError::NotAMiner)
     }
 }
 
 /// Clean up invalid transactions from memory pool
-pub async fn cleanup_invalid_transactions() {
+pub async fn cleanup_invalid_transactions() -> Result<()> {
     info!("Cleaning up invalid transactions from memory pool");
     // For now, this is a placeholder - in a production system,
     // you would validate each transaction and remove invalid ones
     // This ensures the memory pool stays clean and doesn't accumulate invalid transactions
+    Ok(())
 }
