@@ -219,7 +219,7 @@ impl BlockchainFileSystem {
             match iterator.next() {
                 None => break,
                 Some(block) => {
-                    for tx in block.get_transactions() {
+                    for tx in block.get_transactions().await? {
                         let txid_hex = tx.get_tx_id_hex();
 
                         // Add all outputs to UTXO set
@@ -246,7 +246,7 @@ impl BlockchainFileSystem {
             match iterator.next() {
                 None => break,
                 Some(block) => {
-                    for tx in block.get_transactions() {
+                    for tx in block.get_transactions().await? {
                         // Mark inputs as spent (only for non-coinbase transactions)
                         if tx.not_coinbase() {
                             for tx_in in tx.get_vin() {
@@ -303,7 +303,7 @@ impl BlockchainFileSystem {
             match iterator.next() {
                 None => break,
                 Some(block) => {
-                    for transaction in block.get_transactions() {
+                    for transaction in block.get_transactions().await? {
                         if txid.eq(transaction.get_id()) {
                             return Ok(Some(transaction.clone()));
                         }
@@ -321,7 +321,7 @@ impl BlockchainFileSystem {
             match iterator.next() {
                 None => break,
                 Some(block) => {
-                    for tx in block.get_transactions() {
+                    for tx in block.get_transactions().await? {
                         let cur_txid_hex = tx.get_tx_id_hex();
                         let mut current_transactions_summary = TxSummary::new(cur_txid_hex.clone());
 
@@ -1095,7 +1095,7 @@ impl BlockchainFileSystem {
         // Process transactions in reverse order (newest first)
         // This ensures that if a transaction depends on another in the same block,
         // we restore dependencies before dependents
-        for curr_block_tx in block.get_transactions().iter().rev() {
+        for curr_block_tx in block.get_transactions().await? {
             // STEP 1: Remove this transaction's outputs from UTXO set
             // This handles both coinbase and regular transactions
             // For coinbase: removes the subsidy output (e.g., 50 coins)
@@ -1191,7 +1191,7 @@ impl BlockchainFileSystem {
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
 
         // Process each transaction in the block
-        for curr_block_tx in block.get_transactions() {
+        for curr_block_tx in block.get_transactions().await? {
             // Process inputs for non-coinbase transactions
             // Coinbase transactions don't have inputs (they create new coins)
             if !curr_block_tx.is_coinbase() {
@@ -1669,7 +1669,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_mine_block() {
+    async fn test_mine_block() -> Result<()> {
         let (blockchain, db_path) = create_test_blockchain().await;
 
         let genesis_address = generate_test_genesis_address();
@@ -1685,9 +1685,10 @@ mod tests {
         // Check that the block was mined correctly
         assert_eq!(new_block.get_height(), 2); // Height 2 because genesis block is height 1
         assert!(!new_block.get_hash().is_empty());
-        assert!(new_block.get_transactions().len() > 0);
+        assert!(new_block.get_transactions().await?.len() > 0);
 
         cleanup_test_blockchain(&db_path);
+        Ok(())
     }
 
     struct TestPersistenceBlockchain {
@@ -2501,7 +2502,7 @@ mod tests {
     /// 3. Regular transaction outputs are properly removed
     /// 4. UTXO set state is consistent after rollback
     #[tokio::test]
-    async fn test_rollback_utxo_set_method_isolation() {
+    async fn test_rollback_utxo_set_method_isolation() -> Result<()> {
         let (mut blockchain, db_path) = create_test_blockchain().await;
 
         // Create wallets using the wallet service
@@ -2612,7 +2613,7 @@ mod tests {
             .expect("Failed to find UTXOs after rollback");
 
         // Should not have the coinbase transaction from test_block
-        let test_block_coinbase_value: i32 = test_block.get_transactions()[0]
+        let test_block_coinbase_value: i32 = test_block.get_transactions().await?[0]
             .get_vout()
             .iter()
             .map(|output| output.get_value())
@@ -2627,6 +2628,7 @@ mod tests {
         );
 
         cleanup_test_blockchain(&db_path);
+        Ok(())
     }
 
     /// Test to simulate the multi-node SUBSIDY issue

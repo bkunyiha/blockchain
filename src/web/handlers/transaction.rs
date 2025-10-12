@@ -8,9 +8,9 @@ use tracing::{error, info};
 
 use crate::node::NodeContext;
 use crate::web::models::{
-    ApiResponse, PaginatedResponse, SendTransactionRequest, TransactionQuery, TransactionResponse,
+    ApiResponse, PaginatedResponse, SendBitCoinResponse, SendTransactionRequest, TransactionQuery,
+    TransactionResponse,
 };
-use crate::{Transaction, UTXOSet};
 
 /// Send a transaction
 ///
@@ -21,7 +21,7 @@ use crate::{Transaction, UTXOSet};
     tag = "Transaction",
     request_body = SendTransactionRequest,
     responses(
-        (status = 200, description = "Transaction sent successfully", body = ApiResponse<TransactionResponse>),
+        (status = 202, description = "Transaction has been accepted and is being processed", body = ApiResponse<SendBitCoinResponse>),
         (status = 400, description = "Bad request - invalid addresses or amount"),
         (status = 500, description = "Internal server error")
     )
@@ -29,42 +29,21 @@ use crate::{Transaction, UTXOSet};
 pub async fn send_transaction(
     State(node): State<Arc<NodeContext>>,
     Json(request): Json<SendTransactionRequest>,
-) -> Result<Json<ApiResponse<TransactionResponse>>, StatusCode> {
-    // Create transaction using UTXO set
-    let utxo_set = UTXOSet::new(node.blockchain().clone());
-
-    let tx = Transaction::new_utxo_transaction(
-        &request.from_address,
-        &request.to_address,
-        request.amount,
-        &utxo_set,
-    )
-    .await
-    .map_err(|e| {
-        error!("Failed to create transaction: {}", e);
-        StatusCode::BAD_REQUEST
-    })?;
-
-    // Submit transaction through node context (validates, adds to mempool, broadcasts)
-    node.submit_transaction(tx.clone()).await.map_err(|e| {
-        error!("Failed to submit transaction: {}", e);
-        StatusCode::INTERNAL_SERVER_ERROR
-    })?;
-    let txid = tx.get_tx_id_hex();
+) -> Result<Json<ApiResponse<SendBitCoinResponse>>, StatusCode> {
+    let txid = node
+        .btc_transaction(&request.from_address, &request.to_address, request.amount)
+        .await
+        .map_err(|e| {
+            error!("Failed to create transaction: {}", e);
+            StatusCode::BAD_REQUEST
+        })?;
 
     info!("Transaction {} submitted successfully", txid);
 
     // Create response using the actual TransactionResponse structure
-    let response = TransactionResponse {
+    let response = SendBitCoinResponse {
         txid,
-        is_coinbase: false,
-        input_count: tx.get_vin().len(),
-        output_count: tx.get_vout().len(),
-        total_input_value: 0, // TODO: Calculate from inputs
-        total_output_value: tx.get_vout().iter().map(|o| o.get_value()).sum(),
-        fee: 0, // TODO: Calculate fee
         timestamp: chrono::Utc::now(),
-        size_bytes: tx.serialize().unwrap_or_default().len(),
     };
 
     Ok(Json(ApiResponse::success(response)))

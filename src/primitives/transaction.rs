@@ -46,6 +46,10 @@ impl TXInput {
         self.pub_key.as_slice()
     }
 
+    pub fn get_signature(&self) -> &[u8] {
+        self.signature.as_slice()
+    }
+
     pub fn uses_key(&self, pub_key_hash: &[u8]) -> bool {
         let locking_hash = hash_pub_key(self.pub_key.as_slice());
         locking_hash.eq(pub_key_hash)
@@ -91,6 +95,10 @@ impl TXOutput {
 
     pub fn is_locked_with_key(&self, pub_key_hash: &[u8]) -> bool {
         self.pub_key_hash.eq(pub_key_hash)
+    }
+
+    pub fn not_locked_with_key(&self, pub_key_hash: &[u8]) -> bool {
+        self.pub_key_hash.ne(pub_key_hash)
     }
 
     pub fn set_in_global_mem_pool(&mut self, value: bool) {
@@ -146,43 +154,45 @@ impl Transaction {
     /// * `from` - The address of the sender.
     /// * `to` - The address of the recipient.
     pub async fn new_utxo_transaction(
-        from: &WalletAddress,
-        to: &WalletAddress,
-        amount: i32,
+        from_wlt_addr: &WalletAddress,
+        to_wlt_addr: &WalletAddress,
+        tx_amount: i32,
         utxo_set: &UTXOSet,
     ) -> Result<Transaction> {
         let wallets = WalletService::new()?;
         let from_wallet = wallets
-            .get_wallet(from)
-            .ok_or_else(|| BtcError::UTXONotFoundError(from.as_string()))?;
-        let public_key_hash = hash_pub_key(from_wallet.get_public_key());
+            .get_wallet(from_wlt_addr)
+            .ok_or_else(|| BtcError::UTXONotFoundError(from_wlt_addr.as_string()))?;
+        let from_public_key_hash = hash_pub_key(from_wallet.get_public_key());
 
-        let (accumulated, valid_outputs) = utxo_set
-            .find_spendable_outputs(public_key_hash.as_slice(), amount)
+        let (available_funds, valid_outputs) = utxo_set
+            .find_spendable_outputs(from_public_key_hash.as_slice(), tx_amount)
             .await?;
+
         debug!(
             "Transaction creation: from={}, to={}, amount={}",
-            from.as_str(),
-            to.as_str(),
-            amount
+            from_wlt_addr.as_str(),
+            to_wlt_addr.as_str(),
+            tx_amount
         );
         debug!(
             "Found spendable outputs: accumulated={}, valid_outputs={:?}",
-            accumulated, valid_outputs
+            available_funds, valid_outputs
         );
-        if accumulated < amount {
+
+        if available_funds < tx_amount {
             return Err(BtcError::NotEnoughFunds);
         }
 
         let mut inputs = vec![];
-        for (txid_hex, outs) in valid_outputs {
+        for (txid_hex, out_indexes) in valid_outputs {
             let txid = HEXLOWER
                 .decode(txid_hex.as_bytes())
                 .map_err(|e| BtcError::TransactionIdHexDecodingError(e.to_string()))?;
-            for out in outs {
+            for current_out_index in out_indexes {
                 let input = TXInput {
                     txid: txid.clone(), // txid is the hash of the previous transaction or transaction that contains the output that is being spent
-                    vout: out, // vout is the index of the output that is being spent in the previous transaction or transaction that contains the output that is being spent
+                    vout: current_out_index, // vout is the index of the output that is being spent in the previous transaction or transaction that contains the output that is being spent
                     signature: vec![],
                     pub_key: from_wallet.get_public_key().to_vec(),
                 };
@@ -190,12 +200,16 @@ impl Transaction {
             }
         }
 
-        let mut outputs = vec![TXOutput::new(amount, to)?];
+        let mut outputs = vec![TXOutput::new(tx_amount, to_wlt_addr)?];
 
-        if accumulated > amount {
-            let change = accumulated - amount;
-            debug!("Creating change output: {} to {}", change, from.as_str());
-            outputs.push(TXOutput::new(change, from)?); // to: Return change to the sender
+        if available_funds > tx_amount {
+            let change = available_funds - tx_amount;
+            debug!(
+                "Creating change output: {} to {}",
+                change,
+                from_wlt_addr.as_str()
+            );
+            outputs.push(TXOutput::new(change, from_wlt_addr)?); // to: Return change to the sender
         }
 
         // Create a new transaction with the spent inputs and unspent outputs
@@ -312,8 +326,8 @@ impl Transaction {
             trimmed_self_copy.vin[idx].pub_key = vec![];
 
             let verify = schnorr_sign_verify(
-                vin.pub_key.as_slice(),
-                vin.signature.as_slice(),
+                vin.get_pub_key(),
+                vin.get_signature(),
                 trimmed_self_copy.get_id(),
             );
             if !verify {
@@ -352,14 +366,20 @@ impl Transaction {
         Ok(sha256_digest(tx_copy.serialize()?.as_slice()))
     }
 
+    // get the transaction id as a bytes vector
+    // transaction.id is an owned vector, so we need to return a reference to the id bytes
     pub fn get_id(&self) -> &[u8] {
         self.id.as_slice()
     }
 
+    // get the transaction id as a hex string
+    // Use Cases: APIs/JSON responses, Logging/debugging, User interfaces, Block explorers
     pub fn get_tx_id_hex(&self) -> String {
         HEXLOWER.encode(self.get_id())
     }
 
+    // get the transaction id as a bytes vector
+    // Use Cases: Network protocol messages, Binary storage/database keys, Cryptographic operations, Memory efficiency
     pub fn get_id_bytes(&self) -> Vec<u8> {
         self.id.clone()
     }
@@ -454,6 +474,72 @@ impl TxSummary {
     pub fn get_outputs(&mut self) -> &[TxOutputSummary] {
         let _ = &self.outputs.reverse();
         &self.outputs
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub enum WalletTransactionType {
+    Debit,
+    Credit,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub enum WalletTransactionStatus {
+    Pending,
+    Confirmed,
+    Failed,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct WalletTransaction {
+    tx_id: Vec<u8>,
+    from_wlt_addr: Option<WalletAddress>,
+    to_wlt_addr: WalletAddress,
+    value: i32,
+    transaction_type: WalletTransactionType,
+    status: WalletTransactionStatus,
+    vout: usize,
+}
+impl WalletTransaction {
+    pub fn new(
+        tx_id: Vec<u8>,
+        from_wlt_addr: Option<WalletAddress>,
+        to_wlt_addr: WalletAddress,
+        value: i32,
+        transaction_type: WalletTransactionType,
+        status: WalletTransactionStatus,
+        vout: usize,
+    ) -> WalletTransaction {
+        WalletTransaction {
+            tx_id,
+            from_wlt_addr,
+            to_wlt_addr,
+            value,
+            transaction_type,
+            status,
+            vout,
+        }
+    }
+    pub fn get_tx_id(&self) -> &[u8] {
+        &self.tx_id
+    }
+    pub fn get_from_wlt_addr(&self) -> &Option<WalletAddress> {
+        &self.from_wlt_addr
+    }
+    pub fn get_to_wlt_addr(&self) -> &WalletAddress {
+        &self.to_wlt_addr
+    }
+    pub fn get_value(&self) -> i32 {
+        self.value
+    }
+    pub fn get_transaction_type(&self) -> &WalletTransactionType {
+        &self.transaction_type
+    }
+    pub fn get_status(&self) -> &WalletTransactionStatus {
+        &self.status
+    }
+    pub fn get_vout(&self) -> usize {
+        self.vout
     }
 }
 

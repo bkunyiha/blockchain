@@ -10,9 +10,7 @@ pub mod server;
 pub mod txmempool;
 
 pub use context::NodeContext;
-pub use miner::{
-    mine_empty_block, prepare_mining_transactions, process_mine_block, should_trigger_mining,
-};
+pub use miner::{mine_empty_block, prepare_mining_utxo, process_mine_block, should_trigger_mining};
 pub use peers::{Node, Nodes};
 pub use server::*;
 pub use txmempool::{add_to_memory_pool, remove_from_memory_pool, transaction_exists_in_pool};

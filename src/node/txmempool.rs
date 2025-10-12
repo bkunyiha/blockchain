@@ -3,6 +3,7 @@
 //! This module handles the transaction memory pool data structure,
 //! similar to Bitcoin Core's txmempool.cpp (CTxMemPool class)
 
+use crate::error::Result;
 use crate::node::GLOBAL_MEMORY_POOL;
 use crate::{BlockchainService, Transaction, UTXOSet};
 use tracing::debug;
@@ -11,7 +12,10 @@ use tracing::debug;
 ///
 /// This is the core mempool operation that adds a transaction to the pool
 /// and updates UTXO set flags.
-pub async fn add_to_memory_pool(tx: Transaction, blockchain_service: &BlockchainService) {
+pub async fn add_to_memory_pool(
+    tx: Transaction,
+    blockchain_service: &BlockchainService,
+) -> Result<()> {
     debug!("\n");
     debug!(
         "******************************************************************************************************"
@@ -28,10 +32,9 @@ pub async fn add_to_memory_pool(tx: Transaction, blockchain_service: &Blockchain
         .expect("Memory pool add error");
 
     let utxo_set = UTXOSet::new(blockchain_service.clone());
-    utxo_set
-        .set_global_mem_pool_flag(&tx.clone(), true)
-        .await
-        .expect("Failed to get blockchain");
+    utxo_set.set_global_mem_pool_flag(&tx.clone(), true).await?;
+
+    Ok(())
 }
 
 /// Remove transaction from memory pool

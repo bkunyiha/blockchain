@@ -27,11 +27,9 @@ pub fn should_trigger_mining() -> bool {
     pool_size >= TRANSACTION_THRESHOLD && is_miner
 }
 
-/// Prepare transactions for mining
-pub fn prepare_mining_transactions() -> Result<Vec<Transaction>> {
-    let txs = GLOBAL_MEMORY_POOL
-        .get_all()
-        .expect("Memory pool get all error");
+/// Prepare UTXO for mining
+pub fn prepare_mining_utxo() -> Result<Vec<Transaction>> {
+    let txs = GLOBAL_MEMORY_POOL.get_all()?;
 
     // Filter out any invalid transactions before mining
     // This prevents invalid transactions from being included in blocks
@@ -107,7 +105,7 @@ pub async fn process_mine_block(
 ///
 pub async fn mine_empty_block(blockchain: &BlockchainService) -> Result<Block> {
     if GLOBAL_CONFIG.is_miner() {
-        match prepare_mining_transactions() {
+        match prepare_mining_utxo() {
             Ok(txs) => process_mine_block(txs, blockchain).await,
             Err(e) => {
                 error!("Failed to prepare mining transactions: {}", e);

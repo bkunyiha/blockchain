@@ -4,9 +4,14 @@
 //!
 
 extern crate bincode;
+use crate::Wallet;
+use crate::crypto::signature::schnorr_sign_verify;
 use crate::error::{BtcError, Result};
 use crate::pow::ProofOfWork;
-use crate::primitives::transaction::Transaction;
+use crate::primitives::transaction::{
+    Transaction, WalletTransaction, WalletTransactionStatus, WalletTransactionType,
+};
+use crate::wallet::convert_address;
 use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
 use sled::IVec;
@@ -77,8 +82,116 @@ impl Block {
             .map_err(|e| BtcError::BlockSerializationError(e.to_string()))
     }
 
-    pub fn get_transactions(&self) -> &[Transaction] {
-        self.transactions.as_slice()
+    pub async fn get_transactions(&self) -> Result<&[Transaction]> {
+        Ok(self.transactions.as_slice())
+    }
+
+    pub async fn get_user_transactions(&self, wallet: &Wallet) -> Result<Vec<WalletTransaction>> {
+        let wlt_addr_public_key = wallet.get_public_key();
+        let addr_pub_key_hash = wallet.get_public_key_hash();
+        let wallet_address = wallet.get_address()?;
+
+        let wallet_txs: Vec<WalletTransaction> = self
+            .transactions
+            .iter()
+            .map(|tx| -> Result<Vec<WalletTransaction>> {
+                Ok(match tx.is_coinbase() {
+                    true => {
+                        // Only for coinbase transactions that are locked with the wallet
+                        if let Some((index, vout)) = tx
+                            .get_vout()
+                            .iter()
+                            .enumerate()
+                            // Using find because only one output is created for coinbase transactions
+                            .find(|(_, vout)| vout.is_locked_with_key(addr_pub_key_hash.as_slice()))
+                        {
+                            let amount = vout.get_value();
+                            let credit_txs: Vec<WalletTransaction> = vec![WalletTransaction::new(
+                                tx.get_id().to_vec(),
+                                None,
+                                wallet_address.clone(),
+                                amount,
+                                WalletTransactionType::Credit,
+                                if vout.is_in_global_mem_pool() {
+                                    WalletTransactionStatus::Pending
+                                } else {
+                                    WalletTransactionStatus::Confirmed
+                                },
+                                index,
+                            )];
+                            credit_txs
+                        } else {
+                            vec![]
+                        }
+                    }
+                    false => {
+                        // Process non-coinbase transactions
+                        match tx.get_vin().first() {
+                            Some(vin) => {
+                                let signature = vin.get_signature();
+                                let vout = tx.get_vout();
+
+                                // Check if signed by this wallet
+                                if schnorr_sign_verify(wlt_addr_public_key, signature, tx.get_id())
+                                {
+                                    // DEBIT: Signed by wallet, outputs going to others
+                                    vout.iter()
+                                        .enumerate()
+                                        .filter(|(_, v)| {
+                                            v.not_locked_with_key(addr_pub_key_hash.as_slice())
+                                        })
+                                        .map(|(index, vout)| -> Result<WalletTransaction> {
+                                            Ok(WalletTransaction::new(
+                                                tx.get_id().to_vec(),
+                                                Some(wallet_address.clone()),
+                                                convert_address(vout.get_pub_key_hash())?,
+                                                vout.get_value(),
+                                                WalletTransactionType::Debit,
+                                                if vout.is_in_global_mem_pool() {
+                                                    WalletTransactionStatus::Pending
+                                                } else {
+                                                    WalletTransactionStatus::Confirmed
+                                                },
+                                                index,
+                                            ))
+                                        })
+                                        .collect::<Result<Vec<_>>>()?
+                                } else {
+                                    // CREDIT: Not signed by wallet, outputs to this wallet
+                                    vout.iter()
+                                        .enumerate()
+                                        .filter(|(_, v)| {
+                                            v.is_locked_with_key(addr_pub_key_hash.as_slice())
+                                        })
+                                        .map(|(index, vout)| -> Result<WalletTransaction> {
+                                            Ok(WalletTransaction::new(
+                                                tx.get_id().to_vec(),
+                                                Some(convert_address(vin.get_pub_key())?),
+                                                convert_address(vout.get_pub_key_hash())?,
+                                                vout.get_value(),
+                                                WalletTransactionType::Credit,
+                                                if vout.is_in_global_mem_pool() {
+                                                    WalletTransactionStatus::Pending
+                                                } else {
+                                                    WalletTransactionStatus::Confirmed
+                                                },
+                                                index,
+                                            ))
+                                        })
+                                        .collect::<Result<Vec<_>>>()?
+                                }
+                            }
+                            None => vec![],
+                        }
+                    }
+                })
+            })
+            .collect::<Result<Vec<Vec<_>>>>()?
+            .into_iter()
+            .flatten()
+            .collect();
+
+        Ok(wallet_txs)
     }
 
     pub fn get_pre_block_hash(&self) -> String {
@@ -247,19 +360,19 @@ mod tests {
         assert_eq!(block.header.height, deserialized.header.height);
     }
 
-    #[test]
-    fn test_block_getters() {
+    #[tokio::test]
+    async fn test_block_getters() {
         let block = Block::new_block("prev_hash".to_string(), &[], 1);
 
         assert_eq!(block.get_pre_block_hash(), "prev_hash");
         assert!(!block.get_hash().is_empty());
         assert_eq!(block.get_height(), 1);
         assert!(block.get_timestamp() > 0);
-        assert_eq!(block.get_transactions().len(), 0);
+        assert_eq!(block.get_transactions().await.unwrap().len(), 0);
     }
 
-    #[test]
-    fn test_block_with_transactions() {
+    #[tokio::test]
+    async fn test_block_with_transactions() {
         let genesis_address = generate_test_genesis_address();
         let coinbase_tx = Transaction::new_coinbase_tx(&genesis_address.clone())
             .expect("Failed to create coinbase tx");
@@ -268,7 +381,7 @@ mod tests {
         let block = Block::new_block("prev_hash".to_string(), transactions.as_slice(), 1);
 
         assert_eq!(block.transactions.len(), 1);
-        assert_eq!(block.get_transactions().len(), 1);
+        assert_eq!(block.get_transactions().await.unwrap().len(), 1);
     }
 
     #[test]

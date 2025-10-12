@@ -14,7 +14,10 @@ pub mod transaction;
 // Re-export the core types
 pub use block::{Block, GENESIS_BLOCK_PRE_BLOCK_HASH};
 pub use blockchain::Blockchain;
-pub use transaction::{TXInput, TXOutput, Transaction};
+pub use transaction::{
+    TXInput, TXOutput, Transaction, WalletTransaction, WalletTransactionStatus,
+    WalletTransactionType,
+};
 
 // Re-exports for moved modules (backward compatibility)
 // These have moved to root level to match Bitcoin Core structure

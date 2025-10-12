@@ -61,7 +61,7 @@ pub async fn process_stream(
                 info!("Added block {:?}", added_block_hash.as_slice());
 
                 // Remove transactions in block from memory pool functionally, since they have already been mined by other nodes
-                for tx in block.get_transactions() {
+                for tx in block.get_transactions().await? {
                     node_context.remove_from_memory_pool(tx.clone()).await;
                 }
 
@@ -236,7 +236,7 @@ pub async fn process_stream(
                             MessageType::Error,
                             "Invalid addr_from: ${wlt_frm_addr}".to_string(),
                         );
-                        // Run bothin parallel
+                        // Run both in parallel
                         tokio::join!(send_message_invalid_to, send_message_invalid_from);
                     }
                     (Ok(from), Ok(to)) => {

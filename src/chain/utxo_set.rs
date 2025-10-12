@@ -38,11 +38,11 @@ impl UTXOSet {
     /// A tuple containing the accumulated amount and a HashMap of transaction IDs to output indices for spendable outputs.
     pub async fn find_spendable_outputs(
         &self,
-        pub_key_hash: &[u8],
+        from_pub_key_hash: &[u8],
         amount: i32,
     ) -> Result<(i32, HashMap<String, Vec<usize>>)> {
         debug!("Finding spendable outputs for amount: {}", amount);
-        let mut unspent_outputs: HashMap<String, Vec<usize>> = HashMap::new();
+        let mut unspent_outputs_indexes: HashMap<String, Vec<usize>> = HashMap::new();
         let mut accmulated = 0;
         let db = self.blockchain.get_db().await?;
         let utxo_tree = db
@@ -52,45 +52,44 @@ impl UTXOSet {
         for item in utxo_tree.iter() {
             let (k, v) = item.map_err(|e| BtcError::GettingUTXOError(e.to_string()))?;
             let txid_hex = HEXLOWER.encode(k.to_vec().as_slice());
-            let tx_out: Vec<TXOutput> = bincode::serde::decode_from_slice(
+            let (tx_out, _): (Vec<TXOutput>, usize) = bincode::serde::decode_from_slice(
                 v.to_vec().as_slice(),
                 bincode::config::standard(),
             )
-            .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))?
-            .0;
-            for (original_idx, out) in tx_out.iter().enumerate() {
+            .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))?;
+            for (current_out_index, out) in tx_out.iter().enumerate() {
                 total_checked += 1;
                 debug!(
                     "Checking output {} in tx {}: value={}, in_mempool={}, locked_with_key={}",
-                    original_idx,
+                    current_out_index,
                     txid_hex,
                     out.get_value(),
                     out.is_in_global_mem_pool(),
-                    out.is_locked_with_key(pub_key_hash)
+                    out.is_locked_with_key(from_pub_key_hash)
                 );
                 if out.not_in_global_mem_pool()
                     && out.get_value() > 0
-                    && out.is_locked_with_key(pub_key_hash)
+                    && out.is_locked_with_key(from_pub_key_hash)
                     && accmulated < amount
                 {
                     accmulated += out.get_value();
                     debug!(
                         "Adding spendable output: tx={}, idx={}, value={}, accumulated={}",
                         txid_hex,
-                        original_idx,
+                        current_out_index,
                         out.get_value(),
                         accmulated
                     );
-                    if unspent_outputs.contains_key(txid_hex.as_str()) {
-                        unspent_outputs
+                    if unspent_outputs_indexes.contains_key(txid_hex.as_str()) {
+                        unspent_outputs_indexes
                             .get_mut(txid_hex.as_str())
                             .ok_or(BtcError::UTXONotFoundError(format!(
                                 "(find_spendable_outputs) UTXO {} not found",
                                 txid_hex
                             )))?
-                            .push(original_idx);
+                            .push(current_out_index);
                     } else {
-                        unspent_outputs.insert(txid_hex.clone(), vec![original_idx]);
+                        unspent_outputs_indexes.insert(txid_hex.clone(), vec![current_out_index]);
                     }
                 }
             }
@@ -99,9 +98,9 @@ impl UTXOSet {
             "find_spendable_outputs completed: checked {} outputs, accumulated={}, found {} spendable transactions",
             total_checked,
             accmulated,
-            unspent_outputs.len()
+            unspent_outputs_indexes.len()
         );
-        Ok((accmulated, unspent_outputs))
+        Ok((accmulated, unspent_outputs_indexes))
     }
 
     pub async fn find_utxo(&self, pub_key_hash: &[u8]) -> Result<Vec<TXOutput>> {
@@ -202,7 +201,7 @@ impl UTXOSet {
         let utxo_tree = db
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
-        for curr_block_tx in block.get_transactions() {
+        for curr_block_tx in block.get_transactions().await? {
             // Coinbase transactions dont have inputs
             if !curr_block_tx.is_coinbase() {
                 for curr_blc_tx_inpt in curr_block_tx.get_vin() {
@@ -271,7 +270,7 @@ impl UTXOSet {
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
 
         // Process transactions in reverse order (newest first)
-        for curr_block_tx in block.get_transactions().iter().rev() {
+        for curr_block_tx in block.get_transactions().await? {
             // Step 1: Remove this transaction's outputs from UTXO set
             utxo_tree
                 .remove(curr_block_tx.get_id())

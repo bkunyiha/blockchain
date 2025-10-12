@@ -39,6 +39,7 @@ use crate::web::handlers::{blockchain, health, mining, transaction, wallet};
             crate::web::models::responses::HealthResponse,
             crate::web::models::responses::BlockchainInfoResponse,
             crate::web::models::responses::BlockResponse,
+            crate::web::models::responses::SendBitCoinResponse,
             crate::web::models::responses::TransactionResponse,
             crate::web::models::responses::WalletResponse,
             crate::web::models::responses::BalanceResponse,

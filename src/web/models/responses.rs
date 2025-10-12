@@ -59,6 +59,13 @@ pub struct BlockResponse {
 
 /// Transaction response model
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct SendBitCoinResponse {
+    pub txid: String,
+    pub timestamp: DateTime<Utc>,
+}
+
+/// Transaction response model
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct TransactionResponse {
     pub txid: String,
     pub is_coinbase: bool,

@@ -86,11 +86,14 @@ pub async fn get_block_by_hash(
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let block_response = block
-        .map(|block| block_to_response(block.clone(), block.get_height()))
-        .ok_or(StatusCode::NOT_FOUND);
-
-    Ok(Json(ApiResponse::success(block_response?)))
+    match block {
+        Some(block) => {
+            let height = block.get_height();
+            let response = block_to_response(block, height).await;
+            Ok(Json(ApiResponse::success(response)))
+        }
+        None => Err(StatusCode::NOT_FOUND),
+    }
 }
 
 /// Get blocks with pagination
@@ -124,17 +127,17 @@ pub async fn get_blocks(
     let start_height = (page * limit) as usize;
     let end_height = std::cmp::min(start_height + limit as usize, height + 1);
 
-    let blocks = node
+    let blocks_result = node
         .blockchain()
         .get_blocks_by_height(start_height, end_height)
         .await
-        .map(|blocks| {
-            blocks
-                .iter()
-                .map(|block| block_to_response(block.clone(), block.get_height()))
-                .collect()
-        })
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let mut blocks = Vec::new();
+    for block in blocks_result {
+        let response = block_to_response(block.clone(), block.get_height()).await;
+        blocks.push(response);
+    }
 
     let total = height + 1;
     let paginated = PaginatedResponse::new(blocks, page, limit, total as u32);
@@ -163,22 +166,22 @@ pub async fn get_latest_blocks(
 ) -> Result<Json<ApiResponse<Vec<BlockResponse>>>, StatusCode> {
     let limit = query.limit.unwrap_or(10) as usize;
 
-    let blocks = node
+    let blocks_result = node
         .get_latest_blocks(limit)
         .await
-        .map(|blocks| {
-            blocks
-                .iter()
-                .map(|block| block_to_response(block.clone(), block.get_height()))
-                .collect()
-        })
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let mut blocks = Vec::new();
+    for block in blocks_result {
+        let response = block_to_response(block.clone(), block.get_height()).await;
+        blocks.push(response);
+    }
 
     Ok(Json(ApiResponse::success(blocks)))
 }
 
 /// Convert Block to BlockResponse
-fn block_to_response(block: Block, height: usize) -> BlockResponse {
+async fn block_to_response(block: Block, height: usize) -> BlockResponse {
     BlockResponse {
         hash: block.get_hash().to_string(),
         previous_hash: block.get_pre_block_hash().to_string(),
@@ -187,7 +190,7 @@ fn block_to_response(block: Block, height: usize) -> BlockResponse {
         height,
         nonce: 0,      // TODO: Get actual nonce
         difficulty: 1, // TODO: Get actual difficulty
-        transaction_count: block.get_transactions().len(),
+        transaction_count: block.get_transactions().await.unwrap_or(&[]).len(),
         merkle_root: "".to_string(), // TODO: Calculate merkle root
         size_bytes: 0,               // TODO: Calculate block size
     }

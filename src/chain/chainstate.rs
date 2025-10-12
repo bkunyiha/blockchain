@@ -659,6 +659,6 @@ mod tests {
         // Check that the block was mined correctly
         assert_eq!(new_block.get_height(), 2); // Height 2 because genesis block is height 1
         assert!(!new_block.get_hash().is_empty());
-        assert!(new_block.get_transactions().len() > 0);
+        assert!(new_block.get_transactions().await.unwrap().len() > 0);
     }
 }

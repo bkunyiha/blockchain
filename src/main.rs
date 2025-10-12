@@ -138,15 +138,14 @@ fn process_transaction(tx: &blockchain::Transaction) {
 }
 
 /// Process a single block and log its details
-fn process_block(block: &blockchain::Block) {
+async fn process_block(block: &blockchain::Block) {
     info!("Pre block hash: {}", block.get_pre_block_hash());
     info!("Cur block hash: {}", block.get_hash());
     info!("Cur block Timestamp: {}", block.get_timestamp());
 
-    block
-        .get_transactions()
-        .iter()
-        .for_each(process_transaction);
+    if let Ok(transactions) = block.get_transactions().await {
+        transactions.iter().for_each(process_transaction);
+    }
 }
 
 /// Print the entire blockchain using functional iteration
@@ -154,7 +153,7 @@ async fn print_blockchain() -> Result<()> {
     let blockchain = BlockchainService::default().await?;
     let mut iterator = blockchain.iterator().await.expect("Failed to get iterator");
     while let Some(block) = iterator.next() {
-        process_block(&block);
+        process_block(&block).await;
     }
     Ok(())
 }
