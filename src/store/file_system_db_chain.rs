@@ -2,7 +2,7 @@ use crate::error::{BtcError, Result};
 use crate::primitives::block::{Block, GENESIS_BLOCK_PRE_BLOCK_HASH};
 use crate::primitives::blockchain::Blockchain;
 use crate::primitives::transaction::{
-    TXOutput, Transaction, TxInputSummary, TxOutputSummary, TxSummary,
+    TXOutput, Transaction, TxInputSummary, TxOutputSummary, TxSummary, WalletTransaction,
 };
 use crate::wallet::WalletAddress;
 use crate::wallet::{convert_address, hash_pub_key};
@@ -295,6 +295,25 @@ impl BlockchainFileSystem {
         }
 
         Ok(utxo)
+    }
+
+    pub async fn find_user_transaction(
+        &self,
+        address: &WalletAddress,
+    ) -> Result<Vec<WalletTransaction>> {
+        let mut iterator = self.iterator().await?;
+        let mut user_transactions = Vec::new();
+        loop {
+            match iterator.next() {
+                None => break,
+                Some(block) => {
+                    for transaction in block.get_user_transactions(address).await? {
+                        user_transactions.push(transaction);
+                    }
+                }
+            }
+        }
+        Ok(user_transactions)
     }
 
     pub async fn find_transaction(&self, txid: &[u8]) -> Result<Option<Transaction>> {

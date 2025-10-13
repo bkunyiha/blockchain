@@ -78,6 +78,45 @@ pub struct TransactionResponse {
     pub size_bytes: usize,
 }
 
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct TxInputSummaryResponse {
+    pub txid_hex: String,
+    pub output_idx: usize,
+    pub wlt_addr: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct TxOutputSummaryResponse {
+    pub wlt_addr: String,
+    pub value: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct TxSummaryResponse {
+    pub transaction_id: String,
+    pub inputs: Vec<TxInputSummaryResponse>,
+    pub outputs: Vec<TxOutputSummaryResponse>,
+}
+
+/// Transaction response model
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct WalletTransactionRespose {
+    pub tx_id: Vec<u8>,
+    pub from_wlt_addr: Option<String>,
+    pub to_wlt_addr: String,
+    pub value: i32,
+    pub transaction_type: String,
+    pub status: String,
+    pub vout: usize,
+    pub is_coinbase: bool,
+    pub input_count: usize,
+    pub output_count: usize,
+    pub total_output_value: i32,
+    pub fee: i32,
+    pub timestamp: i64,
+    pub size_bytes: usize,
+}
+
 /// Wallet response model
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct WalletResponse {

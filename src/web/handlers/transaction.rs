@@ -6,10 +6,12 @@ use axum::{
 use std::sync::Arc;
 use tracing::{error, info};
 
+use crate::WalletAddress;
 use crate::node::NodeContext;
 use crate::web::models::{
     ApiResponse, PaginatedResponse, SendBitCoinResponse, SendTransactionRequest, TransactionQuery,
-    TransactionResponse,
+    TransactionResponse, TxInputSummaryResponse, TxOutputSummaryResponse, TxSummaryResponse,
+    WalletTransactionRespose,
 };
 
 /// Send a transaction
@@ -54,7 +56,7 @@ pub async fn send_transaction(
 /// Retrieves a specific transaction by its transaction ID.
 #[utoipa::path(
     get,
-    path = "/api/v1/transactions/{txid}",
+    path = "/api/v1/transactions/mempool/{txid}",
     tag = "Transaction",
     params(
         ("txid" = String, Path, description = "Transaction ID")
@@ -65,13 +67,13 @@ pub async fn send_transaction(
         (status = 500, description = "Internal server error")
     )
 )]
-pub async fn get_transaction(
+pub async fn get_mempool_transaction(
     State(node): State<Arc<NodeContext>>,
     Path(txid): Path<String>,
 ) -> Result<Json<ApiResponse<TransactionResponse>>, StatusCode> {
     // Get transaction from mempool
     let tx = node
-        .get_transaction(&txid)
+        .get_mempool_transaction(&txid)
         .map_err(|e| {
             error!("Failed to get transaction: {}", e);
             StatusCode::INTERNAL_SERVER_ERROR
@@ -92,56 +94,6 @@ pub async fn get_transaction(
     };
 
     Ok(Json(ApiResponse::success(response)))
-}
-
-/// Get transactions with pagination
-///
-/// Retrieves a paginated list of transactions from the blockchain.
-#[utoipa::path(
-    get,
-    path = "/api/v1/transactions",
-    tag = "Transaction",
-    params(
-        ("page" = Option<u32>, Query, description = "Page number (default: 1)"),
-        ("limit" = Option<u32>, Query, description = "Items per page (default: 10)")
-    ),
-    responses(
-        (status = 200, description = "Transactions retrieved successfully", body = ApiResponse<PaginatedResponse<TransactionResponse>>),
-        (status = 500, description = "Internal server error")
-    )
-)]
-pub async fn get_transactions(
-    State(node): State<Arc<NodeContext>>,
-    Query(query): Query<TransactionQuery>,
-) -> Result<Json<ApiResponse<PaginatedResponse<TransactionResponse>>>, StatusCode> {
-    // Get all mempool transactions for now
-    let transactions = node.get_mempool_transactions().map_err(|e| {
-        error!("Failed to get transactions: {}", e);
-        StatusCode::INTERNAL_SERVER_ERROR
-    })?;
-
-    let page = query.page.unwrap_or(1);
-    let limit = query.limit.unwrap_or(10);
-
-    // Convert to response format
-    let responses: Vec<TransactionResponse> = transactions
-        .iter()
-        .map(|tx| TransactionResponse {
-            txid: tx.get_tx_id_hex(),
-            is_coinbase: tx.is_coinbase(),
-            input_count: tx.get_vin().len(),
-            output_count: tx.get_vout().len(),
-            total_input_value: 0, // TODO: Calculate from inputs
-            total_output_value: tx.get_vout().iter().map(|o| o.get_value()).sum(),
-            fee: 0, // TODO: Calculate fee
-            timestamp: chrono::Utc::now(),
-            size_bytes: tx.serialize().unwrap_or_default().len(),
-        })
-        .collect();
-
-    let total = responses.len() as u32;
-    let paginated = PaginatedResponse::new(responses, page, limit, total);
-    Ok(Json(ApiResponse::success(paginated)))
 }
 
 /// Get mempool transactions
@@ -184,6 +136,68 @@ pub async fn get_mempool(
     Ok(Json(ApiResponse::success(responses)))
 }
 
+/// Get transactions with pagination
+///
+/// Retrieves a paginated list of transactions from the blockchain.
+#[utoipa::path(
+    get,
+    path = "/api/v1/transactions",
+    tag = "Transaction",
+    params(
+        ("page" = Option<u32>, Query, description = "Page number (default: 1)"),
+        ("limit" = Option<u32>, Query, description = "Items per page (default: 10)")
+    ),
+    responses(
+        (status = 200, description = "Transactions retrieved successfully", body = ApiResponse<PaginatedResponse<TxSummaryResponse>>),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn get_transactions(
+    State(node): State<Arc<NodeContext>>,
+    Query(query): Query<TransactionQuery>,
+) -> Result<Json<ApiResponse<PaginatedResponse<TxSummaryResponse>>>, StatusCode> {
+    // Get all transactions
+    let tx_map = node.find_all_transactions().await.map_err(|e| {
+        error!("Failed to get transactions: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+
+    let page = query.page.unwrap_or(1);
+    let limit = query.limit.unwrap_or(10);
+
+    // Convert to response format
+    let responses: Vec<TxSummaryResponse> = tx_map
+        .iter()
+        .map(|(txid, tx_summary)| {
+            let mut summary = tx_summary.clone();
+            TxSummaryResponse {
+                transaction_id: txid.clone(),
+                inputs: summary
+                    .get_inputs()
+                    .iter()
+                    .map(|input| TxInputSummaryResponse {
+                        txid_hex: input.get_txid_hex().to_string(),
+                        output_idx: input.get_output_idx(),
+                        wlt_addr: input.get_wlt_addr().as_string(),
+                    })
+                    .collect(),
+                outputs: summary
+                    .get_outputs()
+                    .iter()
+                    .map(|output| TxOutputSummaryResponse {
+                        wlt_addr: output.get_wlt_addr().as_string(),
+                        value: output.get_value(),
+                    })
+                    .collect(),
+            }
+        })
+        .collect();
+
+    let total = responses.len() as u32;
+    let paginated = PaginatedResponse::new(responses, page, limit, total);
+    Ok(Json(ApiResponse::success(paginated)))
+}
+
 /// Get transaction history for an address
 ///
 /// Retrieves all transactions associated with a specific address.
@@ -204,11 +218,15 @@ pub async fn get_mempool(
 )]
 pub async fn get_address_transactions(
     State(node): State<Arc<NodeContext>>,
-    Path(_address): Path<String>,
+    Path(address): Path<String>,
     Query(query): Query<TransactionQuery>,
-) -> Result<Json<ApiResponse<PaginatedResponse<TransactionResponse>>>, StatusCode> {
-    // Get all mempool transactions and filter by address
-    let transactions = node.get_mempool_transactions().map_err(|e| {
+) -> Result<Json<ApiResponse<PaginatedResponse<WalletTransactionRespose>>>, StatusCode> {
+    let address = WalletAddress::validate(address.clone()).map_err(|e| {
+        error!("Invalid address format: {}", e);
+        StatusCode::BAD_REQUEST
+    })?;
+    // Get all wallet Transactions
+    let transactions = node.find_user_transaction(&address).await.map_err(|e| {
         error!("Failed to get transactions: {}", e);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
@@ -216,20 +234,27 @@ pub async fn get_address_transactions(
     let page = query.page.unwrap_or(1);
     let limit = query.limit.unwrap_or(10);
 
-    // Filter and convert to response format
-    // TODO: Implement proper address filtering
-    let responses: Vec<TransactionResponse> = transactions
+    // Convert to response format
+    let responses: Vec<WalletTransactionRespose> = transactions
         .iter()
-        .map(|tx| TransactionResponse {
-            txid: tx.get_tx_id_hex(),
+        .map(|tx| WalletTransactionRespose {
+            tx_id: tx.get_tx_id().to_vec(),
+            from_wlt_addr: tx
+                .get_from_wlt_addr()
+                .as_ref()
+                .map(|a| a.as_str().to_string()),
+            to_wlt_addr: tx.get_to_wlt_addr().as_str().to_string(),
+            value: tx.get_value(),
+            transaction_type: format!("{:?}", tx.get_transaction_type()),
+            status: format!("{:?}", tx.get_status()),
+            vout: tx.get_vout(),
             is_coinbase: tx.is_coinbase(),
-            input_count: tx.get_vin().len(),
-            output_count: tx.get_vout().len(),
-            total_input_value: 0, // TODO: Calculate from inputs
-            total_output_value: tx.get_vout().iter().map(|o| o.get_value()).sum(),
-            fee: 0, // TODO: Calculate fee
-            timestamp: chrono::Utc::now(),
-            size_bytes: tx.serialize().unwrap_or_default().len(),
+            input_count: tx.get_input_count(),
+            output_count: tx.get_output_count(),
+            total_output_value: tx.get_total_output_value(),
+            fee: tx.get_fee(),
+            timestamp: tx.get_timestamp(),
+            size_bytes: tx.get_size_bytes(),
         })
         .collect();
 

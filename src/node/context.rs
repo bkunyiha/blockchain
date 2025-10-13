@@ -67,7 +67,7 @@ use crate::node::txmempool::{
 };
 use crate::node::{CENTERAL_NODE, GLOBAL_NODES, Node, OpType};
 use crate::transaction::TxSummary;
-use crate::{Block, Transaction, WalletAddress};
+use crate::{Block, Transaction, WalletAddress, WalletTransaction};
 use std::collections::HashMap;
 use std::net::SocketAddr;
 use tracing::{error, info, warn};
@@ -378,6 +378,23 @@ impl NodeContext {
         self.blockchain.find_all_transactions().await
     }
 
+    /// Find all transactions for a given wallet address
+    ///
+    /// Scans all blocks and returns a vector of every transaction for the given wallet address.
+    /// This is an expensive operation on large blockchains.
+    ///
+    /// # Returns
+    ///
+    /// * `Ok(transactions)` - Vector of wallet transactions
+    /// * `Err(_)` - Database or scanning error
+    ///
+    pub async fn find_user_transaction(
+        &self,
+        address: &WalletAddress,
+    ) -> Result<Vec<WalletTransaction>> {
+        self.blockchain.find_user_transaction(address).await
+    }
+
     //=============================================================================
     // Transaction Mempool Methods
     //=============================================================================
@@ -570,7 +587,7 @@ impl NodeContext {
     /// # Ok(())
     /// # }
     /// ```
-    pub fn get_transaction(&self, txid: &str) -> Result<Option<Transaction>> {
+    pub fn get_mempool_transaction(&self, txid: &str) -> Result<Option<Transaction>> {
         use crate::node::GLOBAL_MEMORY_POOL;
         GLOBAL_MEMORY_POOL.get(txid)
     }
@@ -1126,7 +1143,10 @@ mod tests {
     fn cleanup_test_blockchain(db_path: &str) {
         use std::fs;
         if let Err(e) = fs::remove_dir_all(db_path) {
-            eprintln!("Warning: Failed to clean up test directory {}: {}", db_path, e);
+            eprintln!(
+                "Warning: Failed to clean up test directory {}: {}",
+                db_path, e
+            );
         }
     }
 

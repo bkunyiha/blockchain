@@ -21,11 +21,12 @@ use crate::web::handlers::{blockchain, health, mining, transaction, wallet};
         wallet::get_addresses,
         wallet::get_wallet_info,
         wallet::get_balance,
-        // Transaction endpoints
+        // Transaction endpoints(mempool)
         transaction::send_transaction,
-        transaction::get_transactions,
-        transaction::get_transaction,
+        transaction::get_mempool_transaction,
         transaction::get_mempool,
+        // Transaction endpoints(blockchain)
+        transaction::get_transactions,
         transaction::get_address_transactions,
         // Mining endpoints
         mining::start_mining,
@@ -41,6 +42,10 @@ use crate::web::handlers::{blockchain, health, mining, transaction, wallet};
             crate::web::models::responses::BlockResponse,
             crate::web::models::responses::SendBitCoinResponse,
             crate::web::models::responses::TransactionResponse,
+            crate::web::models::responses::TxInputSummaryResponse,
+            crate::web::models::responses::TxOutputSummaryResponse,
+            crate::web::models::responses::TxSummaryResponse,
+            crate::web::models::responses::WalletTransactionRespose,
             crate::web::models::responses::WalletResponse,
             crate::web::models::responses::BalanceResponse,
             crate::web::models::responses::MiningStatusResponse,

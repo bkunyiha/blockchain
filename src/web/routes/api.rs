@@ -26,11 +26,15 @@ pub fn create_api_routes() -> Router<Arc<NodeContext>> {
         .route("/wallet/addresses", get(wallet::get_addresses))
         .route("/wallet/{address}", get(wallet::get_wallet_info))
         .route("/wallet/{address}/balance", get(wallet::get_balance))
-        // Transaction endpoints
+        // Transaction endpoints(mempool)
         .route("/transactions", post(transaction::send_transaction))
-        .route("/transactions", get(transaction::get_transactions))
-        .route("/transactions/{txid}", get(transaction::get_transaction))
+        .route(
+            "/transactions/mempool/{txid}",
+            get(transaction::get_mempool_transaction),
+        )
         .route("/transactions/mempool", get(transaction::get_mempool))
+        // Transaction endpoints(blockchain)
+        .route("/transactions", get(transaction::get_transactions))
         .route(
             "/transactions/address/{address}",
             get(transaction::get_address_transactions),

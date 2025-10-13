@@ -2,7 +2,7 @@ use crate::WalletAddress;
 use crate::chain::utxo_set::UTXOSet;
 use crate::error::{BtcError, Result};
 use crate::primitives::block::Block;
-use crate::primitives::transaction::{TXOutput, Transaction, TxSummary};
+use crate::primitives::transaction::{TXOutput, Transaction, TxSummary, WalletTransaction};
 
 use sled::Db;
 use std::collections::HashMap;
@@ -148,6 +148,16 @@ impl BlockchainService {
         }
         let blockchain_guard = self.0.write().await;
         blockchain_guard.mine_block(transactions).await
+    }
+
+    pub async fn find_user_transaction(
+        &self,
+        address: &WalletAddress,
+    ) -> Result<Vec<WalletTransaction>> {
+        self.read(|blockchain: BlockchainFileSystem| async move {
+            blockchain.find_user_transaction(address).await
+        })
+        .await
     }
 
     /// Find a transaction in the blockchain

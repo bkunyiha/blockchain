@@ -4,7 +4,7 @@ use crate::chain::UTXOSet;
 use crate::crypto::hash::sha256_digest;
 use crate::crypto::signature::{schnorr_sign_digest, schnorr_sign_verify};
 use crate::error::{BtcError, Result};
-use crate::wallet::{WalletService, get_pub_key_hash, hash_pub_key};
+use crate::wallet::{WalletService, convert_address, get_pub_key_hash, hash_pub_key};
 use data_encoding::HEXLOWER;
 use serde::{Deserialize, Serialize};
 use tracing::debug;
@@ -477,13 +477,13 @@ impl TxSummary {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum WalletTransactionType {
     Debit,
     Credit,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum WalletTransactionStatus {
     Pending,
     Confirmed,
@@ -499,26 +499,45 @@ pub struct WalletTransaction {
     transaction_type: WalletTransactionType,
     status: WalletTransactionStatus,
     vout: usize,
+    is_coinbase: bool,
+    input_count: usize,
+    output_count: usize,
+    total_output_value: i32,
+    fee: i32,
+    timestamp: i64,
+    size_bytes: usize,
 }
 impl WalletTransaction {
     pub fn new(
-        tx_id: Vec<u8>,
+        tx: Transaction,
+        tx_output: &TXOutput,
         from_wlt_addr: Option<WalletAddress>,
-        to_wlt_addr: WalletAddress,
-        value: i32,
         transaction_type: WalletTransactionType,
-        status: WalletTransactionStatus,
-        vout: usize,
-    ) -> WalletTransaction {
-        WalletTransaction {
-            tx_id,
+        vout_index: usize,
+        fee: i32,
+        timestamp: i64,
+    ) -> Result<WalletTransaction> {
+        let status = if tx_output.is_in_global_mem_pool() {
+            WalletTransactionStatus::Pending
+        } else {
+            WalletTransactionStatus::Confirmed
+        };
+        Ok(WalletTransaction {
+            tx_id: tx.get_id().to_vec(),
             from_wlt_addr,
-            to_wlt_addr,
-            value,
+            to_wlt_addr: convert_address(tx_output.get_pub_key_hash())?,
+            value: tx_output.get_value(),
             transaction_type,
             status,
-            vout,
-        }
+            vout: vout_index,
+            is_coinbase: tx.is_coinbase(),
+            input_count: tx.get_vin().len(),
+            output_count: tx.get_vout().len(),
+            total_output_value: tx.get_vout().iter().map(|v| v.get_value()).sum(),
+            fee,
+            timestamp,
+            size_bytes: tx.serialize().unwrap_or_default().len(),
+        })
     }
     pub fn get_tx_id(&self) -> &[u8] {
         &self.tx_id
@@ -540,6 +559,30 @@ impl WalletTransaction {
     }
     pub fn get_vout(&self) -> usize {
         self.vout
+    }
+    pub fn is_coinbase(&self) -> bool {
+        self.is_coinbase
+    }
+    pub fn get_input_count(&self) -> usize {
+        self.input_count
+    }
+    pub fn get_output_count(&self) -> usize {
+        self.output_count
+    }
+    pub fn get_total_output_value(&self) -> i32 {
+        self.total_output_value
+    }
+    pub fn get_fee(&self) -> i32 {
+        self.fee
+    }
+    pub fn get_timestamp(&self) -> i64 {
+        self.timestamp
+    }
+    pub fn get_size_bytes(&self) -> usize {
+        self.size_bytes
+    }
+    pub fn get_tx_id_hex(&self) -> String {
+        data_encoding::HEXLOWER.encode(&self.tx_id)
     }
 }
 
