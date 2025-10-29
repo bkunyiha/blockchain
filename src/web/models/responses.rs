@@ -168,6 +168,36 @@ pub struct PaginatedResponse<T> {
     pub has_prev: bool,
 }
 
+/// Response for getmininginfo RPC command
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct MiningInfoResponse {
+    /// Current block height
+    pub blocks: u64,
+    /// Size of current block in bytes
+    pub currentblocksize: u64,
+    /// Number of transactions in current block
+    pub currentblocktx: u32,
+    /// Current difficulty
+    pub difficulty: f64,
+    /// Network hash rate per second
+    pub networkhashps: f64,
+    /// Number of pooled transactions
+    pub pooledtx: u32,
+    /// Chain name (main, test, regtest)
+    pub chain: String,
+    /// Warnings
+    pub warnings: String,
+}
+
+/// Response for generatetoaddress RPC command
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct GenerateToAddressResponse {
+    /// Array of generated block hashes
+    pub block_hashes: Vec<String>,
+    /// Status message
+    pub message: String,
+}
+
 impl<T> PaginatedResponse<T> {
     pub fn new(items: Vec<T>, page: u32, limit: u32, total: u32) -> Self {
         let total_pages = (total as f64 / limit as f64).ceil() as u32;

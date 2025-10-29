@@ -40,10 +40,8 @@ pub fn create_api_routes() -> Router<Arc<NodeContext>> {
             get(transaction::get_address_transactions),
         )
         // Mining endpoints
-        .route("/mining/start", post(mining::start_mining))
-        .route("/mining/stop", post(mining::stop_mining))
-        .route("/mining/status", get(mining::get_mining_status))
-        .route("/mining/mine", post(mining::mine_block))
+        .route("/mining/info", get(mining::get_mining_info))
+        .route("/mining/generatetoaddress", post(mining::generate_to_address))
 }
 
 pub fn create_monitor_api_routes() -> Router<Arc<NodeContext>> {

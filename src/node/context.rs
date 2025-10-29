@@ -70,7 +70,7 @@ use crate::transaction::TxSummary;
 use crate::{Block, Transaction, WalletAddress, WalletTransaction};
 use std::collections::HashMap;
 use std::net::SocketAddr;
-use tracing::{error, info, warn};
+use tracing::{info, error, warn};
 
 /// Node context - central coordination point for all node operations
 ///
@@ -356,8 +356,8 @@ impl NodeContext {
     /// - Testing blockchain progression
     /// - Keeping the chain moving when mempool is empty
     /// - Network synchronization testing
-    pub async fn mine_empty_block(&self) -> Result<Block> {
-        miner::mine_empty_block(&self.blockchain).await
+    pub async fn mine_empty_block(&self, wallet_address: &WalletAddress) -> Result<Block> {
+        miner::mine_empty_block(&self.blockchain, wallet_address).await
     }
 
     /// Find all transactions across the entire blockchain
@@ -581,7 +581,7 @@ impl NodeContext {
     /// # use blockchain::node::NodeContext;
     /// # async fn example(node: &NodeContext) -> Result<(), Box<dyn std::error::Error>> {
     /// let txid = "9a2f3c4d5e6f...";
-    /// if let Some(tx) = node.get_transaction(txid)? {
+    /// if let Some(tx) = node.get_mempool_transaction(txid)? {
     ///     println!("Found transaction in mempool");
     /// }
     /// # Ok(())
@@ -1026,19 +1026,25 @@ impl NodeContext {
 
         // Trigger mining if threshold is met
         if should_trigger_mining() {
-            match prepare_mining_utxo() {
-                Ok(txs) => {
-                    if !txs.is_empty() {
-                        process_mine_block(txs, &self.blockchain).await.map(|_| ())
-                    } else {
-                        warn!("Mining triggered but no valid transactions to mine");
-                        Ok(())
+            // Get mining address from config
+            if let Some(mining_address) = GLOBAL_CONFIG.get_mining_addr() {
+                match prepare_mining_utxo(&mining_address) {
+                    Ok(txs) => {
+                        if !txs.is_empty() {
+                            process_mine_block(txs, &self.blockchain).await.map(|_| ())
+                        } else {
+                            warn!("Mining triggered but no valid transactions to mine");
+                            Ok(())
+                        }
+                    }
+                    Err(e) => {
+                        error!("Failed to prepare mining transactions: {}", e);
+                        cleanup_invalid_transactions().await
                     }
                 }
-                Err(e) => {
-                    error!("Failed to prepare mining transactions: {}", e);
-                    cleanup_invalid_transactions().await
-                }
+            } else {
+                warn!("Mining triggered but no mining address configured");
+                Ok(())
             }
         } else {
             Ok(())

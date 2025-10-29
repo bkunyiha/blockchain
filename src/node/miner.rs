@@ -7,17 +7,14 @@ use super::txmempool::remove_from_memory_pool;
 use crate::error::{BtcError, Result};
 use crate::net::net_processing::send_inv;
 use crate::node::{GLOBAL_MEMORY_POOL, GLOBAL_NODES, OpType};
-use crate::{Block, BlockchainService, GLOBAL_CONFIG, Transaction};
-use tracing::{error, info};
+use crate::{Block, BlockchainService, GLOBAL_CONFIG, Transaction, WalletAddress};
+use tracing::info;
 
 const TRANSACTION_THRESHOLD: usize = 3;
 
 /// Create coinbase transaction for mining
-fn create_mining_coinbase_transaction() -> Result<Transaction> {
-    let mining_address = GLOBAL_CONFIG
-        .get_mining_addr()
-        .expect("Mining address get error");
-    Transaction::new_coinbase_tx(&mining_address)
+fn create_mining_coinbase_transaction(to: &WalletAddress) -> Result<Transaction> {
+    Transaction::new_coinbase_tx(to)
 }
 
 /// Check if mining should be triggered
@@ -28,20 +25,16 @@ pub fn should_trigger_mining() -> bool {
 }
 
 /// Prepare UTXO for mining
-pub fn prepare_mining_utxo() -> Result<Vec<Transaction>> {
+pub fn prepare_mining_utxo(mining_address: &WalletAddress) -> Result<Vec<Transaction>> {
     let txs = GLOBAL_MEMORY_POOL.get_all()?;
-
-    // Filter out any invalid transactions before mining
-    // This prevents invalid transactions from being included in blocks
-    let valid_txs: Vec<Transaction> = txs.into_iter().collect();
 
     info!(
         "Preparing to mine with {} valid transactions",
-        valid_txs.len()
+        txs.len()
     );
-
-    let coinbase_tx = create_mining_coinbase_transaction()?;
-    let mut final_txs = valid_txs;
+    
+    let coinbase_tx = create_mining_coinbase_transaction(mining_address)?;
+    let mut final_txs = txs;
     final_txs.push(coinbase_tx);
 
     Ok(final_txs)
@@ -72,18 +65,24 @@ pub async fn process_mine_block(
     }
 
     // Broadcast new block to nodes
+    broadcast_new_block(&new_block).await?;
+    Ok(new_block)
+}
+
+pub async fn broadcast_new_block(block: &Block) -> Result<()> {
+    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
     let nodes = GLOBAL_NODES.get_nodes().expect("Global nodes get error");
     nodes
         .iter()
         .filter(|node| !my_node_addr.eq(&node.get_addr()))
         .for_each(|node| {
             let node_addr = node.get_addr();
-            let block_hash = new_block.get_hash_bytes();
+            let block_hash = block.get_hash_bytes();
             tokio::spawn(async move {
                 send_inv(&node_addr, OpType::Block, &[block_hash]).await;
             });
         });
-    Ok(new_block)
+    Ok(())
 }
 
 /// Bitcoin mining without including user transactions is possible because the core incentive for
@@ -103,15 +102,14 @@ pub async fn process_mine_block(
 /// newly minted bitcoins from the coinbase transaction. This process contributes to network security and helps
 /// bring new Bitcoin into circulation, even in the absence of user transactions.
 ///
-pub async fn mine_empty_block(blockchain: &BlockchainService) -> Result<Block> {
+pub async fn mine_empty_block(blockchain: &BlockchainService, wallet_address: &WalletAddress) -> Result<Block> {
     if GLOBAL_CONFIG.is_miner() {
-        match prepare_mining_utxo() {
-            Ok(txs) => process_mine_block(txs, blockchain).await,
-            Err(e) => {
-                error!("Failed to prepare mining transactions: {}", e);
-                Err(e)
-            }
-        }
+        // Create only coinbase transaction for empty block
+        let coinbase_tx = create_mining_coinbase_transaction(wallet_address)?;
+        let txs = vec![coinbase_tx];
+        
+        // Mine the block with only coinbase transaction
+        process_mine_block(txs, blockchain).await
     } else {
         Err(BtcError::NotAMiner)
     }

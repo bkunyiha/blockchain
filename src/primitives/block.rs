@@ -84,6 +84,14 @@ impl Block {
         Ok(self.transactions.as_slice())
     }
 
+    pub fn get_transactions_count(&self) -> usize {
+        self.transactions.len()
+    }
+
+    pub fn get_block_size(&self) -> Result<usize> {
+        Ok(self.serialize()?.len())
+    }
+
     /// Get all transactions relevant to a specific wallet address
     ///
     /// This method scans all transactions in the block and returns those that involve

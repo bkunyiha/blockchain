@@ -436,7 +436,11 @@ pub async fn process_stream(
                 }
                 AdminNodeQueryType::MineEmptyBlock => {
                     if GLOBAL_CONFIG.is_miner() {
-                        node_context.mine_empty_block().await.map(|_| ())?
+                        // Get mining address from config
+                        let mining_address = GLOBAL_CONFIG
+                        .get_mining_addr()
+                        .ok_or(BtcError::NotAMiner)?;
+                        node_context.mine_empty_block(&mining_address).await.map(|_| ())?
                     } else {
                         trace!("Not a miner");
                     }

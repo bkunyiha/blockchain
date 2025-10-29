@@ -29,10 +29,8 @@ use crate::web::handlers::{blockchain, health, mining, transaction, wallet};
         transaction::get_transactions,
         transaction::get_address_transactions,
         // Mining endpoints
-        mining::start_mining,
-        mining::stop_mining,
-        mining::get_mining_status,
-        mining::mine_block,
+        mining::get_mining_info,
+        mining::generate_to_address,
     ),
     components(
         schemas(
