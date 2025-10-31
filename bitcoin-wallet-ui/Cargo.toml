@@ -1,0 +1,16 @@
+[package]
+name = "bitcoin-wallet-ui"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# UI framework
+iced = { version = "0.13.1", features = ["advanced"] }
+
+# Shared typed HTTP client for the node API.
+# Wallet UI should only include wallet-scope endpoints: client + wallet.
+# We disable default-features to avoid compiling admin-only APIs.
+bitcoin-api = { path = "../bitcoin-api", features = ["client", "wallet"], default-features = false }
+
+# Async runtime used by the API client in this UI process.
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
