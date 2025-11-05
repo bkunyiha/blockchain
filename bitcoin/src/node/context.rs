@@ -70,7 +70,7 @@ use crate::transaction::TxSummary;
 use crate::{Block, Transaction, WalletAddress, WalletTransaction};
 use std::collections::HashMap;
 use std::net::SocketAddr;
-use tracing::{info, error, warn};
+use tracing::{error, info, warn};
 
 /// Node context - central coordination point for all node operations
 ///

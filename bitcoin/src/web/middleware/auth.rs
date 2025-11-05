@@ -22,8 +22,11 @@ pub async fn require_role(
     };
 
     // Admin can access wallet routes too
-    let allowed = caller_role == required || (caller_role == Role::Admin && required == Role::Wallet);
-    if !allowed { return Err(StatusCode::FORBIDDEN); }
+    let allowed =
+        caller_role == required || (caller_role == Role::Admin && required == Role::Wallet);
+    if !allowed {
+        return Err(StatusCode::FORBIDDEN);
+    }
 
     // Attach role to extensions if needed by handlers
     req.extensions_mut().insert(caller_role);
@@ -47,14 +50,15 @@ pub async fn require_wallet(
 
 fn is_admin_key(k: &str) -> bool {
     // Read from env vars; fallback to defaults
-    let expected = std::env::var("BITCOIN_API_ADMIN_KEY").unwrap_or_else(|_| "admin-secret".to_string());
+    let expected =
+        std::env::var("BITCOIN_API_ADMIN_KEY").unwrap_or_else(|_| "admin-secret".to_string());
     k == expected
 }
 
 fn is_wallet_key(k: &str) -> bool {
-    let expected = std::env::var("BITCOIN_API_WALLET_KEY").unwrap_or_else(|_| "wallet-secret".to_string());
+    let expected =
+        std::env::var("BITCOIN_API_WALLET_KEY").unwrap_or_else(|_| "wallet-secret".to_string());
     println!("expected: {}", expected);
     println!("k: {}", k);
     k == expected
 }
-

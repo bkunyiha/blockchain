@@ -239,9 +239,15 @@ async fn start_node(
 
     info!("Starting both network and web servers...");
 
+    // Centralized shutdown handling
+    let (shutdown_tx, _) = tokio::sync::broadcast::channel::<()>(1);
+
     // Spawn both servers as separate tasks
+    let net_shutdown_rx = shutdown_tx.subscribe();
     let network_handle = tokio::spawn(async move {
-        network_server.run(&socket_addr, connect_nodes_set).await;
+        network_server
+            .run_with_shutdown(&socket_addr, connect_nodes_set, net_shutdown_rx)
+            .await;
     });
 
     let web_handle = tokio::spawn(async move {
@@ -251,20 +257,25 @@ async fn start_node(
         }
     });
 
-    // Wait for either server to complete
-    // When You Press Ctrl+C:
-    // Web server receives the signal and exits gracefully
-    // tokio::select! completes because the web server task finished.
-    // Main function returns and the process exits.
-    // Network server is automatically cancelled when the process exits.
+    // Wait for Ctrl+C or any server to stop
+    let mut web_handle = web_handle;
+    let mut network_handle = network_handle;
     tokio::select! {
-        _ = network_handle => {
-            info!("Network server stopped");
+        _ = tokio::signal::ctrl_c() => {
+            info!("Ctrl-C received, initiating shutdown...");
+            let _ = shutdown_tx.send(());
         }
-        _ = web_handle => {
-            info!("Web server stopped");
+        _ = &mut web_handle => {
+            info!("Web server task finished");
+        }
+        _ = &mut network_handle => {
+            info!("Network server task finished");
         }
     }
+
+    // Ensure both tasks are concluded
+    let _ = web_handle.await;
+    let _ = network_handle.await;
 
     Ok(())
 }

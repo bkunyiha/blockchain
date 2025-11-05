@@ -53,12 +53,8 @@ use std::sync::Arc;
 
 use crate::node::{NodeContext, miner::broadcast_new_block};
 use crate::web::models::{
-    ApiResponse, 
-    MiningInfoResponse,
-    GenerateToAddressRequest,
-    GenerateToAddressResponse,
+    ApiResponse, GenerateToAddressRequest, GenerateToAddressResponse, MiningInfoResponse,
 };
-
 
 /// Get mining information
 ///
@@ -137,7 +133,9 @@ pub async fn get_mining_info(
     // Extract current block information
     let (currentblocksize, currentblocktx) = if let Some(block) = &last_block {
         // Calculate block size by serializing it
-        let block_size = block.get_block_size().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)? as u64;
+        let block_size = block
+            .get_block_size()
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)? as u64;
 
         // Get transaction count from the block
         let tx_count = block.get_transactions_count() as u32;
@@ -161,7 +159,7 @@ pub async fn get_mining_info(
         blocks,
         currentblocksize,
         currentblocktx,
-        difficulty: 1.0, // TODO: Calculate actual difficulty from recent blocks
+        difficulty: 1.0,    // TODO: Calculate actual difficulty from recent blocks
         networkhashps: 0.0, // TODO: Calculate network hash rate from recent block times
         pooledtx,
         chain,
@@ -270,26 +268,22 @@ pub async fn generate_to_address(
     }
 
     // Validate address format
-    let reward_address = WalletAddress::validate(request.address.clone())
-        .map_err(|_| StatusCode::BAD_REQUEST)?;
+    let reward_address =
+        WalletAddress::validate(request.address.clone()).map_err(|_| StatusCode::BAD_REQUEST)?;
 
     // Collect generated block hashes
     let mut block_hashes = Vec::new();
 
     // Generate nblocks blocks
     for block_num in 0..request.nblocks {
-
         // Create coinbase transaction with the specified reward address
-        let coinbase_tx = Transaction::new_coinbase_tx(&reward_address)
-            .map_err(|e| {
-                error!("Failed to create coinbase transaction: {}", e);
-                StatusCode::INTERNAL_SERVER_ERROR
-            })?;
+        let coinbase_tx = Transaction::new_coinbase_tx(&reward_address).map_err(|e| {
+            error!("Failed to create coinbase transaction: {}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
 
         // Get transactions from mempool (if any)
-        let mempool_txs = node
-        .get_mempool_transactions()
-        .map_err(|e| {
+        let mempool_txs = node.get_mempool_transactions().map_err(|e| {
             error!("Failed to get mempool transactions: {}", e);
             StatusCode::INTERNAL_SERVER_ERROR
         })?;
@@ -299,13 +293,10 @@ pub async fn generate_to_address(
         transactions.extend(mempool_txs);
 
         // Mine the block (already adds to blockchain and updates UTXO)
-        let mined_block = node
-            .mine_block(&transactions)
-            .await
-            .map_err(|e| {
-                error!("Failed to mine block {}: {}", block_num + 1, e);
-                StatusCode::INTERNAL_SERVER_ERROR
-            })?;
+        let mined_block = node.mine_block(&transactions).await.map_err(|e| {
+            error!("Failed to mine block {}: {}", block_num + 1, e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
 
         // Remove mined transactions from mempool (excluding coinbase)
         for tx in transactions.into_iter().skip(1) {
@@ -331,4 +322,3 @@ pub async fn generate_to_address(
 
     Ok(Json(ApiResponse::success(response)))
 }
-

@@ -10,7 +10,7 @@ use tower_http::compression::CompressionLayer;
 use crate::node::NodeContext;
 use crate::web::middleware::cors;
 use crate::web::models::{ApiResponse, ErrorResponse};
-use crate::web::routes::{create_all_api_routes, create_web_routes, create_wallet_only_routes};
+use crate::web::routes::{create_all_api_routes, create_wallet_only_routes, create_web_routes};
 
 /// Web server configuration
 #[derive(Debug, Clone)]

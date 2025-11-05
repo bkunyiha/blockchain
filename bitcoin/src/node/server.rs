@@ -6,8 +6,9 @@ use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::env;
-use std::net::{SocketAddr, TcpListener};
+use std::net::SocketAddr;
 use std::str::FromStr;
+use tokio::net::TcpListener;
 use tracing::{error, info, instrument};
 
 pub const NODE_VERSION: usize = 1;
@@ -92,9 +93,16 @@ impl Server {
         }
     }
 
-    #[instrument(skip(self, addrs, connect_nodes))]
-    pub async fn run(&self, addrs: &SocketAddr, connect_nodes: HashSet<ConnectNode>) {
-        let listener = TcpListener::bind(addrs).expect("TcpListener bind error");
+    #[instrument(skip(self, addrs, connect_nodes, shutdown))]
+    pub async fn run_with_shutdown(
+        &self,
+        addrs: &SocketAddr,
+        connect_nodes: HashSet<ConnectNode>,
+        mut shutdown: tokio::sync::broadcast::Receiver<()>,
+    ) {
+        let listener = TcpListener::bind(addrs)
+            .await
+            .expect("TcpListener bind error");
         info!(
             "Server listening on {:?}",
             listener.local_addr().expect("TcpListener local_addr error")
@@ -136,22 +144,38 @@ impl Server {
             }
         }
 
-        // Serve the incoming connections.
-        for stream in listener.incoming() {
-            let blockchain = self.node_context.clone();
-
-            tokio::spawn(async move {
-                match stream {
-                    Ok(stream) => {
-                        net_processing::process_stream(blockchain, stream)
-                            .await
-                            .expect("Serve error");
-                    }
-                    Err(e) => {
-                        error!("Error: {}", e);
+        // Serve incoming connections with graceful shutdown.
+        loop {
+            tokio::select! {
+                _ = shutdown.recv() => {
+                    info!("Network server shutdown signal received");
+                    break;
+                }
+                accept_res = listener.accept() => {
+                    match accept_res {
+                        Ok((stream, _peer)) => {
+                            let blockchain = self.node_context.clone();
+                            tokio::spawn(async move {
+                                // Convert tokio stream to std stream for existing processing code
+                                match stream.into_std() {
+                                    Ok(std_stream) => {
+                                        let _ = std_stream.set_nonblocking(false);
+                                        if let Err(e) = net_processing::process_stream(blockchain, std_stream).await {
+                                            error!("Serve error: {}", e);
+                                        }
+                                    }
+                                    Err(e) => {
+                                        error!("Failed to convert stream: {}", e);
+                                    }
+                                }
+                            });
+                        }
+                        Err(e) => {
+                            error!("accept error: {}", e);
+                        }
                     }
                 }
-            });
+            }
         }
     }
 }

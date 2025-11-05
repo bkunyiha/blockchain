@@ -28,11 +28,8 @@ pub fn should_trigger_mining() -> bool {
 pub fn prepare_mining_utxo(mining_address: &WalletAddress) -> Result<Vec<Transaction>> {
     let txs = GLOBAL_MEMORY_POOL.get_all()?;
 
-    info!(
-        "Preparing to mine with {} valid transactions",
-        txs.len()
-    );
-    
+    info!("Preparing to mine with {} valid transactions", txs.len());
+
     let coinbase_tx = create_mining_coinbase_transaction(mining_address)?;
     let mut final_txs = txs;
     final_txs.push(coinbase_tx);
@@ -102,12 +99,15 @@ pub async fn broadcast_new_block(block: &Block) -> Result<()> {
 /// newly minted bitcoins from the coinbase transaction. This process contributes to network security and helps
 /// bring new Bitcoin into circulation, even in the absence of user transactions.
 ///
-pub async fn mine_empty_block(blockchain: &BlockchainService, wallet_address: &WalletAddress) -> Result<Block> {
+pub async fn mine_empty_block(
+    blockchain: &BlockchainService,
+    wallet_address: &WalletAddress,
+) -> Result<Block> {
     if GLOBAL_CONFIG.is_miner() {
         // Create only coinbase transaction for empty block
         let coinbase_tx = create_mining_coinbase_transaction(wallet_address)?;
         let txs = vec![coinbase_tx];
-        
+
         // Mine the block with only coinbase transaction
         process_mine_block(txs, blockchain).await
     } else {

@@ -72,12 +72,20 @@ pub struct BalanceQuery {
 #[derive(Debug, Serialize, Deserialize, Validate, ToSchema)]
 pub struct GenerateToAddressRequest {
     /// Number of blocks to generate
-    #[validate(range(min = 1, max = 1000, message = "Block count must be between 1 and 1000"))]
+    #[validate(range(
+        min = 1,
+        max = 1000,
+        message = "Block count must be between 1 and 1000"
+    ))]
     pub nblocks: u32,
     /// Address to receive block rewards
     #[validate(length(min = 26, max = 35, message = "Invalid address format"))]
     pub address: String,
     /// Maximum iterations to try (optional)
-    #[validate(range(min = 1, max = 1000000, message = "Max tries must be between 1 and 1000000"))]
+    #[validate(range(
+        min = 1,
+        max = 1000000,
+        message = "Max tries must be between 1 and 1000000"
+    ))]
     pub maxtries: Option<u32>,
 }
