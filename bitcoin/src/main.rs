@@ -33,6 +33,24 @@ impl FromStr for IsMiner {
     }
 }
 
+#[derive(Debug, Clone)]
+enum IsWebServer {
+    Yes,
+    No,
+}
+
+impl FromStr for IsWebServer {
+    type Err = BtcError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "yes" => Ok(IsWebServer::Yes),
+            "no" => Ok(IsWebServer::No),
+            _ => Err(BtcError::InvalidValueForWebServer(s.to_string())),
+        }
+    }
+}
+
 #[derive(Debug, Parser)]
 #[command(name = "blockchain")]
 struct Opt {
@@ -56,6 +74,8 @@ enum Command {
     StartNode {
         #[arg(name = "is_miner", help = "Is Node a Miner?")]
         is_miner: IsMiner,
+        #[arg(name = "is_web_server", help = "Is Node a Web Server?")]
+        is_web_server: IsWebServer,
         #[arg(name = "connect_nodes", required(true), help = "Connect to a node")]
         connect_nodes: Vec<ConnectNode>,
         #[arg(name = "wlt_mining_addr", help = "Wallet Address", last(true))]
@@ -162,15 +182,19 @@ async fn print_blockchain() -> Result<()> {
 fn validate_miner_config(
     wlt_mining_addr: Option<&WalletAddress>,
     is_miner: &IsMiner,
+    is_web_server: &IsWebServer,
 ) -> Result<()> {
     match is_miner {
         IsMiner::Yes => {
             if let Some(wlt_mining_addr) = wlt_mining_addr {
-                GLOBAL_CONFIG.set_mining_addr(wlt_mining_addr);
+                GLOBAL_CONFIG.set_mining_addr(wlt_mining_addr);                
             }
             Ok(())
         }
-        IsMiner::No => Ok(()),
+        IsMiner::No => {
+            GLOBAL_CONFIG.set_web_server_enabled(matches!(is_web_server, IsWebServer::Yes));
+            Ok(())
+        }
     }
 }
 
@@ -215,11 +239,12 @@ async fn open_or_create_blockchain(
 /// Start the node with functional configuration
 async fn start_node(
     is_miner: IsMiner,
+    is_web_server: IsWebServer,
     connect_nodes: Vec<ConnectNode>,
     wlt_mining_addr: Option<WalletAddress>,
 ) -> Result<()> {
     // Validate miner configuration
-    validate_miner_config(wlt_mining_addr.as_ref(), &is_miner)?;
+    validate_miner_config(wlt_mining_addr.as_ref(), &is_miner, &is_web_server)?;
 
     // Open or create blockchain
     let blockchain = open_or_create_blockchain(wlt_mining_addr.as_ref(), &connect_nodes).await?;
@@ -233,16 +258,13 @@ async fn start_node(
     // Convert connect nodes to HashSet
     let connect_nodes_set: HashSet<ConnectNode> = connect_nodes.into_iter().collect();
 
-    // Start both servers concurrently using tokio::spawn
-    let network_server = Server::new(node_context.clone());
-    let web_server = create_web_server(node_context);
-
-    info!("Starting both network and web servers...");
-
     // Centralized shutdown handling
     let (shutdown_tx, _) = tokio::sync::broadcast::channel::<()>(1);
 
-    // Spawn both servers as separate tasks
+    // Start network server concurrently using tokio::spawn
+    let network_server = Server::new(node_context.clone());
+    info!("Starting network server...");
+    // Spawn server as separate tasks
     let net_shutdown_rx = shutdown_tx.subscribe();
     let network_handle = tokio::spawn(async move {
         network_server
@@ -250,34 +272,68 @@ async fn start_node(
             .await;
     });
 
-    let web_handle = tokio::spawn(async move {
-        match web_server.start_with_shutdown().await {
-            Ok(_) => info!("Web server stopped gracefully"),
-            Err(e) => error!("Web server error: {}", e),
-        }
-    });
-
-    // Wait for Ctrl+C or any server to stop
-    let mut web_handle = web_handle;
+    // Wait for Ctrl+C or any server to stop.
+    // Shadow the JoinHandles as mutable because tokio::select! polls branches by &mut,
+    // requiring mutable bindings to pass &mut handle into the select arms below.
     let mut network_handle = network_handle;
-    tokio::select! {
-        _ = tokio::signal::ctrl_c() => {
-            info!("Ctrl-C received, initiating shutdown...");
-            let _ = shutdown_tx.send(());
-        }
-        _ = &mut web_handle => {
-            info!("Web server task finished");
-        }
-        _ = &mut network_handle => {
-            info!("Network server task finished");
-        }
-    }
 
-    // Ensure both tasks are concluded
-    let _ = web_handle.await;
-    let _ = network_handle.await;
+    let result: Result<()> = match(is_web_server, is_miner) {
+        (IsWebServer::Yes, IsMiner::No) => {
+            // Start both servers concurrently using tokio::spawn
+            let web_server = create_web_server(node_context);
+            info!("Starting web server...");
+            let web_handle = tokio::spawn(async move {
+                match web_server.start_with_shutdown().await {
+                    Ok(_) => info!("Web server stopped gracefully"),
+                    Err(e) => error!("Web server error: {}", e),
+                }
+            });
+            
+            // Wait for Ctrl+C or any server to stop.
+            // Shadow the JoinHandles as mutable because tokio::select! polls branches by &mut,
+            // requiring mutable bindings to pass &mut handle into the select arms below.
+            let mut web_handle = web_handle;
+            tokio::select! {
+                _ = tokio::signal::ctrl_c() => {
+                    info!("Ctrl-C received, initiating shutdown...");
+                    let _ = shutdown_tx.send(());
+                }
+                _ = &mut web_handle => {
+                    info!("Web server task finished");
+                }
+                _ = &mut network_handle => {
+                    info!("Network server task finished");
+                }
+            }
 
-    Ok(())
+            // Ensure all tasks are concluded
+            let _ = web_handle.await;
+            let _ = network_handle.await;
+            Ok(())
+        }
+        (is_web, _) => {
+            if matches!(is_web, IsWebServer::Yes) {
+                error!("Web server and miner cannot be enabled at the same time, WILL NOT START WEB SERVER");
+                return Err(BtcError::InvalidConfiguration("Web server and miner cannot be enabled at the same time".to_string()));
+            }
+            // Start only network server
+            tokio::select! {
+                _ = tokio::signal::ctrl_c() => {
+                    info!("Ctrl-C received, initiating shutdown...");
+                    let _ = shutdown_tx.send(());
+                }
+                _ = &mut network_handle => {
+                    info!("Web server task finished");
+                }
+            }
+    
+            // Ensure both tasks are concluded
+            let _ = network_handle.await;
+            Ok(())
+        }
+    };
+
+    result
 }
 
 /// Process commands using functional patterns
@@ -288,11 +344,12 @@ async fn process_command(command: Command) -> Result<()> {
         Command::Printchain => print_blockchain().await,
         Command::StartNode {
             is_miner,
+            is_web_server,
             connect_nodes,
             wlt_mining_addr,
         } => {
             let validated_addr = wlt_mining_addr.map(WalletAddress::validate).transpose()?;
-            start_node(is_miner, connect_nodes, validated_addr).await
+            start_node(is_miner, is_web_server, connect_nodes, validated_addr).await
         }
     }
 }

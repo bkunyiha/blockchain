@@ -9,6 +9,9 @@ pub enum BtcError {
     #[error("Invalid value:{0} for miner. Must be yes or no.")]
     InvalidValueForMiner(String),
 
+    #[error("Invalid value:{0} for web server. Must be yes or no.")]
+    InvalidValueForWebServer(String),
+
     #[error("Node is not a miner")]
     NotAMiner,
 
@@ -116,6 +119,9 @@ pub enum BtcError {
     GetBlockchainError(String),
     #[error("Open Blockchain tree error: {0}")]
     OpenBlockchainTreeError(String),
+
+    #[error("Invalid configuration: {0}")]
+    InvalidConfiguration(String),
 }
 
 pub type Result<T> = std::result::Result<T, BtcError>;
