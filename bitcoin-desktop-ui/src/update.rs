@@ -1,8 +1,8 @@
 use crate::app::AdminApp;
 use crate::api::*;
 use crate::runtime::spawn_on_tokio;
-use crate::types::{DataSection, Message};
-use bitcoin_api::{ApiConfig, CreateWalletRequest};
+use crate::types::{DataSection, Message, Menu};
+use bitcoin_api::{ApiConfig, CreateWalletRequest, SendTransactionRequest};
 use iced::Task;
 use serde_json::Value;
 
@@ -50,6 +50,56 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
         }
         Message::WalletAddressChanged(v) => {
             app.wallet_address_input = v;
+            Task::none()
+        }
+        Message::WalletSectionChanged(section) => {
+            app.wallet_section = section;
+            app.menu = Menu::Wallet; // Switch to Wallet menu to show the content
+            app.wallet_menu_hovered = false; // Close popup when section is selected
+            Task::none()
+        }
+        Message::TransactionSectionChanged(section) => {
+            app.transaction_section = section;
+            app.menu = Menu::Transactions; // Switch to Transactions menu to show the content
+            app.transaction_menu_hovered = false; // Close popup when section is selected
+            Task::none()
+        }
+        Message::BlockchainSectionChanged(section) => {
+            app.blockchain_section = section;
+            app.menu = Menu::Blockchain; // Switch to Blockchain menu to show the content
+            app.blockchain_menu_hovered = false; // Close popup when section is selected
+            Task::none()
+        }
+        Message::BlockchainMenuHovered(hovered) => {
+            app.blockchain_menu_hovered = hovered;
+            Task::none()
+        }
+        Message::WalletMenuHovered(hovered) => {
+            app.wallet_menu_hovered = hovered;
+            Task::none()
+        }
+        Message::TransactionMenuHovered(hovered) => {
+            app.transaction_menu_hovered = hovered;
+            Task::none()
+        }
+        Message::MiningSectionChanged(section) => {
+            app.mining_section = section;
+            app.menu = Menu::Mining; // Switch to Mining menu to show the content
+            app.mining_menu_hovered = false; // Close popup when section is selected
+            Task::none()
+        }
+        Message::MiningMenuHovered(hovered) => {
+            app.mining_menu_hovered = hovered;
+            Task::none()
+        }
+        Message::HealthSectionChanged(section) => {
+            app.health_section = section;
+            app.menu = Menu::Health; // Switch to Health menu to show the content
+            app.health_menu_hovered = false; // Close popup when section is selected
+            Task::none()
+        }
+        Message::HealthMenuHovered(hovered) => {
+            app.health_menu_hovered = hovered;
             Task::none()
         }
         // Wallet admin operations
@@ -173,6 +223,89 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 Err(e) => {
                     app.status = e;
                     app.wallet_balance = None;
+                }
+            }
+            Task::none()
+        }
+        // Send transaction handlers
+        Message::SendFromChanged(v) => {
+            app.send_from_address = v;
+            Task::none()
+        }
+        Message::SendToChanged(v) => {
+            app.send_to_address = v;
+            Task::none()
+        }
+        Message::SendAmountChanged(v) => {
+            app.send_amount = v;
+            Task::none()
+        }
+        Message::SendTx => {
+            let amount_sat = app.send_amount.trim().parse::<u64>().unwrap_or(0);
+            if amount_sat == 0 {
+                app.status = "Amount must be greater than 0".into();
+                return Task::none();
+            }
+            if app.send_from_address.trim().is_empty() || app.send_to_address.trim().is_empty() {
+                app.status = "From and To addresses are required".into();
+                return Task::none();
+            }
+            let cfg = ApiConfig {
+                base_url: app.base_url.clone(),
+                api_key: Some(app.api_key.clone()),
+            };
+            let req = SendTransactionRequest {
+                from_address: app.send_from_address.clone(),
+                to_address: app.send_to_address.clone(),
+                amount_satoshis: amount_sat,
+            };
+            Task::perform(spawn_on_tokio(send_transaction(cfg, req)), Message::TxSent)
+        }
+        Message::TxSent(res) => {
+            match res {
+                Ok(api) => {
+                    if api.success {
+                        app.last_txid = api.data.as_ref().map(|d| d.txid.clone());
+                        app.status = format!("Transaction sent: {}", 
+                            api.data.as_ref().map(|d| d.txid.as_str()).unwrap_or("unknown"));
+                    } else {
+                        app.status = api.error.unwrap_or_else(|| "Error sending transaction".into());
+                        app.last_txid = None;
+                    }
+                }
+                Err(e) => {
+                    app.status = e;
+                    app.last_txid = None;
+                }
+            }
+            Task::none()
+        }
+        // Transaction history handlers
+        Message::HistoryAddressChanged(v) => {
+            app.history_address = v;
+            Task::none()
+        }
+        Message::FetchTransactionHistory(address) => {
+            let cfg = ApiConfig {
+                base_url: app.base_url.clone(),
+                api_key: Some(app.api_key.clone()),
+            };
+            Task::perform(spawn_on_tokio(fetch_address_transactions(cfg, address)), Message::TransactionHistoryLoaded)
+        }
+        Message::TransactionHistoryLoaded(res) => {
+            match res {
+                Ok(api) => {
+                    if api.success {
+                        app.transaction_history = api.data;
+                        app.status = "Transaction history loaded".into();
+                    } else {
+                        app.status = api.error.unwrap_or_else(|| "Error loading transaction history".into());
+                        app.transaction_history = None;
+                    }
+                }
+                Err(e) => {
+                    app.status = e;
+                    app.transaction_history = None;
                 }
             }
             Task::none()

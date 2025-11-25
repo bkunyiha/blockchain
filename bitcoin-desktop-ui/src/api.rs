@@ -1,4 +1,4 @@
-use bitcoin_api::{AdminClient, ApiConfig, ApiResponse, BlockSummary, BlockchainInfo, CreateWalletRequest, CreateWalletResponse};
+use bitcoin_api::{AdminClient, ApiConfig, ApiResponse, BlockSummary, BlockchainInfo, CreateWalletRequest, CreateWalletResponse, SendTransactionRequest, SendTransactionResponse};
 use serde_json::Value;
 
 pub async fn fetch_info(cfg: ApiConfig) -> Result<ApiResponse<BlockchainInfo>, String> {
@@ -128,6 +128,18 @@ pub async fn fetch_balance_admin(
     let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
     client
         .get_balance_admin(&address)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+// Send transaction using admin client
+pub async fn send_transaction(
+    cfg: ApiConfig,
+    req: SendTransactionRequest,
+) -> Result<ApiResponse<SendTransactionResponse>, String> {
+    let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
+    client
+        .send_transaction_admin(&req)
         .await
         .map_err(|e| e.to_string())
 }

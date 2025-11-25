@@ -214,5 +214,12 @@ impl AdminClient {
         let resp = rb.send().await?.error_for_status()?;
         Ok(resp.json().await?)
     }
+
+    pub async fn send_transaction_admin(&self, req: &SendTransactionRequest) -> Result<ApiResponse<SendTransactionResponse>, ApiError> {
+        let url = self.base.url("/api/admin/transactions")?;
+        let rb = self.base.with_auth(self.base.http.post(url).json(req));
+        let resp = rb.send().await?.error_for_status()?;
+        Ok(resp.json().await?)
+    }
 }
 

@@ -1,4 +1,4 @@
-use crate::types::{DataSection, Menu, Message};
+use crate::types::{DataSection, Menu, Message, WalletSection, TransactionSection, BlockchainSection, MiningSection, HealthSection};
 use bitcoin_api::{BlockSummary, BlockchainInfo};
 use serde_json::Value;
 
@@ -24,6 +24,30 @@ pub struct AdminApp {
     pub wallet_info: Option<Value>,
     pub wallet_balance: Option<Value>,
     pub created_wallet_address: Option<String>,
+    // Send transaction state
+    pub send_from_address: String,
+    pub send_to_address: String,
+    pub send_amount: String,
+    pub last_txid: Option<String>,
+    // Transaction history state
+    pub history_address: String,
+    pub transaction_history: Option<Value>,
+    // Wallet section navigation
+    pub wallet_section: WalletSection,
+    // Transaction section navigation
+    pub transaction_section: TransactionSection,
+    // Blockchain section navigation
+    pub blockchain_section: BlockchainSection,
+    // Mining section navigation
+    pub mining_section: MiningSection,
+    // Health section navigation
+    pub health_section: HealthSection,
+    // Blockchain menu hover state
+    pub blockchain_menu_hovered: bool,
+    pub wallet_menu_hovered: bool,
+    pub transaction_menu_hovered: bool,
+    pub mining_menu_hovered: bool,
+    pub health_menu_hovered: bool,
     // Response data storage
     pub blocks_all_data: Option<Value>,
     pub block_by_hash_data: Option<Value>,
@@ -59,6 +83,22 @@ impl Default for AdminApp {
             wallet_info: None,
             wallet_balance: None,
             created_wallet_address: None,
+            send_from_address: String::new(),
+            send_to_address: String::new(),
+            send_amount: String::new(),
+            last_txid: None,
+            history_address: String::new(),
+            transaction_history: None,
+            wallet_section: WalletSection::Create,
+            transaction_section: TransactionSection::Mempool,
+            blockchain_section: BlockchainSection::Info,
+            mining_section: MiningSection::Info,
+            health_section: HealthSection::Health,
+            blockchain_menu_hovered: false,
+            wallet_menu_hovered: false,
+            transaction_menu_hovered: false,
+            mining_menu_hovered: false,
+            health_menu_hovered: false,
             blocks_all_data: None,
             block_by_hash_data: None,
             mining_info_data: None,
@@ -97,6 +137,22 @@ impl AdminApp {
                 wallet_info: None,
                 wallet_balance: None,
                 created_wallet_address: None,
+                send_from_address: String::new(),
+                send_to_address: String::new(),
+                send_amount: String::new(),
+                last_txid: None,
+                history_address: String::new(),
+                transaction_history: None,
+                wallet_section: WalletSection::Create,
+                transaction_section: TransactionSection::Mempool,
+                blockchain_section: BlockchainSection::Info,
+                mining_section: MiningSection::Info,
+                health_section: HealthSection::Health,
+                blockchain_menu_hovered: false,
+                wallet_menu_hovered: false,
+                transaction_menu_hovered: false,
+                mining_menu_hovered: false,
+                health_menu_hovered: false,
                 blocks_all_data: None,
                 block_by_hash_data: None,
                 mining_info_data: None,

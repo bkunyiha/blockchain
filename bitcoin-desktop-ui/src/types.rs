@@ -1,4 +1,4 @@
-use bitcoin_api::{ApiResponse, BlockSummary, BlockchainInfo, CreateWalletResponse};
+use bitcoin_api::{ApiResponse, BlockSummary, BlockchainInfo, CreateWalletResponse, SendTransactionResponse};
 use serde_json::Value;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -28,6 +28,145 @@ impl core::fmt::Display for Menu {
             Menu::Transactions => "Transactions",
             Menu::Mining => "Mining",
             Menu::Health => "Health",
+        };
+        write!(f, "{}", s)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum WalletSection {
+    Create,
+    Send,
+    History,
+    Addresses,
+    Query,
+}
+
+impl WalletSection {
+    pub const ALL: [WalletSection; 5] = [
+        WalletSection::Create,
+        WalletSection::Send,
+        WalletSection::History,
+        WalletSection::Addresses,
+        WalletSection::Query,
+    ];
+}
+
+impl core::fmt::Display for WalletSection {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        let s = match self {
+            WalletSection::Create => "Create Wallet",
+            WalletSection::Send => "Send Bitcoin",
+            WalletSection::History => "Transaction History",
+            WalletSection::Addresses => "My Addresses",
+            WalletSection::Query => "Query Wallet",
+        };
+        write!(f, "{}", s)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TransactionSection {
+    Mempool,
+    MempoolTx,
+    AllTransactions,
+    AddressTransactions,
+}
+
+impl TransactionSection {
+    pub const ALL: [TransactionSection; 4] = [
+        TransactionSection::Mempool,
+        TransactionSection::MempoolTx,
+        TransactionSection::AllTransactions,
+        TransactionSection::AddressTransactions,
+    ];
+}
+
+impl core::fmt::Display for TransactionSection {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        let s = match self {
+            TransactionSection::Mempool => "Mempool",
+            TransactionSection::MempoolTx => "Mempool Transaction",
+            TransactionSection::AllTransactions => "All Transactions",
+            TransactionSection::AddressTransactions => "Address Transactions",
+        };
+        write!(f, "{}", s)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MiningSection {
+    Info,
+    Generate,
+}
+
+impl MiningSection {
+    pub const ALL: [MiningSection; 2] = [
+        MiningSection::Info,
+        MiningSection::Generate,
+    ];
+}
+
+impl core::fmt::Display for MiningSection {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        let s = match self {
+            MiningSection::Info => "Mining Info",
+            MiningSection::Generate => "Generate Blocks",
+        };
+        write!(f, "{}", s)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum HealthSection {
+    Health,
+    Liveness,
+    Readiness,
+}
+
+impl HealthSection {
+    pub const ALL: [HealthSection; 3] = [
+        HealthSection::Health,
+        HealthSection::Liveness,
+        HealthSection::Readiness,
+    ];
+}
+
+impl core::fmt::Display for HealthSection {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        let s = match self {
+            HealthSection::Health => "Health Check",
+            HealthSection::Liveness => "Liveness Check",
+            HealthSection::Readiness => "Readiness Check",
+        };
+        write!(f, "{}", s)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BlockchainSection {
+    Info,
+    LatestBlocks,
+    AllBlocks,
+    BlockByHash,
+}
+
+impl BlockchainSection {
+    pub const ALL: [BlockchainSection; 4] = [
+        BlockchainSection::Info,
+        BlockchainSection::LatestBlocks,
+        BlockchainSection::AllBlocks,
+        BlockchainSection::BlockByHash,
+    ];
+}
+
+impl core::fmt::Display for BlockchainSection {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        let s = match self {
+            BlockchainSection::Info => "Get Block Info",
+            BlockchainSection::LatestBlocks => "Latest Blocks",
+            BlockchainSection::AllBlocks => "All Blocks",
+            BlockchainSection::BlockByHash => "Block by Hash",
         };
         write!(f, "{}", s)
     }
@@ -109,6 +248,32 @@ pub enum Message {
     WalletInfoAdminLoaded(Result<ApiResponse<Value>, String>),
     FetchBalanceAdmin(String),
     BalanceAdminLoaded(Result<ApiResponse<Value>, String>),
+    // Send transaction
+    SendFromChanged(String),
+    SendToChanged(String),
+    SendAmountChanged(String),
+    SendTx,
+    TxSent(Result<ApiResponse<SendTransactionResponse>, String>),
+    // Transaction history
+    HistoryAddressChanged(String),
+    FetchTransactionHistory(String),
+    TransactionHistoryLoaded(Result<ApiResponse<Value>, String>),
+    // Wallet section navigation
+    WalletSectionChanged(WalletSection),
+    // Transaction section navigation
+    TransactionSectionChanged(TransactionSection),
+    // Blockchain section navigation
+    BlockchainSectionChanged(BlockchainSection),
+    // Blockchain menu hover
+    BlockchainMenuHovered(bool),
+    WalletMenuHovered(bool),
+    TransactionMenuHovered(bool),
+    MiningMenuHovered(bool),
+    HealthMenuHovered(bool),
+    // Mining section navigation
+    MiningSectionChanged(MiningSection),
+    // Health section navigation
+    HealthSectionChanged(HealthSection),
     // Clipboard
     CopyToClipboard(String),
     ClipboardCopied(bool), // true = success, false = failed
