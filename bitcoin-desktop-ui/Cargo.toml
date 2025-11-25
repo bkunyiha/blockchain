@@ -15,3 +15,6 @@ bitcoin-api = { path = "../bitcoin-api", features = ["client", "wallet", "admin"
 # Async runtime used by the API client in this UI process.
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 serde_json = "1.0"
+
+# Tracing for logging
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }

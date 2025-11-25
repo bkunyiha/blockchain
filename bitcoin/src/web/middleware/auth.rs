@@ -58,7 +58,5 @@ fn is_admin_key(k: &str) -> bool {
 fn is_wallet_key(k: &str) -> bool {
     let expected =
         std::env::var("BITCOIN_API_WALLET_KEY").unwrap_or_else(|_| "wallet-secret".to_string());
-    println!("expected: {}", expected);
-    println!("k: {}", k);
     k == expected
 }

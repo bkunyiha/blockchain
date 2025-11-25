@@ -79,7 +79,7 @@ fn view_blockchain(app: &AdminApp) -> Element<Message> {
 
     column![
         row![
-            button("Get Info").on_press(Message::FetchInfo),
+            button("Get Block Info").on_press(Message::FetchInfo),
             button("Latest Blocks").on_press(Message::FetchBlocks),
             button("All Blocks").on_press(Message::FetchBlocksAll),
         ]
@@ -164,7 +164,7 @@ fn view_wallet(app: &AdminApp) -> Element<Message> {
             text_input("Wallet Address", &app.wallet_address_input)
                 .on_input(Message::WalletAddressChanged)
                 .width(350),
-            button("Get Info").on_press(Message::FetchWalletInfoAdmin(
+            button("Get Wallet Info").on_press(Message::FetchWalletInfoAdmin(
                 app.wallet_address_input.clone()
             )),
             button("Get Balance").on_press(Message::FetchBalanceAdmin(

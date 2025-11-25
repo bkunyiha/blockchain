@@ -3,6 +3,7 @@ use reqwest::Client as HttpClient;
 use serde_json::{json, Value};
 use thiserror::Error;
 use url::Url;
+#[cfg(feature = "client")]
 
 #[derive(Debug, Error)]
 pub enum ApiError {
@@ -174,7 +175,9 @@ impl AdminClient {
         let url = self.base.url(&format!("/api/admin/wallet/{}", address))?;
         let rb = self.base.with_auth(self.base.http.get(url));
         let resp = rb.send().await?.error_for_status()?;
-        Ok(resp.json().await?)
+        let json = resp.json().await?;
+        tracing::debug!("[get_wallet_info_admin]: {}", serde_json::to_string_pretty(&json).unwrap_or_else(|_| "Error formatting".into()));
+        Ok(json)
     }
 
     pub async fn get_balance_admin(&self, address: &str) -> Result<ApiResponse<Value>, ApiError> {

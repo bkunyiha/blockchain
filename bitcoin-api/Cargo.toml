@@ -10,7 +10,7 @@ edition = "2021"
 # - admin: enables AdminClient APIs (blockchain, mining, etc.)
 # - ws: reserved for future websocket client support
 default = ["client", "wallet", "admin"]
-client = ["dep:reqwest", "dep:tokio"]
+client = ["dep:reqwest", "dep:tokio", "dep:tracing"]
 wallet = []
 admin = []
 ws = []
@@ -25,6 +25,7 @@ url = "2.5"
 # HTTP client/runtime (enabled by the `client` feature)
 reqwest = { version = "0.12", features = ["json"], optional = true }
 tokio = { version = "1", features = ["rt-multi-thread", "macros"], optional = true }
+tracing = { version = "0.1", optional = true }
 
 [dev-dependencies]
 # Used for async tests/examples in this crate

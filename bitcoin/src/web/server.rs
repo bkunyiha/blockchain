@@ -6,7 +6,6 @@ use axum::{
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::compression::CompressionLayer;
-
 use crate::node::NodeContext;
 use crate::web::middleware::cors;
 use crate::web::models::{ApiResponse, ErrorResponse};
@@ -117,21 +116,35 @@ async fn handle_errors(
 ) -> Result<axum::response::Response, StatusCode> {
     let response = next.run(request).await;
 
-    if response.status() == StatusCode::INTERNAL_SERVER_ERROR {
-        let error_response = ErrorResponse {
-            error: "Internal Server Error".to_string(),
-            message: "An unexpected error occurred".to_string(),
-            status_code: 500,
-            timestamp: chrono::Utc::now(),
-        };
-
-        return Ok(Json(ApiResponse::<()>::error(
-            serde_json::to_string(&error_response).unwrap_or_else(|_| "Unknown error".to_string()),
-        ))
-        .into_response());
+    // Log error response body if status indicates an error
+    if response.status().is_server_error() || response.status().is_client_error() {
+        let (parts, body) = response.into_parts();
+        let body_bytes = axum::body::to_bytes(body, usize::MAX)
+            .await
+            .unwrap_or_default();
+        let body_str = String::from_utf8_lossy(&body_bytes);
+        tracing::error!("[handle_errors]: Error response ({}): {}", parts.status, body_str);
+        
+        // Reconstruct response for further processing
+        let response = axum::response::Response::from_parts(parts, axum::body::Body::from(body_bytes));
+        if response.status() == StatusCode::INTERNAL_SERVER_ERROR {
+            let error_response = ErrorResponse {
+                error: "Internal Server Error".to_string(),
+                message: "An unexpected error occurred".to_string(),
+                status_code: 500,
+                timestamp: chrono::Utc::now(),
+            };
+    
+            return Ok(Json(ApiResponse::<()>::error(
+                serde_json::to_string(&error_response).unwrap_or_else(|_| "Unknown error".to_string()),
+            ))
+            .into_response());
+        }
+        
+        Ok(response)
+    } else {
+        Ok(response)
     }
-
-    Ok(response)
 }
 
 /// Create a web server with default configuration
