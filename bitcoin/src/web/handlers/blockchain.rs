@@ -51,7 +51,8 @@ pub async fn get_blockchain_info(
     let info = BlockchainInfoResponse {
         height,
         difficulty: 1, // TODO: Get actual difficulty
-        total_blocks: height + 1,
+        // Since genesis block is at height 1 (1-indexed), height directly equals total blocks
+        total_blocks: height,
         total_transactions: 0, // TODO: Calculate total transactions
         mempool_size,
         last_block_hash,
@@ -124,8 +125,15 @@ pub async fn get_blocks(
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let start_height = (page * limit) as usize;
-    let end_height = std::cmp::min(start_height + limit as usize, height + 1);
+    // Blocks are 1-indexed (genesis is height 1), so we convert 0-indexed pagination to 1-indexed block heights
+    // Page 0, limit 10 → want blocks 1-10 (first 10 blocks) → start_height = 0*10 + 1 = 1
+    // Page 1, limit 10 → want blocks 11-20 (next 10 blocks) → start_height = 1*10 + 1 = 11
+    let start_height = (page * limit) as usize + 1;
+    // end_height should be the maximum block height (inclusive)
+    // For 'limit' blocks starting at start_height, we want blocks: start_height to start_height + limit - 1
+    // Example: start_height=1, limit=10 → want blocks 1-10 (10 blocks) → end_height = 1 + 10 - 1 = 10
+    // Since get_blocks_by_height uses inclusive range (<= height), we cap at the actual tip height
+    let end_height = std::cmp::min(start_height + limit as usize - 1, height);
 
     let blocks_result = node
         .blockchain()
@@ -139,7 +147,9 @@ pub async fn get_blocks(
         blocks.push(response);
     }
 
-    let total = height + 1;
+    // Since genesis block is at height 1 (1-indexed), the height directly represents total blocks
+    // Example: 9 blocks exist at heights 1-9, so height=9 means total=9 blocks
+    let total = height;
     let paginated = PaginatedResponse::new(blocks, page, limit, total as u32);
 
     Ok(Json(ApiResponse::success(paginated)))

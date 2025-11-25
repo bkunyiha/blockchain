@@ -243,12 +243,12 @@ fn view_transactions(app: &AdminApp) -> Element<Message> {
         transactions_display,
         row![
             addr_input,
-            button("Address Transactions").on_press(Message::FetchAddressTransactions(
+            button("Wallet Address Transactions").on_press(Message::FetchAddressTransactions(
                 app.addr_tx_input.clone()
             )),
         ]
         .spacing(10),
-        text("Address Transactions").size(14),
+        text("Wallet Address Transactions").size(14),
         addr_tx_display,
     ]
     .width(iced::Length::Fill)
@@ -322,19 +322,30 @@ fn view_health(app: &AdminApp) -> Element<Message> {
     .into()
 }
 
-// Helper function to create a scrollable JSON data display
+// Helper function to create a scrollable JSON data display with copy functionality
 fn json_data_display(data: &Option<serde_json::Value>, height: f32) -> Element<Message> {
     if let Some(data) = data {
-        container(
-            scrollable(
-                text(serde_json::to_string_pretty(data).unwrap_or_else(|_| "Error formatting".into()))
-                    .size(10)
-                    .width(iced::Length::Fill)
+        let json_string = serde_json::to_string_pretty(data).unwrap_or_else(|_| "Error formatting".into());
+        column![
+            row![
+                button("📋 Copy")
+                    .on_press(Message::CopyToClipboard(json_string.clone())),
+            ]
+            .spacing(8),
+            container(
+                scrollable(
+                    // Use text widget for proper scrolling - text is selectable on most platforms
+                    text(json_string.clone())
+                        .size(10)
+                        .width(iced::Length::Fill)
+                )
+                .height(iced::Length::Fixed(height))
+                .width(iced::Length::Fill)
             )
-            .height(iced::Length::Fixed(height))
+            .padding(8)
             .width(iced::Length::Fill)
-        )
-        .padding(8)
+        ]
+        .spacing(4)
         .width(iced::Length::Fill)
         .into()
     } else {

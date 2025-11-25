@@ -520,6 +520,26 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
             }
             Task::none()
         }
+        Message::CopyToClipboard(text) => {
+            let text_clone = text.clone();
+            app.status = "Copying to clipboard...".to_string();
+            Task::perform(
+                async move {
+                    let mut clipboard = arboard::Clipboard::new().ok()?;
+                    clipboard.set_text(text_clone).ok()?;
+                    Some(())
+                },
+                |result| Message::ClipboardCopied(result.is_some())
+            )
+        }
+        Message::ClipboardCopied(success) => {
+            app.status = if success {
+                "✓ Copied to clipboard!".to_string()
+            } else {
+                "✗ Failed to copy to clipboard".to_string()
+            };
+            Task::none()
+        }
     }
 }
 

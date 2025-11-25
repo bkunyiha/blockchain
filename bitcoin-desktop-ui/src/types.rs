@@ -109,5 +109,8 @@ pub enum Message {
     WalletInfoAdminLoaded(Result<ApiResponse<Value>, String>),
     FetchBalanceAdmin(String),
     BalanceAdminLoaded(Result<ApiResponse<Value>, String>),
+    // Clipboard
+    CopyToClipboard(String),
+    ClipboardCopied(bool), // true = success, false = failed
 }
 
