@@ -26,7 +26,7 @@ pub struct CreateWalletResponse {
 pub struct SendTransactionRequest {
     pub from_address: String,
     pub to_address: String,
-    pub amount_satoshis: u64,
+    pub amount: u64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -73,4 +73,3 @@ where
 {
     String::deserialize(deserializer)
 }
-

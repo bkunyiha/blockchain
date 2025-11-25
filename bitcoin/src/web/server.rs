@@ -1,3 +1,7 @@
+use crate::node::NodeContext;
+use crate::web::middleware::cors;
+use crate::web::models::{ApiResponse, ErrorResponse};
+use crate::web::routes::{create_all_api_routes, create_wallet_only_routes, create_web_routes};
 use axum::{
     Router,
     http::StatusCode,
@@ -6,10 +10,6 @@ use axum::{
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::compression::CompressionLayer;
-use crate::node::NodeContext;
-use crate::web::middleware::cors;
-use crate::web::models::{ApiResponse, ErrorResponse};
-use crate::web::routes::{create_all_api_routes, create_wallet_only_routes, create_web_routes};
 
 /// Web server configuration
 #[derive(Debug, Clone)]
@@ -123,10 +123,15 @@ async fn handle_errors(
             .await
             .unwrap_or_default();
         let body_str = String::from_utf8_lossy(&body_bytes);
-        tracing::error!("[handle_errors]: Error response ({}): {}", parts.status, body_str);
-        
+        tracing::error!(
+            "[handle_errors]: Error response ({}): {}",
+            parts.status,
+            body_str
+        );
+
         // Reconstruct response for further processing
-        let response = axum::response::Response::from_parts(parts, axum::body::Body::from(body_bytes));
+        let response =
+            axum::response::Response::from_parts(parts, axum::body::Body::from(body_bytes));
         if response.status() == StatusCode::INTERNAL_SERVER_ERROR {
             let error_response = ErrorResponse {
                 error: "Internal Server Error".to_string(),
@@ -134,13 +139,14 @@ async fn handle_errors(
                 status_code: 500,
                 timestamp: chrono::Utc::now(),
             };
-    
+
             return Ok(Json(ApiResponse::<()>::error(
-                serde_json::to_string(&error_response).unwrap_or_else(|_| "Unknown error".to_string()),
+                serde_json::to_string(&error_response)
+                    .unwrap_or_else(|_| "Unknown error".to_string()),
             ))
             .into_response());
         }
-        
+
         Ok(response)
     } else {
         Ok(response)

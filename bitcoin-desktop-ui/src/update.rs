@@ -1,7 +1,7 @@
-use crate::app::AdminApp;
 use crate::api::*;
+use crate::app::AdminApp;
 use crate::runtime::spawn_on_tokio;
-use crate::types::{DataSection, Message, Menu};
+use crate::types::{DataSection, Menu, Message};
 use bitcoin_api::{ApiConfig, CreateWalletRequest, SendTransactionRequest};
 use iced::Task;
 use serde_json::Value;
@@ -46,10 +46,6 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
         }
         Message::WalletLabelChanged(v) => {
             app.wallet_label_input = v;
-            Task::none()
-        }
-        Message::WalletAddressChanged(v) => {
-            app.wallet_address_input = v;
             Task::none()
         }
         Message::WalletSectionChanged(section) => {
@@ -115,21 +111,36 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                     Some(app.wallet_label_input.trim().to_string())
                 },
             };
-            Task::perform(spawn_on_tokio(create_wallet_admin(cfg, req)), Message::CreateWalletAdminDone)
+            Task::perform(
+                spawn_on_tokio(create_wallet_admin(cfg, req)),
+                Message::CreateWalletAdminDone,
+            )
         }
         Message::CreateWalletAdminDone(res) => {
             match res {
                 Ok(api) => {
                     if api.success {
                         app.created_wallet_address = api.data.as_ref().map(|d| d.address.clone());
-                        app.status = format!("Wallet created: {}", 
-                            api.data.as_ref().map(|d| d.address.as_str()).unwrap_or("unknown"));
+                        if let Some(addr) = &app.created_wallet_address {
+                            app.created_wallet_address_editor =
+                                iced::widget::text_editor::Content::with_text(addr);
+                        }
+                        app.status = format!(
+                            "Wallet created: {}",
+                            api.data
+                                .as_ref()
+                                .map(|d| d.address.as_str())
+                                .unwrap_or("unknown")
+                        );
                     } else {
                         app.status = api.error.unwrap_or_else(|| "Error creating wallet".into());
+                        app.created_wallet_address_editor =
+                            iced::widget::text_editor::Content::new();
                     }
                 }
                 Err(e) => {
                     app.status = e;
+                    app.created_wallet_address_editor = iced::widget::text_editor::Content::new();
                 }
             }
             Task::none()
@@ -139,7 +150,10 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 base_url: app.base_url.clone(),
                 api_key: Some(app.api_key.clone()),
             };
-            Task::perform(spawn_on_tokio(fetch_addresses_admin(cfg)), Message::AddressesAdminLoaded)
+            Task::perform(
+                spawn_on_tokio(fetch_addresses_admin(cfg)),
+                Message::AddressesAdminLoaded,
+            )
         }
         Message::AddressesAdminLoaded(res) => {
             match res {
@@ -147,26 +161,35 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                     if api.success {
                         // Try to parse addresses from JSON response
                         if let Some(data) = api.data {
-                            app.addresses = match serde_json::from_value::<Vec<String>>(data.clone()) {
-                                Ok(addrs) => addrs,
-                                Err(_) => {
-                                    // Try parsing as array of objects with address field
-                                    match serde_json::from_value::<Vec<serde_json::Map<String, Value>>>(data) {
-                                        Ok(maps) => maps.iter()
-                                            .filter_map(|m| m.get("address")
-                                                .and_then(|v| v.as_str())
-                                                .map(|s| s.to_string()))
-                                            .collect(),
-                                        Err(_) => Vec::new(),
+                            app.addresses =
+                                match serde_json::from_value::<Vec<String>>(data.clone()) {
+                                    Ok(addrs) => addrs,
+                                    Err(_) => {
+                                        // Try parsing as array of objects with address field
+                                        match serde_json::from_value::<
+                                            Vec<serde_json::Map<String, Value>>,
+                                        >(data)
+                                        {
+                                            Ok(maps) => maps
+                                                .iter()
+                                                .filter_map(|m| {
+                                                    m.get("address")
+                                                        .and_then(|v| v.as_str())
+                                                        .map(|s| s.to_string())
+                                                })
+                                                .collect(),
+                                            Err(_) => Vec::new(),
+                                        }
                                     }
-                                }
-                            };
+                                };
                             app.status = format!("Loaded {} addresses", app.addresses.len());
                         } else {
                             app.status = "No addresses found".into();
                         }
                     } else {
-                        app.status = api.error.unwrap_or_else(|| "Error loading addresses".into());
+                        app.status = api
+                            .error
+                            .unwrap_or_else(|| "Error loading addresses".into());
                     }
                 }
                 Err(e) => {
@@ -181,22 +204,35 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 base_url: app.base_url.clone(),
                 api_key: Some(app.api_key.clone()),
             };
-            Task::perform(spawn_on_tokio(fetch_wallet_info_admin(cfg, address)), Message::WalletInfoAdminLoaded)
+            Task::perform(
+                spawn_on_tokio(fetch_wallet_info_admin(cfg, address)),
+                Message::WalletInfoAdminLoaded,
+            )
         }
         Message::WalletInfoAdminLoaded(res) => {
             match res {
                 Ok(api) => {
                     if api.success {
-                        app.wallet_info = api.data;
+                        app.wallet_info = api.data.clone();
+                        if let Some(ref data) = api.data {
+                            let json_str = serde_json::to_string_pretty(data)
+                                .unwrap_or_else(|_| "Error formatting".to_string());
+                            app.wallet_info_editor =
+                                iced::widget::text_editor::Content::with_text(&json_str);
+                        }
                         app.status = "Wallet info loaded".into();
                     } else {
-                        app.status = api.error.unwrap_or_else(|| "Error loading wallet info".into());
+                        app.status = api
+                            .error
+                            .unwrap_or_else(|| "Error loading wallet info".into());
                         app.wallet_info = None;
+                        app.wallet_info_editor = iced::widget::text_editor::Content::new();
                     }
                 }
                 Err(e) => {
                     app.status = e;
                     app.wallet_info = None;
+                    app.wallet_info_editor = iced::widget::text_editor::Content::new();
                 }
             }
             Task::none()
@@ -207,22 +243,33 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 base_url: app.base_url.clone(),
                 api_key: Some(app.api_key.clone()),
             };
-            Task::perform(spawn_on_tokio(fetch_balance_admin(cfg, address)), Message::BalanceAdminLoaded)
+            Task::perform(
+                spawn_on_tokio(fetch_balance_admin(cfg, address)),
+                Message::BalanceAdminLoaded,
+            )
         }
         Message::BalanceAdminLoaded(res) => {
             match res {
                 Ok(api) => {
                     if api.success {
-                        app.wallet_balance = api.data;
+                        app.wallet_balance = api.data.clone();
+                        if let Some(ref data) = api.data {
+                            let json_str = serde_json::to_string_pretty(data)
+                                .unwrap_or_else(|_| "Error formatting".to_string());
+                            app.wallet_balance_editor =
+                                iced::widget::text_editor::Content::with_text(&json_str);
+                        }
                         app.status = "Balance loaded".into();
                     } else {
                         app.status = api.error.unwrap_or_else(|| "Error loading balance".into());
                         app.wallet_balance = None;
+                        app.wallet_balance_editor = iced::widget::text_editor::Content::new();
                     }
                 }
                 Err(e) => {
                     app.status = e;
                     app.wallet_balance = None;
+                    app.wallet_balance_editor = iced::widget::text_editor::Content::new();
                 }
             }
             Task::none()
@@ -257,7 +304,7 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
             let req = SendTransactionRequest {
                 from_address: app.send_from_address.clone(),
                 to_address: app.send_to_address.clone(),
-                amount_satoshis: amount_sat,
+                amount: amount_sat,
             };
             Task::perform(spawn_on_tokio(send_transaction(cfg, req)), Message::TxSent)
         }
@@ -266,10 +313,17 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 Ok(api) => {
                     if api.success {
                         app.last_txid = api.data.as_ref().map(|d| d.txid.clone());
-                        app.status = format!("Transaction sent: {}", 
-                            api.data.as_ref().map(|d| d.txid.as_str()).unwrap_or("unknown"));
+                        app.status = format!(
+                            "Transaction sent: {}",
+                            api.data
+                                .as_ref()
+                                .map(|d| d.txid.as_str())
+                                .unwrap_or("unknown")
+                        );
                     } else {
-                        app.status = api.error.unwrap_or_else(|| "Error sending transaction".into());
+                        app.status = api
+                            .error
+                            .unwrap_or_else(|| "Error sending transaction".into());
                         app.last_txid = None;
                     }
                 }
@@ -290,7 +344,10 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 base_url: app.base_url.clone(),
                 api_key: Some(app.api_key.clone()),
             };
-            Task::perform(spawn_on_tokio(fetch_address_transactions(cfg, address)), Message::TransactionHistoryLoaded)
+            Task::perform(
+                spawn_on_tokio(fetch_address_transactions(cfg, address)),
+                Message::TransactionHistoryLoaded,
+            )
         }
         Message::TransactionHistoryLoaded(res) => {
             match res {
@@ -299,7 +356,9 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                         app.transaction_history = api.data;
                         app.status = "Transaction history loaded".into();
                     } else {
-                        app.status = api.error.unwrap_or_else(|| "Error loading transaction history".into());
+                        app.status = api
+                            .error
+                            .unwrap_or_else(|| "Error loading transaction history".into());
                         app.transaction_history = None;
                     }
                 }
@@ -331,13 +390,34 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 Ok(api) => {
                     if api.success {
                         app.blocks = api.data.unwrap_or_default();
+                        // Update editor content with formatted block list
+                        let blocks_text = if app.blocks.is_empty() {
+                            "No blocks loaded.".to_string()
+                        } else {
+                            app.blocks
+                                .iter()
+                                .map(|block| {
+                                    format!(
+                                        "Height: {} | Hash: {} | Txns: {}",
+                                        block.height, block.hash, block.transaction_count
+                                    )
+                                })
+                                .collect::<Vec<_>>()
+                                .join("\n")
+                        };
+                        app.latest_blocks_editor =
+                            iced::widget::text_editor::Content::with_text(&blocks_text);
                         app.status = format!("Loaded {} blocks", app.blocks.len());
                     } else {
                         app.status = api.error.unwrap_or_else(|| "Error".into());
+                        app.blocks = Vec::new();
+                        app.latest_blocks_editor = iced::widget::text_editor::Content::new();
                     }
                 }
                 Err(e) => {
                     app.status = e;
+                    app.blocks = Vec::new();
+                    app.latest_blocks_editor = iced::widget::text_editor::Content::new();
                 }
             }
             Task::none()
@@ -346,14 +426,27 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
             match res {
                 Ok(api) => {
                     if api.success {
-                        app.info = api.data;
+                        app.info = api.data.clone();
+                        // Update editor content with formatted info
+                        if let Some(ref i) = api.data {
+                            let info_text = format!(
+                                "Height: {}\nBlocks: {}\nDifficulty: {}\nLast Block: {}",
+                                i.height, i.total_blocks, i.difficulty, i.last_block_hash
+                            );
+                            app.blockchain_info_editor =
+                                iced::widget::text_editor::Content::with_text(&info_text);
+                        }
                         app.status = "Loaded blockchain info".into();
                     } else {
                         app.status = api.error.unwrap_or_else(|| "Error".into());
+                        app.info = None;
+                        app.blockchain_info_editor = iced::widget::text_editor::Content::new();
                     }
                 }
                 Err(e) => {
                     app.status = e;
+                    app.info = None;
+                    app.blockchain_info_editor = iced::widget::text_editor::Content::new();
                 }
             }
             Task::none()
@@ -365,7 +458,10 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 base_url: app.base_url.clone(),
                 api_key: Some(app.api_key.clone()),
             };
-            Task::perform(spawn_on_tokio(fetch_blocks_all(cfg)), Message::BlocksAllLoaded)
+            Task::perform(
+                spawn_on_tokio(fetch_blocks_all(cfg)),
+                Message::BlocksAllLoaded,
+            )
         }
         Message::FetchBlockByHash(hash) => {
             app.clear_related_data(DataSection::BlockByHash);
@@ -373,22 +469,33 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 base_url: app.base_url.clone(),
                 api_key: Some(app.api_key.clone()),
             };
-            Task::perform(spawn_on_tokio(fetch_block_by_hash(cfg, hash)), Message::BlockByHashLoaded)
+            Task::perform(
+                spawn_on_tokio(fetch_block_by_hash(cfg, hash)),
+                Message::BlockByHashLoaded,
+            )
         }
         Message::BlocksAllLoaded(res) => {
             match res {
                 Ok(api) => {
                     if api.success {
-                        app.blocks_all_data = api.data;
+                        app.blocks_all_data = api.data.clone();
+                        if let Some(ref data) = api.data {
+                            let json_str = serde_json::to_string_pretty(data)
+                                .unwrap_or_else(|_| "Error formatting".to_string());
+                            app.blocks_all_editor =
+                                iced::widget::text_editor::Content::with_text(&json_str);
+                        }
                         app.status = "All blocks loaded".into();
                     } else {
                         app.status = api.error.unwrap_or_else(|| "Error loading blocks".into());
                         app.blocks_all_data = None;
+                        app.blocks_all_editor = iced::widget::text_editor::Content::new();
                     }
                 }
                 Err(e) => {
                     app.status = e;
                     app.blocks_all_data = None;
+                    app.blocks_all_editor = iced::widget::text_editor::Content::new();
                 }
             }
             Task::none()
@@ -397,16 +504,24 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
             match res {
                 Ok(api) => {
                     if api.success {
-                        app.block_by_hash_data = api.data;
+                        app.block_by_hash_data = api.data.clone();
+                        if let Some(ref data) = api.data {
+                            let json_str = serde_json::to_string_pretty(data)
+                                .unwrap_or_else(|_| "Error formatting".to_string());
+                            app.block_by_hash_editor =
+                                iced::widget::text_editor::Content::with_text(&json_str);
+                        }
                         app.status = "Block loaded".into();
                     } else {
                         app.status = api.error.unwrap_or_else(|| "Error loading block".into());
                         app.block_by_hash_data = None;
+                        app.block_by_hash_editor = iced::widget::text_editor::Content::new();
                     }
                 }
                 Err(e) => {
                     app.status = e;
                     app.block_by_hash_data = None;
+                    app.block_by_hash_editor = iced::widget::text_editor::Content::new();
                 }
             }
             Task::none()
@@ -418,7 +533,10 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 base_url: app.base_url.clone(),
                 api_key: Some(app.api_key.clone()),
             };
-            Task::perform(spawn_on_tokio(fetch_mining_info(cfg)), Message::MiningInfoLoaded)
+            Task::perform(
+                spawn_on_tokio(fetch_mining_info(cfg)),
+                Message::MiningInfoLoaded,
+            )
         }
         Message::MiningInfoLoaded(res) => {
             match res {
@@ -427,7 +545,9 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                         app.mining_info_data = api.data;
                         app.status = "Mining info loaded".into();
                     } else {
-                        app.status = api.error.unwrap_or_else(|| "Error loading mining info".into());
+                        app.status = api
+                            .error
+                            .unwrap_or_else(|| "Error loading mining info".into());
                         app.mining_info_data = None;
                     }
                 }
@@ -445,7 +565,9 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                         app.generate_result = api.data;
                         app.status = "Blocks generated".into();
                     } else {
-                        app.status = api.error.unwrap_or_else(|| "Error generating blocks".into());
+                        app.status = api
+                            .error
+                            .unwrap_or_else(|| "Error generating blocks".into());
                         app.generate_result = None;
                     }
                 }
@@ -466,7 +588,10 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 base_url: app.base_url.clone(),
                 api_key: Some(app.api_key.clone()),
             };
-            Task::perform(spawn_on_tokio(generate_to_address(cfg, address, nblocks, maxtries)), Message::GenerateToAddressDone)
+            Task::perform(
+                spawn_on_tokio(generate_to_address(cfg, address, nblocks, maxtries)),
+                Message::GenerateToAddressDone,
+            )
         }
         // Health
         Message::FetchHealth => {
@@ -492,7 +617,10 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 base_url: app.base_url.clone(),
                 api_key: Some(app.api_key.clone()),
             };
-            Task::perform(spawn_on_tokio(fetch_readiness(cfg)), Message::ReadinessLoaded)
+            Task::perform(
+                spawn_on_tokio(fetch_readiness(cfg)),
+                Message::ReadinessLoaded,
+            )
         }
         Message::HealthLoaded(res) => {
             match res {
@@ -537,7 +665,9 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                         app.readiness_data = api.data;
                         app.status = "Readiness check loaded".into();
                     } else {
-                        app.status = api.error.unwrap_or_else(|| "Error loading readiness".into());
+                        app.status = api
+                            .error
+                            .unwrap_or_else(|| "Error loading readiness".into());
                         app.readiness_data = None;
                     }
                 }
@@ -563,7 +693,10 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 base_url: app.base_url.clone(),
                 api_key: Some(app.api_key.clone()),
             };
-            Task::perform(spawn_on_tokio(fetch_mempool_tx(cfg, txid)), Message::MempoolTxLoaded)
+            Task::perform(
+                spawn_on_tokio(fetch_mempool_tx(cfg, txid)),
+                Message::MempoolTxLoaded,
+            )
         }
         Message::FetchTransactions => {
             app.clear_related_data(DataSection::Transactions);
@@ -571,7 +704,10 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 base_url: app.base_url.clone(),
                 api_key: Some(app.api_key.clone()),
             };
-            Task::perform(spawn_on_tokio(fetch_transactions(cfg)), Message::TransactionsLoaded)
+            Task::perform(
+                spawn_on_tokio(fetch_transactions(cfg)),
+                Message::TransactionsLoaded,
+            )
         }
         Message::FetchAddressTransactions(address) => {
             app.clear_related_data(DataSection::AddressTransactions);
@@ -579,22 +715,33 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                 base_url: app.base_url.clone(),
                 api_key: Some(app.api_key.clone()),
             };
-            Task::perform(spawn_on_tokio(fetch_address_transactions(cfg, address)), Message::AddressTransactionsLoaded)
+            Task::perform(
+                spawn_on_tokio(fetch_address_transactions(cfg, address)),
+                Message::AddressTransactionsLoaded,
+            )
         }
         Message::MempoolLoaded(res) => {
             match res {
                 Ok(api) => {
                     if api.success {
-                        app.mempool_data = api.data;
+                        app.mempool_data = api.data.clone();
+                        if let Some(ref data) = api.data {
+                            let json_str = serde_json::to_string_pretty(data)
+                                .unwrap_or_else(|_| "Error formatting".to_string());
+                            app.mempool_editor =
+                                iced::widget::text_editor::Content::with_text(&json_str);
+                        }
                         app.status = "Mempool loaded".into();
                     } else {
                         app.status = api.error.unwrap_or_else(|| "Error loading mempool".into());
                         app.mempool_data = None;
+                        app.mempool_editor = iced::widget::text_editor::Content::new();
                     }
                 }
                 Err(e) => {
                     app.status = e;
                     app.mempool_data = None;
+                    app.mempool_editor = iced::widget::text_editor::Content::new();
                 }
             }
             Task::none()
@@ -603,16 +750,26 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
             match res {
                 Ok(api) => {
                     if api.success {
-                        app.mempool_tx_data = api.data;
+                        app.mempool_tx_data = api.data.clone();
+                        if let Some(ref data) = api.data {
+                            let json_str = serde_json::to_string_pretty(data)
+                                .unwrap_or_else(|_| "Error formatting".to_string());
+                            app.mempool_tx_editor =
+                                iced::widget::text_editor::Content::with_text(&json_str);
+                        }
                         app.status = "Mempool transaction loaded".into();
                     } else {
-                        app.status = api.error.unwrap_or_else(|| "Error loading mempool tx".into());
+                        app.status = api
+                            .error
+                            .unwrap_or_else(|| "Error loading mempool tx".into());
                         app.mempool_tx_data = None;
+                        app.mempool_tx_editor = iced::widget::text_editor::Content::new();
                     }
                 }
                 Err(e) => {
                     app.status = e;
                     app.mempool_tx_data = None;
+                    app.mempool_tx_editor = iced::widget::text_editor::Content::new();
                 }
             }
             Task::none()
@@ -621,16 +778,26 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
             match res {
                 Ok(api) => {
                     if api.success {
-                        app.transactions_data = api.data;
+                        app.transactions_data = api.data.clone();
+                        if let Some(ref data) = api.data {
+                            let json_str = serde_json::to_string_pretty(data)
+                                .unwrap_or_else(|_| "Error formatting".to_string());
+                            app.transactions_editor =
+                                iced::widget::text_editor::Content::with_text(&json_str);
+                        }
                         app.status = "Transactions loaded".into();
                     } else {
-                        app.status = api.error.unwrap_or_else(|| "Error loading transactions".into());
+                        app.status = api
+                            .error
+                            .unwrap_or_else(|| "Error loading transactions".into());
                         app.transactions_data = None;
+                        app.transactions_editor = iced::widget::text_editor::Content::new();
                     }
                 }
                 Err(e) => {
                     app.status = e;
                     app.transactions_data = None;
+                    app.transactions_editor = iced::widget::text_editor::Content::new();
                 }
             }
             Task::none()
@@ -639,18 +806,77 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
             match res {
                 Ok(api) => {
                     if api.success {
-                        app.address_transactions_data = api.data;
+                        app.address_transactions_data = api.data.clone();
+                        if let Some(ref data) = api.data {
+                            let json_str = serde_json::to_string_pretty(data)
+                                .unwrap_or_else(|_| "Error formatting".to_string());
+                            app.address_transactions_editor =
+                                iced::widget::text_editor::Content::with_text(&json_str);
+                        }
                         app.status = "Address transactions loaded".into();
                     } else {
-                        app.status = api.error.unwrap_or_else(|| "Error loading address transactions".into());
+                        app.status = api
+                            .error
+                            .unwrap_or_else(|| "Error loading address transactions".into());
                         app.address_transactions_data = None;
+                        app.address_transactions_editor = iced::widget::text_editor::Content::new();
                     }
                 }
                 Err(e) => {
                     app.status = e;
                     app.address_transactions_data = None;
+                    app.address_transactions_editor = iced::widget::text_editor::Content::new();
                 }
             }
+            Task::none()
+        }
+        // Text editor action handlers - allow editing but content will be reset on data reload
+        Message::TransactionsEditorAction(action) => {
+            app.transactions_editor.perform(action);
+            Task::none()
+        }
+        Message::MempoolEditorAction(action) => {
+            app.mempool_editor.perform(action);
+            Task::none()
+        }
+        Message::MempoolTxEditorAction(action) => {
+            app.mempool_tx_editor.perform(action);
+            Task::none()
+        }
+        Message::AddressTransactionsEditorAction(action) => {
+            app.address_transactions_editor.perform(action);
+            Task::none()
+        }
+        Message::WalletInfoEditorAction(action) => {
+            app.wallet_info_editor.perform(action);
+            Task::none()
+        }
+        Message::WalletBalanceEditorAction(action) => {
+            app.wallet_balance_editor.perform(action);
+            Task::none()
+        }
+        Message::TransactionHistoryEditorAction(action) => {
+            app.transaction_history_editor.perform(action);
+            Task::none()
+        }
+        Message::BlocksAllEditorAction(action) => {
+            app.blocks_all_editor.perform(action);
+            Task::none()
+        }
+        Message::BlockByHashEditorAction(action) => {
+            app.block_by_hash_editor.perform(action);
+            Task::none()
+        }
+        Message::BlockchainInfoEditorAction(action) => {
+            app.blockchain_info_editor.perform(action);
+            Task::none()
+        }
+        Message::LatestBlocksEditorAction(action) => {
+            app.latest_blocks_editor.perform(action);
+            Task::none()
+        }
+        Message::CreatedWalletAddressEditorAction(action) => {
+            app.created_wallet_address_editor.perform(action);
             Task::none()
         }
         Message::CopyToClipboard(text) => {
@@ -662,7 +888,7 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
                     clipboard.set_text(text_clone).ok()?;
                     Some(())
                 },
-                |result| Message::ClipboardCopied(result.is_some())
+                |result| Message::ClipboardCopied(result.is_some()),
             )
         }
         Message::ClipboardCopied(success) => {
@@ -675,4 +901,3 @@ pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
         }
     }
 }
-

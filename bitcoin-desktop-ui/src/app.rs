@@ -1,4 +1,7 @@
-use crate::types::{DataSection, Menu, Message, WalletSection, TransactionSection, BlockchainSection, MiningSection, HealthSection};
+use crate::types::{
+    BlockchainSection, DataSection, HealthSection, Menu, Message, MiningSection,
+    TransactionSection, WalletSection,
+};
 use bitcoin_api::{BlockSummary, BlockchainInfo};
 use serde_json::Value;
 
@@ -19,7 +22,6 @@ pub struct AdminApp {
     pub addr_tx_input: String,
     // Wallet admin state
     pub wallet_label_input: String,
-    pub wallet_address_input: String,
     pub addresses: Vec<String>,
     pub wallet_info: Option<Value>,
     pub wallet_balance: Option<Value>,
@@ -60,6 +62,19 @@ pub struct AdminApp {
     pub mempool_tx_data: Option<Value>,
     pub transactions_data: Option<Value>,
     pub address_transactions_data: Option<Value>,
+    // Text editor states for selectable JSON display
+    pub transactions_editor: iced::widget::text_editor::Content,
+    pub mempool_editor: iced::widget::text_editor::Content,
+    pub mempool_tx_editor: iced::widget::text_editor::Content,
+    pub address_transactions_editor: iced::widget::text_editor::Content,
+    pub wallet_info_editor: iced::widget::text_editor::Content,
+    pub wallet_balance_editor: iced::widget::text_editor::Content,
+    pub transaction_history_editor: iced::widget::text_editor::Content,
+    pub blocks_all_editor: iced::widget::text_editor::Content,
+    pub block_by_hash_editor: iced::widget::text_editor::Content,
+    pub blockchain_info_editor: iced::widget::text_editor::Content,
+    pub latest_blocks_editor: iced::widget::text_editor::Content,
+    pub created_wallet_address_editor: iced::widget::text_editor::Content,
 }
 
 impl Default for AdminApp {
@@ -78,7 +93,6 @@ impl Default for AdminApp {
             txid_input: String::new(),
             addr_tx_input: String::new(),
             wallet_label_input: String::new(),
-            wallet_address_input: String::new(),
             addresses: Vec::new(),
             wallet_info: None,
             wallet_balance: None,
@@ -110,6 +124,18 @@ impl Default for AdminApp {
             mempool_tx_data: None,
             transactions_data: None,
             address_transactions_data: None,
+            transactions_editor: iced::widget::text_editor::Content::new(),
+            mempool_editor: iced::widget::text_editor::Content::new(),
+            mempool_tx_editor: iced::widget::text_editor::Content::new(),
+            address_transactions_editor: iced::widget::text_editor::Content::new(),
+            wallet_info_editor: iced::widget::text_editor::Content::new(),
+            wallet_balance_editor: iced::widget::text_editor::Content::new(),
+            transaction_history_editor: iced::widget::text_editor::Content::new(),
+            blocks_all_editor: iced::widget::text_editor::Content::new(),
+            block_by_hash_editor: iced::widget::text_editor::Content::new(),
+            blockchain_info_editor: iced::widget::text_editor::Content::new(),
+            latest_blocks_editor: iced::widget::text_editor::Content::new(),
+            created_wallet_address_editor: iced::widget::text_editor::Content::new(),
         }
     }
 }
@@ -132,7 +158,6 @@ impl AdminApp {
                 txid_input: String::new(),
                 addr_tx_input: String::new(),
                 wallet_label_input: String::new(),
-                wallet_address_input: String::new(),
                 addresses: Vec::new(),
                 wallet_info: None,
                 wallet_balance: None,
@@ -164,6 +189,18 @@ impl AdminApp {
                 mempool_tx_data: None,
                 transactions_data: None,
                 address_transactions_data: None,
+                transactions_editor: iced::widget::text_editor::Content::new(),
+                mempool_editor: iced::widget::text_editor::Content::new(),
+                mempool_tx_editor: iced::widget::text_editor::Content::new(),
+                address_transactions_editor: iced::widget::text_editor::Content::new(),
+                wallet_info_editor: iced::widget::text_editor::Content::new(),
+                wallet_balance_editor: iced::widget::text_editor::Content::new(),
+                transaction_history_editor: iced::widget::text_editor::Content::new(),
+                blocks_all_editor: iced::widget::text_editor::Content::new(),
+                block_by_hash_editor: iced::widget::text_editor::Content::new(),
+                blockchain_info_editor: iced::widget::text_editor::Content::new(),
+                latest_blocks_editor: iced::widget::text_editor::Content::new(),
+                created_wallet_address_editor: iced::widget::text_editor::Content::new(),
             },
             iced::Task::none(),
         )
@@ -233,4 +270,3 @@ impl AdminApp {
         }
     }
 }
-

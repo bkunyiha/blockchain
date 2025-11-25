@@ -1,4 +1,6 @@
-use bitcoin_api::{ApiResponse, BlockSummary, BlockchainInfo, CreateWalletResponse, SendTransactionResponse};
+use bitcoin_api::{
+    ApiResponse, BlockSummary, BlockchainInfo, CreateWalletResponse, SendTransactionResponse,
+};
 use serde_json::Value;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -35,31 +37,34 @@ impl core::fmt::Display for Menu {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum WalletSection {
+    GetWalletInfo,
+    GetBalance,
     Create,
     Send,
     History,
     Addresses,
-    Query,
 }
 
 impl WalletSection {
-    pub const ALL: [WalletSection; 5] = [
+    pub const ALL: [WalletSection; 6] = [
+        WalletSection::GetWalletInfo,
+        WalletSection::GetBalance,
         WalletSection::Create,
         WalletSection::Send,
         WalletSection::History,
         WalletSection::Addresses,
-        WalletSection::Query,
     ];
 }
 
 impl core::fmt::Display for WalletSection {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         let s = match self {
+            WalletSection::GetWalletInfo => "Get Wallet Info",
+            WalletSection::GetBalance => "Get Balance",
             WalletSection::Create => "Create Wallet",
             WalletSection::Send => "Send Bitcoin",
             WalletSection::History => "Transaction History",
-            WalletSection::Addresses => "My Addresses",
-            WalletSection::Query => "Query Wallet",
+            WalletSection::Addresses => "All Addresses",
         };
         write!(f, "{}", s)
     }
@@ -101,10 +106,7 @@ pub enum MiningSection {
 }
 
 impl MiningSection {
-    pub const ALL: [MiningSection; 2] = [
-        MiningSection::Info,
-        MiningSection::Generate,
-    ];
+    pub const ALL: [MiningSection; 2] = [MiningSection::Info, MiningSection::Generate];
 }
 
 impl core::fmt::Display for MiningSection {
@@ -239,7 +241,6 @@ pub enum Message {
     AddressTransactionsLoaded(Result<ApiResponse<Value>, String>),
     // Wallet admin
     WalletLabelChanged(String),
-    WalletAddressChanged(String),
     CreateWalletAdmin,
     CreateWalletAdminDone(Result<ApiResponse<CreateWalletResponse>, String>),
     FetchAddressesAdmin,
@@ -277,5 +278,17 @@ pub enum Message {
     // Clipboard
     CopyToClipboard(String),
     ClipboardCopied(bool), // true = success, false = failed
+    // Text editor edit handlers for JSON displays
+    TransactionsEditorAction(iced::widget::text_editor::Action),
+    MempoolEditorAction(iced::widget::text_editor::Action),
+    MempoolTxEditorAction(iced::widget::text_editor::Action),
+    AddressTransactionsEditorAction(iced::widget::text_editor::Action),
+    WalletInfoEditorAction(iced::widget::text_editor::Action),
+    WalletBalanceEditorAction(iced::widget::text_editor::Action),
+    TransactionHistoryEditorAction(iced::widget::text_editor::Action),
+    BlocksAllEditorAction(iced::widget::text_editor::Action),
+    BlockByHashEditorAction(iced::widget::text_editor::Action),
+    BlockchainInfoEditorAction(iced::widget::text_editor::Action),
+    LatestBlocksEditorAction(iced::widget::text_editor::Action),
+    CreatedWalletAddressEditorAction(iced::widget::text_editor::Action),
 }
-

@@ -187,7 +187,7 @@ fn validate_miner_config(
     match is_miner {
         IsMiner::Yes => {
             if let Some(wlt_mining_addr) = wlt_mining_addr {
-                GLOBAL_CONFIG.set_mining_addr(wlt_mining_addr);                
+                GLOBAL_CONFIG.set_mining_addr(wlt_mining_addr);
             }
             Ok(())
         }
@@ -277,7 +277,7 @@ async fn start_node(
     // requiring mutable bindings to pass &mut handle into the select arms below.
     let mut network_handle = network_handle;
 
-    let result: Result<()> = match(is_web_server, is_miner) {
+    let result: Result<()> = match (is_web_server, is_miner) {
         (IsWebServer::Yes, IsMiner::No) => {
             // Start both servers concurrently using tokio::spawn
             let web_server = create_web_server(node_context);
@@ -288,7 +288,7 @@ async fn start_node(
                     Err(e) => error!("Web server error: {}", e),
                 }
             });
-            
+
             // Wait for Ctrl+C or any server to stop.
             // Shadow the JoinHandles as mutable because tokio::select! polls branches by &mut,
             // requiring mutable bindings to pass &mut handle into the select arms below.
@@ -313,8 +313,12 @@ async fn start_node(
         }
         (is_web, _) => {
             if matches!(is_web, IsWebServer::Yes) {
-                error!("Web server and miner cannot be enabled at the same time, WILL NOT START WEB SERVER");
-                return Err(BtcError::InvalidConfiguration("Web server and miner cannot be enabled at the same time".to_string()));
+                error!(
+                    "Web server and miner cannot be enabled at the same time, WILL NOT START WEB SERVER"
+                );
+                return Err(BtcError::InvalidConfiguration(
+                    "Web server and miner cannot be enabled at the same time".to_string(),
+                ));
             }
             // Start only network server
             tokio::select! {
@@ -326,7 +330,7 @@ async fn start_node(
                     info!("Web server task finished");
                 }
             }
-    
+
             // Ensure both tasks are concluded
             let _ = network_handle.await;
             Ok(())

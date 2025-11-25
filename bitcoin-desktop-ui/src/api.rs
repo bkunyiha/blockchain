@@ -1,4 +1,7 @@
-use bitcoin_api::{AdminClient, ApiConfig, ApiResponse, BlockSummary, BlockchainInfo, CreateWalletRequest, CreateWalletResponse, SendTransactionRequest, SendTransactionResponse};
+use bitcoin_api::{
+    AdminClient, ApiConfig, ApiResponse, BlockSummary, BlockchainInfo, CreateWalletRequest,
+    CreateWalletResponse, SendTransactionRequest, SendTransactionResponse,
+};
 use serde_json::Value;
 
 pub async fn fetch_info(cfg: ApiConfig) -> Result<ApiResponse<BlockchainInfo>, String> {
@@ -20,7 +23,10 @@ pub async fn fetch_blocks_all(cfg: ApiConfig) -> Result<ApiResponse<Value>, Stri
     client.get_blocks().await.map_err(|e| e.to_string())
 }
 
-pub async fn fetch_block_by_hash(cfg: ApiConfig, hash: String) -> Result<ApiResponse<Value>, String> {
+pub async fn fetch_block_by_hash(
+    cfg: ApiConfig,
+    hash: String,
+) -> Result<ApiResponse<Value>, String> {
     let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
     client
         .get_block_by_hash(&hash)
@@ -143,4 +149,3 @@ pub async fn send_transaction(
         .await
         .map_err(|e| e.to_string())
 }
-

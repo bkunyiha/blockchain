@@ -6,13 +6,13 @@ static TOKIO_HANDLE: OnceLock<tokio::runtime::Handle> = OnceLock::new();
 pub fn init_runtime() {
     // Create a Tokio runtime for async operations
     // This must outlive the application to keep the reactor running
-    let rt = tokio::runtime::Runtime::new()
-        .expect("Failed to create Tokio runtime");
-    
+    let rt = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
+
     // Store the handle globally so it can be accessed from any thread
-    TOKIO_HANDLE.set(rt.handle().clone())
+    TOKIO_HANDLE
+        .set(rt.handle().clone())
         .expect("Failed to set Tokio handle");
-    
+
     // Keep the runtime alive in a background thread
     std::thread::spawn(move || {
         rt.block_on(async {
@@ -28,9 +28,9 @@ where
     F: std::future::Future + Send + 'static,
     F::Output: Send + 'static,
 {
-    let handle = TOKIO_HANDLE.get().expect("Tokio runtime not initialized").clone();
-    async move {
-        handle.spawn(fut).await.unwrap()
-    }
+    let handle = TOKIO_HANDLE
+        .get()
+        .expect("Tokio runtime not initialized")
+        .clone();
+    async move { handle.spawn(fut).await.unwrap() }
 }
-
