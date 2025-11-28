@@ -8,9 +8,17 @@ edition = "2024"
 iced = { version = "0.13.1", features = ["advanced"] }
 
 # Shared typed HTTP client for the node API.
-# Wallet UI should only include wallet-scope endpoints: client + wallet.
-# We disable default-features to avoid compiling admin-only APIs.
-bitcoin-api = { path = "../bitcoin-api", features = ["client", "wallet"], default-features = false }
+# We need admin feature for wallet info, balance, and transaction history queries.
+bitcoin-api = { path = "../bitcoin-api", features = ["client", "wallet", "admin"], default-features = false }
+
+# JSON serialization
+serde_json = "1.0"
+
+# Database persistence with SQLCipher encryption
+rusqlite = { version = "0.31", features = ["bundled-sqlcipher"] }
+
+# Directory utilities for finding data directory
+dirs = "5.0"
 
 # Async runtime used by the API client in this UI process.
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
