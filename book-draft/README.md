@@ -47,6 +47,15 @@ This project is organized into several major components, each with its own detai
   - Persistence patterns for wallet data
   - Security considerations and best practices
 
+### Web Admin Interface
+
+- **[Web UI Architecture](./bitcoin-web-ui/Web-UI.md)**
+  - Modern React-based web interface for blockchain administration
+  - Component architecture and state management with React Query
+  - API integration and authentication patterns
+  - Build process and deployment strategies
+  - TypeScript type safety and modern development practices
+
 ## Documentation Index
 
 | Document | Description | Location |
@@ -55,6 +64,7 @@ This project is organized into several major components, each with its own detai
 | **DeskTop-UI.md** | Desktop admin interface architecture and implementation | [`bitcoin-desktop-ui/DeskTop-UI.md`](./bitcoin-desktop-ui/DeskTop-UI.md) |
 | **Wallet-UI.md** | Wallet user interface architecture and design | [`bitcoin-wallet-ui/Wallet-UI.md`](./bitcoin-wallet-ui/Wallet-UI.md) |
 | **Embeded_DB.md** | Embedded database design and persistence strategies | [`bitcoin-wallet-ui/Embeded_DB.md`](./bitcoin-wallet-ui/Embeded_DB.md) |
+| **Web-UI.md** | Web-based admin interface architecture and implementation | [`bitcoin-web-ui/Web-UI.md`](./bitcoin-web-ui/Web-UI.md) |
 
 ## How to Use This Documentation
 
@@ -73,9 +83,10 @@ These documents are designed to be read alongside the source code, providing con
 For readers new to the project, we recommend the following reading order:
 
 1. Start with **Transaction.md** to understand the core blockchain data structures
-2. Review **DeskTop-UI.md** to see how administrative interfaces interact with the blockchain
-3. Explore **Wallet-UI.md** to understand user-facing application design
-4. Study **Embeded_DB.md** to learn about data persistence and security
+2. Review **DeskTop-UI.md** to see how desktop administrative interfaces interact with the blockchain
+3. Explore **Web-UI.md** to understand web-based admin interface architecture and modern React patterns
+4. Study **Wallet-UI.md** to understand user-facing application design
+5. Review **Embeded_DB.md** to learn about data persistence and security
 
 ## Contributing to the Book
 
@@ -90,12 +101,31 @@ This documentation is part of an ongoing book writing process. As the codebase e
 
 The project uses modern Rust with the following key technologies:
 
-- **Iced**: Cross-platform GUI framework for desktop applications
+### Backend (Rust)
 - **Tokio**: Async runtime for non-blocking I/O operations
 - **SQLCipher**: Encrypted SQLite database for secure data storage
 - **Rusqlite**: Rust bindings for SQLite database operations
 - **Serde**: Serialization framework for JSON and other formats
 - **Reqwest**: HTTP client for API communication
+- **Axum**: Web framework for building REST APIs
+
+### Frontend
+
+#### Desktop Admin UI (Rust)
+- **Iced**: Cross-platform GUI framework for desktop applications
+
+#### Wallet UI (Rust)
+- **Iced**: Cross-platform GUI framework for desktop applications
+
+#### Web Admin UI (React/TypeScript)
+- **React 18**: Modern UI framework for building interactive web applications
+- **TypeScript**: Type-safe JavaScript for better developer experience
+- **Vite**: Fast build tool and development server
+- **React Query (TanStack Query)**: Server state management and data fetching
+- **React Router**: Client-side routing for single-page applications
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development
+- **Headless UI**: Accessible, unstyled UI components
+- **Axios**: HTTP client for API communication
 
 ## License and Usage
 
