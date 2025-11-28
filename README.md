@@ -8,7 +8,7 @@ A production-grade blockchain implementation following Bitcoin Core's architectu
 
 ## Project Structure
 
-This workspace contains four main components:
+This workspace contains five main components:
 
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
@@ -16,6 +16,7 @@ This workspace contains four main components:
 | **`bitcoin-api/`** | Shared typed HTTP client library for consuming the blockchain API | See below |
 | **`bitcoin-desktop-ui/`** | Admin UI built with Iced (blockchain management, mining, etc.) | - |
 | **`bitcoin-wallet-ui/`** | Wallet UI built with Iced (wallet operations, transactions) | - |
+| **`bitcoin-web-ui/`** | Modern React-based web admin interface (blockchain management, wallet operations, mining) | [bitcoin-web-ui/README.md](bitcoin-web-ui/README.md) |
 
 ---
 
@@ -46,6 +47,33 @@ See the [Bitcoin Implementation README](bitcoin/README.md) for detailed instruct
 - Running P2P networks
 - Accessing the web API
 
+### Accessing the Web UI
+
+The blockchain node includes a modern React-based web interface:
+
+1. **Build the web UI** (first time only):
+   ```bash
+   cd bitcoin-web-ui
+   npm install
+   npm run build
+   ```
+
+2. **Start the blockchain server**:
+   ```bash
+   cargo run --release -p bitcoin
+   ```
+
+3. **Access the web UI**:
+   - Production: `http://localhost:8080` (served by Rust server)
+   - Development: `http://localhost:3000` (Vite dev server, requires running `npm run dev` in `bitcoin-web-ui/`)
+
+4. **Configure API Key** (development mode):
+   - Click "Configure API" in the navbar
+   - Enter API key: `admin-secret` (default) or your `BITCOIN_API_ADMIN_KEY` value
+   - Base URL: `http://127.0.0.1:8080` (default)
+
+For detailed web UI documentation, see [bitcoin-web-ui/README.md](bitcoin-web-ui/README.md).
+
 ---
 
 ## API Clients and Role-Based Access
@@ -55,23 +83,28 @@ The blockchain node exposes a RESTful API that can be consumed by UI clients or 
 ### Architecture
 
 ```
-┌─────────────────────┐     ┌─────────────────────┐
-│ bitcoin-desktop-ui  │     │ bitcoin-wallet-ui   │
-│   (Admin UI)        │     │   (Wallet UI)       │
-└──────────┬──────────┘     └──────────┬──────────┘
-           │                            │
-           └────────────┬───────────────┘
+┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
+│ bitcoin-desktop-ui  │     │ bitcoin-wallet-ui   │     │   bitcoin-web-ui    │
+│   (Admin UI)        │     │   (Wallet UI)       │     │   (Web Admin UI)   │
+│   (Iced/Rust)      │     │   (Iced/Rust)       │     │   (React/TS)       │
+└──────────┬──────────┘     └──────────┬──────────┘     └──────────┬──────────┘
+           │                            │                            │
+           └────────────┬───────────────┴────────────────────────────┘
                         │
            ┌────────────▼───────────────┐
            │     bitcoin-api            │
            │  (Shared Client Library)   │
+           │  (Rust HTTP Client)        │
            └────────────┬───────────────┘
                         │
            ┌────────────▼───────────────┐
            │   bitcoin (Node API)       │
            │   http://localhost:8080   │
+           │   REST API + Web UI        │
            └────────────────────────────┘
 ```
+
+**Note**: The `bitcoin-web-ui` uses Axios directly (not `bitcoin-api`) and communicates with the Rust server's REST API endpoints.
 
 ### Client Feature Flags
 
@@ -86,8 +119,9 @@ The `bitcoin-api` crate uses feature flags to control which client surfaces are 
 
 ### UI Dependencies
 
-- **`bitcoin-desktop-ui`**: Requires `bitcoin-api` with features `client, wallet, admin`
-- **`bitcoin-wallet-ui`**: Requires `bitcoin-api` with features `client, wallet`
+- **`bitcoin-desktop-ui`**: Requires `bitcoin-api` with features `client, wallet, admin` (Iced/Rust)
+- **`bitcoin-wallet-ui`**: Requires `bitcoin-api` with features `client, wallet` (Iced/Rust)
+- **`bitcoin-web-ui`**: Uses Axios directly, no Rust dependencies (React/TypeScript)
 
 ### Server Authentication
 
@@ -138,6 +172,29 @@ let balance = wallet.get_balance(&address).await?;
 wallet.send_transaction(&tx_request).await?;
 ```
 
+#### Web UI (bitcoin-web-ui)
+
+The web UI is a React application that provides a browser-based interface:
+
+**Features:**
+- Dashboard with real-time blockchain statistics
+- Blockchain management (view blocks, search by hash)
+- Wallet operations (create, view info, check balance, send transactions)
+- Transaction management (mempool, transaction history)
+- Mining controls (view info, generate blocks)
+- Health monitoring
+
+**Access:**
+- After building (`npm run build`), the web UI is served automatically by the Rust server at `http://localhost:8080`
+- For development, run `npm run dev` in `bitcoin-web-ui/` to access at `http://localhost:3000`
+
+**API Configuration:**
+- Configure API key via the UI's "Configure API" button in the navbar
+- Default admin key: `admin-secret` (or `BITCOIN_API_ADMIN_KEY` env var)
+- API key is stored in browser localStorage
+
+See [bitcoin-web-ui/README.md](bitcoin-web-ui/README.md) for detailed setup instructions.
+
 ---
 
 ## Development
@@ -174,4 +231,6 @@ cargo check --all
 - **[Consensus Documentation](bitcoin/CONSENSUS_DOCUMENTATION.md)** - Detailed consensus algorithm documentation
 - **[Package Documentation](bitcoin/PACKAGE_DOCUMENTATION.md)** - Package structure and organization
 - **[Transaction Documentation](bitcoin/docs/Transaction.md)** - Transaction system details
+- **[Web UI Documentation](bitcoin-web-ui/README.md)** - React web interface setup and usage
+- **[Web UI Technical Documentation](book-draft/bitcoin-web-ui/Web-UI.md)** - Detailed technical documentation for the web UI architecture
 

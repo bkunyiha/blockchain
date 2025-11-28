@@ -155,7 +155,7 @@ tower = "0.5.2"
 # HTTP-specific Tower middleware
 # Used in: src/web/ for CORS, tracing, and other HTTP middleware
 # Purpose: CORS handling, request tracing, compression
-tower-http = { version = "0.6.6", features = ["cors", "trace", "compression-gzip"] }
+tower-http = { version = "0.6.6", features = ["cors", "trace", "compression-gzip", "fs"] }
 
 # Rate limiting middleware
 # Used in: src/web/middleware/ for API rate limiting
