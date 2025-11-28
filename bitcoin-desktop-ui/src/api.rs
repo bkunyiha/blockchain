@@ -91,7 +91,7 @@ pub async fn fetch_address_transactions(
 ) -> Result<ApiResponse<Value>, String> {
     let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
     client
-        .get_address_transactions(&address)
+        .get_address_transactions_admin(&address)
         .await
         .map_err(|e| e.to_string())
 }
