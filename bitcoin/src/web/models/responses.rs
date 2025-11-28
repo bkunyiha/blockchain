@@ -200,10 +200,17 @@ pub struct GenerateToAddressResponse {
 
 impl<T> PaginatedResponse<T> {
     pub fn new(items: Vec<T>, page: u32, limit: u32, total: u32) -> Self {
-        let total_pages = (total as f64 / limit as f64).ceil() as u32;
+        let total_pages = if total == 0 {
+            0
+        } else {
+            ((total as f64 / limit as f64).ceil() as u32).max(1)
+        };
+        // Page is 1-indexed (page 1 is first page)
+        // has_next: current page < total pages
+        // has_prev: current page > 1
         Self {
-            has_next: page + 1 < total_pages,
-            has_prev: page > 0,
+            has_next: page < total_pages,
+            has_prev: page > 1,
             items,
             page,
             limit,

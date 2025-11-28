@@ -166,7 +166,7 @@ pub async fn get_transactions(
     let limit = query.limit.unwrap_or(10);
 
     // Convert to response format
-    let responses: Vec<TxSummaryResponse> = tx_map
+    let all_responses: Vec<TxSummaryResponse> = tx_map
         .iter()
         .map(|(txid, tx_summary)| {
             let mut summary = tx_summary.clone();
@@ -193,8 +193,18 @@ pub async fn get_transactions(
         })
         .collect();
 
-    let total = responses.len() as u32;
-    let paginated = PaginatedResponse::new(responses, page, limit, total);
+    let total = all_responses.len() as u32;
+    
+    // Apply pagination: page is 1-indexed, so page 1 = index 0
+    let start_idx = ((page - 1) * limit) as usize;
+    let end_idx = (start_idx + limit as usize).min(all_responses.len());
+    let paginated_items: Vec<TxSummaryResponse> = if start_idx < all_responses.len() {
+        all_responses.into_iter().skip(start_idx).take(end_idx - start_idx).collect()
+    } else {
+        Vec::new()
+    };
+    
+    let paginated = PaginatedResponse::new(paginated_items, page, limit, total);
     Ok(Json(ApiResponse::success(paginated)))
 }
 
@@ -235,7 +245,7 @@ pub async fn get_address_transactions(
     let limit = query.limit.unwrap_or(10);
 
     // Convert to response format
-    let responses: Vec<WalletTransactionRespose> = transactions
+    let all_responses: Vec<WalletTransactionRespose> = transactions
         .iter()
         .map(|tx| WalletTransactionRespose {
             tx_id: tx.get_tx_id().to_vec(),
@@ -258,7 +268,17 @@ pub async fn get_address_transactions(
         })
         .collect();
 
-    let total = responses.len() as u32;
-    let paginated = PaginatedResponse::new(responses, page, limit, total);
+    let total = all_responses.len() as u32;
+    
+    // Apply pagination: page is 1-indexed, so page 1 = index 0
+    let start_idx = ((page - 1) * limit) as usize;
+    let end_idx = (start_idx + limit as usize).min(all_responses.len());
+    let paginated_items: Vec<WalletTransactionRespose> = if start_idx < all_responses.len() {
+        all_responses.into_iter().skip(start_idx).take(end_idx - start_idx).collect()
+    } else {
+        Vec::new()
+    };
+    
+    let paginated = PaginatedResponse::new(paginated_items, page, limit, total);
     Ok(Json(ApiResponse::success(paginated)))
 }

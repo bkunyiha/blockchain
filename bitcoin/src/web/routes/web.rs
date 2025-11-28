@@ -28,11 +28,11 @@ pub fn create_web_routes() -> Router<Arc<NodeContext>> {
             .nest_service("/assets", ServeDir::new(&assets_path))
             .route("/", get({
                 let index_path = index_path.clone();
-                move || serve_react_app(&index_path)
+                move || serve_react_app(index_path.clone())
             }))
             .fallback(get({
                 let index_path = index_path.clone();
-                move || serve_react_app(&index_path)
+                move || serve_react_app(index_path.clone())
             })) // Catch-all for React Router
             .merge(create_swagger_ui())
     } else {
@@ -45,8 +45,8 @@ pub fn create_web_routes() -> Router<Arc<NodeContext>> {
 }
 
 /// Serve React app index.html (for client-side routing)
-async fn serve_react_app(index_path: &str) -> Html<String> {
-    let path = std::path::Path::new(index_path);
+async fn serve_react_app(index_path: String) -> Html<String> {
+    let path = std::path::Path::new(&index_path);
     if path.exists() {
         match std::fs::read_to_string(path) {
             Ok(content) => Html(content),

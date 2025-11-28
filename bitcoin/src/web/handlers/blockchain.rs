@@ -4,6 +4,7 @@ use axum::{
     response::Json,
 };
 use std::sync::Arc;
+use tracing::error;
 
 use crate::node::NodeContext;
 use crate::primitives::Block;
@@ -48,12 +49,21 @@ pub async fn get_blockchain_info(
         .get_mempool_size()
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
+    // Calculate total transactions by counting all transactions in the blockchain
+    let total_transactions = match node.find_all_transactions().await {
+        Ok(tx_map) => tx_map.len(),
+        Err(e) => {
+            error!("Failed to get total transactions count: {}", e);
+            0
+        }
+    };
+
     let info = BlockchainInfoResponse {
         height,
         difficulty: 1, // TODO: Get actual difficulty
         // Since genesis block is at height 1 (1-indexed), height directly equals total blocks
         total_blocks: height,
-        total_transactions: 0, // TODO: Calculate total transactions
+        total_transactions,
         mempool_size,
         last_block_hash,
         last_block_timestamp: chrono::Utc::now(),
@@ -192,10 +202,16 @@ pub async fn get_latest_blocks(
 
 /// Convert Block to BlockResponse
 async fn block_to_response(block: Block, height: usize) -> BlockResponse {
+    // Convert milliseconds to seconds for chrono::DateTime::from_timestamp
+    // block.get_timestamp() returns milliseconds, but from_timestamp expects seconds
+    let timestamp_ms = block.get_timestamp();
+    let timestamp_sec = timestamp_ms / 1000;
+    let timestamp_nanos = ((timestamp_ms % 1000) * 1_000_000) as u32;
+    
     BlockResponse {
         hash: block.get_hash().to_string(),
         previous_hash: block.get_pre_block_hash().to_string(),
-        timestamp: chrono::DateTime::from_timestamp(block.get_timestamp(), 0)
+        timestamp: chrono::DateTime::from_timestamp(timestamp_sec, timestamp_nanos)
             .unwrap_or_else(chrono::Utc::now),
         height,
         nonce: 0,      // TODO: Get actual nonce
