@@ -80,9 +80,30 @@ impl WalletClient {
         &self,
         req: &CreateWalletRequest,
     ) -> Result<ApiResponse<CreateWalletResponse>, ApiError> {
-        let url = self.base.url("/wallet")?;
+        let url = self.base.url("/api/v1/wallet")?;
         let rb = self.base.http.post(url).json(req);
         let rb = self.base.with_auth(rb);
+        let resp = rb.send().await?.error_for_status()?;
+        Ok(resp.json().await?)
+    }
+
+    pub async fn get_wallet_info(&self, address: &str) -> Result<ApiResponse<Value>, ApiError> {
+        let url = self.base.url(&format!("/api/v1/wallet/{}", address))?;
+        let rb = self.base.with_auth(self.base.http.get(url));
+        let resp = rb.send().await?.error_for_status()?;
+        let json = resp.json().await?;
+        tracing::debug!(
+            "[get_wallet_info_admin]: {}",
+            serde_json::to_string_pretty(&json).unwrap_or_else(|_| "Error formatting".into())
+        );
+        Ok(json)
+    }
+
+    pub async fn get_balance(&self, address: &str) -> Result<ApiResponse<Value>, ApiError> {
+        let url = self
+            .base
+            .url(&format!("/api/v1/wallet/{}/balance", address))?;
+        let rb = self.base.with_auth(self.base.http.get(url));
         let resp = rb.send().await?.error_for_status()?;
         Ok(resp.json().await?)
     }
@@ -91,9 +112,21 @@ impl WalletClient {
         &self,
         req: &SendTransactionRequest,
     ) -> Result<ApiResponse<SendTransactionResponse>, ApiError> {
-        let url = self.base.url("/transactions")?;
+        let url = self.base.url("/api/v1/transactions")?;
         let rb = self.base.http.post(url).json(req);
         let rb = self.base.with_auth(rb);
+        let resp = rb.send().await?.error_for_status()?;
+        Ok(resp.json().await?)
+    }
+
+    pub async fn get_address_transactions(
+        &self,
+        address: &str,
+    ) -> Result<ApiResponse<Value>, ApiError> {
+        let url = self
+            .base
+            .url(&format!("/api/v1/transactions/address/{}", address))?;
+        let rb = self.base.with_auth(self.base.http.get(url));
         let resp = rb.send().await?.error_for_status()?;
         Ok(resp.json().await?)
     }
@@ -254,7 +287,7 @@ impl AdminClient {
         Ok(resp.json().await?)
     }
 
-    pub async fn get_address_transactions(
+    pub async fn get_address_transactions_admin(
         &self,
         address: &str,
     ) -> Result<ApiResponse<Value>, ApiError> {
