@@ -1,6 +1,6 @@
 use crate::types::*;
 use reqwest::Client as HttpClient;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use thiserror::Error;
 use url::Url;
 #[cfg(feature = "client")]

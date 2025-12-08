@@ -13,23 +13,26 @@ pub fn create_web_routes() -> Router<Arc<NodeContext>> {
         "../../bitcoin-web-ui/dist",
         "bitcoin-web-ui/dist",
     ];
-    
+
     let react_app_path = possible_paths
         .iter()
         .find(|path| std::path::Path::new(path).exists())
         .copied();
-    
+
     if let Some(path) = react_app_path {
         let assets_path = format!("{}/assets", path);
         let index_path = format!("{}/index.html", path);
-        
+
         // Serve React app with fallback to index.html for client-side routing
         Router::new()
             .nest_service("/assets", ServeDir::new(&assets_path))
-            .route("/", get({
-                let index_path = index_path.clone();
-                move || serve_react_app(index_path.clone())
-            }))
+            .route(
+                "/",
+                get({
+                    let index_path = index_path.clone();
+                    move || serve_react_app(index_path.clone())
+                }),
+            )
             .fallback(get({
                 let index_path = index_path.clone();
                 move || serve_react_app(index_path.clone())
@@ -50,7 +53,9 @@ async fn serve_react_app(index_path: String) -> Html<String> {
     if path.exists() {
         match std::fs::read_to_string(path) {
             Ok(content) => Html(content),
-            Err(_) => Html("<html><body><h1>Error loading React app</h1></body></html>".to_string()),
+            Err(_) => {
+                Html("<html><body><h1>Error loading React app</h1></body></html>".to_string())
+            }
         }
     } else {
         Html("<html><body><h1>React app not built. Run 'npm run build' in bitcoin-web-ui directory.</h1></body></html>".to_string())
@@ -59,7 +64,8 @@ async fn serve_react_app(index_path: String) -> Html<String> {
 
 /// Show message when React app is not built
 async fn react_app_not_built() -> Html<&'static str> {
-    Html(r#"
+    Html(
+        r#"
         <!DOCTYPE html>
         <html>
         <head>
@@ -79,5 +85,6 @@ npm run build</code></pre>
             <p>Then restart the blockchain server.</p>
         </body>
         </html>
-    "#)
+    "#,
+    )
 }

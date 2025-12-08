@@ -6,7 +6,7 @@ use iced::widget::{
 };
 use serde_json::Value;
 
-pub fn view(app: &WalletApp) -> Element<Message> {
+pub fn view<'a>(app: &'a WalletApp) -> Element<'a, Message> {
     // Top toolbar with menu and title
     let menu_buttons: Element<Message> = {
         let mut menu_row = row![].spacing(10);
@@ -385,7 +385,7 @@ where
 }
 
 // Wallet list section - shows saved wallets
-fn wallet_list_section(app: &WalletApp) -> Element<Message> {
+fn wallet_list_section<'a>(app: &'a WalletApp) -> Element<'a, Message> {
     column![
         // Section title
         text("Saved Wallets").size(20),
@@ -596,7 +596,7 @@ fn wallet_list_section(app: &WalletApp) -> Element<Message> {
 }
 
 // Create wallet section - shows create wallet form
-fn create_wallet_section(app: &WalletApp) -> Element<Message> {
+fn create_wallet_section<'a>(app: &'a WalletApp) -> Element<'a, Message> {
     // Determine button text based on whether wallets exist
     let create_button_text = if app.saved_wallets.is_empty() {
         "Create New Wallet"
@@ -805,7 +805,7 @@ fn create_wallet_section(app: &WalletApp) -> Element<Message> {
     .into()
 }
 
-fn wallet_info_section(app: &WalletApp) -> Element<Message> {
+fn wallet_info_section<'a>(app: &'a WalletApp) -> Element<'a, Message> {
     // Get active wallet info
     let (active_address, active_label) = if let Some(addr) = &app.active_wallet_address {
         let wallet = app.saved_wallets.iter().find(|w| &w.address == addr);
@@ -957,7 +957,7 @@ fn wallet_info_section(app: &WalletApp) -> Element<Message> {
     .into()
 }
 
-fn get_balance_section(app: &WalletApp) -> Element<Message> {
+fn get_balance_section<'a>(app: &'a WalletApp) -> Element<'a, Message> {
     // Get active wallet info
     let (active_address, active_label) = if let Some(addr) = &app.active_wallet_address {
         let wallet = app.saved_wallets.iter().find(|w| &w.address == addr);
@@ -1109,7 +1109,7 @@ fn get_balance_section(app: &WalletApp) -> Element<Message> {
     .into()
 }
 
-fn send_section(app: &WalletApp) -> Element<Message> {
+fn send_section<'a>(app: &'a WalletApp) -> Element<'a, Message> {
     // Get active wallet info
     let (active_address, active_label) = if let Some(addr) = &app.active_wallet_address {
         let wallet = app.saved_wallets.iter().find(|w| &w.address == addr);
@@ -1355,7 +1355,7 @@ fn send_section(app: &WalletApp) -> Element<Message> {
     .into()
 }
 
-fn history_section(app: &WalletApp) -> Element<Message> {
+fn history_section<'a>(app: &'a WalletApp) -> Element<'a, Message> {
     // Get active wallet info
     let (active_address, active_label) = if let Some(addr) = &app.active_wallet_address {
         let wallet = app.saved_wallets.iter().find(|w| &w.address == addr);
@@ -1508,7 +1508,7 @@ fn history_section(app: &WalletApp) -> Element<Message> {
     .into()
 }
 
-fn settings_section(app: &WalletApp) -> Element<Message> {
+fn settings_section<'a>(app: &'a WalletApp) -> Element<'a, Message> {
     column![
         text("Settings").size(20),
         container(

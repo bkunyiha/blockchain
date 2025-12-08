@@ -207,7 +207,7 @@ async fn block_to_response(block: Block, height: usize) -> BlockResponse {
     let timestamp_ms = block.get_timestamp();
     let timestamp_sec = timestamp_ms / 1000;
     let timestamp_nanos = ((timestamp_ms % 1000) * 1_000_000) as u32;
-    
+
     BlockResponse {
         hash: block.get_hash().to_string(),
         previous_hash: block.get_pre_block_hash().to_string(),

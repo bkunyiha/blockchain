@@ -1360,9 +1360,16 @@ impl BlockchainIterator {
             .db
             .open_tree(self.file_system_blocks_tree.clone())
             .unwrap();
-        let data = block_tree.get(self.current_hash.clone()).unwrap()?;
+        let data = match block_tree.get(self.current_hash.clone()) {
+            Ok(Some(d)) => d,
+            Ok(None) => return None, // Block doesn't exist (empty blockchain)
+            Err(_) => return None,   // Error reading from database
+        };
 
-        let block = Block::deserialize(data.to_vec().as_slice()).unwrap();
+        let block = match Block::deserialize(data.to_vec().as_slice()) {
+            Ok(b) => b,
+            Err(_) => return None, // Failed to deserialize block
+        };
         self.current_hash = block.get_pre_block_hash().clone();
         Some(block)
     }

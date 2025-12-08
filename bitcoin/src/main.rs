@@ -78,8 +78,13 @@ enum Command {
         is_web_server: IsWebServer,
         #[arg(name = "connect_nodes", required(true), help = "Connect to a node")]
         connect_nodes: Vec<ConnectNode>,
-        #[arg(name = "wlt_mining_addr", help = "Wallet Address", last(true))]
-        wlt_mining_addr: Option<String>,
+        #[arg(
+            name = "wlt_mining_addr",
+            required(true),
+            help = "Wallet Address (required)",
+            last(true)
+        )]
+        wlt_mining_addr: String,
     },
 }
 
@@ -180,15 +185,13 @@ async fn print_blockchain() -> Result<()> {
 
 /// Validate miner configuration
 fn validate_miner_config(
-    wlt_mining_addr: Option<&WalletAddress>,
+    wlt_mining_addr: &WalletAddress,
     is_miner: &IsMiner,
     is_web_server: &IsWebServer,
 ) -> Result<()> {
     match is_miner {
         IsMiner::Yes => {
-            if let Some(wlt_mining_addr) = wlt_mining_addr {
-                GLOBAL_CONFIG.set_mining_addr(wlt_mining_addr);
-            }
+            GLOBAL_CONFIG.set_mining_addr(wlt_mining_addr);
             Ok(())
         }
         IsMiner::No => {
@@ -212,11 +215,19 @@ async fn create_seed_blockchain(wlt_mining_addr: &WalletAddress) -> Result<Block
 
 /// Handle blockchain opening with fallback logic
 async fn open_or_create_blockchain(
-    wlt_mining_addr: Option<&WalletAddress>,
+    wlt_mining_addr: &WalletAddress,
     connect_nodes: &[ConnectNode],
 ) -> Result<BlockchainService> {
     match BlockchainService::default().await {
         Ok(blockchain) => {
+            // Check if blockchain is empty - if so and we're a seed node, create genesis block
+            let height = blockchain.get_best_height().await?;
+            if height == 0 && connect_nodes.contains(&ConnectNode::Local) {
+                info!("Blockchain database exists but is empty, creating seed blockchain");
+                // Close the empty blockchain and create a new seed blockchain
+                drop(blockchain);
+                return create_seed_blockchain(wlt_mining_addr).await;
+            }
             // Reindex UTXOSet when opening existing blockchain
             let utxo_set = UTXOSet::new(blockchain.clone());
             utxo_set.reindex().await?;
@@ -224,7 +235,7 @@ async fn open_or_create_blockchain(
         }
         Err(BtcError::BlockchainNotFoundError(_)) => {
             if connect_nodes.contains(&ConnectNode::Local) {
-                create_seed_blockchain(wlt_mining_addr.unwrap()).await
+                create_seed_blockchain(wlt_mining_addr).await
             } else {
                 BlockchainService::empty().await
             }
@@ -241,13 +252,13 @@ async fn start_node(
     is_miner: IsMiner,
     is_web_server: IsWebServer,
     connect_nodes: Vec<ConnectNode>,
-    wlt_mining_addr: Option<WalletAddress>,
+    wlt_mining_addr: WalletAddress,
 ) -> Result<()> {
     // Validate miner configuration
-    validate_miner_config(wlt_mining_addr.as_ref(), &is_miner, &is_web_server)?;
+    validate_miner_config(&wlt_mining_addr, &is_miner, &is_web_server)?;
 
     // Open or create blockchain
-    let blockchain = open_or_create_blockchain(wlt_mining_addr.as_ref(), &connect_nodes).await?;
+    let blockchain = open_or_create_blockchain(&wlt_mining_addr, &connect_nodes).await?;
     let node_context = NodeContext::new(blockchain);
 
     // Get node configuration
@@ -352,7 +363,7 @@ async fn process_command(command: Command) -> Result<()> {
             connect_nodes,
             wlt_mining_addr,
         } => {
-            let validated_addr = wlt_mining_addr.map(WalletAddress::validate).transpose()?;
+            let validated_addr = WalletAddress::validate(wlt_mining_addr)?;
             start_node(is_miner, is_web_server, connect_nodes, validated_addr).await
         }
     }

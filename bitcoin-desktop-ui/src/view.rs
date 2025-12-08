@@ -10,7 +10,7 @@ use iced::widget::{
     button, column, container, mouse_area, row, scrollable, text, text_editor, text_input,
 };
 
-pub fn view(app: &AdminApp) -> Element<Message> {
+pub fn view<'a>(app: &'a AdminApp) -> Element<'a, Message> {
     // Helper function to calculate popup width based on longest text
     // Approximate: 6 pixels per character + padding (4px left + 4px right) + container padding (2px * 2)
     let calculate_popup_width = |texts: &[&str]| -> f32 {
@@ -551,7 +551,7 @@ pub fn view(app: &AdminApp) -> Element<Message> {
         .into()
 }
 
-fn view_blockchain(app: &AdminApp) -> Element<Message> {
+fn view_blockchain<'a>(app: &'a AdminApp) -> Element<'a, Message> {
     // Content section based on selected blockchain section
     let content: Element<Message> = match app.blockchain_section {
         BlockchainSection::Info => column![
@@ -678,7 +678,7 @@ fn view_blockchain(app: &AdminApp) -> Element<Message> {
         .into()
 }
 
-fn view_wallet(app: &AdminApp) -> Element<Message> {
+fn view_wallet<'a>(app: &'a AdminApp) -> Element<'a, Message> {
     // Content section based on selected wallet section (selection via popup menu)
     let content: Element<Message> = match app.wallet_section {
         WalletSection::GetWalletInfo => column![
@@ -1218,7 +1218,7 @@ fn view_wallet(app: &AdminApp) -> Element<Message> {
         .into()
 }
 
-fn view_transactions(app: &AdminApp) -> Element<Message> {
+fn view_transactions<'a>(app: &'a AdminApp) -> Element<'a, Message> {
     // Content section based on selected transaction section (selection via popup menu)
     let content: Element<Message> = match app.transaction_section {
         TransactionSection::Mempool => column![
@@ -1287,7 +1287,7 @@ fn view_transactions(app: &AdminApp) -> Element<Message> {
         .into()
 }
 
-fn view_mining(app: &AdminApp) -> Element<Message> {
+fn view_mining<'a>(app: &'a AdminApp) -> Element<'a, Message> {
     // Content section based on selected mining section (selection via popup menu)
     let content: Element<Message> = match app.mining_section {
         MiningSection::Info => column![
@@ -1350,7 +1350,7 @@ fn view_mining(app: &AdminApp) -> Element<Message> {
         .into()
 }
 
-fn view_health(app: &AdminApp) -> Element<Message> {
+fn view_health<'a>(app: &'a AdminApp) -> Element<'a, Message> {
     // Content section based on selected health section (selection via popup menu)
     let content: Element<Message> = match app.health_section {
         HealthSection::Health => column![

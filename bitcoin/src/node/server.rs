@@ -14,10 +14,19 @@ use tracing::{error, info, instrument};
 pub const NODE_VERSION: usize = 1;
 
 pub static CENTERAL_NODE: Lazy<SocketAddr> = Lazy::new(|| {
-    env::var("CENTERAL_NODE")
-        .unwrap_or_else(|_| "127.0.0.1:2001".to_string())
-        .parse()
-        .expect("CENTERAL_NODE environment variable is not a valid socket address")
+    let central_node_str =
+        env::var("CENTERAL_NODE").unwrap_or_else(|_| "127.0.0.1:2001".to_string());
+
+    // Handle empty string case (when CENTERAL_NODE is set but empty)
+    if central_node_str.is_empty() {
+        "127.0.0.1:2001"
+            .parse()
+            .expect("Failed to parse default CENTERAL_NODE address")
+    } else {
+        central_node_str
+            .parse()
+            .expect("CENTERAL_NODE environment variable is not a valid socket address")
+    }
 });
 
 pub const TRANSACTION_THRESHOLD: usize = 3;
