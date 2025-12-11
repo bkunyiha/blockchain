@@ -1,8 +1,50 @@
-# SQLCipher Persistence Implementation - Technical Documentation
+<div align="left">
+
+<details>
+<summary><b>📑 Chapter Navigation ▼</b></summary>
+
+### Part I: Core Blockchain Implementation
+
+1. [Chapter 1: Introduction & Overview](../../README.md)
+2. [Chapter 2: Transaction System](../bitcoin-blockchain/02-Transaction-System.md)
+3. [Chapter 3: Web API Architecture](../bitcoin-blockchain/web/README.md)
+4. [Chapter 4: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
+5. [Chapter 5: Wallet User Interface](04-Wallet-UI.md)
+6. **Chapter 6: Embedded Database & Persistence** ← *You are here*
+7. [Chapter 7: Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md)
+
+### Part II: Deployment & Operations
+
+8. [Chapter 8: Docker Compose Deployment](../ci/docker-compose/01-Introduction.md)
+9. [Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md)
+
+</details>
+
+</div>
+
+<div align="right">
+
+**[← Back to Main Book](../../README.md)**
+
+</div>
+
+---
+
+# Chapter 6: Embedded Database & Persistence
+
+**Part I: Core Blockchain Implementation**
+
+<div align="center">
+
+**📚 [← Chapter 5: Wallet UI](04-Wallet-UI.md)** | **Chapter 6: Embedded Database** | **[Chapter 7: Web Admin UI →](../bitcoin-web-ui/06-Web-Admin-UI.md)** 📚
+
+</div>
+
+---
 
 ## Overview
 
-This document provides a comprehensive technical explanation of the SQLCipher-based persistence layer added to `bitcoin-wallet-ui`. The implementation enables secure, encrypted storage of application settings and wallet addresses using SQLCipher (an encrypted SQLite database).
+In this chapter, we'll explore one of the most critical aspects of wallet applications: secure data persistence. We'll dive deep into the SQLCipher-based persistence layer we've added to `bitcoin-wallet-ui`. This implementation enables secure, encrypted storage of application settings and wallet addresses using SQLCipher—an encrypted SQLite database. As we'll discover, storing sensitive data like wallet addresses and API keys requires careful consideration of security, performance, and user experience. We'll understand not just how to implement encrypted storage, but why each design decision matters.
 
 ---
 
@@ -23,6 +65,8 @@ This document provides a comprehensive technical explanation of the SQLCipher-ba
 
 ## What is SQLCipher?
 
+Before we dive into our implementation, let's understand what SQLCipher is and why we chose it for our wallet application.
+
 **SQLCipher** is an open-source extension to SQLite that provides transparent 256-bit AES encryption of database files. Unlike standard SQLite, SQLCipher encrypts the entire database file, including:
 
 - Table schemas
@@ -30,18 +74,26 @@ This document provides a comprehensive technical explanation of the SQLCipher-ba
 - Data pages
 - Metadata
 
-### Key Features:
-- **Transparent Encryption**: Applications use standard SQLite APIs; encryption is handled automatically
-- **AES-256 Encryption**: Industry-standard encryption algorithm
-- **Zero Configuration**: Works with existing SQLite code
-- **Cross-Platform**: Available on all major platforms
+### Key Features
+
+SQLCipher offers several compelling features that make it ideal for our use case:
+
+- **Transparent Encryption**: Applications use standard SQLite APIs; encryption is handled automatically behind the scenes
+- **AES-256 Encryption**: Industry-standard encryption algorithm that provides strong security
+- **Zero Configuration**: Works with existing SQLite code—we don't need to rewrite our database logic
+- **Cross-Platform**: Available on all major platforms, ensuring our wallet works everywhere
 
 ### Why SQLCipher for Bitcoin Wallet UI?
 
-1. **Security**: Wallet addresses and API keys are sensitive data that must be encrypted
-2. **Compliance**: Meets security best practices for financial applications
-3. **Transparency**: No code changes needed in application logic
-4. **Performance**: Minimal overhead compared to unencrypted SQLite
+When we were designing the persistence layer for our wallet application, we considered several options. SQLCipher emerged as the clear choice for several important reasons:
+
+1. **Security**: Wallet addresses and API keys are sensitive data that must be encrypted. SQLCipher provides this encryption transparently.
+
+2. **Compliance**: It meets security best practices for financial applications, which is crucial when dealing with blockchain assets.
+
+3. **Transparency**: We don't need to change our application logic—the encryption happens automatically, making our code cleaner and easier to maintain.
+
+4. **Performance**: There's minimal overhead compared to unencrypted SQLite, so our users won't notice any performance impact.
 
 ---
 
@@ -252,26 +304,6 @@ The implementation uses `std::sync::Mutex` rather than `std::sync::RwLock` for p
 - Lock is held for microseconds, released immediately
 
 **Conclusion**: `Mutex` is the optimal choice for this application. The overhead difference between `Mutex` and `RwLock` is negligible for this use case, and `Mutex` provides simplicity and correctness guarantees.
-
-#### Alternative Approaches Considered
-
-**Connection Pooling:**
-- **Not Used**: Single global connection is sufficient
-- **Reason**: GUI application with low concurrency
-- **Benefit**: Simpler code, no pool management overhead
-- **When to Use**: High-throughput server with many concurrent requests
-
-**Per-Operation Connections:**
-- **Not Used**: Opening/closing connections is expensive
-- **Reason**: Single long-lived connection is more efficient
-- **Benefit**: Reuse connection, avoid connection overhead
-- **Trade-off**: Requires synchronization (Mutex), but worth it
-
-**Transaction Management:**
-- **Not Explicitly Used**: SQLite auto-commits each statement
-- **Reason**: Operations are atomic (single INSERT/UPDATE/SELECT)
-- **Benefit**: Simpler code, no transaction state management
-- **When to Use**: Batch operations requiring atomicity across multiple statements
 
 ### Database Path Resolution
 
@@ -561,43 +593,15 @@ conn.execute(
   - Optional (NULL allowed)
   - Can be updated independently
 
-- **`profile_picture BLOB`**:
-  - Binary data containing the user's profile picture image
+- **`profile_picture_path TEXT`**:
+  - Path to user's profile picture file
   - Optional (NULL allowed)
-  - Stores the complete image file as binary data
-  - **Note**: Image data is stored directly in the database as BLOB
-  - This approach is ideal for single-user applications
-  - All user data (including profile picture) is in one encrypted database file
+  - Stores file path, not binary data
 
 - **Timestamps**:
   - `created_at`: When user profile was first created
   - `updated_at`: Last modification time
   - Automatically updated on changes
-
-**Profile Picture Storage Strategy:**
-
-The database stores the **image data directly as BLOB** in the `profile_picture` column. This approach is optimal for single-user applications:
-
-1. **Simplicity**: All user data in one encrypted database file
-2. **Backup/Restore**: Single file contains everything (database + profile picture)
-3. **Security**: Profile picture is encrypted along with other user data
-4. **No File Management**: No need to manage separate files or directories
-5. **Atomic Operations**: Profile picture updates are transactional with other user data
-
-**Why BLOB for Single-User Application:**
-
-- **Single User**: Only one profile picture needs to be stored
-- **Encrypted Storage**: SQLCipher encrypts the BLOB data automatically
-- **Portability**: Entire user profile (including picture) in one database file
-- **No Cleanup**: No orphaned files to manage
-- **Simplified Backup**: Backup database = backup everything
-
-**Size Considerations:**
-
-- Typical profile pictures: 50-500 KB (JPEG/PNG)
-- SQLite BLOB limit: Up to ~2 GB per BLOB
-- Database size: Small increase for single image
-- Performance: Fast for single-user access patterns
 
 ### Schema Version Table
 
@@ -795,14 +799,14 @@ pub fn load_user() -> SqliteResult<Option<User>> {
     let conn = get_connection()?;
     
     match conn.query_row(
-        "SELECT id, first_name, last_name, profile_picture, created_at, updated_at FROM users WHERE id = 1",
+        "SELECT id, first_name, last_name, profile_picture_path, created_at, updated_at FROM users WHERE id = 1",
         [],
         |row| {
             Ok(User {
                 id: row.get(0)?,
                 first_name: row.get(1)?,
                 last_name: row.get(2)?,
-                profile_picture: row.get(3)?,
+                profile_picture_path: row.get(3)?,
                 created_at: row.get(4)?,
                 updated_at: row.get(5)?,
             })
@@ -831,15 +835,15 @@ pub fn save_user(user: &User) -> SqliteResult<()> {
     
     // Try to update first (if user exists)
     let rows_affected = conn.execute(
-        "UPDATE users SET first_name = ?, last_name = ?, profile_picture = ?, updated_at = datetime('now') WHERE id = 1",
-        params![user.first_name, user.last_name, user.profile_picture.as_ref().map(|v| v.as_slice())],
+        "UPDATE users SET first_name = ?, last_name = ?, profile_picture_path = ?, updated_at = datetime('now') WHERE id = 1",
+        params![user.first_name, user.last_name, user.profile_picture_path],
     )?;
     
     // If no rows were updated, insert new user
     if rows_affected == 0 {
         conn.execute(
-            "INSERT INTO users (id, first_name, last_name, profile_picture) VALUES (1, ?, ?, ?)",
-            params![user.first_name, user.last_name, user.profile_picture.as_ref().map(|v| v.as_slice())],
+            "INSERT INTO users (id, first_name, last_name, profile_picture_path) VALUES (1, ?, ?, ?)",
+            params![user.first_name, user.last_name, user.profile_picture_path],
         )?;
     }
     
@@ -886,7 +890,7 @@ pub fn update_user_first_name(first_name: Option<&str>) -> SqliteResult<()> {
 1. **Partial Updates**: Allows updating individual fields
    - `update_user_first_name()`: Updates only first name
    - `update_user_last_name()`: Updates only last name
-   - `update_user_profile_picture()`: Updates profile picture BLOB data
+   - `update_user_profile_picture()`: Updates profile picture path
 
 2. **Auto-Creation**: Creates user if doesn't exist
    - Useful for progressive profile building
@@ -895,44 +899,6 @@ pub fn update_user_first_name(first_name: Option<&str>) -> SqliteResult<()> {
 3. **Timestamp Update**: `updated_at` automatically updated
    - Tracks when each field was last modified
    - Useful for audit trails
-
-**Profile Picture BLOB Management:**
-
-When saving a profile picture:
-
-1. **File Upload**: User selects image file
-2. **Read File**: Load image data into memory
-   ```rust
-   let image_data = std::fs::read(uploaded_file_path)?;
-   ```
-3. **Store BLOB**: Save image data directly to database
-   ```rust
-   database::update_user_profile_picture(Some(image_data))?;
-   ```
-4. **Retrieve BLOB**: Load image data from database
-   ```rust
-   if let Some(user) = database::load_user()? {
-       if let Some(image_data) = user.profile_picture {
-           // Use image_data (Vec<u8>) to display image
-           // Can be saved to file or used directly in UI
-       }
-   }
-   ```
-
-**Convenience Function:**
-
-For easier file-based uploads:
-```rust
-// Read file and store in database in one call
-database::update_user_profile_picture_from_file(&uploaded_file_path)?;
-```
-
-**Deleting Profile Picture:**
-
-```rust
-// Set profile_picture to NULL
-database::delete_user_profile_picture()?;
-```
 
 ---
 
@@ -1072,8 +1038,8 @@ Message::LastNameChanged(v) => {
 }
 
 Message::ProfilePictureUploaded(path) => {
-    // Read file and store as BLOB in database
-    match crate::database::update_user_profile_picture_from_file(&path) {
+    // Copy file to secure location and store path
+    match crate::database::update_user_profile_picture(Some(&path)) {
         Ok(()) => {
             app.status = "Profile picture saved successfully".into();
         }
@@ -1224,3 +1190,28 @@ The SQLCipher persistence implementation provides:
 
 The implementation follows Rust best practices and provides a solid foundation for future enhancements.
 
+---
+
+<div align="center">
+
+**📚 [← Previous: Wallet User Interface](04-Wallet-UI.md)** | **Chapter 6: Embedded Database & Persistence** | **[Next: Web Admin Interface →](../bitcoin-web-ui/06-Web-Admin-UI.md)** 📚
+
+</div>
+
+---
+
+*This chapter has explored one of the most critical aspects of wallet applications: secure data persistence using SQLCipher. We've examined how the SQLCipher-based persistence layer enables secure, encrypted storage of application settings and wallet addresses, understanding not just how to implement encrypted storage, but why each design decision matters. The implementation demonstrates how AES-256 encryption, automatic persistence, cross-platform support, and thread safety combine to create a production-ready storage solution. Security considerations, performance optimization, and error handling patterns ensure that sensitive data is protected while maintaining excellent user experience. In the next chapter, we'll explore the [Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md) to understand how modern web technologies like React and TypeScript create a comprehensive administrative interface for blockchain node management.*
+
+---
+
+<div align="center">
+
+**Local Navigation - Table of Contents**
+
+| [← First Section: What is SQLCipher?](#what-is-sqlcipher) | [↑ Table of Contents](#table-of-contents) | [Last Section: Future Considerations →](#future-considerations) |
+|:---:|:---:|:---:|
+| *Start of Chapter* | *Current Chapter* | *End of Chapter* |
+
+</div>
+
+---

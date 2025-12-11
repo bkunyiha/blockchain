@@ -1,8 +1,125 @@
-# Bitcoin Desktop Admin UI - Technical Architecture Documentation
+<div align="left">
+
+<details>
+<summary><b>📑 Chapter Navigation ▼</b></summary>
+
+### Part I: Core Blockchain Implementation
+
+1. [Chapter 1: Introduction & Overview](../../README.md)
+2. [Chapter 2: Transaction System](../bitcoin-blockchain/02-Transaction-System.md)
+3. [Chapter 3: Web API Architecture](../bitcoin-blockchain/web/README.md)
+4. **Chapter 4: Desktop Admin Interface** ← *You are here*
+5. [Chapter 5: Wallet User Interface](../bitcoin-wallet-ui/04-Wallet-UI.md)
+6. [Chapter 6: Embedded Database & Persistence](../bitcoin-wallet-ui/05-Embedded-Database.md)
+7. [Chapter 7: Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md)
+
+### Part II: Deployment & Operations
+
+8. [Chapter 8: Docker Compose Deployment](../ci/docker-compose/01-Introduction.md)
+9. [Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md)
+
+</details>
+
+</div>
+
+<div align="right">
+
+**[← Back to Main Book](../../README.md)**
+
+</div>
+
+---
+
+# Chapter 4: Desktop Admin Interface - Technical Architecture Documentation
+
+**Part I: Core Blockchain Implementation**
+
+<div align="center">
+
+**📚 [← Chapter 3: Web API Architecture](../bitcoin-blockchain/web/README.md)** | **Chapter 4: Desktop Admin Interface** | **[Chapter 5: Wallet UI →](../bitcoin-wallet-ui/04-Wallet-UI.md)** 📚
+
+</div>
+
+---
 
 ## Overview
 
-The Bitcoin Desktop Admin UI is a comprehensive administrative interface for managing a Bitcoin node. It provides full access to blockchain data, wallet operations, transaction management, mining controls, and health monitoring. This document provides a detailed technical explanation of the architecture, data flow, and implementation patterns.
+In this chapter, we'll explore the Bitcoin Desktop Admin UI—a comprehensive administrative interface for managing a Bitcoin node. This application provides full access to blockchain data, wallet operations, transaction management, mining controls, and health monitoring. As we journey through this chapter, we'll understand the architecture, data flow, and implementation patterns that make this interface both powerful and user-friendly.
+
+## Getting Started
+
+Before we dive into the architecture, let's get the application running. We'll need a few things set up first.
+
+### Prerequisites
+
+To follow along with this chapter, you'll need:
+
+- **Rust 1.70+** installed on your system
+- **A Bitcoin blockchain node** running and accessible
+- **API access** to the blockchain node (default: `http://127.0.0.1:8080`)
+
+### API Authentication Configuration
+
+The Desktop Admin UI needs to authenticate with the blockchain node, so we'll need to configure an API key. We have two ways to do this:
+
+#### Method 1: Environment Variable (Recommended for Development)
+
+Set the `BITCOIN_API_ADMIN_KEY` environment variable before starting the application:
+
+```bash
+export BITCOIN_API_ADMIN_KEY=admin-secret
+cargo run --release -p bitcoin-desktop-ui
+```
+
+**Default Value:** If not set, the application defaults to `admin-secret`.
+
+#### Method 2: Configuration in UI
+
+The application provides a configuration toolbar where you can set:
+- **Base URL**: The blockchain node API endpoint (default: `http://127.0.0.1:8080`)
+- **API Key**: The admin API key for authentication (default: `admin-secret`)
+
+**Note:** Changes made in the UI configuration toolbar are stored in memory for the current session only. To persist configuration, use environment variables or modify the default values in the code.
+
+### Troubleshooting Authentication Errors
+
+#### Error: 401 Unauthorized
+
+If you encounter a `401 Unauthorized` error when making API requests:
+
+1. **Verify API Key**: Ensure the API key matches the server's `BITCOIN_API_ADMIN_KEY` environment variable
+2. **Check Base URL**: Verify the base URL points to the correct blockchain node
+3. **Server Configuration**: Confirm the blockchain node is running and accessible
+4. **Default Keys**: If using Docker Compose, default keys are:
+   - Admin API Key: `admin-secret`
+   - Wallet API Key: `wallet-secret`
+
+#### Verifying API Connection
+
+Test the API connection using curl:
+
+```bash
+# Test health endpoint (no auth required)
+curl http://localhost:8080/health
+
+# Test admin endpoint (requires API key)
+curl -H "X-API-Key: admin-secret" http://localhost:8080/api/admin/health
+```
+
+If the second command succeeds, the API key is correct and the Desktop Admin UI should work.
+
+### Running the Application
+
+```bash
+# Build and run
+cargo run --release -p bitcoin-desktop-ui
+
+# Or build separately
+cargo build --release -p bitcoin-desktop-ui
+./target/release/bitcoin-desktop-ui
+```
+
+The application will start and connect to the blockchain node using the configured API key.
 
 ## Architecture Overview
 
@@ -2047,3 +2164,28 @@ The Bitcoin Desktop Admin UI is a sophisticated application with:
 
 The architecture makes the codebase maintainable, testable, and scalable while providing a professional user experience for Bitcoin node administration with beautifully formatted, readable data displays.
 
+---
+
+<div align="center">
+
+**📚 [← Previous: Web API Architecture](../bitcoin-blockchain/web/README.md)** | **Chapter 4: Desktop Admin Interface** | **[Next: Wallet User Interface →](../bitcoin-wallet-ui/04-Wallet-UI.md)** 📚
+
+</div>
+
+---
+
+*This chapter has explored the Bitcoin Desktop Admin UI, a comprehensive administrative interface built with the Iced framework using the Model-View-Update (MVU) pattern. We've examined the modular architecture, async runtime integration, API communication patterns, and sophisticated formatting system that transforms raw blockchain data into beautifully readable displays. The application demonstrates how Rust's type safety, Iced's declarative UI, and Tokio's async capabilities combine to create a professional desktop application for Bitcoin node administration. In the next chapter, we'll explore the [Wallet User Interface](../bitcoin-wallet-ui/04-Wallet-UI.md) to understand how user-facing wallet applications differ from administrative interfaces and how similar architectural patterns apply to different use cases.*
+
+---
+
+<div align="center">
+
+**Local Navigation - Table of Contents**
+
+| [← First Section: Overview](#overview) | [↑ Table of Contents](#overview) | [Last Section: Summary →](#summary) |
+|:---:|:---:|:---:|
+| *Start of Chapter* | *Current Chapter* | *End of Chapter* |
+
+</div>
+
+---

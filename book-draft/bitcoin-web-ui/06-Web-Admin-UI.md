@@ -1,4 +1,46 @@
-# Bitcoin Web UI - Technical Documentation
+<div align="left">
+
+<details>
+<summary><b>📑 Chapter Navigation ▼</b></summary>
+
+### Part I: Core Blockchain Implementation
+
+1. [Chapter 1: Introduction & Overview](../../README.md)
+2. [Chapter 2: Transaction System](../bitcoin-blockchain/02-Transaction-System.md)
+3. [Chapter 3: Web API Architecture](../bitcoin-blockchain/web/README.md)
+4. [Chapter 4: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
+5. [Chapter 5: Wallet User Interface](../bitcoin-wallet-ui/04-Wallet-UI.md)
+6. [Chapter 6: Embedded Database & Persistence](../bitcoin-wallet-ui/05-Embedded-Database.md)
+7. **Chapter 7: Web Admin Interface** ← *You are here*
+
+### Part II: Deployment & Operations
+
+8. [Chapter 8: Docker Compose Deployment](../ci/docker-compose/01-Introduction.md)
+9. [Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md)
+
+</details>
+
+</div>
+
+<div align="right">
+
+**[← Back to Main Book](../../README.md)**
+
+</div>
+
+---
+
+# Chapter 7: Web Admin Interface
+
+**Part I: Core Blockchain Implementation** | **Part II: Deployment & Operations**
+
+<div align="center">
+
+**📚 [← Chapter 6: Embedded Database](../bitcoin-wallet-ui/05-Embedded-Database.md)** | **Chapter 7: Web Admin Interface** | **[Chapter 8: Docker Compose →](../ci/docker-compose/01-Introduction.md)** 📚
+
+</div>
+
+---
 
 ## Table of Contents
 
@@ -19,17 +61,25 @@
 
 ## Overview
 
-The Bitcoin Web UI is a modern, single-page application (SPA) built with React and TypeScript that provides a comprehensive administrative interface for managing a Bitcoin blockchain node. It replaces the previous static HTML pages with a fully-featured, interactive web application.
+In this chapter, we'll explore the Bitcoin Web UI—a modern, single-page application (SPA) built with React and TypeScript that provides a comprehensive administrative interface for managing a Bitcoin blockchain node. This web interface represents a significant evolution from static HTML pages to a fully-featured, interactive web application. As we journey through this chapter, we'll understand how modern web technologies come together to create a powerful administrative tool.
 
-### Key Features
+### What We'll Build
 
-- **Real-time Dashboard**: Auto-refreshing blockchain statistics
-- **Blockchain Management**: View and search blocks
-- **Wallet Operations**: Create wallets, manage addresses, send transactions
-- **Transaction Management**: Browse mempool and transaction history
-- **Mining Controls**: View mining info and generate blocks
-- **Health Monitoring**: System health, liveness, and readiness checks
-- **Modern UI**: Dark theme with responsive design
+The Web Admin Interface provides a rich set of features that make managing a blockchain node intuitive and efficient:
+
+- **Real-time Dashboard**: We'll build an auto-refreshing dashboard that shows blockchain statistics, giving administrators immediate insight into the network's state.
+
+- **Blockchain Management**: Users can view and search blocks, exploring the blockchain's history and understanding its structure.
+
+- **Wallet Operations**: The interface allows creating wallets, managing addresses, and sending transactions—all through an intuitive web interface.
+
+- **Transaction Management**: Administrators can browse the mempool and view transaction history, understanding what's happening in real-time.
+
+- **Mining Controls**: The interface provides mining information and allows generating blocks, giving full control over the mining process.
+
+- **Health Monitoring**: System health, liveness, and readiness checks ensure administrators know the system's status at a glance.
+
+- **Modern UI**: A dark theme with responsive design ensures the interface looks great and works well on any device.
 
 ---
 
@@ -48,9 +98,9 @@ The Bitcoin Web UI is a modern, single-page application (SPA) built with React a
         ┌───────────────┴───────────────┐
         │                               │
         ▼                               ▼
-┌───────────────┐              ┌───────────────┐
-│  React App    │              │  Rust Server  │
-│  (Frontend)   │◄─────────────┤  (Backend)    │
+┌───────────────┐               ┌───────────────┐
+│  React App    │               │  Rust Server  │
+│  (Frontend)   │◄─────────────-|  (Backend)    │
 │               │  API Calls    │               │
 │  - React      │  /api/admin/* │  - Axum       │
 │  - TypeScript │               │  - NodeContext│
@@ -766,48 +816,6 @@ const handleClick = useCallback(() => {
 
 - <u>**In Our Codebase:**</u>
   - **Not used**: We don't use `useCallback` in our codebase. Our components don't use React.memo() for child components, so function reference stability isn't necessary for performance optimization.
-
-**Other Common Built-in Hooks:**
-
-**6. `useRef`** - Access DOM elements or store mutable values
-- **Purpose**: Reference DOM elements or store values that don't trigger re-renders
-- **Use Case**: Focus input fields, store previous values, access DOM elements, timers/intervals
-- **Returns**: Mutable ref object with `.current` property
-
-- <u>**In Our Codebase:**</u>
-  - **Not used**: We don't use `useRef` in our codebase. We don't need direct DOM manipulation or mutable values that persist without re-renders.
-
-**7. `useReducer`** - State management with reducer pattern
-- **Purpose**: Manage complex state logic with actions and reducers (like Redux)
-- **Use Case**: Complex state with multiple sub-values, state transitions, when state logic is complex
-- **Returns**: `[state, dispatch]` - current state and dispatch function
-
-- <u>**In Our Codebase:**</u>
-  - **Not used**: We don't use `useReducer` in our codebase. `useState` is sufficient for our component state needs, and React Query handles complex server state management.
-
-**8. `useLayoutEffect`** - Synchronous version of useEffect
-- **Purpose**: Run effects synchronously after DOM mutations but before browser paint
-- **Use Case**: Measuring DOM elements, animations that need to happen before paint
-- **Runs**: Synchronously after all DOM mutations
-
-- <u>**In Our Codebase:**</u>
-  - **Not used**: We don't use `useLayoutEffect` in our codebase. We don't need synchronous DOM measurements or animations that require pre-paint execution.
-
-**9. `useImperativeHandle`** - Customize ref value exposed to parent
-- **Purpose**: Expose specific methods/values from child component via ref
-- **Use Case**: Exposing imperative methods from child to parent (rare, usually avoid)
-- **Returns**: Nothing (modifies ref)
-
-- <u>**In Our Codebase:**</u>
-  - **Not used**: We don't use `useImperativeHandle` in our codebase. We follow React's declarative patterns and don't expose imperative APIs from child components.
-
-**10. `useDebugValue`** - Display custom label in React DevTools
-- **Purpose**: Add custom labels to custom hooks in React DevTools
-- **Use Case**: Debugging custom hooks, showing hook values in DevTools
-- **Returns**: Nothing (for debugging only)
-
-- <u>**In Our Codebase:**</u>
-  - **Not used**: We don't use `useDebugValue` in our codebase. Our custom hooks are straightforward and don't require additional DevTools debugging labels.
 
 #### Custom Hooks
 
@@ -1617,3 +1625,29 @@ The architecture separates concerns cleanly:
 - **Utils**: Utility functions (date formatting, etc.)
 
 This structure makes the codebase maintainable, testable, and scalable. Recent improvements have enhanced pagination, fixed data display issues, and improved the overall user experience.
+
+---
+
+<div align="center">
+
+**📚 [← Previous: Embedded Database & Persistence](../bitcoin-wallet-ui/05-Embedded-Database.md)** | **Chapter 7: Web Admin Interface** | **[Next: Docker Compose Deployment →](../ci/docker-compose/01-Introduction.md)** 📚
+
+</div>
+
+---
+
+*This chapter has explored the Bitcoin Web UI, a modern single-page application built with React and TypeScript that provides a comprehensive administrative interface for managing a Bitcoin blockchain node. We've examined how modern web technologies—React 18, TypeScript, Vite, React Query, React Router, and Tailwind CSS—come together to create a powerful, type-safe, and maintainable web application. The architecture demonstrates clean separation of concerns between components, hooks, services, context, types, and utilities, creating a scalable foundation for web-based blockchain administration. The evolution from static HTML pages to a fully-featured interactive application showcases the power of modern web development practices. In the next chapter, we'll explore [Docker Compose Deployment](../ci/docker-compose/01-Introduction.md) to understand how to deploy and manage the blockchain network using containerization.*
+
+---
+
+<div align="center">
+
+**Local Navigation - Table of Contents**
+
+| [← First Section: Overview](#overview) | [↑ Table of Contents](#table-of-contents) | [Last Section: Configuration →](#configuration) |
+|:---:|:---:|:---:|
+| *Start of Chapter* | *Current Chapter* | *End of Chapter* |
+
+</div>
+
+---

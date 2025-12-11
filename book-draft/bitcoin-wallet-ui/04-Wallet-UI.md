@@ -1,12 +1,54 @@
-# Bitcoin Wallet UI - Architecture and Implementation Details
+<div align="left">
+
+<details>
+<summary><b>📑 Chapter Navigation ▼</b></summary>
+
+### Part I: Core Blockchain Implementation
+
+1. [Chapter 1: Introduction & Overview](../../README.md)
+2. [Chapter 2: Transaction System](../bitcoin-blockchain/02-Transaction-System.md)
+3. [Chapter 3: Web API Architecture](../bitcoin-blockchain/web/README.md)
+4. [Chapter 4: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
+5. **Chapter 5: Wallet User Interface** ← *You are here*
+6. [Chapter 6: Embedded Database & Persistence](05-Embedded-Database.md)
+7. [Chapter 7: Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md)
+
+### Part II: Deployment & Operations
+
+8. [Chapter 8: Docker Compose Deployment](../ci/docker-compose/01-Introduction.md)
+9. [Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md)
+
+</details>
+
+</div>
+
+<div align="right">
+
+**[← Back to Main Book](../../README.md)**
+
+</div>
+
+---
+
+# Chapter 5: Wallet User Interface
+
+**Part I: Core Blockchain Implementation**
+
+<div align="center">
+
+**📚 [← Chapter 4: Desktop Admin UI](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** | **Chapter 5: Wallet UI** | **[Chapter 6: Embedded Database →](05-Embedded-Database.md)** 📚
+
+</div>
+
+---
 
 ## Overview
 
-The Bitcoin Wallet UI has been refactored from a single-file monolithic structure into a modular, professional architecture that matches the design patterns of the desktop admin UI. This document explains the architecture, data flow, and implementation details.
+In this chapter, we'll explore the Bitcoin Wallet UI—a user-facing application that allows individuals to interact with the blockchain. Unlike the admin interface we built in Chapter 4, this application focuses on wallet operations from a user's perspective. The Wallet UI has been refactored from a single-file monolithic structure into a modular, professional architecture that matches the design patterns we learned in the desktop admin UI. As we journey through this chapter, we'll understand the architecture, data flow, and implementation details that make this application both powerful and user-friendly.
 
 ## Architecture Overview
 
-The application follows the **Model-View-Update (MVU)** pattern used by the Iced framework, with clear separation of concerns across multiple modules:
+As we explore the Wallet UI, we'll see that it follows the **Model-View-Update (MVU)** pattern we learned about in Chapter 3. This pattern provides clear separation of concerns across multiple modules, making the codebase maintainable and easy to understand. Let's see how the modules are organized:
 
 ```
 bitcoin-wallet-ui/
@@ -22,11 +64,11 @@ bitcoin-wallet-ui/
 
 ## Module-by-Module Breakdown
 
+Now let's walk through each module, understanding how they work together to create a cohesive application.
+
 ### 1. `main.rs` - Application Entry Point
 
-**Purpose**: Initializes the application and wires everything together.
-
-**Key Components**:
+The `main.rs` file is where our application begins. Its purpose is to initialize the application and wire everything together. Let's see how it works:
 
 ```rust
 fn main() -> iced::Result {
@@ -40,16 +82,24 @@ fn main() -> iced::Result {
 }
 ```
 
-**How it works**:
-1. **`init_runtime()`**: Sets up a global Tokio runtime that will handle all async operations (HTTP requests). This must be done before the Iced application starts.
-2. **`application()`**: Creates an Iced application with:
+**How it works:**
+
+Let's trace through the execution flow:
+
+1. **`init_runtime()`**: First, we set up a global Tokio runtime that will handle all async operations (HTTP requests). This must be done before the Iced application starts, as Iced needs the runtime to be available.
+
+2. **`application()`**: Next, we create an Iced application with:
    - Title: "Bitcoin Wallet UI"
-   - Update function: `update` (from `update.rs`)
-   - View function: `view` (from `view.rs`)
-   - Theme: Dark mode
-3. **`run_with(WalletApp::new)`**: Starts the application with the initial state provided by `WalletApp::new()`
+   - Update function: `update` (from `update.rs`) - this handles all state changes
+   - View function: `view` (from `view.rs`) - this renders the UI
+   - Theme: Dark mode for a modern look
+
+3. **`run_with(WalletApp::new)`**: Finally, we start the application with the initial state provided by `WalletApp::new()`, which creates our starting application state.
 
 **Data Flow**: 
+
+Here's how the data flows when the application starts:
+
 ```
 main() 
   → init_runtime() [sets up Tokio]
@@ -57,6 +107,8 @@ main()
   → WalletApp::new() [creates initial state]
   → Iced event loop starts
 ```
+
+Once the event loop starts, the application is ready to handle user interactions and API responses.
 
 ---
 
@@ -801,3 +853,28 @@ The refactored Bitcoin Wallet UI follows modern Rust GUI patterns with:
 
 This architecture makes the codebase easier to understand, maintain, and extend.
 
+---
+
+<div align="center">
+
+**📚 [← Previous: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** | **Chapter 5: Wallet User Interface** | **[Next: Embedded Database & Persistence →](05-Embedded-Database.md)** 📚
+
+</div>
+
+---
+
+*This chapter has examined the Bitcoin Wallet UI, a user-facing application that allows individuals to interact with the blockchain. We've explored how the application was refactored from a monolithic structure into a modular, professional architecture following the Model-View-Update (MVU) pattern. The wallet UI demonstrates how similar architectural patterns from the desktop admin interface can be adapted for user-facing applications, focusing on wallet operations, transaction management, and user experience. The modular design, async runtime integration, and professional styling create a maintainable and user-friendly application. In the next chapter, we'll explore [Embedded Database & Persistence](05-Embedded-Database.md) to understand how sensitive wallet data is securely stored using SQLCipher encryption.*
+
+---
+
+<div align="center">
+
+**Local Navigation - Table of Contents**
+
+| [← First Section: Overview](#overview) | [↑ Table of Contents](#overview) | [Last Section: Summary →](#summary) |
+|:---:|:---:|:---:|
+| *Start of Chapter* | *Current Chapter* | *End of Chapter* |
+
+</div>
+
+---
