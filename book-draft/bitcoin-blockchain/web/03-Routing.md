@@ -6,7 +6,7 @@
 ### Part I: Core Blockchain Implementation
 
 1. [Chapter 1: Introduction & Overview](../../README.md)
-2. [Chapter 2: Transaction System](../02-Transaction-System.md)
+2. [Chapter 2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)
 3. **Chapter 3: Web API Architecture** ← *You are here*
    - [Web API Index](README.md) - Overview and navigation
    - [01: Introduction](01-Introduction.md) - Architecture overview
@@ -48,7 +48,7 @@
 
 <div align="center">
 
-**📚 [← Chapter 2.2: Transaction System](../02-Transaction-System.md)** | **Chapter 3.3: Routing System** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
+**📚 [← Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Chapter 3.3: Routing System** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
 
 </div>
 

@@ -199,7 +199,7 @@ In the next chapter, we'll explore generics, which allow us to write reusable co
 - **[Best Practices](17-Best-Practices.md)** - Error handling patterns
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - Error handling in practice
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Error handling in practice
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - API error responses
 
 ---

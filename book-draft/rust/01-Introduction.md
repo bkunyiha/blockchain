@@ -498,7 +498,7 @@ This guide is designed to be read sequentially, with each chapter building on pr
 
 **For quick reference**: Use the summary sections at the end of each chapter for quick review of key concepts.
 
-> **📘 Implementation Context**: This guide explains Rust language features with examples from our blockchain implementation. To see these features applied in specific contexts, see the [Transaction System](../bitcoin-blockchain/02-Transaction-System.md) chapter for ownership and data structures, the [Web API Architecture](../bitcoin-blockchain/web/README.md) for async patterns and error handling, and the [Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md) for asynchronous programming details.
+> **📘 Implementation Context**: This guide explains Rust language features with examples from our blockchain implementation. To see these features applied in specific contexts, see the [Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) chapter for ownership and data structures, the [Web API Architecture](../bitcoin-blockchain/web/README.md) for async patterns and error handling, and the [Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md) for asynchronous programming details.
 
 ---
 
@@ -519,7 +519,7 @@ Ready to begin? Start with **[Ownership and Borrowing](02-Ownership-and-Borrowin
 - **[Best Practices](17-Best-Practices.md)** - Rust idioms and patterns
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - See Rust features in action
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - See Rust features in action
 - **[Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md)** - Async programming in Rust
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Rust in web development
 

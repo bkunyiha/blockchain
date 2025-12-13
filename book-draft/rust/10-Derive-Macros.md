@@ -116,7 +116,7 @@ In the next chapter, we'll explore async/await, which enables efficient concurre
 - **[Best Practices](17-Best-Practices.md)** - When to use derive macros
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - Derived traits in practice
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Derived traits in practice
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Serialization with Serde
 - **[Serde Framework Guide](../bitcoin-blockchain/web/Serde.md)** - Serialization framework
 

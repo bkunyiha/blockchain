@@ -4,7 +4,7 @@
 
 <div align="center">
 
-**📚 [← Chapter 2.3: Blockchain State Management](../chain/README.md)** | **Chapter 2.4: Network Layer** | **[Chapter 2.5: Node Orchestration →](../node/README.md)** 📚
+**📚 [← Chapter 2.3: Primitives](../primitives/README.md)** | **Chapter 2.4: Network Layer** | **[Chapter 2.5: Node Orchestration →](../node/README.md)** 📚
 
 </div>
 
@@ -120,7 +120,7 @@ This module aligns with Bitcoin Core's network architecture:
 - **[Node Orchestration](../node/README.md)**: Node context and coordination
 - **[Blockchain State Management](../chain/README.md)**: State queries during network operations
 - **[Primitives](../primitives/README.md)**: Block and transaction structures
-- **[Transaction System](../02-Transaction-System.md)**: Transaction validation
+- **[Transaction ID Format](../primitives/02-Transaction-ID-Format.md)**: Transaction ID representation
 
 ## Code Examples
 
@@ -161,7 +161,7 @@ let tx_msg = Package {
 
 <div align="center">
 
-**📚 [← Previous: Blockchain State Management](../chain/README.md)** | **Chapter 2.4: Network Layer** | **[Next: Chapter 2.5: Node Orchestration →](../node/README.md)** 📚
+📚  | **Chapter 2.4: Network Layer** | 📚
 
 </div>
 

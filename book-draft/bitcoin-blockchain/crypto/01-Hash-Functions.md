@@ -7,7 +7,7 @@ Hash functions are fundamental to blockchain operations. They create fixed-size 
 1. [Overview: Hash Functions in Blockchain](#overview-hash-functions-in-blockchain)
 2. [SHA-256 Digest: General-Purpose Hashing](#sha-256-digest-general-purpose-hashing)
 3. [Taproot Hash: P2TR Address Hashing](#taproot-hash-p2tr-address-hashing)
-4. [Usage in Transaction System](#usage-in-transaction-system)
+4. [Usage in Transaction ID Format](#usage-in-transaction-system)
 5. [Usage in Block System](#usage-in-block-system)
 6. [Usage in Proof-of-Work Mining](#usage-in-proof-of-work-mining)
 7. [Hash Function Properties](#hash-function-properties)

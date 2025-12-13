@@ -4,7 +4,7 @@
 
 <div align="center">
 
-**📚 [← Chapter 2.2: Transaction System](../02-Transaction-System.md)** | **Chapter 3: Web API Architecture** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
+**📚 [← Chapter 2.8: Wallet](../wallet/README.md)** | **Chapter 3: Web API Architecture** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
 
 </div>
 
@@ -49,7 +49,7 @@ Built using Rust's Axum framework, the web layer implements a complete system fo
 - **[Utoipa Framework Guide](Utoipa.md)** - OpenAPI documentation generation
 - **[Tracing Framework Guide](Tracing.md)** - Structured logging and diagnostics
 - **[Tokio Runtime Guide](../Tokio.md)** - Async runtime framework
-- **[Rust Language Guide](../../rust/README.md)** - Rust programming language features
+- **[Chapter 10: Rust Language Guide](../../rust/README.md)** - Comprehensive Rust language reference
 
 ---
 

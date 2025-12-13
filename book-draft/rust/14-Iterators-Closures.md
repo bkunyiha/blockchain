@@ -213,7 +213,7 @@ In the next chapter, we'll explore type conversions, which enable converting bet
 - **[Best Practices](17-Best-Practices.md)** - Iterator patterns
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - Iterators in practice
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Iterators in practice
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Processing collections
 
 ---

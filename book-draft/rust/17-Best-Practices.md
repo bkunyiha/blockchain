@@ -604,7 +604,7 @@ As you continue working with Rust, these concepts will become second nature. The
 - **[Async/Await](11-Async-Await.md)** - Async best practices
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - Production patterns in practice
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Production patterns in practice
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - API design patterns
 - **[Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md)** - Async runtime patterns
 

@@ -107,7 +107,7 @@ In the next chapter, we'll explore pattern matching, which works seamlessly with
 - **[Async/Await](11-Async-Await.md)** - Sharing state across async tasks
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - Shared state in practice
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Shared state in practice
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Sharing node context
 - **[Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md)** - Async state management
 

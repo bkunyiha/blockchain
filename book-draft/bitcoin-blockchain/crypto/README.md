@@ -8,7 +8,7 @@
 1. [Chapter 1: Introduction & Overview](../../01-Introduction.md)
 2. [Chapter 2: Introduction to Bitcoin & Blockchain](../README.md)
 3. **Chapter 2.1: Cryptography** (this index) - Cryptographic primitives and libraries ← *You are here*
-4. [Chapter 2.2: Transaction System](../02-Transaction-System.md)
+4. [Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)
 5. [Chapter 2.3: Blockchain State Management](../chain/README.md)
 6. [Chapter 2.4: Network Layer](../net/README.md)
 7. [Chapter 2.5: Node Orchestration](../node/README.md)
@@ -33,7 +33,7 @@
 
 <div align="right">
 
-**[← Back to Main Book](../../README.md)** | **[← Back to Transaction System](../02-Transaction-System.md)**
+**[← Back to Main Book](../../README.md)** | **[← Back to Transaction ID Format](../primitives/02-Transaction-ID-Format.md)**
 
 </div>
 
@@ -45,7 +45,7 @@
 
 <div align="center">
 
-**[← Back to Introduction to Bitcoin & Blockchain](../README.md)** | **Cryptography** | **[Transaction System →](../02-Transaction-System.md)** 📚
+**[← Blockchain State Management](../chain/README.md)** | **Cryptography** | **[Primitives →](../primitives/README.md)** 📚
 
 </div>
 
@@ -515,10 +515,20 @@ Jump directly to specific topics:
 
 <div align="center">
 
-**📚 [← Previous: Introduction to Bitcoin & Blockchain](../README.md)** | **Chapter 2.1: Cryptography** | **[Next: Transaction System →](../02-Transaction-System.md)** 📚
+**📚 [← Blockchain State Management](../chain/README.md)** | **Chapter 2.1: Cryptography** | **[Start Reading: Hash Functions →](01-Hash-Functions.md)** 📚
 
 </div>
 
 ---
 
-*This chapter has provided comprehensive coverage of the cryptographic primitives that secure our blockchain implementation. We've explored hash functions (SHA-256) that create transaction IDs and block hashes, digital signatures that authorize transactions, key pair generation and management, and address encoding using Base58. These cryptographic foundations are essential for understanding how blockchain security is achieved through mathematical guarantees rather than trust in intermediaries. The cryptographic libraries and their implementations form the bedrock upon which all blockchain operations are built. In the next chapter, we'll examine the [Transaction System](../02-Transaction-System.md) to understand how these cryptographic primitives are applied in transaction structure, validation, and the complete transaction lifecycle. For detailed coverage of specific cryptographic concepts, refer to the individual chapters in the [cryptography section](#table-of-contents).*
+**📖 Continue Reading Cryptography Documentation:**
+
+- **[01: Hash Functions](01-Hash-Functions.md)** - SHA-256 hashing for transaction IDs, block hashes, and Merkle trees
+- **[02: Digital Signatures](02-Digital-Signatures.md)** - Schnorr and ECDSA signatures for transaction authorization
+- **[03: Key Pair Generation](03-Key-Pair-Generation.md)** - Secure key pair generation and public key derivation
+- **[04: Address Encoding](04-Address-Encoding.md)** - Base58 encoding for human-readable addresses
+- **[05: Security and Performance](05-Security-and-Performance.md)** - Security best practices and performance considerations
+
+---
+
+*This chapter has provided comprehensive coverage of the cryptographic primitives that secure our blockchain implementation. We've explored hash functions (SHA-256) that create transaction IDs and block hashes, digital signatures that authorize transactions, key pair generation and management, and address encoding using Base58. These cryptographic foundations are essential for understanding how blockchain security is achieved through mathematical guarantees rather than trust in intermediaries. The cryptographic libraries and their implementations form the bedrock upon which all blockchain operations are built. Continue reading the [Hash Functions](01-Hash-Functions.md) documentation to dive deeper into SHA-256 hashing, or explore any of the [cryptography documentation files](#table-of-contents) for detailed coverage of specific cryptographic concepts.*

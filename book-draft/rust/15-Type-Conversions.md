@@ -77,7 +77,7 @@ In the final chapters, we'll explore best practices that synthesize all the conc
 - **[Best Practices](17-Best-Practices.md)** - Conversion patterns
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - Type conversions in practice
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Type conversions in practice
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Request/response conversions
 
 ---

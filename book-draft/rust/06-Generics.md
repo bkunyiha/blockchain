@@ -187,7 +187,7 @@ In the next chapter, we'll explore lifetimes, which work closely with generics t
 - **[Best Practices](17-Best-Practices.md)** - Generic patterns
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - Generic code in practice
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Generic code in practice
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Generic API responses
 
 ---

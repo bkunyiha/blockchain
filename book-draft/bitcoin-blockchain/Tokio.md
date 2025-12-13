@@ -6,7 +6,7 @@
 ### Part I: Core Blockchain Implementation
 
 1. [Chapter 1: Introduction & Overview](../README.md)
-2. [Chapter 2: Transaction System](02-Transaction-System.md)
+2. [Chapter 2: Transaction ID Format](primitives/02-Transaction-ID-Format.md)
 3. **Chapter 3: Web API Architecture**
    - [Web API Index](web/README.md) - Overview and navigation
    - [01: Introduction](web/01-Introduction.md) - Architecture overview

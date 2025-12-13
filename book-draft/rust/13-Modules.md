@@ -83,7 +83,7 @@ In the next chapter, we'll explore iterators and closures, which enable function
 - **[Best Practices](17-Best-Practices.md)** - Module organization patterns
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - Module structure in practice
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Module structure in practice
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - API module organization
 
 ---

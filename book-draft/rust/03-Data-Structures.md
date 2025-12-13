@@ -117,7 +117,7 @@ In the next chapter, we'll see how traits allow us to define shared behavior acr
 - **[Error Handling](05-Error-Handling.md)** - Error enums and Result types
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - See data structures in action
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - See data structures in action
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Data models and serialization
 
 ---

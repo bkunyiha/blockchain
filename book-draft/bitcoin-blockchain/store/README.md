@@ -4,7 +4,7 @@
 
 <div align="center">
 
-**📚 [← Chapter 2.6: Primitives](../primitives/README.md)** | **Chapter 2.7: Storage Layer** | **[Chapter 2.8: Utilities →](../util/README.md)** 📚
+**📚 [← Chapter 2.5: Node Orchestration](../node/README.md)** | **Chapter 2.6: Storage Layer** | **[Chapter 2.7: Utilities →](../util/README.md)** 📚
 
 </div>
 

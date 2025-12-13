@@ -151,7 +151,7 @@ In the next chapter, we'll explore concurrency primitives that ensure thread saf
 **Related Guides:**
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Async handlers and middleware
 - **[Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md)** - Async runtime details
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - Async blockchain operations
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Async blockchain operations
 
 ---
 

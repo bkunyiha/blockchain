@@ -8,7 +8,7 @@
 1. **Chapter 1: Introduction & Overview** (this chapter) ← *You are here*
 2. [Chapter 2: Introduction to Bitcoin & Blockchain](bitcoin-blockchain/README.md) - Bitcoin and blockchain fundamentals
 3. [Chapter 2.1: Cryptography](bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-4. [Chapter 2.2: Transaction System](bitcoin-blockchain/02-Transaction-System.md) - Transaction ID format guide
+4. [Chapter 2.2: Transaction ID Format](bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) - Transaction ID format guide
 5. [Chapter 3: Web API Architecture](bitcoin-blockchain/web/README.md) - REST API implementation
 6. [Chapter 4: Desktop Admin Interface](bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
 7. [Chapter 5: Wallet User Interface](bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
@@ -95,6 +95,8 @@ blockchain/
 #### Desktop UIs (Rust)
 - **Iced**: Cross-platform GUI framework
 - **Model-View-Update (MVU)**: Architecture pattern
+- **Desktop Admin Interface**: Admin UI for blockchain management (Iced)
+- **Wallet User Interface**: User-facing wallet application (Iced)
 
 #### Web UI (TypeScript/React)
 - **React 18**: UI framework
@@ -119,7 +121,7 @@ We've designed this book to accommodate different learning goals and experience 
 
 3. **Learn [Chapter 2.1: Cryptography](bitcoin-blockchain/crypto/README.md)** - We'll dive into the cryptographic primitives that secure blockchain: hash functions, digital signatures, key pairs, and address encoding.
 
-4. **Explore [Chapter 2.2: Transaction System](bitcoin-blockchain/02-Transaction-System.md)** - Here, we'll explore core blockchain concepts: transaction structure, the UTXO model, and validation. This is where you'll understand how blockchain fundamentally works.
+4. **Explore [Chapter 2.2: Transaction ID Format](bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Here, we'll explore core blockchain concepts: transaction structure, the UTXO model, and validation. This is where you'll understand how blockchain fundamentally works.
 
 5. **Understand [Chapter 3: Web API Architecture](bitcoin-blockchain/web/README.md)** - We'll dive into the REST API layer, understanding how HTTP requests are handled, how authentication works, and how the web layer connects clients to the blockchain.
 
@@ -137,7 +139,7 @@ We've designed this book to accommodate different learning goals and experience 
 
 2. **Learn [Chapter 2.1: Cryptography](bitcoin-blockchain/crypto/README.md)** - Explore cryptographic primitives: hash functions, signatures, and key pairs.
 
-3. **Dive into [Chapter 2.2: Transaction System](bitcoin-blockchain/02-Transaction-System.md)** - We'll explore transaction ID format, storage patterns, and performance considerations.
+3. **Dive into [Chapter 2.2: Transaction ID Format](bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - We'll explore transaction ID format, storage patterns, and performance considerations.
 
 4. **Explore [Chapter 3: Web API Architecture](bitcoin-blockchain/web/README.md)** - We'll understand how the REST API is built, how authentication works, and how handlers process requests.
 
@@ -161,7 +163,7 @@ We've designed this book to accommodate different learning goals and experience 
 
 **If you need information about specific topics**, you can jump directly to:
 
-- **Transaction Storage:** [Chapter 2: Transaction System](bitcoin-blockchain/02-Transaction-System.md) - We explore `Vec<u8>` vs String, bytes vs hex representations
+- **Transaction Storage:** [Chapter 2.2: Transaction ID Format](bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) - We explore `Vec<u8>` vs String, bytes vs hex representations
 - **Web API Architecture:** [Chapter 3: Web API Architecture](bitcoin-blockchain/web/README.md) - REST API implementation, handlers, middleware, and security
 - **Desktop UI Patterns:** [Chapter 4: Desktop Admin Interface](bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - MVU architecture and component design
 - **Wallet Implementation:** [Chapter 5: Wallet User Interface](bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet architecture and user experience
@@ -169,7 +171,7 @@ We've designed this book to accommodate different learning goals and experience 
 - **Web Development:** [Chapter 7: Web Admin Interface](bitcoin-web-ui/06-Web-Admin-UI.md) - React patterns and TypeScript usage
 - **Local Deployment:** [Chapter 8: Docker Compose](ci/docker-compose/01-Introduction.md) - Quick start and deployment scenarios
 - **Production Deployment:** [Chapter 9: Kubernetes](ci/kubernetes/README.md) - Production deployment and autoscaling
-- **Rust Language:** [Rust Language Guide](rust/README.md) - Rust programming language features and examples
+- **Rust Language:** [Chapter 10: Rust Language Guide](rust/README.md) - Comprehensive Rust language reference (Part III)
 
 ---
 
@@ -178,11 +180,11 @@ We've designed this book to accommodate different learning goals and experience 
 - **[← Back to Main Book](README.md)** - Book index and table of contents
 - **[Next: Introduction to Bitcoin & Blockchain →](bitcoin-blockchain/README.md)** - Bitcoin and blockchain fundamentals
 - **[Cryptography →](bitcoin-blockchain/crypto/README.md)** - Cryptographic primitives
-- **[Transaction System →](bitcoin-blockchain/02-Transaction-System.md)** - Transaction ID format and storage
+- **[Transaction ID Format →](bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Transaction ID format and storage
 - **[Web API Architecture →](bitcoin-blockchain/web/README.md)** - REST API implementation
 
 **Related Guides:**
-- **[Rust Language Guide](rust/README.md)** - Rust programming language features
+- **[Chapter 10: Rust Language Guide](rust/README.md)** - Comprehensive Rust language reference (Part III)
 - **[Tokio Runtime Guide](bitcoin-blockchain/Tokio.md)** - Async runtime framework
 
 ---

@@ -113,7 +113,7 @@ In the next chapter, we'll explore derive macros, which automatically generate t
 - **[Iterators and Closures](14-Iterators-Closures.md)** - Pattern matching in iterators
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - Pattern matching in practice
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Pattern matching in practice
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Matching on request types
 
 ---

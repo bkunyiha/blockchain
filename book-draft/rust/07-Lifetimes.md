@@ -168,7 +168,7 @@ In the next chapter, we'll explore smart pointers, which enable shared ownership
 - **[Best Practices](17-Best-Practices.md)** - Lifetime best practices
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - Lifetimes in practice
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Lifetimes in practice
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Reference management
 
 ---

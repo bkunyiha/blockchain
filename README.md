@@ -310,7 +310,7 @@ For comprehensive technical documentation covering all aspects of the blockchain
 - [Chapter 1: Introduction & Overview](book-draft/01-Introduction.md) - Book introduction, project structure, technical stack
 - [Chapter 2: Introduction to Bitcoin & Blockchain](book-draft/bitcoin-blockchain/README.md) - Bitcoin and blockchain fundamentals
 - [Chapter 2.1: Cryptography](book-draft/bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-- [Chapter 2.2: Transaction System](book-draft/bitcoin-blockchain/02-Transaction-System.md) - Transaction ID format guide
+- [Chapter 2.2: Transaction System](book-draft/bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) - Transaction ID format guide
 - [Chapter 2.3: Blockchain State Management](book-draft/bitcoin-blockchain/chain/README.md) - Chain state and UTXO management
 - [Chapter 2.4: Network Layer](book-draft/bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
 - [Chapter 2.5: Node Orchestration](book-draft/bitcoin-blockchain/node/README.md) - Node context and coordination
@@ -344,6 +344,9 @@ For comprehensive technical documentation covering all aspects of the blockchain
 **Part II: Deployment & Operations** (Chapters 8-9)
 - [Chapter 8: Docker Compose Deployment](book-draft/ci/docker-compose/01-Introduction.md) - Complete Docker Compose guide (12 sections)
 - [Chapter 9: Kubernetes Deployment](book-draft/ci/kubernetes/README.md) - Kubernetes production guide (7 sections)
+
+**Part III: Language Reference** (Chapter 10)
+- [Chapter 10: Rust Language Guide](book-draft/rust/README.md) - Comprehensive Rust language reference (17 sections)
 
 The book provides detailed technical explanations, code walkthroughs, architecture diagrams, and deployment guides suitable for developers, DevOps engineers, and technical professionals.
 

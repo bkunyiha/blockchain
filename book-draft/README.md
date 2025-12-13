@@ -7,15 +7,14 @@
 
 1. [Chapter 1: Introduction & Overview](01-Introduction.md) - Book introduction, project structure, technical stack
 2. [Chapter 2: Introduction to Bitcoin & Blockchain](bitcoin-blockchain/README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 2.1: Cryptography](bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-4. [Chapter 2.2: Transaction System](bitcoin-blockchain/02-Transaction-System.md) - Transaction ID format guide
-5. [Chapter 2.3: Blockchain State Management](bitcoin-blockchain/chain/README.md) - Chain state and UTXO management
-6. [Chapter 2.4: Network Layer](bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
-7. [Chapter 2.5: Node Orchestration](bitcoin-blockchain/node/README.md) - Node context and coordination
-8. [Chapter 2.6: Primitives](bitcoin-blockchain/primitives/README.md) - Core data structures
-9. [Chapter 2.7: Storage Layer](bitcoin-blockchain/store/README.md) - Persistent storage implementation
-10. [Chapter 2.8: Utilities](bitcoin-blockchain/util/README.md) - Utility functions and helpers
-11. [Chapter 2.9: Wallet System](bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
+3. [Chapter 2.1: Blockchain State Management](bitcoin-blockchain/chain/README.md) - Chain state and UTXO management
+4. [Chapter 2.2: Cryptography](bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
+5. [Chapter 2.3: Primitives](bitcoin-blockchain/primitives/README.md) - Core data structures
+7. [Chapter 2.4: Network Layer](bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
+8. [Chapter 2.5: Node Orchestration](bitcoin-blockchain/node/README.md) - Node context and coordination
+9. [Chapter 2.6: Storage Layer](bitcoin-blockchain/store/README.md) - Persistent storage implementation
+10. [Chapter 2.7: Utilities](bitcoin-blockchain/util/README.md) - Utility functions and helpers
+11. [Chapter 2.8: Wallet System](bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
 12. [Chapter 3: Web API Architecture](bitcoin-blockchain/web/README.md) - REST API implementation
 13. [Chapter 4: Desktop Admin Interface](bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
 14. [Chapter 5: Wallet User Interface](bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
@@ -26,6 +25,7 @@
 
 17. [Chapter 8: Docker Compose Deployment](ci/docker-compose/01-Introduction.md) - Docker Compose guide
 18. [Chapter 9: Kubernetes Deployment](ci/kubernetes/README.md) - Kubernetes production guide
+19. [Chapter 10: Rust Language Guide](rust/README.md) - Rust programming language reference
 
 </details>
 
@@ -47,9 +47,10 @@
 
 **Main Book Index**
 
-[![Book](https://img.shields.io/badge/Book-9%20Chapters-blue)](README.md)
+[![Book](https://img.shields.io/badge/Book-10%20Chapters-blue)](README.md)
 [![Part I](https://img.shields.io/badge/Part%20I-Core%20Implementation-green)](#part-i-core-blockchain-implementation)
 [![Part II](https://img.shields.io/badge/Part%20II-Deployment-orange)](#part-ii-deployment--operations)
+[![Part III](https://img.shields.io/badge/Part%20III-Language%20Reference-blue)](#part-iii-language-reference)
 
 </div>
 
@@ -63,17 +64,16 @@
 
 | # | Chapter | Description | Link |
 |---|---------|-------------|------|
-| 1 | **Introduction & Overview** | Book introduction, project structure, technical stack | **[📄 Read Chapter 1 →](01-Introduction.md)** ← *You are here* |
+| 1 | **Introduction & Overview** | Book introduction, project structure, technical stack | **[📄 Read Chapter 1 →](01-Introduction.md)** |
 | 2 | **Introduction to Bitcoin & Blockchain** | Bitcoin and blockchain fundamentals, use cases, and technical foundations | **[📄 Read Chapter 2 →](bitcoin-blockchain/README.md)** |
-| 2.1 | **Cryptography** | Cryptographic primitives, hash functions, signatures, and key pairs | **[📄 Read Chapter 2.1 →](bitcoin-blockchain/crypto/README.md)** |
-| 2.2 | **Transaction System** | Transaction ID format, storage, and best practices | **[📄 Read Chapter 2.2 →](bitcoin-blockchain/02-Transaction-System.md)** |
-| 2.3 | **Blockchain State Management** | Chain state and UTXO management | **[📄 Read Chapter 2.3 →](bitcoin-blockchain/chain/README.md)** |
+| 2.1 | **Blockchain State Management** | Chain state and UTXO management | **[📄 Read Chapter 2.1 →](bitcoin-blockchain/chain/README.md)** |
+| 2.2 | **Cryptography** | Cryptographic primitives, hash functions, signatures, and key pairs | **[📄 Read Chapter 2.2 →](bitcoin-blockchain/crypto/README.md)** |
+| 2.3 | **Primitives** | Core data structures (Block, Transaction, Blockchain) | **[📄 Read Chapter 2.3 →](bitcoin-blockchain/primitives/README.md)** |
 | 2.4 | **Network Layer** | Peer-to-peer networking and protocol | **[📄 Read Chapter 2.4 →](bitcoin-blockchain/net/README.md)** |
 | 2.5 | **Node Orchestration** | Node context and coordination | **[📄 Read Chapter 2.5 →](bitcoin-blockchain/node/README.md)** |
-| 2.6 | **Primitives** | Core data structures (Block, Transaction, Blockchain) | **[📄 Read Chapter 2.6 →](bitcoin-blockchain/primitives/README.md)** |
-| 2.7 | **Storage Layer** | Persistent storage implementation | **[📄 Read Chapter 2.7 →](bitcoin-blockchain/store/README.md)** |
-| 2.8 | **Utilities** | Utility functions and helpers | **[📄 Read Chapter 2.8 →](bitcoin-blockchain/util/README.md)** |
-| 2.9 | **Wallet System** | Wallet implementation and key management | **[📄 Read Chapter 2.9 →](bitcoin-blockchain/wallet/README.md)** |
+| 2.6 | **Storage Layer** | Persistent storage implementation | **[📄 Read Chapter 2.6 →](bitcoin-blockchain/store/README.md)** |
+| 2.7 | **Utilities** | Utility functions and helpers | **[📄 Read Chapter 2.7 →](bitcoin-blockchain/util/README.md)** |
+| 2.8 | **Wallet System** | Wallet implementation and key management | **[📄 Read Chapter 2.8 →](bitcoin-blockchain/wallet/README.md)** |
 | 3 | **Web API Architecture** | REST API implementation, handlers, middleware, and security | **[📄 Read Chapter 3 →](bitcoin-blockchain/web/README.md)** |
 | 4 | **Desktop Admin Interface** | Iced desktop admin UI architecture and implementation | **[📄 Read Chapter 4 →](bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** |
 | 5 | **Wallet User Interface** | Wallet UI architecture and implementation details | **[📄 Read Chapter 5 →](bitcoin-wallet-ui/04-Wallet-UI.md)** |
@@ -87,6 +87,12 @@
 | 8 | **Docker Compose Deployment** | Complete Docker Compose guide with scaling and examples | **[📄 Read Chapter 8 →](ci/docker-compose/01-Introduction.md)** |
 | 9 | **Kubernetes Deployment** | Production Kubernetes deployment and autoscaling | **[📄 Read Chapter 9 →](ci/kubernetes/README.md)** |
 
+### 📚 **Part III: Language Reference**
+
+| # | Chapter | Description | Link |
+|---|---------|-------------|------|
+| 10 | **Rust Language Guide** | Comprehensive Rust language features and examples | **[📄 Read Chapter 10 →](rust/README.md)** |
+
 </div>
 
 ---
@@ -99,7 +105,7 @@ Our journey is structured to guide you through both understanding the theory and
 
 ### Book Structure
 
-We've organized this book into two main parts that reflect the natural progression from implementation to deployment:
+We've organized this book into three main parts that reflect the natural progression from implementation to deployment to language reference:
 
 **Part I: Core Blockchain Implementation** (Chapters 1-7)
 
@@ -108,6 +114,10 @@ In the first part, we dive deep into the heart of blockchain technology. We'll e
 **Part II: Deployment & Operations** (Chapters 8-9)
 
 Once we've built our blockchain, we need to deploy it. In the second part, we'll explore deployment strategies and operational procedures. We'll start with Docker Compose for development and local deployments, then move to Kubernetes for production-grade orchestration. You'll learn practical guidance for running and scaling the system in real-world scenarios.
+
+**Part III: Language Reference** (Chapter 10)
+
+In the final part, we provide a comprehensive reference guide to the Rust programming language features used throughout the blockchain implementation. This guide explains Rust concepts with examples from our codebase, helping you understand not just what Rust features exist, but how they work together to build reliable, performant systems software.
 
 ### How to Read This Book
 
@@ -144,7 +154,7 @@ If you're new to blockchain development or this project, we recommend beginning 
 
 3. **Learn [Chapter 2.1: Cryptography](bitcoin-blockchain/crypto/README.md)** - We'll dive into the cryptographic primitives that secure blockchain: hash functions, digital signatures, key pairs, and address encoding.
 
-4. **Explore [Chapter 2.2: Transaction System](bitcoin-blockchain/02-Transaction-System.md)** - Here, we'll explore the fundamental blockchain concepts and transaction handling. This is where the magic of blockchain begins.
+4. **Explore [Chapter 2.2: Transaction ID Format](bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Here, we'll explore the fundamental blockchain concepts and transaction handling. This is where the magic of blockchain begins.
 
 5. **Understand [Chapter 3: Web API Architecture](bitcoin-blockchain/web/README.md)** - We'll understand how the REST API is built, how requests flow through the system, and how we've created a secure, scalable web layer.
 
@@ -156,7 +166,7 @@ If you're new to blockchain development or this project, we recommend beginning 
 
 If you're already familiar with blockchain concepts and Rust, you can dive deeper into specific areas:
 
-- **Blockchain Implementation:** Start with [Chapter 2: Introduction to Bitcoin & Blockchain](bitcoin-blockchain/README.md) for fundamentals, then [Chapter 2.1: Cryptography](bitcoin-blockchain/crypto/README.md) and [Chapter 2.2: Transaction System](bitcoin-blockchain/02-Transaction-System.md) to understand our implementation choices and design decisions.
+- **Blockchain Implementation:** Start with [Chapter 2: Introduction to Bitcoin & Blockchain](bitcoin-blockchain/README.md) for fundamentals, then [Chapter 2.1: Cryptography](bitcoin-blockchain/crypto/README.md) and [Chapter 2.2: Transaction ID Format](bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) to understand our implementation choices and design decisions.
 - **UI Architecture:** Explore [Chapter 4: Desktop Admin Interface](bitcoin-desktop-ui/03-Desktop-Admin-UI.md) or [Chapter 7: Web Admin Interface](bitcoin-web-ui/06-Web-Admin-UI.md) to see how we've structured our user interfaces.
 - **Deployment:** Jump directly to [Chapter 8: Docker Compose](ci/docker-compose/01-Introduction.md) or [Chapter 9: Kubernetes](ci/kubernetes/README.md) to understand our deployment strategies.
 
@@ -189,9 +199,9 @@ In Chapter 2, we explore the fundamental concepts of Bitcoin and blockchain tech
 
 In Chapter 2.1, we explore the cryptographic primitives that secure our blockchain. We'll understand how hash functions create transaction IDs and block hashes, how digital signatures authorize transactions, how key pairs are generated and managed, and how addresses are encoded. This chapter provides detailed technical documentation on the cryptographic libraries used, their implementation, and their role in blockchain security.
 
-## Chapter 2.2: Transaction System
+## Chapter 2.2: Transaction ID Format
 
-**[→ Read Full Chapter 2.2: Transaction System](bitcoin-blockchain/02-Transaction-System.md)**
+**[→ Read Full Chapter 2.2: Transaction ID Format](bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)**
 
 **Reference Materials:**
 - [Rust Language Guide](rust/README.md) - Rust programming language features used throughout
@@ -267,8 +277,10 @@ In Chapter 3, we explore the web API layer that powers our blockchain node. We'l
 - [Tower Framework Guide](bitcoin-blockchain/web/Tower.md) - Middleware framework and tower_http components
 - [Serde Framework Guide](bitcoin-blockchain/web/Serde.md) - Serialization and deserialization framework
 - [Utoipa Framework Guide](bitcoin-blockchain/web/Utoipa.md) - OpenAPI documentation generation framework
+- [Tracing Framework Guide](bitcoin-blockchain/web/Tracing.md) - Structured logging and diagnostics
 - [Tokio Runtime Guide](bitcoin-blockchain/Tokio.md) - Async runtime framework
-- [Rust Language Guide](rust/README.md) - Rust programming language features
+
+**Note:** For comprehensive Rust language reference, see [Chapter 10: Rust Language Guide](rust/README.md) in Part III.
 
 ---
 
@@ -343,6 +355,33 @@ Chapter 9 takes us into production-grade deployment. We'll learn how to deploy a
 
 ---
 
+## Chapter 10: Rust Language Guide
+
+**[→ Read Full Chapter 10: Rust Language Guide](rust/README.md)**
+
+Chapter 10 provides a comprehensive reference guide to the Rust programming language features used throughout our blockchain implementation. This guide explains Rust concepts with examples from our codebase, helping you understand not just what Rust features exist, but how they work together to build reliable, performant systems software. We'll explore ownership and borrowing, data structures, traits, error handling, generics, lifetimes, smart pointers, pattern matching, derive macros, async/await, concurrency, modules, iterators and closures, type conversions, testing, and best practices. Each section includes practical examples from our blockchain codebase, making this guide both a language reference and a practical implementation guide.
+
+**Chapter Sections (read in order):**
+1. [Section 1: Introduction](rust/01-Introduction.md) - Guide overview and Rust fundamentals
+2. [Section 2: Ownership and Borrowing](rust/02-Ownership-and-Borrowing.md) - Memory safety and borrowing rules
+3. [Section 3: Data Structures](rust/03-Data-Structures.md) - Structs, enums, and collections
+4. [Section 4: Traits](rust/04-Traits.md) - Trait definitions and implementations
+5. [Section 5: Error Handling](rust/05-Error-Handling.md) - Result, Option, and error propagation
+6. [Section 6: Generics](rust/06-Generics.md) - Generic types and functions
+7. [Section 7: Lifetimes](rust/07-Lifetimes.md) - Lifetime annotations and elision
+8. [Section 8: Smart Pointers](rust/08-Smart-Pointers.md) - Box, Rc, Arc, and RefCell
+9. [Section 9: Pattern Matching](rust/09-Pattern-Matching.md) - Match expressions and patterns
+10. [Section 10: Derive Macros](rust/10-Derive-Macros.md) - Common derive macros and custom derives
+11. [Section 11: Async/Await](rust/11-Async-Await.md) - Asynchronous programming
+12. [Section 12: Concurrency](rust/12-Concurrency.md) - Threads, channels, and synchronization
+13. [Section 13: Modules](rust/13-Modules.md) - Module system and visibility
+14. [Section 14: Iterators and Closures](rust/14-Iterators-Closures.md) - Functional programming patterns
+15. [Section 15: Type Conversions](rust/15-Type-Conversions.md) - From, Into, and custom conversions
+16. [Section 16: Testing](rust/16-Testing.md) - Unit tests, integration tests, and test organization
+17. [Section 17: Best Practices](rust/17-Best-Practices.md) - Rust idioms and coding standards
+
+---
+
 ## Key Concepts Covered
 
 ### Blockchain Fundamentals
@@ -396,7 +435,7 @@ We believe that the best technical books are living documents that grow and impr
 
 **Local Navigation - Table of Contents**
 
-| [← First Section: Chapter 1: Introduction & Overview](01-Introduction.md) | [↑ Table of Contents](#table-of-contents) | [Last Section: Chapter 9: Kubernetes Deployment →](#chapter-9-kubernetes-deployment) |
+| [← First Section: Chapter 1: Introduction & Overview](01-Introduction.md) | [↑ Table of Contents](#table-of-contents) | [Last Section: Chapter 10: Rust Language Guide →](#chapter-10-rust-language-guide) |
 |:---:|:---:|:---:|
 | *Start of Book* | *Current Chapter* | *End of Book* |
 

@@ -818,7 +818,7 @@ Our project uses multiple testing approaches:
 - **[Async/Await](11-Async-Await.md)** - Asynchronous programming
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - See testing in practice
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - See testing in practice
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - API testing patterns
 
 ---

@@ -4,7 +4,7 @@
 
 <div align="center">
 
-**📚 [← Chapter 2.4: Network Layer](../net/README.md)** | **Chapter 2.5: Node Orchestration** | **[Chapter 2.6: Primitives →](../primitives/README.md)** 📚
+**📚 [← Chapter 2.4: Network Layer](../net/README.md)** | **Chapter 2.5: Node Orchestration** | **[Chapter 2.6: Storage Layer →](../store/README.md)** 📚
 
 </div>
 
@@ -159,7 +159,7 @@ This module aligns with Bitcoin Core's node architecture:
 - **[Network Layer](../net/README.md)**: P2P networking
 - **[Primitives](../primitives/README.md)**: Core data structures
 - **[Web API Architecture](web/README.md)**: Web interface using NodeContext
-- **[Transaction System](../02-Transaction-System.md)**: Transaction validation
+- **[Transaction ID Format](../primitives/02-Transaction-ID-Format.md)**: Transaction ID representation
 
 ## Code Examples
 
@@ -213,7 +213,7 @@ let size = node.get_mempool_size().await?;
 
 <div align="center">
 
-**📚 [← Previous: Network Layer](../net/README.md)** | **Chapter 2.5: Node Orchestration** | **[Next: Primitives →](../primitives/README.md)** 📚
+📚 | **Chapter 2.5: Node Orchestration** | 📚
 
 </div>
 

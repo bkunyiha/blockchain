@@ -112,7 +112,7 @@ In the next chapter, we'll explore how Rust handles errors explicitly through th
 - **[Modules](13-Modules.md)** - Code organization
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - See traits in action
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - See traits in action
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Trait-based design patterns
 
 ---

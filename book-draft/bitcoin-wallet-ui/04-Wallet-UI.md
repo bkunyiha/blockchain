@@ -6,7 +6,7 @@
 ### Part I: Core Blockchain Implementation
 
 1. [Chapter 1: Introduction & Overview](../../README.md)
-2. [Chapter 2: Transaction System](../bitcoin-blockchain/02-Transaction-System.md)
+2. [Chapter 2: Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)
 3. [Chapter 3: Web API Architecture](../bitcoin-blockchain/web/README.md)
 4. [Chapter 4: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
 5. **Chapter 5: Wallet User Interface** ← *You are here*

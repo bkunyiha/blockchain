@@ -5,20 +5,20 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../01-Introduction.md)
+1. [Chapter 1: Introduction & Overview](../../01-Introduction.md)
 2. [Chapter 2: Introduction to Bitcoin & Blockchain](../README.md)
-3. [Chapter 2.1: Cryptography](crypto/README.md)
-4. **Chapter 2.2: Transaction System** ← *You are here*
-5. [Chapter 3: Web API Architecture](web/README.md)
-6. [Chapter 4: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
-4. [Chapter 5: Wallet User Interface](../bitcoin-wallet-ui/04-Wallet-UI.md)
-5. [Chapter 6: Embedded Database & Persistence](../bitcoin-wallet-ui/05-Embedded-Database.md)
-6. [Chapter 7: Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md)
+3. [Chapter 2.1: Cryptography](../crypto/README.md)
+4. **Chapter 2.2: Transaction ID Format** ← *You are here*
+5. [Chapter 3: Web API Architecture](../web/README.md)
+6. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
+4. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md)
+5. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md)
+6. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md)
 
 ### Part II: Deployment & Operations
 
-8. [Chapter 8: Docker Compose Deployment](../ci/docker-compose/01-Introduction.md)
-9. [Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md)
+8. [Chapter 8: Docker Compose Deployment](../../ci/docker-compose/01-Introduction.md)
+9. [Chapter 9: Kubernetes Deployment](../../ci/kubernetes/README.md)
 
 </details>
 
@@ -26,19 +26,19 @@
 
 <div align="right">
 
-**[← Back to Cryptography](crypto/README.md)** | **[Rust Language Guide](../rust/README.md)** | **[Tokio Runtime Guide](Tokio.md)**
+**[← Back to Cryptography](../crypto/README.md)** | **[Chapter 10: Rust Language Guide](../../rust/README.md)** | **[Tokio Runtime Guide](../Tokio.md)**
 
 </div>
 
 ---
 
-# Chapter 2: Transaction System
+# Chapter 2.2: Transaction ID Format
 
 **Part I: Core Blockchain Implementation**
 
 <div align="center">
 
-**📚 [← Cryptography](crypto/README.md)** | **Chapter 2.2: Transaction System** | **[Chapter 2.3: Blockchain State Management →](chain/README.md)** 📚
+**📚 [← Primitives](README.md)** | **Chapter 2.2: Transaction ID Format** 📚
 
 </div>
 
@@ -1280,13 +1280,13 @@ Now that we understand how to represent transaction identifiers efficiently, we'
 
 <div align="center">
 
-**📚 [← Previous: Cryptography](crypto/README.md)** | **Chapter 2.2: Transaction System** | **[Next: Blockchain State Management →](chain/README.md)** 📚
+**📚 [← Primitives](README.md)** | **Chapter 2.2: Transaction ID Format** 📚
 
 </div>
 
 ---
 
-*This chapter has explored the fundamental aspects of transaction representation and storage in our blockchain implementation. We've examined why transaction IDs are stored as `Vec<u8>` rather than strings, understanding the critical differences between bytes and hex representations and their implications for memory efficiency, performance, and code clarity. We've compared our implementation with Bitcoin Core, explored best practices and performance benchmarks, and delved deep into the UTXO model implementation, script execution, verification, and the complete transaction lifecycle. These design decisions cascade through the entire architecture, affecting everything from network protocol efficiency to database query performance. In the next chapter, we'll explore [Blockchain State Management](chain/README.md) to understand how the UTXO set is maintained and how blockchain state operations are coordinated.*
+*This chapter has explored the fundamental aspects of transaction representation and storage in our blockchain implementation. We've examined why transaction IDs are stored as `Vec<u8>` rather than strings, understanding the critical differences between bytes and hex representations and their implications for memory efficiency, performance, and code clarity. We've compared our implementation with Bitcoin Core, explored best practices and performance benchmarks, and delved deep into the UTXO model implementation, script execution, verification, and the complete transaction lifecycle. These design decisions cascade through the entire architecture, affecting everything from network protocol efficiency to database query performance. In the next chapter, we'll explore [Blockchain State Management](../chain/README.md) to understand how the UTXO set is maintained and how blockchain state operations are coordinated.*
 
 **Last Updated:** December 2024  
 **Version:** 1.0  

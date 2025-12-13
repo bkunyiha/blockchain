@@ -1,10 +1,10 @@
 # Blockchain State Management
 
-**Part I: Core Blockchain Implementation** | **Chapter 2.3: Blockchain State Management**
+**Part I: Core Blockchain Implementation** | **Chapter 2.1: Blockchain State Management**
 
 <div align="center">
 
-**📚 [← Chapter 2.2: Transaction System](../02-Transaction-System.md)** | **Chapter 2.3: Blockchain State Management** | **[Chapter 2.4: Network Layer →](../net/README.md)** 📚
+**📚 [← Introduction to Bitcoin & Blockchain](../README.md)** | **Chapter 2.1: Blockchain State Management** | **[Cryptography →](../crypto/README.md)** 📚
 
 </div>
 
@@ -15,6 +15,20 @@
 The blockchain state management module (`bitcoin/src/chain`) is responsible for maintaining and managing the active blockchain state, including the UTXO (Unspent Transaction Output) set and chain state operations. This module follows Bitcoin Core's architecture pattern, where the `chain/` directory contains the core state management components.
 
 This module provides the foundational services for querying blockchain state, managing UTXOs, and coordinating blockchain operations. It serves as the bridge between the blockchain data structures (primitives) and higher-level node operations.
+
+### 📖 Technical Foundations
+
+Before diving into implementation details, we recommend reading **[Technical Foundations: Blockchain Architecture and Domain Model](01-Technical-Foundations.md)** for a comprehensive understanding of:
+
+- **Blockchain Architecture**: High-level system architecture and component organization
+- **Domain Objects**: Detailed explanation of Block, Transaction, UTXO, Blockchain, Node, and Mempool
+- **How Blockchain Works**: Complete end-to-end flow from transaction creation to block confirmation
+- **Node Architecture**: How nodes operate and coordinate different subsystems
+- **Component Interactions**: How chain, mempool, network, and mining components interact
+- **State Management**: Consistency mechanisms and state update patterns
+- **Consensus and Validation**: Validation rules and consensus mechanisms
+
+This foundational document provides the architectural context needed to understand how the chain module fits into the broader blockchain system.
 
 ## Key Components
 
@@ -126,12 +140,16 @@ This module aligns with Bitcoin Core's `chain/` directory structure:
    - Index optimization
    - Memory management
 
+## Documentation
+
+- **[Technical Foundations: Blockchain Architecture and Domain Model](01-Technical-Foundations.md)**: Comprehensive guide to blockchain architecture, domain objects, and how components interact
+
 ## Related Chapters
 
 - **[Primitives](../primitives/README.md)**: Core data structures (Block, Transaction, Blockchain)
 - **[Store](../store/README.md)**: Persistent storage implementation
 - **[Node](../node/README.md)**: Node orchestration using chain services
-- **[Transaction System](../02-Transaction-System.md)**: Transaction structure and validation
+- **[Transaction ID Format](../primitives/02-Transaction-ID-Format.md)**: Transaction ID representation and storage
 
 ## Code Examples
 
@@ -175,7 +193,7 @@ let exists = blockchain.utxo_exists(&txid, vout).await?;
 
 <div align="center">
 
-**📚 [← Previous: Transaction System](../02-Transaction-System.md)** | **Chapter 2.3: Blockchain State Management** | **[Next: Network Layer →](../net/README.md)** 📚
+**📚 [← Previous: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Chapter 2.3: Blockchain State Management** | **[Technical Foundations →](01-Technical-Foundations.md)** 📚
 
 </div>
 

@@ -6,7 +6,7 @@
 ### Part I: Core Blockchain Implementation
 
 1. [Chapter 1: Introduction & Overview](../../../README.md)
-2. [Chapter 2: Transaction System](../../bitcoin-blockchain/02-Transaction-System.md)
+2. [Chapter 2: Transaction ID Format](../../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)
 3. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
 4. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md)
 5. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md)
@@ -587,6 +587,6 @@ This section covered:
 
 ---
 
-*This chapter has explored production-grade Kubernetes deployment for the blockchain network. We've examined architecture and core concepts, migration from Docker Compose, Kubernetes manifests, deployment and operations, autoscaling capabilities, and production considerations with advanced topics. Kubernetes provides industry-standard container orchestration with automatic scaling, high availability, rolling updates, and production-grade operational capabilities. The deployment system transforms our development blockchain network into a scalable, resilient, production-ready system. This concludes our comprehensive journey through building a full-stack Bitcoin blockchain implementation, from fundamental concepts through implementation to production deployment. You now have the knowledge and tools to build, deploy, and operate blockchain systems using Rust, modern web technologies, and container orchestration platforms.*
+*This chapter has explored production-grade Kubernetes deployment for the blockchain network. We've examined architecture and core concepts, migration from Docker Compose, Kubernetes manifests, deployment and operations, autoscaling capabilities, and production considerations with advanced topics. Kubernetes provides industry-standard container orchestration with automatic scaling, high availability, rolling updates, and production-grade operational capabilities. The deployment system transforms our development blockchain network into a scalable, resilient, production-ready system. In the next chapter, we'll explore [Chapter 10: Rust Language Guide](../../rust/README.md) to understand the comprehensive Rust language features used throughout our blockchain implementation.*
 
 For more detailed information, see the complete guide sections on each topic.

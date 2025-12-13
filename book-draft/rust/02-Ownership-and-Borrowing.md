@@ -178,7 +178,7 @@ In the next chapter, we'll explore how we use structs and enums to model our blo
 - **[Concurrency](12-Concurrency.md)** - Thread safety and shared state
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - See ownership in action
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - See ownership in action
 - **[Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md)** - Async programming patterns
 
 ---

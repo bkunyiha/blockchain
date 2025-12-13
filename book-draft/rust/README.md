@@ -6,25 +6,8 @@
 ### Part I: Core Blockchain Implementation
 
 1. [Chapter 1: Introduction & Overview](../README.md)
-2. [Chapter 2: Transaction System](../bitcoin-blockchain/02-Transaction-System.md)
-3. **Chapter 3: Web API Architecture**
-   - [Web API Index](../bitcoin-blockchain/web/README.md) - Overview and navigation
-   - [01: Introduction](../bitcoin-blockchain/web/01-Introduction.md) - Architecture overview
-   - [02: Server Setup](../bitcoin-blockchain/web/02-Server-Setup.md) - Server configuration
-   - [03: Routing](../bitcoin-blockchain/web/03-Routing.md) - Route definitions
-   - [04: Handlers](../bitcoin-blockchain/web/04-Handlers.md) - Request handlers
-   - [05: Middleware](../bitcoin-blockchain/web/05-Middleware.md) - Middleware layer
-   - [06: Data Models](../bitcoin-blockchain/web/06-Data-Models.md) - Request/response models
-   - [07: Error Handling](../bitcoin-blockchain/web/07-Error-Handling.md) - Error management
-   - [08: OpenAPI](../bitcoin-blockchain/web/08-OpenAPI.md) - API documentation
-   - [09: Security](../bitcoin-blockchain/web/09-Security.md) - Security architecture
-   - [10: Best Practices](../bitcoin-blockchain/web/10-Best-Practices.md) - Design patterns
-   - [Axum Framework Guide](../bitcoin-blockchain/web/Axum.md) - Framework reference
-   - [Tower Framework Guide](../bitcoin-blockchain/web/Tower.md) - Middleware framework
-   - [Serde Framework Guide](../bitcoin-blockchain/web/Serde.md) - Serialization framework
-   - [Utoipa Framework Guide](../bitcoin-blockchain/web/Utoipa.md) - OpenAPI framework
-   - [Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md) - Async runtime framework
-   - **Rust Language Guide** (this index) - Rust language features ← *You are here*
+2. [Chapter 2: Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)
+3. [Chapter 3: Web API Architecture](../bitcoin-blockchain/web/README.md) - REST API implementation
 4. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
 5. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md)
 6. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md)
@@ -35,13 +18,17 @@
 8. [Chapter 8: Docker Compose Deployment](../../ci/docker-compose/01-Introduction.md)
 9. [Chapter 9: Kubernetes Deployment](../../ci/kubernetes/README.md)
 
+### Part III: Language Reference
+
+10. **Chapter 10: Rust Language Guide** (this index) - Rust language features ← *You are here*
+
 </details>
 
 </div>
 
 <div align="right">
 
-**[← Back to Main Book](../README.md)** | **[← Back to Web API Index](../bitcoin-blockchain/web/README.md)**
+**[← Back to Main Book](../README.md)**
 
 </div>
 
@@ -49,11 +36,11 @@
 
 # Rust Language Guide
 
-**Part I: Core Blockchain Implementation** | **Technical Reference: Rust Programming Language**
+**Part III: Language Reference** | **Chapter 10: Rust Language Guide**
 
 <div align="center">
 
-**[← Back to Main Book](../README.md)** | **Rust Language Guide** | **[Transaction System →](../bitcoin-blockchain/02-Transaction-System.md)** 📚
+**📚 [← Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md)** | **Chapter 10: Rust Language Guide** | **[End of Book →](#)** 📚
 
 </div>
 
@@ -77,7 +64,7 @@ This guide is structured to build understanding progressively. We begin with fou
 
 Each chapter builds on previous concepts, so reading sequentially will provide the most comprehensive understanding. However, each chapter is also self-contained, allowing you to jump to specific topics as needed.
 
-> **📘 Implementation Context**: This guide explains Rust language features with examples from our blockchain implementation. To see these features applied in specific contexts, see the [Transaction System](../bitcoin-blockchain/02-Transaction-System.md) chapter for ownership and data structures, the [Web API Architecture](../bitcoin-blockchain/web/README.md) for async patterns and error handling, and the [Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md) for asynchronous programming details.
+> **📘 Implementation Context**: This guide explains Rust language features with examples from our blockchain implementation. To see these features applied in specific contexts, see the [Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) chapter for ownership and data structures, the [Web API Architecture](../bitcoin-blockchain/web/README.md) for async patterns and error handling, and the [Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md) for asynchronous programming details.
 
 ---
 
@@ -217,7 +204,7 @@ Chapters build on each other, introducing concepts in a logical order. Each chap
 - **[Rust API Guidelines](https://rust-lang.github.io/api-guidelines/)**: Best practices for Rust APIs
 - **[Rustonomicon](https://doc.rust-lang.org/nomicon/)**: Advanced Rust topics
 - **[Rust Performance Book](https://nnethercote.github.io/perf-book/)**: Performance optimization guide
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)**: See Rust features in action
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)**: See Rust features in action
 - **[Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md)**: Async programming in Rust
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)**: Rust in web development
 
@@ -255,7 +242,7 @@ Chapters build on each other, introducing concepts in a logical order. Each chap
 - **[Best Practices](17-Best-Practices.md)** - Rust idioms and patterns
 
 **Related Guides:**
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - See Rust features in action
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - See Rust features in action
 - **[Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md)** - Async programming details
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Rust in web development
 
@@ -263,7 +250,7 @@ Chapters build on each other, introducing concepts in a logical order. Each chap
 
 <div align="center">
 
-**📚 [← Back to Main Book](../README.md)** | **Rust Language Guide** | **[Introduction →](01-Introduction.md)** | **[Transaction System →](../bitcoin-blockchain/02-Transaction-System.md)** | **[Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md)** | **[Web API Index](../bitcoin-blockchain/web/README.md)** 📚
+**📚 [← Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md)** | **Chapter 10: Rust Language Guide** | **[Introduction →](01-Introduction.md)** 📚
 
 </div>
 
@@ -286,4 +273,4 @@ Whether you're new to Rust or looking to deepen your understanding, this guide p
 
 ---
 
-*This guide provides detailed explanations of Rust language features used in our blockchain implementation. Each section includes examples from our codebase and practical guidance for using Rust effectively.*
+*This chapter provides a comprehensive reference guide to the Rust programming language features used throughout our blockchain implementation. Each section includes examples from our codebase and practical guidance for using Rust effectively. This guide explains Rust concepts with examples from our codebase, helping you understand not just what Rust features exist, but how they work together to build reliable, performant systems software. This concludes our comprehensive journey through building a full-stack Bitcoin blockchain implementation, from fundamental concepts through implementation to production deployment and language reference.*

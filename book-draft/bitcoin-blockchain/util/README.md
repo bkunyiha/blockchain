@@ -4,7 +4,7 @@
 
 <div align="center">
 
-**📚 [← Chapter 2.7: Storage Layer](../store/README.md)** | **Chapter 2.8: Utilities** | **[Chapter 2.9: Wallet System →](../wallet/README.md)** 📚
+**📚 [← Chapter 2.6: Storage Layer](../store/README.md)** | **Chapter 2.7: Utilities** | **[Chapter 2.8: Wallet System →](../wallet/README.md)** 📚
 
 </div>
 
@@ -120,7 +120,7 @@ The `utils` module contains various helper functions:
 
 - **[Primitives](../primitives/README.md)**: Utilities used with data structures
 - **[Blockchain State Management](../chain/README.md)**: Utilities in chain operations
-- **[Transaction System](../02-Transaction-System.md)**: Transaction utilities
+- **[Transaction ID Format](../primitives/02-Transaction-ID-Format.md)**: Transaction ID utilities
 
 ## Code Examples
 

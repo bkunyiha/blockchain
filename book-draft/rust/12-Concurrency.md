@@ -193,7 +193,7 @@ In the next chapter, we'll explore modules, which help us organize code and cont
 **Related Guides:**
 - **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Concurrent request handling
 - **[Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md)** - Async runtime and synchronization
-- **[Transaction System](../bitcoin-blockchain/02-Transaction-System.md)** - Concurrent transaction processing
+- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Concurrent transaction processing
 
 ---
 

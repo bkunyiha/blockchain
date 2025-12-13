@@ -4,7 +4,7 @@
 
 <div align="center">
 
-**📚 [← Chapter 2.5: Node Orchestration](../node/README.md)** | **Chapter 2.6: Primitives** | **[Chapter 2.7: Storage Layer →](../store/README.md)** 📚
+**📚 [← Chapter 2.2: Cryptography](../crypto/README.md)** | **Chapter 2.3: Primitives** | **[Chapter 2.4: Network Layer →](../net/README.md)** 📚
 
 </div>
 
@@ -140,7 +140,7 @@ This module aligns with Bitcoin Core's primitives directory:
 ## Related Chapters
 
 - **[Blockchain State Management](../chain/README.md)**: Using primitives in state management
-- **[Transaction System](../02-Transaction-System.md)**: Transaction structure and validation
+- **[Transaction ID Format](02-Transaction-ID-Format.md)**: Transaction ID representation and storage
 - **[Cryptography](crypto/README.md)**: Hash functions and digital signatures
 - **[Storage Layer](../store/README.md)**: Persisting primitive structures
 
@@ -197,7 +197,7 @@ let block = blockchain.get_block(&hash)?;
 
 <div align="center">
 
-**📚 [← Previous: Chapter 2.5: Node Orchestration](../node/README.md)** | **Chapter 2.6: Primitives** | **[Next: Storage Layer →](../store/README.md)** 📚
+**📚 [← Previous: Chapter 2.5: Node Orchestration](../node/README.md)** | **Chapter 2.6: Primitives** | **[Transaction ID Format →](02-Transaction-ID-Format.md)** 📚
 
 </div>
 
