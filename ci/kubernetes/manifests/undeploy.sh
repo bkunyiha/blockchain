@@ -18,6 +18,7 @@ kubectl delete -f 10-hpa-webserver.yaml --ignore-not-found=true
 echo "Deleting services..."
 kubectl delete -f 09-service-webserver.yaml --ignore-not-found=true
 kubectl delete -f 08-service-miner.yaml --ignore-not-found=true
+kubectl delete -f 15-redis.yaml --ignore-not-found=true
 
 echo "Deleting deployments..."
 kubectl delete -f 07-deployment-webserver.yaml --ignore-not-found=true
@@ -29,6 +30,7 @@ kubectl delete -f 04-pvc-miner.yaml --ignore-not-found=true
 
 echo "Deleting configuration..."
 kubectl delete -f 03-secrets.yaml --ignore-not-found=true
+kubectl delete -f 14-configmap-rate-limit.yaml --ignore-not-found=true
 kubectl delete -f 02-configmap.yaml --ignore-not-found=true
 
 echo "Deleting namespace..."

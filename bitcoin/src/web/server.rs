@@ -1,10 +1,12 @@
 use crate::node::NodeContext;
 use crate::web::middleware::cors;
+use crate::web::middleware::rate_limit::{RateLimitConfig, build_rate_limiter_manager};
 use crate::web::models::{ApiResponse, ErrorResponse};
 use crate::web::routes::{create_all_api_routes, create_wallet_only_routes, create_web_routes};
 use axum::{
     Router,
     http::StatusCode,
+    middleware::from_fn_with_state,
     response::{IntoResponse, Json},
 };
 use std::net::SocketAddr;
@@ -59,7 +61,7 @@ impl WebServer {
     }
 
     /// Create the main application router
-    pub fn create_app(&self) -> Router {
+    pub fn create_app(&self) -> Result<Router, Box<dyn std::error::Error + Send + Sync>> {
         let app = Router::new()
             .merge(create_all_api_routes())
             .merge(create_wallet_only_routes())
@@ -68,6 +70,17 @@ impl WebServer {
 
         // Add basic middleware
         let mut app = app;
+
+        // Add rate limiting middleware
+        if self.config.enable_rate_limiting {
+            let rl_config = RateLimitConfig::default();
+            if let Some(manager) = build_rate_limiter_manager(&rl_config)? {
+                app = app.layer(from_fn_with_state(
+                    manager,
+                    axum_rate_limiter::limiter::middleware,
+                ));
+            }
+        }
 
         // Add CORS middleware
         if self.config.enable_cors {
@@ -80,12 +93,14 @@ impl WebServer {
         // Add error handling middleware
         app = app.layer(axum::middleware::from_fn(handle_errors));
 
-        app
+        Ok(app)
     }
 
     /// Start the web server with graceful shutdown
-    pub async fn start_with_shutdown(&self) -> Result<(), Box<dyn std::error::Error>> {
-        let app = self.create_app();
+    pub async fn start_with_shutdown(
+        &self,
+    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        let app = self.create_app()?;
 
         let addr = SocketAddr::from(([0, 0, 0, 0], self.config.port));
 
@@ -101,9 +116,13 @@ impl WebServer {
             tracing::info!("Shutdown signal received");
         };
 
-        axum::serve(listener, app)
-            .with_graceful_shutdown(shutdown_signal)
-            .await?;
+        // `axum_rate_limiter` relies on `ConnectInfo<SocketAddr>` to determine the client IP.
+        axum::serve(
+            listener,
+            app.into_make_service_with_connect_info::<SocketAddr>(),
+        )
+        .with_graceful_shutdown(shutdown_signal)
+        .await?;
 
         Ok(())
     }

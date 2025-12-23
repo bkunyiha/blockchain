@@ -34,26 +34,30 @@ kubectl apply -f 01-namespace.yaml
 
 echo "Step 2: Creating configuration..."
 kubectl apply -f 02-configmap.yaml
+kubectl apply -f 14-configmap-rate-limit.yaml
 kubectl apply -f 03-secrets.yaml
 
 echo "Step 3: Creating storage..."
 kubectl apply -f 04-pvc-miner.yaml
 kubectl apply -f 05-pvc-webserver.yaml
 
-echo "Step 4: Creating StatefulSet and Deployment..."
+echo "Step 4: Creating rate limiting backend (Redis)..."
+kubectl apply -f 15-redis.yaml
+
+echo "Step 5: Creating StatefulSet and Deployment..."
 kubectl apply -f 06-statefulset-miner.yaml
 kubectl apply -f 07-deployment-webserver.yaml
 
-echo "Step 5: Creating services..."
+echo "Step 6: Creating services..."
 kubectl apply -f 08-service-miner-headless.yaml
 kubectl apply -f 08-service-miner.yaml
 kubectl apply -f 09-service-webserver.yaml
 
-echo "Step 6: Creating autoscalers..."
+echo "Step 7: Creating autoscalers..."
 kubectl apply -f 10-hpa-webserver.yaml
 kubectl apply -f 11-hpa-miner.yaml
 
-echo "Step 7: Creating disruption budgets..."
+echo "Step 8: Creating disruption budgets..."
 kubectl apply -f 12-pod-disruption-budget.yaml
 
 echo ""

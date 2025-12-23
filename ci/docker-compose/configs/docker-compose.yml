@@ -4,6 +4,18 @@
 # Or set NUM_MINERS and NUM_WEBSERVERS environment variables
 
 services:
+  # Redis for axum_rate_limiter (rate limiting state)
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   # Miner service - can be scaled to run multiple miners
   miner:
     build:
@@ -61,6 +73,8 @@ services:
     depends_on:
       miner:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     # Note: When scaling, only the first instance gets port mapping
     # Other instances use internal ports only (accessible via docker network)
     # To expose all instances, use port ranges or create separate services
@@ -73,6 +87,8 @@ services:
       # This ensures each node has its own isolated blockchain copy
       - webserver-data:/app/data
       - webserver-wallets:/app/wallets
+      # Rate limiter settings (used by axum_rate_limiter via RL_SETTINGS_PATH)
+      - ./Settings.toml:/app/Settings.toml:ro
     environment:
       # Node configuration
       - NODE_IS_MINER=no
@@ -92,6 +108,8 @@ services:
       # API authentication keys
       - BITCOIN_API_ADMIN_KEY=${BITCOIN_API_ADMIN_KEY:-admin-secret}
       - BITCOIN_API_WALLET_KEY=${BITCOIN_API_WALLET_KEY:-wallet-secret}
+      # Rate limiting configuration (axum_rate_limiter)
+      - RL_SETTINGS_PATH=/app/Settings.toml
       # Optional: Central node configuration
       - CENTERAL_NODE=${CENTERAL_NODE:-}
       # Wallet file path
@@ -106,6 +124,8 @@ services:
     # Instance number is auto-detected from container name by entrypoint script
 
 volumes:
+  redis-data:
+    driver: local
   miner-data:
     driver: local
   miner-wallets:

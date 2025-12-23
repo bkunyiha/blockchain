@@ -69,6 +69,13 @@ cargo run createwallet
 cargo run startnode yes no local <WALLET_ADDR>
 
 # 3. Start the web node
+#
+# Rate limiting (recommended):
+# - Start Redis (required for rate limiting)
+# - Set RL_SETTINGS_PATH to a Settings.toml file
+docker run -d --name redis -p 6379:6379 redis:7-alpine
+export RL_SETTINGS_PATH=/absolute/path/to/Settings.toml
+
 cargo run startnode no yes <MINING_NODE> <WALLET_ADDR>
 ```
 
@@ -86,7 +93,7 @@ export RUST_LOG=info
 
 cargo run startnode yes no local <WALLET_ADDR>
 
-# Terminal 2 - Second Node
+# Terminal 2 - Second Node (miner)
 export CENTRAL_NODE=127.0.0.1:2002
 export BLOCKS_TREE=blocks2
 export TREE_DIR=data2
@@ -94,6 +101,20 @@ export NODE_ADDR=127.0.0.1:2002
 export RUST_LOG=info
 
 cargo run startnode yes no 127.0.0.1:2001 <WALLET_ADDR>
+
+# Terminal 3 - Web node (connect to a miner)
+export CENTRAL_NODE=127.0.0.1:2003
+export BLOCKS_TREE=blocks3
+export TREE_DIR=data3
+export NODE_ADDR=127.0.0.1:2003
+export RUST_LOG=info
+#
+# Rate limiting (recommended):
+docker run -d --name redis -p 6379:6379 redis:7-alpine
+# Set location of Settings.toml, default is root folder
+# export RL_SETTINGS_PATH=/absolute/path/to/Settings.toml
+
+cargo run startnode no yes 127.0.0.1:2001 <WALLET_ADDR>
 ```
 
 ### Web API Access

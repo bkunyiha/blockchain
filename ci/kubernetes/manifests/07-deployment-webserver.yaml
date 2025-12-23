@@ -22,6 +22,9 @@ spec:
       - name: wait-for-miner
         image: busybox:1.35
         command: ['sh', '-c', 'until nc -z miner-service.blockchain.svc.cluster.local 2001; do echo waiting for miner; sleep 2; done;']
+      - name: wait-for-redis
+        image: busybox:1.35
+        command: ['sh', '-c', 'until nc -z redis.blockchain.svc.cluster.local 6379; do echo waiting for redis; sleep 2; done;']
       
       containers:
       - name: blockchain-node
@@ -71,6 +74,10 @@ spec:
             configMapKeyRef:
               name: blockchain-config
               key: WALLET_FILE
+
+        # Rate limiting configuration (axum_rate_limiter)
+        - name: RL_SETTINGS_PATH
+          value: /app/Settings.toml
         
         # Environment variables from Secrets
         - name: BITCOIN_API_ADMIN_KEY
@@ -112,6 +119,10 @@ spec:
           mountPath: /app/data
         - name: webserver-wallets
           mountPath: /app/wallets
+        - name: rate-limit-settings
+          mountPath: /app/Settings.toml
+          subPath: Settings.toml
+          readOnly: true
         
         # Resource limits
         resources:
@@ -149,4 +160,10 @@ spec:
       - name: webserver-wallets
         persistentVolumeClaim:
           claimName: webserver-wallets-pvc
+      - name: rate-limit-settings
+        configMap:
+          name: rate-limit-settings
+          items:
+            - key: Settings.toml
+              path: Settings.toml
 

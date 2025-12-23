@@ -142,10 +142,13 @@ serde_json = "1.0.145"
 # Used in: src/web/ for HTTP API endpoints
 # Purpose: REST API and web server functionality
 # Features: ws - WebSocket support, macros - derive macros
-axum = { version = "0.8.7", features = ["ws", "macros"] }
-axum-swagger-ui = "0.3.0"
+#
+# NOTE: `axum_rate_limiter` currently depends on Axum 0.7.x, so we align our Axum
+# version to avoid multiple-incompatible Axum versions in the dependency graph.
+axum = { version = "0.7.9", features = ["ws", "macros"] }
 utoipa = { version = "5.4.0", features = ["axum_extras", "chrono", "uuid"] }
-utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
+# Axum integration for Swagger UI. v8 targets axum 0.7.
+utoipa-swagger-ui = { version = "8.0.0", features = ["axum"] }
 
 # Tower middleware and services
 # Used in: src/web/ for middleware and service composition
@@ -161,6 +164,11 @@ tower-http = { version = "0.6.7", features = ["cors", "trace", "compression-gzip
 # Used in: src/web/middleware/ for API rate limiting
 # Purpose: Prevent API abuse and ensure fair usage
 tower_governor = "0.8.0"
+
+# Redis-backed Axum rate limiting middleware (token bucket)
+# Used in: src/web/middleware/rate_limit.rs
+# Purpose: Distributed rate limiting with configurable strategies (IP/URL/header/query/body)
+axum_rate_limiter = "0.1.1"
 
 # HTTP client and server library
 # Used in: src/web/ for low-level HTTP operations

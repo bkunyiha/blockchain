@@ -63,6 +63,20 @@ stringData:
   MINER_ADDRESS: "your-wallet-address-here"  # REQUIRED: Must be set to a valid wallet address
 ```
 
+### Step 2b: Rate Limiting (Redis + Settings.toml)
+
+The webserver uses Redis-backed rate limiting via `axum_rate_limiter`.
+
+- Redis is deployed in-cluster (`manifests/15-redis.yaml`)
+- The webserver reads a `Settings.toml` from a ConfigMap (`manifests/14-configmap-rate-limit.yaml`)
+  and uses `RL_SETTINGS_PATH=/app/Settings.toml`.
+
+To change limits/strategies, edit `manifests/14-configmap-rate-limit.yaml` and restart the webserver:
+
+```bash
+kubectl rollout restart deployment/webserver -n blockchain
+```
+
 ### Step 3: Deploy
 
 ```bash

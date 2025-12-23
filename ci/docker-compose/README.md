@@ -26,9 +26,18 @@ docker-compose/
 ### Default Setup (1 miner + 1 webserver)
 
 ```bash
-cd configs
-docker-compose up -d
+cd ci/docker-compose/configs
+# Set up address pool (at least 2 addresses for 1 miner + 1 webserver)
+export WALLET_ADDRESS_POOL="addr1,addr2"
+docker compose up -d
+# miner_1 → selects addr1 (index 0)
+# webserver_1 → selects addr2 (index 1)
 ```
+
+This starts:
+- `redis` (required for API rate limiting)
+- `miner` (P2P + mining)
+- `webserver` (REST API + Swagger UI + rate limiting)
 
 ### Scale to Multiple Instances
 
