@@ -127,6 +127,13 @@ cd manifests
 ./deploy.sh
 ```
 
+**Rate limiting note (webserver):**
+- Kubernetes deploys an in-cluster `redis` service for rate limiting.
+- The webserver reads `axum_rate_limiter` settings from a ConfigMap (`Settings.toml`), mounted at `/app/Settings.toml`,
+  and sets `RL_SETTINGS_PATH=/app/Settings.toml`.
+- To customize limits, edit `manifests/14-configmap-rate-limit.yaml` and restart the webserver deployment:
+  - `kubectl rollout restart deployment/webserver -n blockchain`
+
 **Step 4: Verify**
 
 ```bash

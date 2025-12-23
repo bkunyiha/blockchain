@@ -75,6 +75,12 @@ docker compose build --no-cache
 docker compose up -d
 ```
 
+**Rate limiting note (webserver):**
+- The Compose configs start a `redis` service and mount `configs/Settings.toml` into the webserver container.
+- The webserver reads it via `RL_SETTINGS_PATH=/app/Settings.toml`.
+- If you change `Settings.toml`, restart just the webserver to apply:
+  - `docker compose restart webserver`
+
 ### Alternative: Rebuild and Restart in One Command
 
 ```bash

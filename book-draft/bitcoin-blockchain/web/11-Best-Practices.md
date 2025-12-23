@@ -16,9 +16,10 @@
    - [05: Middleware](05-Middleware.md) - Middleware layer
    - [06: Data Models](06-Data-Models.md) - Request/response models
    - [07: Error Handling](07-Error-Handling.md) - Error management
-   - [08: OpenAPI](08-OpenAPI.md) - API documentation
-   - [09: Security](09-Security.md) - Security architecture
-   - [10: Best Practices](10-Best-Practices.md) - Design patterns ← *You are here*
+   - [08: Rate Limiting](08-Rate-Limiting.md) - Rate limiting implementation
+   - [09: OpenAPI](09-OpenAPI.md) - API documentation
+   - [10: Security](10-Security.md) - Security architecture
+   - [11: Best Practices](11-Best-Practices.md) - Design patterns ← *You are here*
    - [Axum Framework Guide](Axum.md) - Framework reference
    - [Tower Framework Guide](Tower.md) - Middleware framework
    - [Serde Framework Guide](Serde.md) - Serialization framework
@@ -46,13 +47,13 @@
 
 ---
 
-# Chapter 3.10: Best Practices and Patterns
+# Chapter 3.11: Best Practices and Patterns
 
 **Part I: Core Blockchain Implementation** | **Web API Architecture**
 
 <div align="center">
 
-**📚 [← Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Chapter 3.10: Best Practices and Patterns** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
+**📚 [← Security](10-Security.md)** | **Chapter 3.11: Best Practices and Patterns** | **[Web API Index](README.md)** 📚
 
 </div>
 
@@ -97,7 +98,7 @@ For detailed error handling patterns, see [Error Handling](07-Error-Handling.md)
 - Inline documentation for all public functions
 - Examples in documentation
 
-For OpenAPI documentation details, see [OpenAPI Documentation](08-OpenAPI.md).
+For OpenAPI documentation details, see [OpenAPI Documentation](09-OpenAPI.md).
 
 ### 6. Structured Logging and Observability
 
@@ -172,9 +173,9 @@ In this Web API Architecture section, we've explored:
 - **[Middleware Layer](05-Middleware.md)**: Cross-cutting concerns: authentication, CORS, logging
 - **[Data Models](06-Data-Models.md)**: Request and response structures with type safety
 - **[Error Handling](07-Error-Handling.md)**: Comprehensive error management strategies
-- **[OpenAPI Documentation](08-OpenAPI.md)**: Automatic API documentation generation
-- **[Security Architecture](09-Security.md)**: Authentication, authorization, and security
-- **[Best Practices and Patterns](10-Best-Practices.md)**: Design patterns and conventions
+- **[OpenAPI Documentation](09-OpenAPI.md)**: Automatic API documentation generation
+- **[Security Architecture](10-Security.md)**: Authentication, authorization, and security
+- **[Best Practices and Patterns](11-Best-Practices.md)**: Design patterns and conventions
 
 The web layer is designed to be:
 - **Secure**: Authentication, authorization, and error sanitization
@@ -190,7 +191,7 @@ As we continue building blockchain applications, these patterns will serve as a 
 
 ## Navigation
 
-- **[← Previous: Security Architecture](09-Security.md)** - Authentication, authorization, and security
+- **[← Previous: Security Architecture](10-Security.md)** - Authentication, authorization, and security
 - **[Web API Index](README.md)** - Overview and navigation
 - **[Introduction & Architecture Overview](01-Introduction.md)** - Overview and chapter summaries
 - **[Axum Framework Guide](Axum.md)** - Detailed Axum feature explanations
@@ -202,7 +203,7 @@ As we continue building blockchain applications, these patterns will serve as a 
 
 <div align="center">
 
-**📚 [← Previous: Security](09-Security.md)** | **Chapter 3.10: Best Practices and Patterns** | **[Web API Index](README.md)** 📚
+**📚 [← Previous: Security](10-Security.md)** | **Chapter 3.11: Best Practices and Patterns** | **[Web API Index](README.md)** 📚
 
 **[← Web API Architecture Index](01-Introduction.md)** | **[Axum Framework Guide](Axum.md)** | **[Tracing Framework Guide](Tracing.md)**
 

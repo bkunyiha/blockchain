@@ -16,9 +16,9 @@
    - [05: Middleware](05-Middleware.md) - Middleware layer
    - [06: Data Models](06-Data-Models.md) - Request/response models
    - [07: Error Handling](07-Error-Handling.md) - Error management
-   - [08: OpenAPI](08-OpenAPI.md) - API documentation
-   - [09: Security](09-Security.md) - Security architecture
-   - [10: Best Practices](10-Best-Practices.md) - Design patterns
+   - [08: OpenAPI](09-OpenAPI.md) - API documentation
+   - [09: Security](10-Security.md) - Security architecture
+   - [10: Best Practices](11-Best-Practices.md) - Design patterns
    - [Axum Framework Guide](Axum.md) - Framework reference
 4. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
 5. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md)
@@ -169,7 +169,10 @@ pub async fn start_with_shutdown(&self) -> Result<(), Box<dyn std::error::Error>
         tracing::info!("Shutdown signal received");
     };
 
-    axum::serve(listener, app)
+    // NOTE: Some middleware (e.g. rate limiting) needs to know the client socket address.
+    // Axum provides this via the `ConnectInfo<SocketAddr>` extractor, but only if we start the
+    // server with `into_make_service_with_connect_info::<SocketAddr>()`.
+    axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
         .with_graceful_shutdown(shutdown_signal)
         .await?;
 

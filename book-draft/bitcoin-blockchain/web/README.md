@@ -37,9 +37,10 @@ Built using Rust's Axum framework, the web layer implements a complete system fo
 ### Part 3: Advanced Topics
 
 7. **[07: Error Handling](07-Error-Handling.md)** - Error management strategies and patterns
-8. **[08: OpenAPI Documentation](08-OpenAPI.md)** - Automatic API documentation generation
-9. **[09: Security Architecture](09-Security.md)** - Authentication, authorization, and security measures
-10. **[10: Best Practices and Patterns](10-Best-Practices.md)** - Design patterns and conventions
+8. **[08: Rate Limiting Implementation](08-Rate-Limiting.md)** - Rate limiting algorithms, implementation, and configuration
+9. **[09: OpenAPI Documentation](09-OpenAPI.md)** - Automatic API documentation generation
+10. **[10: Security Architecture](10-Security.md)** - Authentication, authorization, and security measures
+11. **[11: Best Practices and Patterns](11-Best-Practices.md)** - Design patterns and conventions
 
 ### Reference Materials
 
@@ -66,7 +67,8 @@ Built using Rust's Axum framework, the web layer implements a complete system fo
 - **[Routing System](03-Routing.md)** - Endpoint organization
 - **[Data Models](06-Data-Models.md)** - Request/response structures
 - **[Error Handling](07-Error-Handling.md)** - Error management patterns
-- **[Security Architecture](09-Security.md)** - Security implementation
+- **[Rate Limiting](08-Rate-Limiting.md)** - Rate limiting implementation
+- **[Security Architecture](10-Security.md)** - Security implementation
 
 ---
 
@@ -93,9 +95,10 @@ Built using Rust's Axum framework, the web layer implements a complete system fo
 ### Path 3: Security and Production Readiness
 
 1. [Middleware Layer](05-Middleware.md)
-2. [Security Architecture](09-Security.md)
-3. [Error Handling](07-Error-Handling.md)
-4. [Best Practices and Patterns](10-Best-Practices.md)
+2. [Rate Limiting](08-Rate-Limiting.md)
+3. [Security Architecture](10-Security.md)
+4. [Error Handling](07-Error-Handling.md)
+5. [Best Practices and Patterns](11-Best-Practices.md)
 
 **Outcome**: Understand security considerations and production-ready patterns.
 
@@ -148,7 +151,7 @@ All code examples in this section are taken from the actual implementation:
 
 **📚 Web API Index** | **[Introduction & Architecture Overview →](01-Introduction.md)** 📚
 
-**[Routing](03-Routing.md)** | **[Handlers](04-Handlers.md)** | **[Middleware](05-Middleware.md)** | **[Data Models](06-Data-Models.md)** | **[Error Handling](07-Error-Handling.md)** | **[OpenAPI](08-OpenAPI.md)** | **[Security](09-Security.md)** | **[Best Practices](10-Best-Practices.md)**
+**[Routing](03-Routing.md)** | **[Handlers](04-Handlers.md)** | **[Middleware](05-Middleware.md)** | **[Data Models](06-Data-Models.md)** | **[Error Handling](07-Error-Handling.md)** | **[Rate Limiting](08-Rate-Limiting.md)** | **[OpenAPI](09-OpenAPI.md)** | **[Security](10-Security.md)** | **[Best Practices](11-Best-Practices.md)**
 
 </div>
 

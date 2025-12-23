@@ -16,9 +16,10 @@
    - [05: Middleware](05-Middleware.md) - Middleware layer
    - [06: Data Models](06-Data-Models.md) - Request/response models
    - [07: Error Handling](07-Error-Handling.md) - Error management
-   - [08: OpenAPI](08-OpenAPI.md) - API documentation ← *You are here*
-   - [09: Security](09-Security.md) - Security architecture
-   - [10: Best Practices](10-Best-Practices.md) - Design patterns
+   - [08: Rate Limiting](08-Rate-Limiting.md) - Rate limiting implementation
+   - [09: OpenAPI](09-OpenAPI.md) - API documentation ← *You are here*
+   - [10: Security](10-Security.md) - Security architecture
+   - [11: Best Practices](11-Best-Practices.md) - Design patterns
    - [Axum Framework Guide](Axum.md) - Framework reference
 4. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
 5. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md)
@@ -42,13 +43,13 @@
 
 ---
 
-# Chapter 3.8: OpenAPI Documentation
+# Chapter 3.9: OpenAPI Documentation
 
 **Part I: Core Blockchain Implementation** | **Web API Architecture**
 
 <div align="center">
 
-**📚 [← Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Chapter 3.8: OpenAPI Documentation** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
+**📚 [← Rate Limiting](08-Rate-Limiting.md)** | **Chapter 3.9: OpenAPI Documentation** | **[Security →](10-Security.md)** 📚
 
 </div>
 
@@ -302,8 +303,8 @@ Once the server is running, the OpenAPI documentation is available at:
 
 ## Navigation
 
-- **[← Previous: Error Handling](07-Error-Handling.md)** - Comprehensive error management strategies
-- **[Next: Security Architecture →](09-Security.md)** - Authentication, authorization, and security
+- **[← Previous: Rate Limiting](08-Rate-Limiting.md)** - Rate limiting implementation
+- **[Next: Security Architecture →](10-Security.md)** - Authentication, authorization, and security
 - **[Web API Index](README.md)** - Overview and navigation
 - **[Utoipa Framework Guide](Utoipa.md)** - Detailed Utoipa feature explanations
 - **[Serde Framework Guide](Serde.md)** - Schema serialization details
@@ -312,7 +313,7 @@ Once the server is running, the OpenAPI documentation is available at:
 
 <div align="center">
 
-**📚 [← Previous: Error Handling](07-Error-Handling.md)** | **Chapter 3.8: OpenAPI Documentation** | **[Next: Security →](09-Security.md)** 📚
+**📚 [← Previous: Rate Limiting](08-Rate-Limiting.md)** | **Chapter 3.9: OpenAPI Documentation** | **[Next: Security →](10-Security.md)** 📚
 
 **[← Web API Index](README.md)** | **[Introduction & Architecture Overview](01-Introduction.md)**
 
@@ -320,4 +321,4 @@ Once the server is running, the OpenAPI documentation is available at:
 
 ---
 
-*This chapter covers OpenAPI documentation. Continue to [Security Architecture](09-Security.md) to learn about authentication, authorization, and security measures.*
+*This chapter covers OpenAPI documentation. Continue to [Security Architecture](10-Security.md) to learn about authentication, authorization, and security measures.*

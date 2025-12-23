@@ -206,6 +206,7 @@ Before deploying to production:
 - [ ] Configure network policies
 - [ ] Set up monitoring (Prometheus/Grafana)
 - [ ] Configure logging (ELK/Loki)
+- [ ] Configure Redis persistence/HA for rate limiting (if enabled)
 - [ ] Set up backup strategy (Velero)
 - [ ] Configure RBAC for access control
 - [ ] Use external secret management

@@ -18,9 +18,10 @@
    - [05: Middleware](05-Middleware.md) - Middleware layer
    - [06: Data Models](06-Data-Models.md) - Request/response models
    - [07: Error Handling](07-Error-Handling.md) - Error management
-   - [08: OpenAPI](08-OpenAPI.md) - API documentation
-   - [09: Security](09-Security.md) - Security architecture
-   - [10: Best Practices](10-Best-Practices.md) - Design patterns
+   - [08: Rate Limiting](08-Rate-Limiting.md) - Rate limiting implementation
+   - [09: OpenAPI](09-OpenAPI.md) - API documentation
+   - [10: Security](10-Security.md) - Security architecture
+   - [11: Best Practices](11-Best-Practices.md) - Design patterns
    - [Axum Framework Guide](Axum.md) - Framework reference
 6. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
 7. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md)
@@ -153,13 +154,13 @@ Security measures are built into the architecture from the ground up:
 - **Error Sanitization**: Internal errors don't leak sensitive information
 - **Input Validation**: Request data is validated before processing
 
-For CORS implementation details, see [CORS Configuration in Axum](Axum.md#cors-configuration). For comprehensive security coverage, see [Security Architecture](09-Security.md).
+For CORS implementation details, see [CORS Configuration in Axum](Axum.md#cors-configuration). For comprehensive security coverage, see [Security Architecture](10-Security.md).
 
 ### 5. Automatic Documentation
 
 OpenAPI/Swagger documentation is automatically generated from code, ensuring documentation stays synchronized with implementation. The documentation includes request/response schemas, endpoint descriptions, and interactive testing capabilities.
 
-For OpenAPI implementation details, see [OpenAPI Documentation](08-OpenAPI.md) and the [Utoipa Framework Guide](Utoipa.md).
+For OpenAPI implementation details, see [OpenAPI Documentation](09-OpenAPI.md) and the [Utoipa Framework Guide](Utoipa.md).
 
 ---
 
@@ -273,15 +274,21 @@ Examines how request and response structures are defined using Rust types. Cover
 
 Explores error handling patterns that provide clear feedback to clients while maintaining security. Covers error flows, common error patterns, and error logging. See [Error Handling in Axum](Axum.md#error-handling) for error conversion and middleware.
 
-**[08: OpenAPI Documentation](08-OpenAPI.md)**
+**[08: Rate Limiting Implementation](08-Rate-Limiting.md)**
+
+Details rate limiting implementation using the `axum_rate_limiter` crate. Covers token bucket algorithm, configuration, multiple strategies (IP, URL, header, query, body), Redis integration, and production deployment considerations.
+
+**[09: OpenAPI Documentation](09-OpenAPI.md)**
 
 Details how OpenAPI/Swagger documentation is automatically generated from code. Covers API documentation, Swagger UI integration, and the benefits of automatic documentation.
 
-**[09: Security Architecture](09-Security.md)**
+**[10: Security Architecture](10-Security.md)**
 
 Examines security measures built into the web layer: authentication mechanisms, role-based access control, CORS configuration, error sanitization, and rate limiting strategies. See [CORS Configuration in Axum](Axum.md#cors-configuration) for CORS implementation.
 
-**[10: Best Practices and Patterns](10-Best-Practices.md)**
+**[11: Best Practices and Patterns](11-Best-Practices.md)**
+
+Summarizes design patterns, conventions, and principles that make the API secure, scalable, and maintainable. See [Async/Await in Axum](Axum.md#asyncawait) for async patterns.
 
 Summarizes design patterns, conventions, and principles that make the API secure, scalable, and maintainable. See [Async/Await in Axum](Axum.md#asyncawait) for async patterns.
 

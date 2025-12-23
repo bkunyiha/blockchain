@@ -16,9 +16,10 @@
    - [05: Middleware](05-Middleware.md) - Middleware layer
    - [06: Data Models](06-Data-Models.md) - Request/response models
    - [07: Error Handling](07-Error-Handling.md) - Error management ← *You are here*
-   - [08: OpenAPI](08-OpenAPI.md) - API documentation
-   - [09: Security](09-Security.md) - Security architecture
-   - [10: Best Practices](10-Best-Practices.md) - Design patterns
+   - [08: Rate Limiting](08-Rate-Limiting.md) - Rate limiting implementation
+   - [09: OpenAPI](09-OpenAPI.md) - API documentation
+   - [10: Security](10-Security.md) - Security architecture
+   - [11: Best Practices](11-Best-Practices.md) - Design patterns
    - [Axum Framework Guide](Axum.md) - Framework reference
 4. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
 5. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md)
@@ -122,7 +123,7 @@ For more details on error handling middleware, see the [Middleware Layer](05-Mid
 ## Navigation
 
 - **[← Previous: Data Models](06-Data-Models.md)** - Request and response structures with type safety
-- **[Next: OpenAPI Documentation →](08-OpenAPI.md)** - Automatic API documentation generation
+- **[Next: Rate Limiting →](08-Rate-Limiting.md)** - Rate limiting implementation
 - **[Middleware Layer](05-Middleware.md)** - Error handling middleware implementation
 - **[Web API Index](README.md)** - Overview and navigation
 - **[Axum Framework Guide](Axum.md)** - Detailed Axum feature explanations
@@ -133,7 +134,7 @@ For more details on error handling middleware, see the [Middleware Layer](05-Mid
 
 <div align="center">
 
-**📚 [← Previous: Data Models](06-Data-Models.md)** | **Chapter 3.7: Error Handling** | **[Next: OpenAPI →](08-OpenAPI.md)** 📚
+**📚 [← Previous: Data Models](06-Data-Models.md)** | **Chapter 3.7: Error Handling** | **[Next: Rate Limiting →](08-Rate-Limiting.md)** 📚
 
 **[← Web API Index](README.md)** | **[Introduction & Architecture Overview](01-Introduction.md)**
 
@@ -141,4 +142,4 @@ For more details on error handling middleware, see the [Middleware Layer](05-Mid
 
 ---
 
-*This chapter covers error handling. Continue to [OpenAPI Documentation](08-OpenAPI.md) to learn about automatic API documentation generation.*
+*This chapter covers error handling. Continue to [Rate Limiting](08-Rate-Limiting.md) to learn about rate limiting implementation.*

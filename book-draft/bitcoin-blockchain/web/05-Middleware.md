@@ -16,9 +16,10 @@
    - [05: Middleware](05-Middleware.md) - Middleware layer ← *You are here*
    - [06: Data Models](06-Data-Models.md) - Request/response models
    - [07: Error Handling](07-Error-Handling.md) - Error management
-   - [08: OpenAPI](08-OpenAPI.md) - API documentation
-   - [09: Security](09-Security.md) - Security architecture
-   - [10: Best Practices](10-Best-Practices.md) - Design patterns
+   - [08: Rate Limiting](08-Rate-Limiting.md) - Rate limiting implementation
+   - [09: OpenAPI](09-OpenAPI.md) - API documentation
+   - [10: Security](10-Security.md) - Security architecture
+   - [11: Best Practices](11-Best-Practices.md) - Design patterns
    - [Axum Framework Guide](Axum.md) - Framework reference
 4. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
 5. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md)
@@ -202,7 +203,7 @@ pub fn create_cors_layer_with_origins(origins: Vec<String>) -> CorsLayer {
 
 ### Rate Limiting Middleware
 
-Rate limiting middleware in `middleware/rate_limit.rs` (currently a placeholder) will prevent abuse:
+Rate limiting middleware in `middleware/rate_limit.rs` prevents abuse by limiting the number of requests clients can make within a specified time window.
 
 **The `RateLimitConfig` struct and `create_rate_limit_layer()` function in `middleware/rate_limit.rs`:**
 
@@ -213,20 +214,22 @@ pub struct RateLimitConfig {
 }
 
 pub fn create_rate_limit_layer(
-    _config: RateLimitConfig,
+    config: RateLimitConfig,
 ) -> impl tower::Layer<axum::Router> + Clone {
-    // Placeholder - returns no-op layer
-    tower::layer::util::Identity::new()
+    // Returns rate limiting layer
 }
 ```
 
-**Future Implementation:**
+**Rate Limiting Features:**
 
-When implemented, rate limiting will:
-- Track requests per IP address or API key
-- Enforce limits based on configuration
-- Return `429 Too Many Requests` when limits are exceeded
-- Use a token bucket algorithm for burst handling
+- **Token Bucket Algorithm**: Allows bursts up to `burst_size` while maintaining average rate
+- **Per-IP Limiting**: Tracks requests by client IP address
+- **Per-API-Key Limiting**: Supports API key-based rate limiting for granular control
+- **Automatic Cleanup**: Removes inactive entries to manage memory
+- **Standard Headers**: Returns `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `Retry-After` headers
+- **429 Response**: Returns `429 Too Many Requests` when limits are exceeded
+
+**For detailed implementation guide, code examples, and advanced configurations, see [Rate Limiting Implementation Guide](08-Rate-Limiting.md).**
 
 ### Error Handling Middleware
 
@@ -297,6 +300,7 @@ See [Error Handling in Axum](Axum.md#error-handling) for detailed technical info
 - **[← Previous: Request Handlers](04-Handlers.md)** - Processing requests and implementing business logic
 - **[Next: Data Models →](06-Data-Models.md)** - Request and response structures with type safety
 - **[Error Handling →](07-Error-Handling.md)** - Comprehensive error management strategies
+- **[Rate Limiting →](08-Rate-Limiting.md)** - Detailed rate limiting implementation guide
 - **[Web API Index](README.md)** - Overview and navigation
 - **[Axum Framework Guide](Axum.md)** - Detailed Axum feature explanations
 

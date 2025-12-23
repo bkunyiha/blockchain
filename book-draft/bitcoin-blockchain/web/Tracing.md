@@ -16,9 +16,9 @@
    - [05: Middleware](05-Middleware.md) - Middleware layer
    - [06: Data Models](06-Data-Models.md) - Request/response models
    - [07: Error Handling](07-Error-Handling.md) - Error management
-   - [08: OpenAPI](08-OpenAPI.md) - API documentation
-   - [09: Security](09-Security.md) - Security architecture
-   - [10: Best Practices](10-Best-Practices.md) - Design patterns
+   - [08: OpenAPI](09-OpenAPI.md) - API documentation
+   - [09: Security](10-Security.md) - Security architecture
+   - [10: Best Practices](11-Best-Practices.md) - Design patterns
    - [Axum Framework Guide](Axum.md) - Framework reference
    - [Tower Framework Guide](Tower.md) - Middleware framework
    - [Serde Framework Guide](Serde.md) - Serialization framework

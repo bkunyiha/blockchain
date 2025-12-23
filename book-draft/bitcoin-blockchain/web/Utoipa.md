@@ -16,9 +16,10 @@
    - [05: Middleware](05-Middleware.md) - Middleware layer
    - [06: Data Models](06-Data-Models.md) - Request/response models
    - [07: Error Handling](07-Error-Handling.md) - Error management
-   - [08: OpenAPI](08-OpenAPI.md) - API documentation
-   - [09: Security](09-Security.md) - Security architecture
-   - [10: Best Practices](10-Best-Practices.md) - Design patterns
+   - [08: Rate Limiting](08-Rate-Limiting.md) - Rate limiting implementation
+   - [09: OpenAPI](09-OpenAPI.md) - API documentation
+   - [10: Security](10-Security.md) - Security architecture
+   - [11: Best Practices](11-Best-Practices.md) - Design patterns
    - [Axum Framework Guide](Axum.md) - Framework reference
    - [Tower Framework Guide](Tower.md) - Middleware framework
    - [Serde Framework Guide](Serde.md) - Serialization framework
@@ -68,7 +69,7 @@ In our blockchain API, Utoipa is used for:
 - **Path Documentation**: Documenting endpoints with request/response details
 - **Type Safety**: Ensuring documentation matches implementation
 
-> **📘 See the full implementation**: This guide explains Utoipa concepts. To see how Utoipa is used in our complete web API architecture, see the [OpenAPI Documentation](08-OpenAPI.md) chapter and the [Data Models](06-Data-Models.md) chapter.
+> **📘 See the full implementation**: This guide explains Utoipa concepts. To see how Utoipa is used in our complete web API architecture, see the [OpenAPI Documentation](09-OpenAPI.md) chapter and the [Data Models](06-Data-Models.md) chapter.
 
 ---
 
@@ -742,7 +743,7 @@ Utoipa's integration with Axum and Serde creates a seamless documentation workfl
 - **[Utoipa Documentation](https://docs.rs/utoipa/)**: Official Utoipa crate documentation
 - **[OpenAPI Specification](https://swagger.io/specification/)**: OpenAPI 3.0 specification
 - **[Swagger UI](https://swagger.io/tools/swagger-ui/)**: Interactive API documentation
-- **[OpenAPI Documentation](08-OpenAPI.md)**: How we use Utoipa in our API
+- **[OpenAPI Documentation](09-OpenAPI.md)**: How we use Utoipa in our API
 - **[Data Models](06-Data-Models.md)**: How schemas are generated from our models
 - **[Serde Framework Guide](Serde.md)**: Serialization framework that Utoipa integrates with
 - **[Axum Framework Guide](Axum.md)**: Web framework that Utoipa documents
@@ -760,4 +761,4 @@ Utoipa's integration with Axum and Serde creates a seamless documentation workfl
 
 ---
 
-*This guide provides detailed explanations of Utoipa framework features used in our blockchain API. For implementation details, see the [OpenAPI Documentation](08-OpenAPI.md) chapter.*
+*This guide provides detailed explanations of Utoipa framework features used in our blockchain API. For implementation details, see the [OpenAPI Documentation](09-OpenAPI.md) chapter.*

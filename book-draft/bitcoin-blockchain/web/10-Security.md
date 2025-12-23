@@ -16,9 +16,10 @@
    - [05: Middleware](05-Middleware.md) - Middleware layer
    - [06: Data Models](06-Data-Models.md) - Request/response models
    - [07: Error Handling](07-Error-Handling.md) - Error management
-   - [08: OpenAPI](08-OpenAPI.md) - API documentation
-   - [09: Security](09-Security.md) - Security architecture ← *You are here*
-   - [10: Best Practices](10-Best-Practices.md) - Design patterns
+   - [08: Rate Limiting](08-Rate-Limiting.md) - Rate limiting implementation
+   - [09: OpenAPI](09-OpenAPI.md) - API documentation
+   - [10: Security](10-Security.md) - Security architecture ← *You are here*
+   - [11: Best Practices](11-Best-Practices.md) - Design patterns
    - [Axum Framework Guide](Axum.md) - Framework reference
 4. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
 5. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md)
@@ -42,13 +43,13 @@
 
 ---
 
-# Chapter 3.9: Security Architecture
+# Chapter 3.10: Security Architecture
 
 **Part I: Core Blockchain Implementation** | **Web API Architecture**
 
 <div align="center">
 
-**📚 [← Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Chapter 3.9: Security Architecture** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
+**📚 [← OpenAPI](09-OpenAPI.md)** | **Chapter 3.10: Security Architecture** | **[Best Practices →](11-Best-Practices.md)** 📚
 
 </div>
 
@@ -116,8 +117,8 @@ For current implementation status, see [Rate Limiting Middleware](05-Middleware.
 
 ## Navigation
 
-- **[← Previous: OpenAPI Documentation](08-OpenAPI.md)** - Automatic API documentation generation
-- **[Next: Best Practices and Patterns →](10-Best-Practices.md)** - Design patterns and conventions
+- **[← Previous: OpenAPI Documentation](09-OpenAPI.md)** - Automatic API documentation generation
+- **[Next: Best Practices and Patterns →](11-Best-Practices.md)** - Design patterns and conventions
 - **[Authentication Middleware](05-Middleware.md#authentication-middleware)** - Detailed authentication implementation
 - **[CORS Middleware](05-Middleware.md#cors-middleware)** - CORS configuration details
 - **[Web API Index](README.md)** - Overview and navigation
@@ -128,7 +129,7 @@ For current implementation status, see [Rate Limiting Middleware](05-Middleware.
 
 <div align="center">
 
-**📚 [← Previous: OpenAPI](08-OpenAPI.md)** | **Chapter 3.9: Security Architecture** | **[Next: Best Practices →](10-Best-Practices.md)** 📚
+**📚 [← Previous: OpenAPI](09-OpenAPI.md)** | **Chapter 3.10: Security Architecture** | **[Next: Best Practices →](11-Best-Practices.md)** 📚
 
 **[← Web API Index](README.md)** | **[Introduction & Architecture Overview](01-Introduction.md)**
 
@@ -136,4 +137,4 @@ For current implementation status, see [Rate Limiting Middleware](05-Middleware.
 
 ---
 
-*This chapter covers security architecture. Continue to [Best Practices and Patterns](10-Best-Practices.md) to learn about design patterns and conventions.*
+*This chapter covers security architecture. Continue to [Best Practices and Patterns](11-Best-Practices.md) to learn about design patterns and conventions.*

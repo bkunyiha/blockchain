@@ -56,6 +56,7 @@ This section provides complete manifest examples with detailed explanations. Eac
 |------|--------------|---------|-------------------|
 | `01-namespace.yaml` | Namespace | Creates isolated environment | Namespace name, labels |
 | `02-configmap.yaml` | ConfigMap | Stores non-sensitive configuration | Node settings, connection strings |
+| `14-configmap-rate-limit.yaml` | ConfigMap | Rate limiting settings (`Settings.toml`) | `redis_addr`, strategies, buckets |
 | `03-secrets.yaml` | Secret | Stores sensitive data | API keys, base64 encoding |
 | `04-pvc-miner.yaml` | PersistentVolumeClaim | Storage for miner data | Storage size (50Gi), access mode |
 | `05-pvc-webserver.yaml` | PersistentVolumeClaim | Storage for webserver data | Storage size (50Gi), access mode |
@@ -67,6 +68,7 @@ This section provides complete manifest examples with detailed explanations. Eac
 | `10-hpa-webserver.yaml` | HorizontalPodAutoscaler | Auto-scales webservers | CPU/Memory thresholds, scaling policies |
 | `11-hpa-miner.yaml` | HorizontalPodAutoscaler | Auto-scales miners | CPU threshold, conservative scaling |
 | `12-pod-disruption-budget.yaml` | PodDisruptionBudget | Ensures minimum availability | Minimum available pods |
+| `15-redis.yaml` | Deployment + Service | Redis backend for rate limiting | ClusterIP service, probes |
 
 ## 1. Namespace
 

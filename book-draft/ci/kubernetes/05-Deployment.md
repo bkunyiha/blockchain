@@ -107,6 +107,19 @@ stringData:
 **Update ConfigMap (Optional):**
 Edit `manifests/02-configmap.yaml` if needed.
 
+**Rate Limiting (Optional):**
+The webserver uses Redis-backed rate limiting (via `axum_rate_limiter`).
+
+- Rate limiting settings live in `manifests/14-configmap-rate-limit.yaml` (mounted into the webserver pod as `/app/Settings.toml`)
+- Redis is deployed in-cluster via `manifests/15-redis.yaml`
+
+After changing rate limit settings:
+
+```bash
+kubectl apply -f manifests/14-configmap-rate-limit.yaml
+kubectl rollout restart deployment/webserver -n blockchain
+```
+
 **Adjust Resource Limits (Optional):**
 Edit manifests to adjust CPU/memory requests and limits.
 

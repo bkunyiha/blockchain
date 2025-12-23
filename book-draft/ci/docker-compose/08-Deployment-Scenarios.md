@@ -62,6 +62,8 @@ docker compose up -d
 ### Network Topology
 
 ```
+redis:6379 (rate limiting backend)
+    ↑
 miner_1:2001 (seed node, "local")
     ↑
 webserver_1:2101 → connects to miner_1:2001
@@ -69,6 +71,7 @@ webserver_1:2101 → connects to miner_1:2001
 
 ### Details
 
+- **Redis**: Provides shared state for the webserver’s Redis-backed API rate limiting.
 - **Miner 1**: Acts as seed node, P2P port 2001
 - **Webserver 1**: Connects to miner_1:2001, Web port 8080, P2P port 2101
 - **Ports accessible**: 2001, 8080, 2101

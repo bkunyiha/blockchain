@@ -121,6 +121,16 @@ docker compose up -d
 # webserver_1 → selects addr2 (index 1)
 ```
 
+**What starts with `docker compose up -d`:**
+- `redis` (required by the webserver’s Redis-backed API rate limiting)
+- `miner` (P2P + mining)
+- `webserver` (REST API + Swagger UI + rate limiting)
+
+**Rate limiting configuration:**
+- The webserver loads `axum_rate_limiter` settings from `ci/docker-compose/configs/Settings.toml`.
+- Compose mounts it into the container as `/app/Settings.toml` and sets `RL_SETTINGS_PATH=/app/Settings.toml`.
+- To change limits/strategies, edit `configs/Settings.toml` and restart the webserver.
+
 **Method 2: Direct Assignment**
 
 If you prefer to assign addresses directly, you can use this simpler approach:
@@ -175,6 +185,8 @@ There are also standalone alternative compose files that can be used instead:
   docker compose -f docker-compose.webserver.yml up -d
   ```
 
+  Note: this file also starts a `redis` service for rate limiting.
+
 **Note:** These alternative files are **NOT automatically called**. They're manual alternatives you can use with the `-f` flag if you want to run only miners or only webservers separately. The main `docker-compose.yml` is recommended for most use cases as it supports scaling both services together.
 
 ### Port Assignments
@@ -224,6 +236,12 @@ The wallet file (`wallets.dat`) is stored inside each container at `/app/wallets
 - **Miners**: Volume `miner-wallets` mounted at `/app/wallets`
 - **Webservers**: Volume `webserver-wallets` mounted at `/app/wallets`
 
+**Important (Docker Compose volume names):** Docker Compose prefixes volume names with the **project name**.
+For example, if you run from `ci/docker-compose/configs/`, the project name is typically `configs`, so volumes become:
+
+- Miner wallets: `configs_miner-wallets`
+- Webserver wallets: `configs_webserver-wallets`
+
 #### Accessing Wallet Files
 
 **Method 1: Via Container Exec**
@@ -246,8 +264,11 @@ docker exec -it <container_name> test -f /app/wallets/wallets.dat && echo "Walle
 docker volume ls | grep wallets
 
 # Inspect volume to find host path
-docker volume inspect blockchain_miner-wallets
-docker volume inspect blockchain_webserver-wallets
+docker volume inspect configs_miner-wallets
+docker volume inspect configs_webserver-wallets
+
+# Or print only the mountpoint:
+docker volume inspect configs_webserver-wallets --format '{{.Mountpoint}}'
 ```
 
 **Host Filesystem Location:**
@@ -260,11 +281,11 @@ The actual location on your local server depends on your operating system:
 /var/lib/docker/volumes/<volume_name>/_data
 
 # Example paths:
-/var/lib/docker/volumes/blockchain_miner-wallets/_data/wallets.dat
-/var/lib/docker/volumes/blockchain_webserver-wallets/_data/wallets.dat
+/var/lib/docker/volumes/configs_miner-wallets/_data/wallets.dat
+/var/lib/docker/volumes/configs_webserver-wallets/_data/wallets.dat
 
 # Find exact path:
-docker volume inspect blockchain_miner-wallets | grep Mountpoint
+docker volume inspect configs_webserver-wallets | grep Mountpoint
 ```
 
 **macOS (Docker Desktop):**
@@ -274,7 +295,7 @@ docker volume inspect blockchain_miner-wallets | grep Mountpoint
 # ~/Library/Containers/com.docker.docker/Data/vms/0/data/docker/volumes/
 
 # Use docker volume inspect to get the path inside the VM:
-docker volume inspect blockchain_miner-wallets
+docker volume inspect configs_webserver-wallets
 
 # Output shows "Mountpoint" which is the path inside the Docker VM
 # Example: /var/lib/docker/volumes/blockchain_miner-wallets/_data

@@ -253,6 +253,14 @@ docker compose logs miner-1
 docker compose restart webserver-1
 ```
 
+### Rate Limiting Verification (Optional)
+
+The webserver uses Redis-backed rate limiting. You can verify headers are present on successful responses:
+
+```bash
+curl -i http://localhost:8080/api/health/liveness | grep -i "x-ratelimit"
+```
+
 ### API Authentication Failing
 Make sure you're using the correct API key:
 - Check `docker-compose.yml` for `BITCOIN_API_ADMIN_KEY` and `BITCOIN_API_WALLET_KEY`
