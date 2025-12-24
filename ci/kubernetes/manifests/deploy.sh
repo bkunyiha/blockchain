@@ -39,13 +39,18 @@ kubectl apply -f 03-secrets.yaml
 
 echo "Step 3: Creating storage..."
 kubectl apply -f 04-pvc-miner.yaml
-kubectl apply -f 05-pvc-webserver.yaml
 
 echo "Step 4: Creating rate limiting backend (Redis)..."
 kubectl apply -f 15-redis.yaml
 
 echo "Step 5: Creating StatefulSet and Deployment..."
 kubectl apply -f 06-statefulset-miner.yaml
+kubectl apply -f 09-service-webserver-headless.yaml
+
+# If you're upgrading from the old setup (webserver Deployment -> StatefulSet),
+# remove the old Deployment so it doesn't keep spawning pods that share PVCs.
+kubectl delete deployment webserver -n blockchain --ignore-not-found=true || true
+
 kubectl apply -f 07-deployment-webserver.yaml
 
 echo "Step 6: Creating services..."

@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: webserver
   namespace: blockchain
@@ -7,10 +7,31 @@ metadata:
     app: webserver
     component: blockchain-node
 spec:
+  serviceName: webserver-headless
   replicas: 2  # Start with 2 webservers
   selector:
     matchLabels:
       app: webserver
+
+  # Each webserver gets its own PVCs (isolated blockchain + wallet storage)
+  volumeClaimTemplates:
+  - metadata:
+      name: webserver-data
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 50Gi
+  - metadata:
+      name: webserver-wallets
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+
   template:
     metadata:
       labels:
@@ -97,7 +118,7 @@ spec:
             secretKeyRef:
               name: blockchain-secrets
               key: MINER_ADDRESS
-              # REQUIRED: MINER_ADDRESS must be set in secrets
+              optional: true
         
         # Use Downward API to get pod information
         - name: POD_NAME
@@ -154,12 +175,6 @@ spec:
       
       # Volumes
       volumes:
-      - name: webserver-data
-        persistentVolumeClaim:
-          claimName: webserver-data-pvc
-      - name: webserver-wallets
-        persistentVolumeClaim:
-          claimName: webserver-wallets-pvc
       - name: rate-limit-settings
         configMap:
           name: rate-limit-settings

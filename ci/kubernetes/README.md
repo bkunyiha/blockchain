@@ -115,30 +115,31 @@ All comprehensive documentation is organized in the [`book-draft/ci/kubernetes/`
 - **Multi-node support**: Distribute pods across cluster nodes
 - **Persistent storage**: PVCs for data and wallet persistence
 - **High availability**: Pod Disruption Budgets ensure minimum availability
+- **Isolated webserver storage**: Webservers run as a StatefulSet with per-pod storage (each webserver has its own blockchain DB)
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────┐
-│         Kubernetes Cluster              │
-│                                         │
-│  ┌──────────────┐  ┌──────────────┐   │
-│  │   Miner Pods │  │ Webserver Pods│   │
-│  │   (2+)       │  │   (2+)       │   │
-│  └──────┬───────┘  └──────┬───────┘   │
-│         │                 │            │
-│  ┌──────▼─────────────────▼──────┐    │
-│  │      Services                  │    │
-│  │  miner-service (ClusterIP)     │    │
-│  │  webserver-service (LB)        │    │
-│  └───────────────────────────────┘    │
-│                                         │
-│  ┌───────────────────────────────┐    │
-│  │  HPA (Autoscalers)            │    │
-│  │  Monitors CPU/Memory          │    │
-│  │  Scales pods automatically    │    │
-│  └───────────────────────────────┘    │
-└─────────────────────────────────────────┘
+┌───────────────────────────────────────┐
+│         Kubernetes Cluster            │
+│                                       │
+│  ┌──────────────┐  ┌────────────-──┐  │
+│  │   Miner Pods │  │ Webserver Pods│  │
+│  │   (2+)       │  │   (2+)        │  │
+│  └──────┬───────┘  └──────┬──────-─┘  │
+│         │                 │           │
+│  ┌──────▼─────────────────▼─────--─┐  │
+│  │      Services                   │  │
+│  │  miner-service (ClusterIP)      │  │
+│  │  webserver-service (LB)         │  │
+│  └──────────────────────────────--─┘  │
+│                                       │
+│  ┌─────────────────────────────--──┐  │
+│  │  HPA (Autoscalers)              │  │
+│  │  Monitors CPU/Memory            │  │
+│  │  Scales pods automatically      │  │
+│  └──────────────────────────────--─┘  │
+└───────────────────────────────────────┘
 ```
 
 ## Common Commands

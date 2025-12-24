@@ -12,6 +12,28 @@ spec:
   selector:
     matchLabels:
       app: miner
+
+  # ⚠️ Critical: StatefulSet uses volumeClaimTemplates (at spec level, not pod template)
+  # Each pod gets its own PVC automatically: miner-data-miner-0, miner-data-miner-1, etc.
+  # This ensures each miner has isolated persistent storage
+  volumeClaimTemplates:
+  - metadata:
+      name: miner-data
+    spec:
+      accessModes:
+        - ReadWriteOnce  # Single pod access
+      resources:
+        requests:
+          storage: 50Gi  # Adjust based on blockchain size
+  - metadata:
+      name: miner-wallets
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi  # Wallets are typically small
+
   template:
     metadata:
       labels:
@@ -71,7 +93,7 @@ spec:
             secretKeyRef:
               name: blockchain-secrets
               key: MINER_ADDRESS
-              # REQUIRED: MINER_ADDRESS must be set in secrets
+              optional: true
         
         # ⚠️ Critical: Use Downward API to get pod information for StatefulSet
         # StatefulSet pods have stable names: miner-0, miner-1, miner-2, etc.
@@ -122,25 +144,4 @@ spec:
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
-      
-      # ⚠️ Critical: StatefulSet uses volumeClaimTemplates
-      # Each pod gets its own PVC automatically: miner-data-miner-0, miner-data-miner-1, etc.
-      # This ensures each miner has isolated persistent storage
-      volumeClaimTemplates:
-      - metadata:
-          name: miner-data
-        spec:
-          accessModes:
-            - ReadWriteOnce  # Single pod access
-          resources:
-            requests:
-              storage: 50Gi  # Adjust based on blockchain size
-      - metadata:
-          name: miner-wallets
-        spec:
-          accessModes:
-            - ReadWriteOnce
-          resources:
-            requests:
-              storage: 1Gi  # Wallets are typically small
 

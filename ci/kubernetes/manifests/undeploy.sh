@@ -17,6 +17,7 @@ kubectl delete -f 10-hpa-webserver.yaml --ignore-not-found=true
 
 echo "Deleting services..."
 kubectl delete -f 09-service-webserver.yaml --ignore-not-found=true
+kubectl delete -f 09-service-webserver-headless.yaml --ignore-not-found=true
 kubectl delete -f 08-service-miner.yaml --ignore-not-found=true
 kubectl delete -f 15-redis.yaml --ignore-not-found=true
 
@@ -25,7 +26,6 @@ kubectl delete -f 07-deployment-webserver.yaml --ignore-not-found=true
 kubectl delete -f 06-statefulset-miner.yaml --ignore-not-found=true
 
 echo "Deleting storage..."
-kubectl delete -f 05-pvc-webserver.yaml --ignore-not-found=true
 kubectl delete -f 04-pvc-miner.yaml --ignore-not-found=true
 
 echo "Deleting configuration..."

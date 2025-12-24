@@ -291,6 +291,24 @@ else
     fi
 fi
 
+# Kubernetes mode: keep *container* ports stable.
+#
+# In Docker Compose we vary ports per instance on the host (and sometimes inside the container),
+# but in Kubernetes each pod has its own IP, so all pods can (and should) listen on the same
+# internal ports. Our manifests and probes assume:
+# - miner P2P: 2001
+# - webserver HTTP: 8080
+# - webserver P2P: 2001
+if [ -n "${POD_NAME:-}" ]; then
+    if [ "${NODE_IS_MINER}" = "yes" ]; then
+        P2P_PORT=2001
+    fi
+    if [ "${NODE_IS_WEB_SERVER}" = "yes" ] && [ "${NODE_IS_MINER}" = "no" ]; then
+        WEB_PORT=8080
+        P2P_PORT=2001
+    fi
+fi
+
 # Instance-specific data directory
 # Each instance gets its own isolated blockchain data directory
 DATA_DIR="data${INSTANCE_NUMBER}"
@@ -602,6 +620,11 @@ if [ "${SEQUENTIAL_STARTUP:-yes}" = "yes" ]; then
     fi  # Close SHOULD_WAIT check
 else
     # Sequential startup disabled - for webservers, still try to wait for miner if instance 1
+    # IMPORTANT: This Docker-Compose-style wait logic should NOT run in Kubernetes.
+    # In Kubernetes, we use initContainers (and/or readiness probes) for ordering and service availability.
+    if [ -n "${POD_NAME:-}" ]; then
+        debug_log "Kubernetes mode detected (POD_NAME set) - skipping Docker Compose sequential wait logic"
+    else
     if [ "${NODE_IS_WEB_SERVER}" = "yes" ] && [ "${NODE_IS_MINER}" = "no" ] && [ "${INSTANCE_NUMBER}" -eq 1 ]; then
         echo "Sequential startup disabled, but webserver instance 1 will wait for miner..."
         if [ -f "/app/wait-for-node.sh" ]; then
@@ -632,6 +655,7 @@ else
             fi
         fi
     fi
+    fi
 fi
 
 # Determine wallet address from pool or direct assignment
@@ -657,15 +681,56 @@ if [ -n "${WALLET_ADDRESS_POOL}" ]; then
         echo "  Available addresses: ${WALLET_ADDRESS_POOL}"
         exit 1
     fi
-elif [ -z "${NODE_MINING_ADDRESS}" ]; then
-    echo "ERROR: Either WALLET_ADDRESS_POOL or NODE_MINING_ADDRESS must be set"
-    exit 1
 fi
 
-# Validate required environment variables
+# Auto-generate a mining address if none is provided (Kubernetes-friendly).
+#
+# Why: `startnode` requires a valid wallet address argument. In Kubernetes we prefer not to
+# force users to pre-generate and inject addresses. Instead, if no address is provided, we
+# create one in the container and persist it to the wallet volume.
+#
+# We also treat the common placeholder "your-wallet-address-here" as "unset".
+PLACEHOLDER_MINING_ADDR="your-wallet-address-here"
+MINING_ADDR_FILE=""
+
+# Determine wallet directory from WALLET_FILE (default: wallets.dat in /app).
+WALLET_FILE_PATH="${WALLET_FILE:-wallets.dat}"
+WALLET_DIR="/app/$(dirname "${WALLET_FILE_PATH}")"
+if [ "${WALLET_DIR}" = "/app/." ]; then
+    WALLET_DIR="/app"
+fi
+MINING_ADDR_FILE="${WALLET_DIR}/mining_address.txt"
+
+if [ "${NODE_MINING_ADDRESS}" = "${PLACEHOLDER_MINING_ADDR}" ]; then
+    NODE_MINING_ADDRESS=""
+fi
+
 if [ -z "${NODE_MINING_ADDRESS}" ]; then
-    echo "ERROR: NODE_MINING_ADDRESS environment variable is required but not set"
-    exit 1
+    # Prefer previously persisted mining address (stable across restarts).
+    if [ -f "${MINING_ADDR_FILE}" ]; then
+        NODE_MINING_ADDRESS="$(cat "${MINING_ADDR_FILE}" | head -n1 | xargs || true)"
+    fi
+fi
+
+if [ -z "${NODE_MINING_ADDRESS}" ]; then
+    echo "NODE_MINING_ADDRESS not provided; creating a new wallet address for mining..."
+    echo "  Wallet file: /app/${WALLET_FILE_PATH}"
+    echo "  Mining address cache: ${MINING_ADDR_FILE}"
+
+    CREATE_OUTPUT=$(/app/blockchain createwallet 2>&1 || true)
+    # The CLI prints: "Your new address: <ADDR>"
+    NEW_ADDR=$(echo "${CREATE_OUTPUT}" | sed -n 's/.*Your new address: \([^[:space:]]\+\).*/\1/p' | tail -n1)
+
+    if [ -z "${NEW_ADDR}" ]; then
+        echo "ERROR: Failed to create wallet address. Raw output:" >&2
+        echo "${CREATE_OUTPUT}" >&2
+        exit 1
+    fi
+
+    NODE_MINING_ADDRESS="${NEW_ADDR}"
+    mkdir -p "${WALLET_DIR}"
+    echo "${NODE_MINING_ADDRESS}" > "${MINING_ADDR_FILE}"
+    echo "Generated mining address: ${NODE_MINING_ADDRESS}"
 fi
 
 # Final resolution: Ensure NODE_CONNECT_NODES doesn't contain hostnames with underscores

@@ -1,5 +1,5 @@
 # Build stage for Rust binary
-FROM rust:1.91.1-slim as rust-builder
+FROM rust:1.91.1-slim AS rust-builder
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
@@ -29,7 +29,7 @@ COPY bitcoin-api/src ./bitcoin-api/src
 RUN cargo build --release -p blockchain
 
 # Build stage for React web UI
-FROM node:20-slim as web-ui-builder
+FROM node:20-slim AS web-ui-builder
 
 # Set working directory
 WORKDIR /app
@@ -89,8 +89,6 @@ EXPOSE 8080 2001
 ENV TREE_DIR=data1
 ENV BLOCKS_TREE=blocks1
 ENV NODE_ADDR=0.0.0.0:2001
-ENV BITCOIN_API_ADMIN_KEY=admin-secret
-ENV BITCOIN_API_WALLET_KEY=wallet-secret
 
 # Node configuration (can be overridden)
 # NODE_IS_MINER defaults to "no" (webserver mode) as a safe default:

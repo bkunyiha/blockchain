@@ -69,7 +69,7 @@ spec:
             secretKeyRef:
               name: blockchain-secrets
               key: MINER_ADDRESS
-              # REQUIRED: MINER_ADDRESS must be set in secrets
+              optional: true
         
         # Use Downward API to get pod information
         # This helps with instance number detection
