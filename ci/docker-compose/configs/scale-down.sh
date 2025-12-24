@@ -18,9 +18,21 @@ fi
 echo "Scaling ${SERVICE} down: ${CURRENT_COUNT} → ${NEW_COUNT}"
 echo ""
 
+# Compose wrapper: prefer `docker compose`, fall back to `docker-compose`.
+compose() {
+    if docker compose version >/dev/null 2>&1; then
+        docker compose "$@"
+    elif command -v docker-compose >/dev/null 2>&1; then
+        docker-compose "$@"
+    else
+        echo "Error: neither 'docker compose' nor 'docker-compose' is available" >&2
+        exit 1
+    fi
+}
+
 # Get current counts for both services
-CURRENT_MINERS=$(docker-compose ps -q miner 2>/dev/null | wc -l | tr -d ' ')
-CURRENT_WEBSERVERS=$(docker-compose ps -q webserver 2>/dev/null | wc -l | tr -d ' ')
+CURRENT_MINERS=$(compose ps -q miner 2>/dev/null | wc -l | tr -d ' ')
+CURRENT_WEBSERVERS=$(compose ps -q webserver 2>/dev/null | wc -l | tr -d ' ')
 
 # Determine new counts after scaling
 if [ "${SERVICE}" = "miner" ]; then
@@ -72,7 +84,7 @@ echo "  ✓ Updated ${OUTPUT_FILE}"
 echo ""
 
 # Scale down by one
-docker-compose up -d --no-recreate --scale ${SERVICE}=${NEW_COUNT}
+compose up -d --no-recreate --scale ${SERVICE}=${NEW_COUNT}
 
 echo ""
 echo "Waiting for container removal..."
@@ -80,7 +92,7 @@ sleep 5
 
 echo ""
 echo "Current ${SERVICE} containers:"
-docker-compose ps ${SERVICE}
+compose ps ${SERVICE}
 
 echo ""
 echo "✓ Port mappings updated - remaining instances have ports accessible externally"

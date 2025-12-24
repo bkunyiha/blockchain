@@ -27,7 +27,8 @@ Docker Compose is ideal for:
 **Quick Start:**
 ```bash
 cd ci/docker-compose/configs
-docker-compose up -d
+# Use either `docker compose` (recommended) or `docker-compose` (legacy)
+docker compose up -d
 ```
 
 **Documentation**: 
@@ -62,7 +63,7 @@ Kubernetes is recommended for:
 **Quick Start:**
 ```bash
 cd ci/kubernetes/manifests
-kubectl apply -f .
+./deploy.sh
 ```
 
 **Documentation**: 

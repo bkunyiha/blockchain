@@ -59,5 +59,7 @@ for i in $(seq 1 ${NUM_WEBSERVERS}); do
     echo "    Instance ${i}: Web port ${WEB_PORT}, P2P port ${P2P_PORT}"
 done
 echo ""
-echo "Now run: docker-compose up -d --scale miner=${NUM_MINERS} --scale webserver=${NUM_WEBSERVERS}"
+echo "Now run:"
+echo "  docker compose up -d --scale miner=${NUM_MINERS} --scale webserver=${NUM_WEBSERVERS}"
+echo "  # (or, legacy): docker-compose up -d --scale miner=${NUM_MINERS} --scale webserver=${NUM_WEBSERVERS}"
 

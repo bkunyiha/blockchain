@@ -1,6 +1,6 @@
 # Alternative compose file: Run blockchain node as a miner (no web server)
-# Usage: docker-compose -f docker-compose.miner.yml up -d
-# To scale: docker-compose -f docker-compose.miner.yml up -d --scale miner=3
+# Usage: docker compose -f docker-compose.miner.yml up -d
+# To scale: docker compose -f docker-compose.miner.yml up -d --scale miner=3
 #
 # Note: Instance numbers are auto-detected by the entrypoint script from container names
 # Instance 1: P2P port 2001, Instance 2: P2P port 2002, etc.

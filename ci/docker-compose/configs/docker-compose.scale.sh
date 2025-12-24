@@ -10,9 +10,21 @@ set -e
 NUM_MINERS=${1:-1}
 NUM_WEBSERVERS=${2:-1}
 
+# Compose wrapper: prefer `docker compose`, fall back to `docker-compose`.
+compose() {
+    if docker compose version >/dev/null 2>&1; then
+        docker compose "$@"
+    elif command -v docker-compose >/dev/null 2>&1; then
+        docker-compose "$@"
+    else
+        echo "Error: neither 'docker compose' nor 'docker-compose' is available" >&2
+        exit 1
+    fi
+}
+
 # Get current counts
-CURRENT_MINERS=$(docker-compose ps -q miner 2>/dev/null | wc -l | tr -d ' ')
-CURRENT_WEBSERVERS=$(docker-compose ps -q webserver 2>/dev/null | wc -l | tr -d ' ')
+CURRENT_MINERS=$(compose ps -q miner 2>/dev/null | wc -l | tr -d ' ')
+CURRENT_WEBSERVERS=$(compose ps -q webserver 2>/dev/null | wc -l | tr -d ' ')
 
 echo "Current blockchain network:"
 echo "  Miners: ${CURRENT_MINERS}"
@@ -80,11 +92,11 @@ echo ""
 
 # Scale services (--no-recreate prevents recreating existing containers)
 # This keeps existing containers running and only adds/removes as needed
-docker-compose up -d --no-recreate --scale miner=${NUM_MINERS} --scale webserver=${NUM_WEBSERVERS}
+compose up -d --no-recreate --scale miner=${NUM_MINERS} --scale webserver=${NUM_WEBSERVERS}
 
 echo ""
 echo "Scaled services:"
-docker-compose ps
+compose ps
 
 echo ""
 echo "Port mappings (ALL instances accessible externally):"

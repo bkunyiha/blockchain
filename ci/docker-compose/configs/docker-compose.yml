@@ -1,6 +1,6 @@
 # Multi-instance blockchain network
 # Default: 1 miner + 1 webserver
-# Scale with: docker-compose up -d --scale miner=3 --scale webserver=2
+# Scale with: docker compose up -d --scale miner=3 --scale webserver=2
 # Or set NUM_MINERS and NUM_WEBSERVERS environment variables
 
 services:

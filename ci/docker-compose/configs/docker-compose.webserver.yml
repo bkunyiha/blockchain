@@ -1,6 +1,6 @@
 # Alternative compose file: Run blockchain node as a web server (no miner)
-# Usage: docker-compose -f docker-compose.webserver.yml up -d
-# To scale: docker-compose -f docker-compose.webserver.yml up -d --scale webserver=3
+# Usage: docker compose -f docker-compose.webserver.yml up -d
+# To scale: docker compose -f docker-compose.webserver.yml up -d --scale webserver=3
 #
 # Note: Instance numbers are auto-detected by the entrypoint script from container names
 # Instance 1: Web port 8080, P2P port 2101

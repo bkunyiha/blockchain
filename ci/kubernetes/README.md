@@ -10,14 +10,16 @@ kubernetes/
 └── manifests/                     # Kubernetes manifest files
     ├── 01-namespace.yaml         # Namespace
     ├── 02-configmap.yaml         # Configuration
+    ├── 14-configmap-rate-limit.yaml # Rate limiting settings (Settings.toml)
     ├── 03-secrets.yaml           # Secrets (API keys)
-    ├── 04-pvc-miner.yaml         # Miner storage
-    ├── 05-pvc-webserver.yaml     # Webserver storage
-    ├── 06-deployment-miner.yaml  # Miner deployment (alternative)
+    ├── 04-pvc-miner.yaml         # (Legacy/optional) old PVC approach
+    ├── 05-pvc-webserver.yaml     # (Legacy/optional) old PVC approach
+    ├── 15-redis.yaml             # Redis (rate limiting backend)
     ├── 06-statefulset-miner.yaml # Miner StatefulSet (chain topology)
-    ├── 07-deployment-webserver.yaml # Webserver deployment
+    ├── 07-deployment-webserver.yaml # Webserver StatefulSet (per-pod storage)
     ├── 08-service-miner-headless.yaml  # Miner headless service (for StatefulSet)
     ├── 08-service-miner.yaml     # Miner service (load balanced)
+    ├── 09-service-webserver-headless.yaml # Webserver headless service (for StatefulSet)
     ├── 09-service-webserver.yaml  # Webserver service
     ├── 10-hpa-webserver.yaml     # Webserver autoscaler
     ├── 11-hpa-miner.yaml         # Miner autoscaler
@@ -41,26 +43,32 @@ kubernetes/
 **For Minikube:**
 ```bash
 eval $(minikube docker-env)
-cd ../docker-compose/configs
-docker build -t blockchain-node:latest .
+# IMPORTANT: build from the repository root (build context), because the Dockerfile
+# uses COPY paths like `ci/docker-compose/configs/...`.
+cd /path/to/repo/root
+docker build -t blockchain-node:latest -f Dockerfile .
 ```
 
 **For Cloud/Registry:**
 ```bash
-cd ../docker-compose/configs
-docker build -t your-registry/blockchain-node:v1.0.0 .
+cd /path/to/repo/root
+docker build -t your-registry/blockchain-node:v1.0.0 -f Dockerfile .
 docker push your-registry/blockchain-node:v1.0.0
 # Then update image in manifests/06-statefulset-miner.yaml and 07-deployment-webserver.yaml
 ```
 
 ### Step 2: Update Configuration
 
-Edit `manifests/03-secrets.yaml` to set your API keys and wallet address:
+Edit `manifests/03-secrets.yaml` to set your API keys. The mining address is optional.
 ```yaml
 stringData:
   BITCOIN_API_ADMIN_KEY: "your-admin-key"
   BITCOIN_API_WALLET_KEY: "your-wallet-key"
-  MINER_ADDRESS: "your-wallet-address-here"  # REQUIRED: Must be set to a valid wallet address
+  # Optional: Mining address (wallet address).
+  #
+  # If omitted, the container entrypoint will auto-create a wallet address
+  # and persist it in the pod's wallets volume.
+  # MINER_ADDRESS: ""
 ```
 
 ### Step 2b: Rate Limiting (Redis + Settings.toml)
@@ -74,14 +82,14 @@ The webserver uses Redis-backed rate limiting via `axum_rate_limiter`.
 To change limits/strategies, edit `manifests/14-configmap-rate-limit.yaml` and restart the webserver:
 
 ```bash
-kubectl rollout restart deployment/webserver -n blockchain
+kubectl rollout restart statefulset/webserver -n blockchain
 ```
 
 ### Step 3: Deploy
 
 ```bash
 cd manifests
-kubectl apply -f .
+./deploy.sh
 ```
 
 ### Step 4: Verify
@@ -145,8 +153,8 @@ All comprehensive documentation is organized in the [`book-draft/ci/kubernetes/`
 ## Common Commands
 
 ```bash
-# Deploy all resources
-cd manifests && kubectl apply -f .
+# Deploy all resources (recommended)
+cd manifests && ./deploy.sh
 
 # Check status
 kubectl get all -n blockchain
@@ -156,10 +164,10 @@ kubectl logs -n blockchain -l app=webserver -f
 
 # Scale manually
 kubectl scale statefulset miner -n blockchain --replicas=3
-kubectl scale deployment webserver -n blockchain --replicas=5
+kubectl scale statefulset webserver -n blockchain --replicas=5
 
 # Update image
-kubectl set image deployment/webserver blockchain-node=blockchain-node:v1.1.0 -n blockchain
+kubectl set image statefulset/webserver blockchain-node=blockchain-node:v1.1.0 -n blockchain
 
 # Port forward (for local access)
 kubectl port-forward -n blockchain svc/webserver-service 8080:8080
