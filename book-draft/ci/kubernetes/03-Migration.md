@@ -36,7 +36,7 @@
 
 ---
 
-# Chapter 8, Section 3: Migration Guide
+# Chapter 9, Section 3: Migration Guide
 
 **Part II: Deployment & Operations** | **Chapter 9: Kubernetes Deployment**
 
@@ -66,8 +66,8 @@ Migrating from Docker Compose to Kubernetes involves:
 
 ```bash
 # Build the image
-cd ci/docker-compose/configs
-docker build -t blockchain-node:latest .
+cd /path/to/repo/root
+docker build -t blockchain-node:latest -f Dockerfile .
 
 # Tag for registry (replace with your registry)
 docker tag blockchain-node:latest your-registry/blockchain-node:v1.0.0
@@ -82,8 +82,13 @@ docker push your-registry/blockchain-node:v1.0.0
 # Use Minikube's Docker daemon
 eval $(minikube docker-env)
 
-# Build directly in Minikube
-docker build -t blockchain-node:latest .
+# IMPORTANT: build from the repository root (build context),
+# because the Dockerfile uses COPY paths like `ci/docker-compose/configs/...`.
+cd /path/to/repo/root
+docker build -t blockchain-node:latest -f Dockerfile .
+
+# Restore Docker to your normal local daemon (recommended)
+eval $(minikube docker-env -u)
 ```
 
 ## Step 2: Create Kubernetes Namespace
@@ -114,7 +119,7 @@ kubectl apply -f 01-namespace.yaml
 
 ### ConfigMap
 
-Create `02-configmap.yaml`:
+Use `ci/kubernetes/manifests/02-configmap.yaml` (recommended). It contains the node settings used by miners and webservers.
 
 ```yaml
 apiVersion: v1
@@ -124,23 +129,23 @@ metadata:
   namespace: blockchain
 data:
   MINER_NODE_IS_MINER: "yes"
-  MINER_NODE_IS_WEB_SERVER: "no"
   MINER_NODE_CONNECT_NODES: "local"
-  WEBSERVER_NODE_IS_MINER: "no"
   WEBSERVER_NODE_IS_WEB_SERVER: "yes"
   WEBSERVER_NODE_CONNECT_NODES: "miner-service.blockchain.svc.cluster.local:2001"
+  CENTERAL_NODE: ""
   SEQUENTIAL_STARTUP: "no"
   WALLET_FILE: "wallets/wallets.dat"
 ```
 
 Apply:
 ```bash
+cd ci/kubernetes/manifests
 kubectl apply -f 02-configmap.yaml
 ```
 
 ### Secrets
 
-Create `03-secrets.yaml`:
+Use `ci/kubernetes/manifests/03-secrets.yaml` (recommended).
 
 ```yaml
 apiVersion: v1
@@ -152,56 +157,50 @@ type: Opaque
 stringData:
   BITCOIN_API_ADMIN_KEY: "your-secure-admin-key"
   BITCOIN_API_WALLET_KEY: "your-secure-wallet-key"
-  MINER_ADDRESS: "your-wallet-address-here"  # REQUIRED: Must be set to a valid wallet address
+  # Optional: if omitted/empty, the container entrypoint will auto-create and persist it.
+  # MINER_ADDRESS: ""
 ```
 
 Apply:
 ```bash
+cd ci/kubernetes/manifests
 kubectl apply -f 03-secrets.yaml
+
+# Secret values are injected as env vars at pod startup, so restart workloads after changes:
+kubectl rollout restart statefulset/miner -n blockchain
+kubectl rollout restart statefulset/webserver -n blockchain
+```
+
+### Rate limiting configuration (ConfigMap + Redis)
+
+If you are using rate limiting, Kubernetes stores the `Settings.toml` text inside a ConfigMap and mounts it into the webserver pod:
+
+- `ci/kubernetes/manifests/14-configmap-rate-limit.yaml` creates `rate-limit-settings` and embeds `Settings.toml`
+- `ci/kubernetes/manifests/15-redis.yaml` deploys Redis as the backend (`redis:6379`)
+
+Apply:
+
+```bash
+cd ci/kubernetes/manifests
+kubectl apply -f 14-configmap-rate-limit.yaml
+kubectl apply -f 15-redis.yaml
 ```
 
 ## Step 4: Create PersistentVolumeClaims
 
-### Miner PVC
+In the current Kubernetes setup for this repo, **miners and webservers are StatefulSets** and use `volumeClaimTemplates`, which means Kubernetes will create **one PVC per pod** automatically.
 
-Create `04-pvc-miner.yaml`:
+This is critical because both miners and webservers store a disk-backed chain DB and wallets, and sharing the same PVC/path across replicas can cause DB lock issues.
 
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: miner-data-pvc
-  namespace: blockchain
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 50Gi
-```
+You can observe the generated PVC names like:
 
-### Webserver PVC
+- `miner-data-miner-0`, `miner-data-miner-1`, ...
+- `webserver-data-webserver-0`, `webserver-data-webserver-1`, ...
 
-Create `05-pvc-webserver.yaml`:
+Verify:
 
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: webserver-data-pvc
-  namespace: blockchain
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 50Gi
-```
-
-Apply:
 ```bash
-kubectl apply -f 04-pvc-miner.yaml
-kubectl apply -f 05-pvc-webserver.yaml
+kubectl get pvc -n blockchain
 ```
 
 ## Step 5: Create Deployments
@@ -210,9 +209,9 @@ kubectl apply -f 05-pvc-webserver.yaml
 
 Create `06-statefulset-miner.yaml` (see [Chapter 4: Kubernetes Manifests](04-Manifests.md) for complete example).
 
-### Deployment for Webservers
+### StatefulSet for Webservers
 
-Create `07-deployment-webserver.yaml` (see [Chapter 4: Kubernetes Manifests](04-Manifests.md) for complete example).
+Create `07-deployment-webserver.yaml` (note: despite the filename, it defines a **StatefulSet** for the webserver in the current repo).
 
 Apply:
 ```bash
@@ -283,6 +282,7 @@ Apply:
 ```bash
 kubectl apply -f 08-service-miner-headless.yaml
 kubectl apply -f 08-service-miner.yaml
+kubectl apply -f 09-service-webserver-headless.yaml
 kubectl apply -f 09-service-webserver.yaml
 ```
 
@@ -301,7 +301,7 @@ metadata:
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment
+    kind: StatefulSet
     name: webserver
   minReplicas: 1
   maxReplicas: 10
@@ -348,6 +348,8 @@ kubectl apply -f .
 kubectl get pods -n blockchain
 kubectl get svc -n blockchain
 ```
+
+Note: `kubectl apply -f .` does not guarantee ordering. Prefer `./deploy.sh` or Kustomize for repeatability.
 
 ### Option 3: Using Deployment Script
 
@@ -431,6 +433,13 @@ kubectl exec -n blockchain <pod-name> -- curl http://webserver-service:8080/api/
 # Check ConfigMap
 kubectl get configmap blockchain-config -n blockchain -o yaml
 
+# Check rate limiting Settings.toml ConfigMap (if enabled)
+kubectl get configmap rate-limit-settings -n blockchain -o yaml
+
+# Check Secrets
+kubectl get secret blockchain-secrets -n blockchain -o yaml
+```
+
 ---
 
 <div align="center">
@@ -442,11 +451,5 @@ kubectl get configmap blockchain-config -n blockchain -o yaml
 | *Section 2* | *Current Section* | *Section 4* |
 
 </div>
-
----
-
-# Check Secrets
-kubectl get secret blockchain-secrets -n blockchain -o yaml
-```
 
 For more detailed troubleshooting, see [Chapter 7: Production & Advanced Topics](07-Production.md).

@@ -179,6 +179,53 @@ If your focus is on deploying and operating the system:
 
 ---
 
+## 🧹 Cleanup (Stopping and Undeploying)
+
+When you’re done experimenting, you can tear down resources cleanly. This is especially important on laptops, where local clusters can consume CPU/RAM/disk in the background.
+
+### Docker Compose Cleanup
+
+From `ci/docker-compose/configs/`:
+
+```bash
+docker compose down
+```
+
+### Kubernetes Cleanup (Minikube)
+
+If you deployed the Kubernetes manifests (Chapter 9), you have two levels of cleanup:
+
+**Option A: Undeploy just the blockchain resources (keep Minikube running):**
+
+```bash
+cd ci/kubernetes/manifests
+./undeploy.sh
+```
+
+**Option B: Remove the entire namespace:**
+
+```bash
+kubectl delete namespace blockchain
+```
+
+**Stop Minikube (keeps the cluster on disk):**
+
+```bash
+minikube stop
+```
+
+**Delete Minikube completely (removes the cluster and its disk state):**
+
+```bash
+minikube delete
+```
+
+If you previously ran `eval $(minikube docker-env)`, you may also want to restore your shell to your normal Docker daemon:
+
+```bash
+eval $(minikube docker-env -u)
+```
+
 ## Chapter 1: Introduction & Overview
 
 **[→ Read Full Chapter 1: Introduction & Overview](01-Introduction.md)**

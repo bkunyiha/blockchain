@@ -36,7 +36,7 @@
 
 ---
 
-# Chapter 8, Section 2: Architecture & Core Concepts
+# Chapter 9, Section 2: Architecture & Core Concepts
 
 **Part II: Deployment & Operations** | **Chapter 9: Kubernetes Deployment**
 
@@ -50,62 +50,110 @@
 
 This section explains Kubernetes architecture, core concepts, and how they differ from Docker Compose.
 
+## How to Read This Section
+
+This chapter is easiest to understand if you read it in three parts:
+
+- **Part 1 (mental model)**: read the architecture diagram and the “relationships” section to understand how the building blocks connect.
+- **Part 2 (primitives)**: read the core concepts (Namespace, ConfigMap, Secret, StatefulSet/Deployment, Service, HPA).
+- **Part 3 (operations)**: read storage and resource management to understand what makes the system reliable in production.
+
+## Table of Contents
+
+- [Architecture Overview](#architecture-overview)
+- [Key Differences between Docker Compose and Kubernetes](#key-differences-between-docker-compose-and-kubernetes)
+- [Layered Architecture Model (Recommended Mental Model)](#layered-architecture-model-recommended-mental-model)
+- [Layer 0: Scope & Isolation (Namespace)](#layer-0-scope--isolation-namespace)
+- [Layer 1: Configuration (ConfigMaps + Secrets)](#layer-1-configuration-configmaps--secrets)
+- [Layer 2: Workloads (StatefulSet + Deployment)](#layer-2-workloads-statefulset--deployment)
+- [Layer 3: Networking (Services + DNS)](#layer-3-networking-services--dns)
+- [Layer 4: Scaling (HPA)](#layer-4-scaling-hpa)
+- [Layer 5: Persistence (PVCs + StorageClasses)](#layer-5-persistence-pvcs--storageclasses)
+- [Layer 6: Resource Governance (Requests/Limits)](#layer-6-resource-governance-requestslimits)
+- [Kubernetes Core Concepts (Reference)](#kubernetes-core-concepts-reference)
+- [Service Discovery & Networking (Deep Dive)](#service-discovery--networking-deep-dive)
+- [Persistent Storage (Deep Dive)](#persistent-storage-deep-dive)
+- [Resource Management (Deep Dive)](#resource-management-deep-dive)
+- [Summary](#summary)
+
 ## Architecture Overview
 
 ### Current Docker Compose Architecture
 
 ```
-┌──────────────────────────────────────┐
-│         Docker Host                  │
-│                                      │
-│  ┌──────────┐  ┌──────────┐          │
-│  │ miner_1  │  │ miner_2  │          │
-│  │ :2001    │  │ :2002    │          │
-│  └────┬─────┘  └────┬─────┘          │
-│       │             │                │
-│  ┌────▼─────────────▼─────┐          │
-│  │   webserver_1          │          │
-│  │   :8080, :2101         │          │
-│  └────────────────────────┘          │
-│                                      │
-└──────────────────────────────────────┘
+┌──────────────────────────────┐
+│         Docker Host          │
+│                              │
+│  ┌──────────┐  ┌──────────┐  │
+│  │ miner_1  │  │ miner_2  │  │
+│  │ :2001    │  │ :2002    │  │
+│  └────┬─────┘  └────┬─────┘  │
+│       │             │        │
+│  ┌────▼─────────────▼─────┐  │
+│  │   webserver_1          │  │
+│  │   :8080, :2101         │  │
+│  └────────────────────────┘  │
+│                              │
+└──────────────────────────────┘
 ```
 
 ### Kubernetes Architecture
 
 ```
-┌────────────────────────────────────────────────────────────┐
-│                    Kubernetes Cluster                      │
-│                                                            │
-│  ┌──────────────────┐      ┌──────────────────┐            │
-│  │   Node 1         │      │   Node 2         │            │
-│  │                  │      │                  │            │
-│  │  ┌──────────┐    │      │  ┌──────────┐    │            │
-│  │  │miner-0   │    │      │  │miner-1   │    │            │
-│  │  │Pod       │    │      │  │Pod       │    │            │
-│  │  └──────────┘    │      │  └──────────┘    │            │
-│  │                  │      │                  │            │
-│  │  ┌──────────┐    │      │  ┌──────────┐    │            │
-│  │  │webserver │    │      │  │webserver │    │            │
-│  │  │-0 Pod    │    │      │  │-1 Pod    │    │            │
-│  │  └──────────┘    │      │  └──────────┘    │            │
-│  └──────────────────┘      └──────────────────┘            │
-│                                                            │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │              Service Layer                          │   │
-│  │  miner-service (ClusterIP)                          │   │
-│  │  webserver-service (LoadBalancer/NodePort)          │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                            │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │         HPA (Horizontal Pod Autoscaler)             │   │
-│  │  Monitors CPU/Memory and scales pods automatically  │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                            │
-└────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────-─┐
+│                    Kubernetes Cluster                       │
+│                                                             │
+│  ┌──────────────────┐                 ┌──────────────────┐  │
+│  │   Node 1         │                 │   Node 2         │  │
+│  │                  │                 │                  │  │
+│  │  ┌──────────┐    │                 │  ┌──────────┐    │  │
+│  │  │miner-0   │    │                 │  │miner-1   │    │  │
+│  │  │Pod       │    │                 │  │Pod       │    │  │
+│  │  └──────────┘    │                 │  └──────────┘    │  │
+│  │                  │                 │                  │  │
+│  │  ┌──────────┐    │                 │  ┌──────────┐    │  │
+│  │  │webserver │    │                 │  │webserver │    │  │
+│  │  │-0 Pod    │    │                 │  │-1 Pod    │    │  │
+│  │  └──────────┘    │                 │  └──────────┘    │  │
+│  │                  │                 │                  │  │
+│  │  ┌──────────┐    │                 │                  │  │
+│  │  │redis     │    │                 │                  │  │
+│  │  │Pod       │    │                 │                  │  │
+│  │  └──────────┘    │                 │                  │  │
+│  └──────────────────┘                 └──────────────────┘  │
+│                                                             │
+│  ┌────────────────────────────────────────────────────--─┐  │
+│  │                    Service Layer                      │  │
+│  │  miner-headless (Headless, per-pod DNS for miners)    │  │
+│  │  miner-service  (ClusterIP, stable “miner” endpoint)  │  │
+│  │  webserver-headless (Headless, per-pod DNS)           │  │
+│  │  webserver-service  (LoadBalancer/NodePort/port-fwd)  │  │
+│  │  redis (ClusterIP, backend for rate limiting)         │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                                                             │
+│  ┌─────────────────────────────────────────────────--────┐  │
+│  │         HPA (Horizontal Pod Autoscaler)               │  │
+│  │  Monitors CPU/Memory and scales pods automatically    │  │
+│  └───────────────────────────────────────────────────--──┘  │
+│                                                             │
+│  ┌──────────────────────────────────────────────────--───┐  │
+│  │         Config & Secrets                              │  │
+│  │  ConfigMap: `blockchain-config` (node settings)       │  │
+│  │  Secret: API keys, optional MINER_ADDRESS             │  │
+│  │  ConfigMap: `rate-limit-settings` (Settings.toml)     │  │
+│  └────────────────────────────────────────────────────--─┘  │
+│                                                             │
+│  ┌────────────────────────────────────────────────────--─┐  │
+│  │         Persistent Storage                            │  │
+│  │  StatefulSet volumeClaimTemplates → per-pod PVCs      │  │
+│  │  miner: chain DB + wallets (per miner)                │  │
+│  │  webserver: chain DB + wallets (per webserver)        │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                                                             │
+└──────────────────────────────────────────────────────────-──┘
 ```
 
-### Key Differences
+### Key Differences between Docker Compose and Kubernetes
 
 **Docker Compose:**
 - Single host deployment
@@ -118,8 +166,86 @@ This section explains Kubernetes architecture, core concepts, and how they diffe
 - Service-based networking
 - Automatic load balancing
 - Native autoscaling
+- First-class stateful primitives (StatefulSets + per-pod PVCs)
 
-## Kubernetes Core Concepts
+## Layered Architecture Model (Easier To Understand - Mental Model)
+
+Kubernetes can feel like “a lot of YAML” until you adopt the right mental model. In practice, most systems (including this repo) can be understood as **layers** that build on each other:
+
+- **Layer 0 (Scope)**: where do objects live? (Namespace)
+- **Layer 1 (Configuration)**: what do pods read at startup? (ConfigMaps, Secrets, mounted files)
+- **Layer 2 (Workloads)**: what creates and maintains pods? (StatefulSet, Deployment)
+- **Layer 3 (Networking)**: how do clients/peers reach pods? (Services, DNS, headless vs normal)
+- **Layer 4 (Scaling)**: who changes replica counts automatically? (HPA + metrics)
+- **Layer 5 (Persistence)**: where is state stored? (PVCs + StorageClasses; per-pod PVCs for StatefulSets)
+- **Layer 6 (Resource governance)**: how do we prevent noisy neighbors? (requests/limits, quotas)
+
+If you ever feel lost, you can usually “locate the problem” by asking:
+
+- Which **workload** created the pod?
+- Which **Service/DNS name** is used to reach it?
+- Which **ConfigMap/Secret** is it reading?
+- Where is its **PVC** mounted (if stateful)?
+
+## Layer 0: Scope & Isolation (Namespace)
+
+In this repo, almost everything is created inside the `blockchain` namespace. Namespaces provide scoping, isolation, and a place to apply RBAC/quotas.
+
+## Layer 1: Configuration (ConfigMaps + Secrets)
+
+Pods consume configuration in two common ways:
+
+- **Environment variables** (good for small key/value settings)
+- **Mounted files** (good for structured config like TOML)
+
+In this repo:
+
+- `blockchain-config` provides node settings (mostly env vars)
+- `rate-limit-settings` provides `Settings.toml` (mounted as a file)
+- `blockchain-secrets` provides API keys and optional mining address (env vars)
+
+## Layer 2: Workloads (StatefulSet + Deployment)
+
+Workloads are controllers that create and reconcile pods:
+
+- **StatefulSet**: stable identities + per-pod PVCs (used for miners and webservers here)
+- **Deployment**: interchangeable replicas (used for stateless workloads; Redis is a Deployment here)
+
+## Layer 3: Networking (Services + DNS)
+
+Services give stable names/ports:
+
+- **Normal Service**: stable front-door + load balancing to any ready pod
+- **Headless Service**: stable per-pod identity (DNS to endpoints), commonly used as the governing service for StatefulSets
+
+## Layer 4: Scaling (HPA)
+
+HPA adjusts replica counts automatically based on metrics (typically CPU/memory via `metrics-server`).
+
+## Layer 5: Persistence (PVCs + StorageClasses)
+
+Stateful pods write to PVC-backed storage. StatefulSets typically create per-pod PVCs to avoid shared disk locks for databases.
+
+## Layer 6: Resource Governance (Requests/Limits)
+
+Requests/limits control scheduling and resource isolation. They interact with HPA (scale) and cluster autoscaling (add nodes).
+
+## Kubernetes Core Concepts (Reference)
+
+This section describes the primitives Kubernetes gives you. The key is understanding how they compose:
+
+- **Namespace** scopes everything to `blockchain`.
+- **ConfigMaps** and **Secrets** provide configuration that pods consume via env vars or mounted files.
+- **StatefulSets/Deployments** create and manage pods.
+- **Services** provide stable networking (either load-balanced “group” access, or headless per-pod identity).
+- **HPA** can scale workloads (including StatefulSets) based on metrics.
+- **PVCs + StorageClasses** provide persistence; for StatefulSets we use per-pod PVCs to avoid shared-disk locking.
+
+**If you ever feel lost, ask yourself:** 
+- What creates pods (controller eg StatefulSet and Deployment)? controller chain is (Deployment → ReplicaSet → Pods)
+- What config do pods read (ConfigMap/Secret)? 
+- How do other things reach those pods (Service)? 
+- Where is state stored (PVC)?
 
 ### Namespace
 
@@ -187,6 +313,11 @@ env:
       key: MINER_NODE_IS_MINER
 ```
 
+**How this repo uses ConfigMaps (two roles):**
+
+- **`blockchain-config`**: general node settings used by miners and webservers (connect targets, feature toggles, wallet path). These are mostly consumed as **environment variables**.
+- **`rate-limit-settings`**: contains a `Settings.toml` document used by the webserver’s rate limiter. This is consumed as a **mounted file** (e.g. `/app/Settings.toml`) and pointed to via `RL_SETTINGS_PATH`.
+
 ### Secret
 
 A Secret is similar to a ConfigMap but designed for sensitive data like API keys and passwords.
@@ -207,7 +338,8 @@ type: Opaque
 stringData:
   BITCOIN_API_ADMIN_KEY: "admin-secret"
   BITCOIN_API_WALLET_KEY: "wallet-secret"
-  MINER_ADDRESS: "your-wallet-address-here"  # REQUIRED: Must be set to a valid wallet address
+  # Optional: if omitted/empty, the container entrypoint will auto-create and persist it.
+  # MINER_ADDRESS: ""
 ```
 
 **How It's Used:**
@@ -220,45 +352,89 @@ env:
       key: BITCOIN_API_ADMIN_KEY
 ```
 
+**Important runtime detail:**
+
+- When Secrets are injected as **environment variables**, pods typically need to be **restarted** to pick up changes, because env vars are read at process start.
+
 ### StatefulSet
 
-A StatefulSet manages stateful applications and provides:
-- Stable, unique network identifiers
-- Stable, persistent storage
-- Ordered, graceful deployment and scaling
-- Ordered, automated rolling updates
+A **StatefulSet** is a workload controller for **stateful pods**. It is responsible for creating and managing pods in a way that preserves **identity** and **storage** across restarts and reschedules.
 
-**Why StatefulSet for Miners:**
-- Miners need stable pod names for chain topology
-- Each miner needs its own persistent storage
-- Ordered startup ensures proper connection chain
+At a high level, a StatefulSet provides:
+
+- **Stable pod identity**: pods are named with ordinals (`miner-0`, `miner-1`, …) and keep those names.
+- **Stable network identity**: each pod can be addressed consistently via DNS when used with a “governing” Service (typically headless).
+- **Stable storage**: each pod gets its own PersistentVolumeClaims via `volumeClaimTemplates` (e.g. `miner-data-miner-0`, `miner-data-miner-1`, …).
+- **Ordered operations**: optional ordered startup/termination and rolling updates (important when peers must come up in sequence).
+
+StatefulSets are usually paired with a **headless Service** (the “governing service”) to enable stable per-pod DNS identities like `miner-0.miner-headless...`.
+The deeper networking details—headless vs normal Services, DNS behavior, and why we use both—are covered in **Service Discovery & Networking** below.
 
 **Example:**
 ```yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: miner
+  name: webserver
+  namespace: blockchain
 spec:
-  serviceName: miner-headless
-  replicas: 3
+  # Governing service (typically headless) used for stable per-pod DNS identities:
+  #   webserver-0.webserver-headless.blockchain.svc.cluster.local
+  serviceName: webserver-headless
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webserver
   template:
+    metadata:
+      labels:
+        app: webserver
     spec:
       containers:
       - name: blockchain-node
         image: blockchain-node:latest
+        ports:
+        - name: web
+          containerPort: 8080
+        - name: p2p
+          containerPort: 2001
+        volumeMounts:
+        - name: webserver-data
+          mountPath: /app/data
+        - name: webserver-wallets
+          mountPath: /app/wallets
+  volumeClaimTemplates:
+  - metadata:
+      name: webserver-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 50Gi
+  - metadata:
+      name: webserver-wallets
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
 ```
+
+**How this relates to storage and Services:**
+
+- The StatefulSet creates the pods (`webserver-0`, `webserver-1`, …).
+- The `volumeClaimTemplates` create **one PVC per pod**, ensuring each webserver/miner has isolated disk state.
+- A **headless Service** is used to give each pod a stable DNS identity; a **normal Service** is used for load-balanced access to “the group”.
 
 ### Deployment
 
-A Deployment provides declarative updates for Pods and ReplicaSets.
+A Deployment is a controller (more precisely, a Kubernetes workload/controller object) that provides declarative updates for Pods and ReplicaSets.
 
-**Why Deployment for Webservers:**
-- Webservers are stateless (can be replaced)
-- Need rolling updates and rollbacks
-- Don't need stable pod names
+Deployments are ideal for **stateless** workloads where any replica is interchangeable and there is no per-replica disk state (e.g. many frontends, API gateways, background workers).
 
-**Example:**
+In this repo, **miners and webservers are stateful** (disk-backed chain DB + wallets), so they are modeled as **StatefulSets** instead of Deployments.
+
+**Example (generic):**
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -273,6 +449,55 @@ spec:
         image: blockchain-node:latest
 ```
 
+### Deployment vs StatefulSet
+
+This is one of the most important “modeling choices” you make in Kubernetes. A **Deployment** and a **StatefulSet** both run multiple pod replicas, but they make very different guarantees.
+
+#### What a Deployment guarantees (and what it doesn’t)
+
+A **Deployment** manages a ReplicaSet, which creates pods that are treated as **interchangeable**:
+
+- **Identity**: pods have *no stable identity*. A pod name is essentially disposable.
+- **Networking**: you typically access Deployments through a normal Service (load-balanced). There is no concept of “pod 0” being special.
+- **Storage**: you *can* mount storage, but Deployments don’t have first-class per-replica PVC templating. If multiple replicas share the same PVC/path, you can hit **file-locking/data corruption** issues for databases.
+- **Rollouts**: Deployments shine at rolling updates for stateless services (swap pods gradually behind a Service).
+
+**Best use cases**:
+- Web frontends
+- Stateless REST APIs
+- Workers where any replica can pick up any job
+
+#### What a StatefulSet guarantees
+
+A **StatefulSet** is built for workloads where **replica identity matters**:
+
+- **Stable pod identity**: deterministic names with ordinals (`miner-0`, `miner-1`, `webserver-0`, …).
+- **Stable storage per replica**: `volumeClaimTemplates` creates a *separate PVC per pod* (e.g. `webserver-data-webserver-0`, `webserver-data-webserver-1`).
+- **Stable network identity**: when paired with a headless “governing” Service, each replica gets a stable DNS name (`pod.service.namespace.svc.cluster.local`).
+- **Ordered rollout/scaling semantics**: StatefulSets can create/terminate pods in order, which is useful when replicas form a topology (seed nodes, upstream/downstream).
+
+**Best use cases**:
+- Databases (Postgres, Redis with persistence, etc.)
+- Consensus/peer-to-peer systems
+- Anything that stores state on disk and must not be shared between replicas
+
+#### Why this repo uses StatefulSet for both miners and webservers
+
+In many architectures, “webserver” implies stateless. In *this* repo, the webserver is a full blockchain node with:
+
+- a disk-backed **chain database** (Sled),
+- a disk-backed **wallet** directory,
+- and peer connectivity.
+
+That makes it **stateful**, and running multiple replicas as a Deployment would tempt you to share storage paths—causing errors like Sled DB lock contention (`could not acquire lock on .../db`). A StatefulSet with per-pod PVCs avoids that by construction.
+
+Miners are also stateful for the same reasons (disk-backed chain DB/wallets), and they also benefit from stable identity for forming a predictable topology.
+
+#### Quick “when to choose what?”
+
+- Choose a **Deployment** when: replicas are interchangeable and you can replace any pod at any time with no data loss.
+- Choose a **StatefulSet** when: replicas need stable identity, stable storage, or stable per-replica DNS—and especially when running databases or peer-to-peer nodes.
+
 ### Service
 
 A Service provides a stable network endpoint for pods.
@@ -282,6 +507,12 @@ A Service provides a stable network endpoint for pods.
 - **NodePort**: Exposes service on each node's IP
 - **LoadBalancer**: External load balancer (cloud providers)
 - **Headless**: No cluster IP, direct pod DNS (for StatefulSets)
+
+**Relationship to workloads:**
+
+- Services do not create pods. They select existing pods via **labels** (e.g. `app: webserver`) and provide a stable name/port in front of them.
+- A normal Service is ideal for “talk to the group” use cases (HTTP APIs).
+- A headless Service is ideal when “which replica” matters (StatefulSet per-pod DNS identities).
 
 **Example:**
 ```yaml
@@ -298,33 +529,7 @@ spec:
     targetPort: 8080
 ```
 
-### HorizontalPodAutoscaler (HPA)
-
-HPA automatically scales the number of pods based on CPU, memory, or custom metrics.
-
-**Example:**
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: webserver-hpa
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: webserver
-  minReplicas: 1
-  maxReplicas: 10
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-```
-
-## Service Discovery & Networking
+## Service Discovery & Networking (Deep Dive)
 
 **How Pods Connect:**
 
@@ -333,7 +538,89 @@ In Kubernetes, pods connect using **Service DNS names**:
 <service-name>.<namespace>.svc.cluster.local
 ```
 
-**Example: Webserver Connecting to Miner**
+### Normal Service vs Headless Service (and why you often see *both*)
+
+In practice, it’s common to have **two Services** for the same app:
+
+1) a **headless Service** (`clusterIP: None`) for stable *per-pod identity* (DNS),
+2) a **normal Service** (ClusterIP/NodePort/LoadBalancer) for stable *front-door access* (load balancing).
+
+#### 1. Normal Service (ClusterIP/NodePort/LoadBalancer)
+
+A normal Service assigns a **virtual IP** (ClusterIP) and load-balances connections to **any Ready backend** behind its selector.
+
+##### Config example (normal Service / load-balanced):
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: webserver-service
+  namespace: blockchain
+spec:
+  # Common options:
+  # - ClusterIP (default): internal-only access inside the cluster
+  # - NodePort: expose on every node IP:port (local clusters)
+  # - LoadBalancer: provision a cloud LB (or use minikube tunnel)
+  type: ClusterIP
+  selector:
+    app: webserver
+  ports:
+    - name: web
+      port: 8080        # Service port (what clients connect to)
+      targetPort: 8080  # Pod/container port (what the pod listens on)
+      protocol: TCP
+```
+
+Technically:
+
+- `kube-proxy` programs iptables/IPVS rules so traffic to the Service VIP is routed to one of the endpoints.
+- DNS for the Service name resolves to the **Service virtual IP** (for ClusterIP services).
+- You get a stable “front door” that **does not preserve per-pod identity**.
+
+Use this when the caller wants “talk to *the set*”:
+
+- HTTP APIs (`webserver-service:8080`)
+- Port-forwarding a single name (`kubectl port-forward svc/webserver-service ...`)
+- Any request where replica identity doesn’t matter
+
+#### 2. Headless Service (`clusterIP: None`)
+
+A headless Service disables the Service VIP and load-balancing. Its primary purpose is **DNS identity**, not routing.
+
+##### Config example (headless Service / per-pod identity):
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: webserver-headless
+  namespace: blockchain
+spec:
+  clusterIP: None   # This is what makes it "headless"
+  selector:
+    app: webserver
+  ports:
+    - name: web
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+    - name: p2p
+      port: 2001
+      targetPort: 2001
+      protocol: TCP
+```
+
+Technically:
+
+- DNS for the Service name resolves to the **pod IPs directly** (A records for endpoints), instead of a single ClusterIP.
+- For StatefulSets, the headless Service is also the **governing service** (`spec.serviceName`). That enables stable per-pod DNS names like:
+  - `miner-0.miner-headless.blockchain.svc.cluster.local`
+  - `miner-1.miner-headless.blockchain.svc.cluster.local`
+
+This matters for stateful systems because peers often need to connect to **a specific node** (seed node, leader, or a specific replica), not “any node”.
+
+##### Example: Webserver Connecting to Miner
 ```bash
 # Docker Compose
 NODE_CONNECT_NODES=miner_1:2001
@@ -342,18 +629,41 @@ NODE_CONNECT_NODES=miner_1:2001
 NODE_CONNECT_NODES=miner-service.blockchain.svc.cluster.local:2001
 ```
 
-**StatefulSet with Headless Service:**
+### Why miners use a headless Service (technically)
+
+Miners form a peer-to-peer topology where identity matters:
+
+- `miner-0` acts as the seed node, and other miners connect to a specific upstream miner.
+- With a headless Service, `miner-1` can consistently resolve `miner-0.miner-headless...` to miner-0’s pod IP.
+- This survives reschedules because the **pod name stays the same** and the per-pod DNS record updates if the underlying IP changes.
+
+### Why webservers use a headless Service (technically)
+
+In this repo, webservers are also **stateful** (each has its own blockchain DB + wallets), so we run them as a StatefulSet. The headless Service is used as the StatefulSet’s **governing service** (`spec.serviceName`), which enables:
+
+- **Stable DNS per replica** (`webserver-0.webserver-headless...`, `webserver-1.webserver-headless...`) for targeted debugging and any future replica-aware behavior.
+- An identity model that matches the storage model (each replica has its own PVCs).
+
+Even if clients typically use the normal `webserver-service`, the headless Service is what gives the StatefulSet its per-pod DNS identities.
+
+### StatefulSet with Headless Service: miner chain topology
 
 For miners, we use StatefulSet with headless service for chain topology:
 - `miner-0`: Seed node (`NODE_CONNECT_NODES="local"`)
 - `miner-1`: Connects to `miner-0.miner-headless.blockchain.svc.cluster.local:2001`
 - `miner-2`: Connects to `miner-1.miner-headless.blockchain.svc.cluster.local:2001`
 
-## Persistent Storage
+## Persistent Storage (Deep Dive)
 
 **PersistentVolumeClaim (PVC):**
 
 PVCs provide persistent storage for pods:
+
+**Relationship to StatefulSets and databases:**
+
+- PVCs are how pods get **durable disk**. Without PVCs, pod filesystems are ephemeral.
+- For **StatefulSets**, we typically use `volumeClaimTemplates` so each replica gets its *own* PVC (avoids shared-disk locking for databases like Sled).
+- Storage is provisioned via a **StorageClass** (cloud-specific), and the PVC binds to a PersistentVolume behind the scenes.
 
 ```yaml
 apiVersion: v1
@@ -382,7 +692,39 @@ parameters:
   type: gp3
 ```
 
-## Resource Management
+### HorizontalPodAutoscaler (HPA)
+
+HPA automatically scales the number of pods based on CPU, memory, or custom metrics.
+
+**Relationship to workloads and metrics:**
+
+- HPA targets a **workload controller** (Deployment or StatefulSet) via `scaleTargetRef`.
+- HPA needs a metrics source (typically the Kubernetes Metrics API via `metrics-server`) for CPU/memory-based scaling.
+- Scaling a **StatefulSet** increases/decreases replicas by creating/deleting ordinal pods (e.g. adding `webserver-2`).
+
+**Example:**
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: webserver-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: webserver
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+```
+
+## Resource Management (Deep Dive)
 
 **Requests and Limits:**
 
@@ -398,6 +740,12 @@ resources:
 
 - **Requests**: Guaranteed resources, used for scheduling
 - **Limits**: Maximum resources, prevents resource exhaustion
+
+**Relationship to scheduling and autoscaling:**
+
+- The scheduler places pods based on **requests** (not limits).
+- HPA uses **metrics** (CPU/memory usage) and scales replicas, but it cannot create capacity on its own. If the cluster has no room to schedule new pods, they remain `Pending`.
+- In production, combine HPA with a **Cluster Autoscaler** (cloud provider feature) to add nodes when the cluster is full.
 
 ## Summary
 

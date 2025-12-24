@@ -36,7 +36,7 @@
 
 ---
 
-# Chapter 8, Section 5: Deployment & Operations
+# Chapter 9, Section 5: Deployment & Operations
 
 **Part II: Deployment & Operations** | **Chapter 9: Kubernetes Deployment**
 
@@ -48,76 +48,125 @@
 
 ---
 
-This section covers step-by-step deployment, verification, monitoring, scaling, and day-to-day operations.
+This section is a practical, production-style guide to deploying and operating the blockchain network on Kubernetes. It focuses on repeatable commands, how to verify a healthy rollout, and how to perform common operational tasks safely.
 
-## Deployment Process
+## How to Read This Section
+
+- If you want the fastest path to a working cluster, read **Deployment Process** and use `./deploy.sh`.
+- If you are operating a running cluster, jump to **Verification**, **Accessing Services**, **Monitoring**, and **Updates**.
+- If something is broken, jump to **Troubleshooting** and use the commands there to narrow the failure mode quickly.
+
+## Table of Contents
+
+- [Deployment Process (Step-by-Step)](#deployment-process-step-by-step)
+  - [Prerequisites](#prerequisites)
+  - [Cluster Setup](#cluster-setup)
+  - [Image Preparation](#image-preparation)
+  - [Configuration](#configuration)
+  - [Deploy](#deploy)
+- [Verification](#verification)
+- [Accessing Services](#accessing-services)
+- [Monitoring](#monitoring)
+- [Scaling](#scaling)
+- [Updates](#updates)
+- [Common Operations](#common-operations)
+- [Troubleshooting](#troubleshooting)
+- [Cleanup](#cleanup)
+
+## Deployment Process (Step-by-Step)
 
 ### Prerequisites
 
-**Required Tools:**
-```bash
-# Install kubectl
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/amd64/kubectl"
-chmod +x kubectl
-sudo mv kubectl /usr/local/bin/
+You need:
 
-# Verify installation
-kubectl version --client
+- **`kubectl`** (talk to the cluster)
+- **A cluster** (Minikube is recommended for local development)
+- **Docker** (build the `blockchain-node` image)
+
+### Cluster Setup
+
+#### Option 1: Minikube (recommended for local development)
+
+```bash
+minikube start --cpus=4 --memory=3072mb --addons=metrics-server
 ```
 
-**Cluster Setup:**
+Optional (handy for exploration):
 
-**Option 1: Minikube (Local Development)**
 ```bash
-minikube start --cpus=4 --memory=8192
-minikube addons enable ingress
-eval $(minikube docker-env)
+minikube addons enable dashboard
+minikube dashboard --url
 ```
 
-**Option 2: Cloud Provider**
-- AWS EKS, Google GKE, Azure AKS, etc.
+#### Option 2: Managed Kubernetes (production)
+
+Examples: AWS EKS, Google GKE, Azure AKS, etc. In production you typically build and push images to a registry and run with `imagePullPolicy: Always` and pinned tags.
+
+For production hardening, CI/CD, and cloud-provider specifics, see **[Section 7: Production & Advanced Topics](07-Production.md)**.
 
 ### Image Preparation
 
-**For Minikube:**
+#### Build for Minikube (build “into” the cluster node)
+
 ```bash
+# Point your Docker CLI at Minikube’s internal Docker daemon (this terminal only)
 eval $(minikube docker-env)
-cd ../docker-compose/configs
-docker build -t blockchain-node:latest .
+
+# IMPORTANT: build from the repository root (build context), because the Dockerfile
+# uses COPY paths like `ci/docker-compose/configs/...`.
+cd /path/to/repo/root
+docker build -t blockchain-node:latest -f Dockerfile .
+
+# Restore Docker to your normal local daemon
+eval $(minikube docker-env -u)
 ```
 
-**For Cloud/Registry:**
+#### Build for a registry (typical production workflow)
+
 ```bash
-docker build -t blockchain-node:latest .
+docker build -t blockchain-node:latest -f Dockerfile .
 docker tag blockchain-node:latest your-registry/blockchain-node:v1.0.0
 docker push your-registry/blockchain-node:v1.0.0
 ```
 
 ### Configuration
 
-**Update Secrets:**
-Edit `manifests/03-secrets.yaml`:
-```yaml
-stringData:
-  BITCOIN_API_ADMIN_KEY: "your-secure-admin-key"
-  BITCOIN_API_WALLET_KEY: "your-secure-wallet-key"
-  MINER_ADDRESS: "your-wallet-address-here"  # REQUIRED: Must be set to a valid wallet address
+#### Secrets (API keys, optional mining address)
+
+Edit `ci/kubernetes/manifests/03-secrets.yaml` to set API keys.
+
+- `BITCOIN_API_ADMIN_KEY`: admin key (protected endpoints)
+- `BITCOIN_API_WALLET_KEY`: wallet key (wallet endpoints)
+- `MINER_ADDRESS`: **optional**; if omitted/empty, the container entrypoint will auto-create one and persist it in the pod’s wallet volume.
+
+After editing:
+
+```bash
+cd ci/kubernetes/manifests
+kubectl apply -f 03-secrets.yaml
+
+# Secret values are injected as env vars at pod startup, so restart workloads
+kubectl rollout restart statefulset/miner -n blockchain
+kubectl rollout restart statefulset/webserver -n blockchain
 ```
 
-**Update ConfigMap (Optional):**
-Edit `manifests/02-configmap.yaml` if needed.
+#### ConfigMap (non-secret configuration)
 
-**Rate Limiting (Optional):**
-The webserver uses Redis-backed rate limiting (via `axum_rate_limiter`).
+If you need to change non-secret configuration (ports, connect targets, feature toggles), edit `ci/kubernetes/manifests/02-configmap.yaml`.
 
-- Rate limiting settings live in `manifests/14-configmap-rate-limit.yaml` (mounted into the webserver pod as `/app/Settings.toml`)
-- Redis is deployed in-cluster via `manifests/15-redis.yaml`
+#### Rate Limiting (Redis + `axum_rate_limiter`)
+
+The webserver includes Redis-backed rate limiting (via `axum_rate_limiter`).
+
+- Rate limiting settings live in `ci/kubernetes/manifests/14-configmap-rate-limit.yaml` (mounted into the webserver pod as `/app/Settings.toml`)
+- Redis is deployed in-cluster via `ci/kubernetes/manifests/15-redis.yaml`
 
 After changing rate limit settings:
 
 ```bash
-kubectl apply -f manifests/14-configmap-rate-limit.yaml
-kubectl rollout restart deployment/webserver -n blockchain
+cd ci/kubernetes/manifests
+kubectl apply -f 14-configmap-rate-limit.yaml
+kubectl rollout restart statefulset/webserver -n blockchain
 ```
 
 **Adjust Resource Limits (Optional):**
@@ -125,37 +174,44 @@ Edit manifests to adjust CPU/memory requests and limits.
 
 ### Deploy
 
-**Option 1: Using Script (Recommended)**
+#### Option 1: Using the script (recommended)
+
 ```bash
-cd manifests
+cd ci/kubernetes/manifests
 ./deploy.sh
 ```
 
-**Option 2: Using Kustomize**
+Notes:
+
+- The script applies manifests in dependency order.
+- If you are upgrading from an older setup where `webserver` was a Deployment, the script deletes `deployment/webserver` so it doesn’t keep spawning pods that accidentally share storage.
+
+#### Option 2: Using Kustomize
+
 ```bash
-cd manifests
+cd ci/kubernetes/manifests
 kubectl apply -k .
 ```
 
-**Option 3: Manual**
-```bash
-cd manifests
-kubectl apply -f .
-```
+#### Option 3: Manual (explicit order is safer)
+
+Kubernetes does not guarantee ordering when you `kubectl apply -f .`. Prefer the script or Kustomize unless you know what you’re doing.
 
 ## Verification
 
-### Check Namespace
+### Quick Snapshot (recommended first)
+
 ```bash
-kubectl get ns blockchain
+kubectl get namespaces
+kubectl get pods -n blockchain -o wide
+kubectl get svc -n blockchain
+kubectl get pvc -n blockchain
 ```
 
 ### Check Pods
 ```bash
-# List all pods
+# List / watch pods
 kubectl get pods -n blockchain
-
-# Watch pods
 kubectl get pods -n blockchain -w
 
 # Wait for pods to be ready
@@ -195,9 +251,9 @@ kubectl logs -n blockchain <pod-name> -f
 # Describe pod
 kubectl describe pod -n blockchain <pod-name>
 
-# Describe StatefulSet/Deployment
+# Describe StatefulSets
 kubectl describe statefulset miner -n blockchain
-kubectl describe deployment webserver -n blockchain
+kubectl describe statefulset webserver -n blockchain
 
 # Describe service
 kubectl describe svc webserver-service -n blockchain
@@ -205,7 +261,7 @@ kubectl describe svc webserver-service -n blockchain
 
 ## Accessing Services
 
-### Method 1: LoadBalancer (Cloud)
+### Method 1: LoadBalancer (cloud providers)
 ```bash
 # Get external IP
 kubectl get svc webserver-service -n blockchain
@@ -214,7 +270,7 @@ kubectl get svc webserver-service -n blockchain
 curl http://<EXTERNAL-IP>:8080/api/health/ready
 ```
 
-### Method 2: NodePort (Local/Minikube)
+### Method 2: NodePort (local/Minikube)
 ```bash
 # Get node IP
 minikube ip
@@ -223,7 +279,7 @@ minikube ip
 curl http://$(minikube ip):<nodePort>/api/health/ready
 ```
 
-### Method 3: Port Forward (Development)
+### Method 3: Port Forward (recommended for development)
 ```bash
 # Forward webserver port
 kubectl port-forward -n blockchain svc/webserver-service 8080:8080
@@ -232,7 +288,7 @@ kubectl port-forward -n blockchain svc/webserver-service 8080:8080
 curl http://localhost:8080/api/health/ready
 ```
 
-### Method 4: Minikube Tunnel
+### Method 4: Minikube Tunnel (for LoadBalancer services on Minikube)
 ```bash
 # Run in separate terminal
 minikube tunnel
@@ -246,15 +302,22 @@ curl http://127.0.0.1:8080/api/health/ready
 
 ## Monitoring
 
-### Check Resource Usage
+### Resource Usage (`kubectl top`)
+
+`kubectl top ...` requires the Kubernetes Metrics API (usually provided by **metrics-server**).
+
+For Minikube, enable it via addon:
+
 ```bash
-# Install metrics server (if not installed)
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+minikube addons enable metrics-server
+kubectl get pods -n kube-system | grep metrics-server
+kubectl get apiservices | grep metrics
+```
 
-# Check pod resource usage
+Then:
+
+```bash
 kubectl top pods -n blockchain
-
-# Check node resource usage
 kubectl top nodes
 ```
 
@@ -280,8 +343,8 @@ kubectl describe pod <pod-name> -n blockchain | grep Events -A 10
 
 ### Manual Scaling
 ```bash
-# Scale webserver deployment
-kubectl scale deployment webserver -n blockchain --replicas=5
+# Scale webserver StatefulSet
+kubectl scale statefulset webserver -n blockchain --replicas=5
 
 # Scale miner StatefulSet
 kubectl scale statefulset miner -n blockchain --replicas=3
@@ -302,7 +365,7 @@ kubectl get hpa -n blockchain -w
 ```
 
 ### Adjust HPA Thresholds
-Edit `manifests/10-hpa-webserver.yaml` or `11-hpa-miner.yaml`:
+Edit `ci/kubernetes/manifests/10-hpa-webserver.yaml` or `ci/kubernetes/manifests/11-hpa-miner.yaml`:
 
 ```yaml
 metrics:
@@ -316,27 +379,29 @@ metrics:
 
 Apply changes:
 ```bash
-kubectl apply -f manifests/10-hpa-webserver.yaml
+# From the repo root:
+cd ci/kubernetes/manifests
+kubectl apply -f 10-hpa-webserver.yaml
 ```
 
 ## Updates
 
-### Rolling Update
+### Rolling Update (image)
 ```bash
 # Update image
-kubectl set image deployment/webserver blockchain-node=blockchain-node:v1.1.0 -n blockchain
+kubectl set image statefulset/webserver blockchain-node=blockchain-node:v1.1.0 -n blockchain
 
 # Check rollout status
-kubectl rollout status deployment/webserver -n blockchain
+kubectl rollout status statefulset/webserver -n blockchain
 
 # View rollout history
-kubectl rollout history deployment/webserver -n blockchain
+kubectl rollout history statefulset/webserver -n blockchain
 
 # Rollback if needed
-kubectl rollout undo deployment/webserver -n blockchain
+kubectl rollout undo statefulset/webserver -n blockchain
 
 # Rollback to specific revision
-kubectl rollout undo deployment/webserver -n blockchain --to-revision=2
+kubectl rollout undo statefulset/webserver -n blockchain --to-revision=2
 ```
 
 ### Update Configuration
@@ -345,7 +410,7 @@ kubectl rollout undo deployment/webserver -n blockchain --to-revision=2
 kubectl edit configmap blockchain-config -n blockchain
 
 # Restart pods to pick up changes
-kubectl rollout restart deployment/webserver -n blockchain
+kubectl rollout restart statefulset/webserver -n blockchain
 kubectl rollout restart statefulset/miner -n blockchain
 ```
 
@@ -355,7 +420,8 @@ kubectl rollout restart statefulset/miner -n blockchain
 kubectl edit secret blockchain-secrets -n blockchain
 
 # Restart pods to pick up changes
-kubectl rollout restart deployment/webserver -n blockchain
+kubectl rollout restart statefulset/webserver -n blockchain
+kubectl rollout restart statefulset/miner -n blockchain
 ```
 
 ## Common Operations
@@ -427,7 +493,7 @@ kubectl describe hpa webserver-hpa -n blockchain
 kubectl top pods -n blockchain
 
 # Verify metrics server
-kubectl get apiservice v1beta1.metrics.k8s.io
+kubectl get apiservices | grep metrics
 ```
 
 ### PersistentVolume Issues
@@ -446,19 +512,36 @@ kubectl get pv
 
 ### Delete All Resources
 ```bash
-# Delete all resources in namespace
-kubectl delete -f manifests/
+# From the repo root:
+cd ci/kubernetes/manifests
+
+# Undeploy using the script (recommended)
+./undeploy.sh
 
 # Or delete namespace (deletes everything)
 kubectl delete namespace blockchain
+
+# Stop the local cluster (keeps cluster on disk)
+minikube stop
+
+# Or delete it completely
+minikube delete
 ```
 
 ### Delete Specific Resources
 ```bash
-# Delete StatefulSet/Deployment
+# Delete StatefulSets
 kubectl delete statefulset miner -n blockchain
+kubectl delete statefulset webserver -n blockchain
 
 # Delete service
+kubectl delete svc webserver-service -n blockchain
+
+# Delete PVC (data will be lost!)
+kubectl delete pvc -n blockchain miner-data-miner-0
+```
+
+For deeper troubleshooting patterns, see [Section 7: Production & Advanced Topics](07-Production.md).
 
 ---
 
@@ -471,12 +554,3 @@ kubectl delete statefulset miner -n blockchain
 | *Section 4* | *Current Section* | *Section 6* |
 
 </div>
-
----
-kubectl delete svc webserver-service -n blockchain
-
-# Delete PVC (data will be lost!)
-kubectl delete pvc miner-data-pvc -n blockchain
-```
-
-For more detailed troubleshooting, see [Chapter 7: Production & Advanced Topics](07-Production.md).

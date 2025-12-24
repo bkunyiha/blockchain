@@ -36,7 +36,7 @@
 
 ---
 
-# Chapter 8, Section 4: Kubernetes Manifests
+# Chapter 9, Section 4: Kubernetes Manifests
 
 **Part II: Deployment & Operations** | **Chapter 9: Kubernetes Deployment**
 
@@ -48,9 +48,65 @@
 
 ---
 
-This section provides complete manifest examples with detailed explanations. Each manifest file is numbered in deployment order.
+This section provides complete Kubernetes manifest examples with detailed explanations. Each manifest file is numbered in deployment order.
+
 
 ## Overview of Manifest Files
+
+### Why the ordering matters
+
+Kubernetes is declarative, but resources still have **real dependencies**. Deploying in a sensible order makes the first rollout reliable and reduces confusing transient failures.
+
+- **Namespace first**: most resources specify `namespace: blockchain`. If the namespace doesn’t exist yet, `kubectl apply` will fail.
+- **ConfigMaps/Secrets before workloads**: pods reference them via `configMapKeyRef`, `secretKeyRef`, or mounted files. If they don’t exist, pods fail to start (CreateContainerConfigError) or crash at runtime due to missing config.
+- **Storage before stateful workloads (where “volumes” fit)**:
+  - In Kubernetes, “volumes” are just **mount points in a Pod spec**, but the underlying backing store is often a **Persistent Volume Claim (PVC)**.
+  - For **StatefulSets**, the recommended pattern is `volumeClaimTemplates`, which means Kubernetes will create **one PVC per pod** automatically (e.g. `webserver-data-webserver-0`, `webserver-data-webserver-1`).
+  - Those per-pod PVCs are created **when the StatefulSet creates pods**, but they still depend on your cluster having a working storage provisioner / default **StorageClass**. If storage can’t be provisioned, pods will sit in `Pending` with PVCs stuck in `Pending`.
+  - If you are using **static/legacy PVC manifests** (like `04-pvc-miner.yaml` / `05-pvc-webserver.yaml`), apply them **before** the workloads that mount them, otherwise pods will fail to schedule/mount volumes.
+- **Redis + rate-limit ConfigMap before webserver** (when rate limiting is enabled): the webserver uses an init container to wait for Redis, and it mounts `Settings.toml` from the rate-limit ConfigMap. If these aren’t present, webserver pods can stall in init or start without expected configuration.
+- **Workloads before “operational” controllers**: HPA and PodDisruptionBudgets target an existing workload (StatefulSet/Deployment) by name/labels. Applying them after workloads avoids “target not found” confusion.
+- **Services before clients rely on DNS/endpoints**: Services provide stable names and load balancing. Applying them early ensures DNS names exist before you start debugging connectivity (endpoints may still populate as pods become Ready).
+- **NetworkPolicy last (optional)**: policies can unintentionally block traffic if applied too early. Apply after the basic cluster is healthy, then tighten ingress/egress with confidence.
+
+### How `deploy.sh` wires everything up
+
+The repository includes a deployment script at `ci/kubernetes/manifests/deploy.sh`. It is essentially an “opinionated `kubectl apply`” that:
+
+- Runs **preflight checks** (verifies `kubectl` exists and you’re connected to a cluster via `kubectl cluster-info`)
+- Applies manifests in a **known-safe dependency order**
+- Handles **upgrade cleanup** when migrating from older setups (removes the legacy `deployment/webserver` so it can’t keep creating pods that share storage)
+- Waits for pods to become Ready and prints a status summary + common follow-up commands
+
+At a high level, it applies:
+
+```bash
+01-namespace.yaml
+02-configmap.yaml
+14-configmap-rate-limit.yaml
+03-secrets.yaml
+04-pvc-miner.yaml
+15-redis.yaml
+06-statefulset-miner.yaml
+09-service-webserver-headless.yaml
+# delete deployment/webserver (upgrade safety)
+07-deployment-webserver.yaml
+08-service-miner-headless.yaml
+08-service-miner.yaml
+09-service-webserver.yaml
+10-hpa-webserver.yaml
+11-hpa-miner.yaml
+12-pod-disruption-budget.yaml
+```
+
+Then it performs readiness waits:
+
+```bash
+kubectl wait --for=condition=ready pod -l app=miner -n blockchain --timeout=300s
+kubectl wait --for=condition=ready pod -l app=webserver -n blockchain --timeout=300s
+```
+
+Finally it prints “what next” helpers (logs and `kubectl port-forward ... svc/webserver-service 8080:8080`).
 
 | File | Resource Type | Purpose | Key Configurations |
 |------|--------------|---------|-------------------|
@@ -58,17 +114,22 @@ This section provides complete manifest examples with detailed explanations. Eac
 | `02-configmap.yaml` | ConfigMap | Stores non-sensitive configuration | Node settings, connection strings |
 | `14-configmap-rate-limit.yaml` | ConfigMap | Rate limiting settings (`Settings.toml`) | `redis_addr`, strategies, buckets |
 | `03-secrets.yaml` | Secret | Stores sensitive data | API keys, base64 encoding |
-| `04-pvc-miner.yaml` | PersistentVolumeClaim | Storage for miner data | Storage size (50Gi), access mode |
-| `05-pvc-webserver.yaml` | PersistentVolumeClaim | Storage for webserver data | Storage size (50Gi), access mode |
+| `04-pvc-miner.yaml` | PersistentVolumeClaim | (Legacy/optional) shared PVCs | Older Deployment-based storage |
+| `05-pvc-webserver.yaml` | PersistentVolumeClaim | (Legacy/optional) shared PVCs | Older Deployment-based storage |
 | `06-statefulset-miner.yaml` | StatefulSet | Defines miner pods | Replicas, volumeClaimTemplates, headless service |
-| `07-deployment-webserver.yaml` | Deployment | Defines webserver pods | Replicas, init containers, health checks |
+| `07-deployment-webserver.yaml` | StatefulSet | Defines webserver pods | Replicas, init containers, **volumeClaimTemplates** |
 | `08-service-miner-headless.yaml` | Service | Headless service for pod DNS | clusterIP: None, stable DNS per pod |
 | `08-service-miner.yaml` | Service | Internal network endpoint | ClusterIP, session affinity |
+| `09-service-webserver-headless.yaml` | Service | Headless service for webserver StatefulSet | clusterIP: None |
 | `09-service-webserver.yaml` | Service | External network endpoint | LoadBalancer, port mappings |
 | `10-hpa-webserver.yaml` | HorizontalPodAutoscaler | Auto-scales webservers | CPU/Memory thresholds, scaling policies |
 | `11-hpa-miner.yaml` | HorizontalPodAutoscaler | Auto-scales miners | CPU threshold, conservative scaling |
 | `12-pod-disruption-budget.yaml` | PodDisruptionBudget | Ensures minimum availability | Minimum available pods |
 | `15-redis.yaml` | Deployment + Service | Redis backend for rate limiting | ClusterIP service, probes |
+| `13-network-policy.yaml` | NetworkPolicy | (Optional) restrict traffic | Ingress/egress allow rules |
+| `deploy.sh` | Script | Applies manifests in order | Safe, repeatable rollout |
+| `undeploy.sh` | Script | Removes resources | Clean teardown |
+| `kustomization.yaml` | Kustomize | Deploy all resources | `kubectl apply -k .` |
 
 ## 1. Namespace
 
@@ -103,14 +164,15 @@ metadata:
   name: blockchain-config
   namespace: blockchain
 data:
+  SEQUENTIAL_STARTUP: "no"
+  CENTERAL_NODE: ""
+  WALLET_FILE: "wallets/wallets.dat"
   MINER_NODE_IS_MINER: "yes"
   MINER_NODE_IS_WEB_SERVER: "no"
   MINER_NODE_CONNECT_NODES: "local"
   WEBSERVER_NODE_IS_MINER: "no"
   WEBSERVER_NODE_IS_WEB_SERVER: "yes"
   WEBSERVER_NODE_CONNECT_NODES: "miner-service.blockchain.svc.cluster.local:2001"
-  SEQUENTIAL_STARTUP: "no"
-  WALLET_FILE: "wallets/wallets.dat"
 ```
 
 **Key Points:**
@@ -133,18 +195,81 @@ type: Opaque
 stringData:
   BITCOIN_API_ADMIN_KEY: "admin-secret"
   BITCOIN_API_WALLET_KEY: "wallet-secret"
-  MINER_ADDRESS: "your-wallet-address-here"  # REQUIRED: Must be set to a valid wallet address
+  # Optional: if omitted/empty, the container entrypoint will auto-create and persist it.
+  # MINER_ADDRESS: ""
 ```
 
 **Key Points:**
 - `stringData` is plain text (Kubernetes encodes automatically)
 - For production, use sealed-secrets or external secret management
 
-## 4. PersistentVolumeClaim (Miner)
+## 4. `volumeClaimTemplates` (StatefulSet storage)
 
-**File**: `04-pvc-miner.yaml`
+In the current repo, both **miners** and **webservers** run as **StatefulSets** and use `volumeClaimTemplates` to provision storage. This is the recommended Kubernetes pattern for stateful workloads because it guarantees **one PersistentVolumeClaim per replica** (per pod).
 
-Provides persistent storage for miner blockchain data.
+### What `volumeClaimTemplates` does:
+
+`volumeClaimTemplates` is not a “volume” by itself. It is a *template* that the StatefulSet controller uses to create PVCs with deterministic names.
+
+- You define a template named (for example) `webserver-data`.
+- When the StatefulSet creates `webserver-0`, Kubernetes automatically creates a PVC named:
+  - `webserver-data-webserver-0`
+- When it creates `webserver-1`, it creates:
+  - `webserver-data-webserver-1`
+
+This matters because databases (like Sled) generally require **exclusive access** to their on-disk data directory. If multiple replicas share the same disk path, you can hit DB lock contention and corruption risks.
+
+### How it connects to the Pod (mount wiring)
+
+Inside the pod template you mount volumes by name using `volumeMounts`. For StatefulSets, the “volume” name you mount must match the template name:
+
+- `volumeClaimTemplates[].metadata.name == volumeMounts[].name`
+
+**What are `metadata` and `metadata.name`?**
+
+- **`metadata`**: a standard field on *all* Kubernetes objects that holds “object metadata” (identity and organizational info). Common fields include:
+  - `name`: the object’s name
+  - `namespace`: where it lives (for namespaced objects)
+  - `labels`: key/value tags used for selection and organization
+  - `annotations`: arbitrary non-identifying key/value metadata
+
+- **`metadata.name`**: the object’s name **within its scope**.
+  - For top-level objects (Service/StatefulSet/ConfigMap), this is the name you reference elsewhere.
+  - For a StatefulSet **`volumeClaimTemplates` entry**, `metadata.name` is the **template name** (e.g. `webserver-data`). Kubernetes uses it to generate per-pod PVC names (like `webserver-data-webserver-0`), and the pod uses that same template name as the `volumeMounts[].name`.
+
+So a template named `webserver-data` is mounted by:
+
+```yaml
+volumeMounts:
+  - name: webserver-data
+    mountPath: /app/data
+```
+
+### Example (snippet)
+
+```yaml
+volumeClaimTemplates:
+  - metadata:
+      name: webserver-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 50Gi
+```
+
+### Operational behavior to know
+
+- **Provisioning depends on storage**: PVCs will remain `Pending` if your cluster has no default StorageClass / provisioner that can satisfy them.
+- **Retention**: PVCs are typically retained even if pods restart (and often even if you scale down), which is usually what you want for stateful data.
+
+## 5. PersistentVolumeClaim (PVC) (Legacy / optional)
+
+PVC manifests are **legacy/optional** and were used in older Deployment-based setups where a single PVC was manually bound.
+
+In the current repo, storage is primarily provisioned via `volumeClaimTemplates` (Section 4). You usually do **not** need to apply these PVCs unless you are experimenting with a static/shared-PVC architecture.
+
+**File**: `04-pvc-miner.yaml` (legacy/optional)
 
 ```yaml
 apiVersion: v1
@@ -160,25 +285,7 @@ spec:
       storage: 50Gi
 ```
 
-## 5. PersistentVolumeClaim (Webserver)
-
-**File**: `05-pvc-webserver.yaml`
-
-Provides persistent storage for webserver blockchain data.
-
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: webserver-data-pvc
-  namespace: blockchain
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 50Gi
-```
+**File**: `05-pvc-webserver.yaml` (legacy/optional)
 
 ## 6. StatefulSet (Miner)
 
@@ -246,22 +353,22 @@ spec:
           storage: 1Gi
 ```
 
-## 7. Deployment (Webserver)
+## 7. StatefulSet (Webserver)
 
 **File**: `07-deployment-webserver.yaml`
 
-Defines webserver pods with rolling updates.
+Defines **webserver StatefulSet** pods. Despite the filename, the current repo uses a StatefulSet so each webserver has isolated chain DB + wallets.
 
 **Key Features:**
-- Stateless pods (can be replaced)
-- Rolling updates and rollbacks
-- Init containers for dependency waiting
+- Stable pod identities: `webserver-0`, `webserver-1`, ...
+- Per-pod PVCs via `volumeClaimTemplates` (isolated chain DB + wallets)
+- Init containers for dependency waiting (miner + Redis)
 - Health checks (liveness and readiness probes)
 
 **Important Configurations:**
 ```yaml
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: webserver
   namespace: blockchain
@@ -291,7 +398,7 @@ spec:
         # ... more env vars ...
         livenessProbe:
           httpGet:
-            path: /api/health/liveness
+            path: /api/health/live
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -306,13 +413,21 @@ spec:
           mountPath: /app/data
         - name: webserver-wallets
           mountPath: /app/wallets
-      volumes:
-      - name: webserver-data
-        persistentVolumeClaim:
-          claimName: webserver-data-pvc
-      - name: webserver-wallets
-        persistentVolumeClaim:
-          claimName: webserver-wallets-pvc
+  volumeClaimTemplates:
+  - metadata:
+      name: webserver-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 50Gi
+  - metadata:
+      name: webserver-wallets
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
 ```
 
 ## 8. Services
@@ -343,6 +458,28 @@ spec:
 **File**: `08-service-miner.yaml`
 
 Provides load-balanced internal network endpoint.
+
+#### Relationship: `miner-headless` vs `miner-service` (why both exist)
+
+Both Services typically select the **same set of pods** (here: `app: miner`). The difference is *how they expose those pods*:
+
+- **`miner-headless` (headless Service, `clusterIP: None`)**
+  - **Purpose**: per-pod identity for the **StatefulSet**.
+  - **What you get**: stable DNS names for each replica, e.g.:
+    - `miner-0.miner-headless.blockchain.svc.cluster.local:2001`
+    - `miner-1.miner-headless.blockchain.svc.cluster.local:2001`
+  - **Why it matters**: miners form a topology where connecting to a *specific* peer matters (seed node / upstream node). Headless DNS gives you deterministic addresses that survive rescheduling (DNS updates if pod IP changes).
+
+- **`miner-service` (normal Service, `type: ClusterIP`)**
+  - **Purpose**: a single stable “front door” DNS name for “talk to **a miner**”.
+  - **What you get**: `miner-service.blockchain.svc.cluster.local:2001` load-balances to any Ready miner pod.
+  - **Why it matters**: clients that don’t care which miner they hit (e.g. webservers syncing from “the miner set”, simple health checks, internal callers) can use one stable name.
+
+**How they work together**
+
+- The **StatefulSet** uses the headless Service to make replica identity usable in the network.
+- The **ClusterIP Service** provides convenience and resiliency for “group” access.
+- It is normal (and recommended) to have **both** for stateful peer systems: one for *identity* (headless), one for *load-balanced access* (ClusterIP).
 
 ```yaml
 apiVersion: v1
@@ -397,7 +534,7 @@ metadata:
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment
+    kind: StatefulSet
     name: webserver
   minReplicas: 1
   maxReplicas: 10
@@ -472,6 +609,38 @@ spec:
 
 Ensures minimum availability during disruptions.
 
+### Why this is needed:
+
+Kubernetes does “self-healing”, but there is an important distinction between:
+
+- **Involuntary disruptions**: a node crashes, the kernel OOM-kills a container, a process segfaults, etc.
+- **Voluntary disruptions**: an operator (or automation) intentionally evicts pods, usually due to:
+  - `kubectl drain` (node maintenance / upgrades)
+  - cluster autoscaler scale-down (node removal)
+  - some forms of rolling infrastructure maintenance
+
+A **PodDisruptionBudget (PDB)** protects you from *voluntary* disruptions taking down too many replicas at once. For a blockchain peer set, this matters because losing too many miners simultaneously can stall connectivity/propagation, and for stateful nodes it can increase recovery time as pods restart and resync.
+
+### How it works
+
+When a component tries to evict a pod, it typically uses the **Eviction API**. The Kubernetes disruption controller checks the matching PDB and decides whether the eviction is allowed:
+
+- With `minAvailable: 1`, Kubernetes will block evictions that would take the number of **available** pods below 1 for the selected set.
+- “Available” is based on readiness (Ready pods), not just “Running”.
+
+### What it does NOT do
+
+- It does **not** prevent involuntary failures (OOMKilled, node crash).
+- It does **not** guarantee zero downtime by itself; it only constrains *how many can be voluntarily evicted at once*.
+- It does **not** stop you from manually deleting pods (`kubectl delete pod ...`)—it is enforced on evictions, not all delete paths.
+
+### How to verify it in a cluster
+
+```bash
+kubectl get pdb -n blockchain
+kubectl describe pdb miner-pdb -n blockchain
+```
+
 ```yaml
 apiVersion: policy/v1
 kind: PodDisruptionBudget
@@ -490,17 +659,62 @@ spec:
 Deploy manifests in this order:
 
 1. Namespace
-2. ConfigMap and Secrets
-3. PersistentVolumeClaims
-4. StatefulSet/Deployment
-5. Services
+2. ConfigMaps + Secrets (including rate limiting `Settings.toml`)
+3. Redis (rate limiting backend, if enabled)
+4. Workloads (StatefulSets)
+5. Services (including headless services)
 6. HPA
 7. PodDisruptionBudget
+8. NetworkPolicy (optional)
 
-Or use Kustomize to deploy all at once:
+Or use **Kustomize** to deploy all at once:
 
 ```bash
 kubectl apply -k .
+```
+
+### What is Kustomize?
+
+**Kustomize** is a Kubernetes-native configuration tool for composing and modifying YAML without templates.
+
+Technically, it works by taking a set of base manifests (listed under `resources:` in `kustomization.yaml`) and applying:
+
+- **Patches** (strategic-merge or JSON6902) to change fields per environment
+- **Name/label transformations** (common labels, prefixes/suffixes)
+- **Generators** (e.g. create ConfigMaps/Secrets from files)
+
+Kustomize is built into `kubectl`, which is why you can run `kubectl apply -k .`.
+
+### Kustomize vs Helm (what’s the difference?)
+
+- **Kustomize**:
+  - **No templating** (no Go templates)
+  - Keeps YAML “as YAML”, and changes it via overlays/patches
+  - Great when you want minimal moving parts and manifests that stay close to raw Kubernetes
+
+- **Helm**:
+  - A **package manager** for Kubernetes with **templating**
+  - Great when you need distributable charts, lots of configuration knobs, or third-party app installs
+  - Adds a rendering step and chart conventions that can be overkill for small, repo-owned manifests
+
+### Why this project uses Kustomize (and a script)
+
+This repo’s manifests are **owned by the repo** (not a reusable “chart”), and we mainly need:
+
+- a clean way to apply a consistent set of YAML files (`kustomization.yaml`)
+- the option to add patches later (staging vs prod) without introducing templating
+- a simple, readable workflow that matches the book-style documentation
+
+That’s why we keep:
+
+- **Kustomize** for “apply the whole set”
+- **`deploy.sh`** for “apply in a safe order + do upgrade cleanup + wait for readiness”
+
+Or use the script (recommended for repeatable ordering):
+
+```bash
+cd ci/kubernetes/manifests
+./deploy.sh
 ```
 
 For detailed explanations of each manifest, see the complete guide sections on each resource type.
