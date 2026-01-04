@@ -5,33 +5,37 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../../README.md)
-2. [Chapter 2: Transaction ID Format](../../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)
-3. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)
-4. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md)
-5. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md)
-6. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md)
+1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
+2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../../bitcoin-blockchain/README.md) - Bitcoin and blockchain fundamentals
+3. [Chapter 1.3: Bitcoin Whitepaper](../../bitcoin-blockchain/00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
+4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../../bitcoin-blockchain/whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
+5. [Chapter 2.0: Rust Blockchain Project](../../bitcoin-blockchain/Rust-Project-Index.md) - Blockchain Project
+6. [Chapter 2.1: Primitives](../../bitcoin-blockchain/primitives/README.md) - Core data structures
+7. [Chapter 2.2: Utilities](../../bitcoin-blockchain/util/README.md) - Utility functions and helpers
+8. [Chapter 2.3: Cryptography](../../bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
+9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../../bitcoin-blockchain/chain/01-Technical-Foundations.md) - Proof Of Work
+10. [Chapter 2.5: Storage Layer](../../bitcoin-blockchain/store/README.md) - Persistent storage implementation
+11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../../bitcoin-blockchain/chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
+12. [Chapter 2.7: Network Layer](../../bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
+13. [Chapter 2.8: Node Orchestration](../../bitcoin-blockchain/node/README.md) - Node context and coordination
+14. [Chapter 2.9: Wallet System](../../bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
+15. [Chapter 3: Web API Architecture](../../bitcoin-blockchain/web/README.md) - REST API implementation
+16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
+17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
+18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
+19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-8. [Chapter 8: Docker Compose Deployment](01-Introduction.md) - Main chapter
-   - [Section 2: Architecture](02-Architecture.md)
-   - [Section 3: Execution Flow](03-Execution-Flow.md)
-   - [Section 4: Network Configuration](04-Network-Configuration.md)
-   - [Section 5: Sequential Startup](07-Sequential-Startup.md)
-   - [Section 6: Port Mapping](05-Port-Mapping.md)
-   - [Section 7: Scaling](06-Scaling.md)
-   - [Section 8: Deployment Scenarios](08-Deployment-Scenarios.md)
-   - [Section 9: Accessing Webserver](09-Accessing-Webserver.md)
-   - [Section 10: Deployment Guide](10-Deployment-Guide.md)
-   - [Section 11: Deployment Execution Walkthrough](11-Deployment-Execution-Walkthrough.md)
-   - **Section 12: DNS Resolution Mechanism** ← *You are here*
-9. [Chapter 9: Kubernetes Deployment](../../kubernetes/README.md)
+20. **Chapter 8: Docker Compose Deployment** ← *You are here*
+21. [Chapter 9: Kubernetes Deployment](../kubernetes/README.md) - Kubernetes production guide
+22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
 
 </details>
 
 </div>
 
+---
 <div align="right">
 
 **[← Back to Main Book](../../../README.md)**
@@ -46,7 +50,7 @@
 
 <div align="center">
 
-**📚 [← Section 11: Deployment Execution Walkthrough](11-Deployment-Execution-Walkthrough.md)** | **Section 12: DNS Resolution Mechanism** | **[Chapter 9: Kubernetes →](../../kubernetes/README.md)** 📚
+**📚 [← Section 11: Deployment Execution Walkthrough](11-Deployment-Execution-Walkthrough.md)** | **Section 12: DNS Resolution Mechanism** | **[Chapter 9: Kubernetes →](../kubernetes/README.md)** 📚
 
 </div>
 
@@ -723,10 +727,10 @@ This mechanism is essential for the deployment system to function correctly, ena
 
 <div align="center">
 
-**📚 [← Section 11: Deployment Execution Walkthrough](11-Deployment-Execution-Walkthrough.md)** | **Section 12: DNS Resolution Mechanism** | **[Chapter 9: Kubernetes →](../../kubernetes/README.md)** 📚
+**📚 [← Section 11: Deployment Execution Walkthrough](11-Deployment-Execution-Walkthrough.md)** | **Section 12: DNS Resolution Mechanism** | **[Chapter 9: Kubernetes →](../kubernetes/README.md)** 📚
 
 </div>
 
 ---
 
-*This chapter has provided a comprehensive guide to deploying and managing the blockchain network using Docker Compose. We've explored the complete architecture, execution flow, network configuration, sequential startup mechanisms, port mapping, scaling operations, deployment scenarios, webserver access, production deployment procedures, execution walkthroughs, and DNS resolution mechanisms. Docker Compose enables rapid development and local deployment with automatic port configuration, flexible scaling, and reliable networking. Understanding these concepts is essential for transitioning from development to production deployment. In the next chapter, we'll explore [Kubernetes Deployment](../../kubernetes/README.md) to understand how to deploy the blockchain network on Kubernetes for production-grade orchestration, autoscaling, and high availability.*
+*This chapter has provided a comprehensive guide to deploying and managing the blockchain network using Docker Compose. We've explored the complete architecture, execution flow, network configuration, sequential startup mechanisms, port mapping, scaling operations, deployment scenarios, webserver access, production deployment procedures, execution walkthroughs, and DNS resolution mechanisms. Docker Compose enables rapid development and local deployment with automatic port configuration, flexible scaling, and reliable networking. Understanding these concepts is essential for transitioning from development to production deployment. In the next chapter, we'll explore [Kubernetes Deployment](../kubernetes/README.md) to understand how to deploy the blockchain network on Kubernetes for production-grade orchestration, autoscaling, and high availability.*

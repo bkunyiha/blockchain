@@ -309,14 +309,16 @@ For comprehensive technical documentation covering all aspects of the blockchain
 **Part I: Core Blockchain Implementation** (Chapters 1-7)
 - [Chapter 1: Introduction & Overview](book-draft/01-Introduction.md) - Book introduction, project structure, technical stack
 - [Chapter 2: Introduction to Bitcoin & Blockchain](book-draft/bitcoin-blockchain/README.md) - Bitcoin and blockchain fundamentals
-- [Chapter 2.1: Cryptography](book-draft/bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-- [Chapter 2.2: Transaction System](book-draft/bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) - Transaction ID format guide
-- [Chapter 2.3: Blockchain State Management](book-draft/bitcoin-blockchain/chain/README.md) - Chain state and UTXO management
-- [Chapter 2.4: Network Layer](book-draft/bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
-- [Chapter 2.5: Node Orchestration](book-draft/bitcoin-blockchain/node/README.md) - Node context and coordination
-- [Chapter 2.6: Primitives](book-draft/bitcoin-blockchain/primitives/README.md) - Core data structures
-- [Chapter 2.7: Storage Layer](book-draft/bitcoin-blockchain/store/README.md) - Persistent storage implementation
-- [Chapter 2.8: Utilities](book-draft/bitcoin-blockchain/util/README.md) - Utility functions and helpers
+- [Chapter 2.1: Business Objects and encoding](book-draft/bitcoin-blockchain/primitives/README.md) - Primitives: Business Objects
+- [Chapter 2.1B: Transaction System](book-draft/bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) - Transaction ID format guide
+- [Chapter 2.2: Utilities](book-draft/bitcoin-blockchain/util/README.md) - Utility functions and helpers
+- [Chapter 2.3: Cryptography](book-draft/bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
+- [Chapter 2.4: Blockchain(POW & Block Acceptance)](book-draft/bitcoin-blockchain/chain/01-Technical-Foundations.md) - Blockchain POW and Block Acceptance
+- [Chapter 2.5: Storage Layer](book-draft/bitcoin-blockchain/chain/Blockchain-State-Management.md) - Persistent storage implementation
+- [Chapter 2.6: Blockchain State Management](book-draft/bitcoin-blockchain/chain/README.md) - Chain state and UTXO management
+- [Chapter 2.7: Network Layer](book-draft/bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protoco
+- [Chapter 2.8: Node Orchestration](book-draft/bitcoin-blockchain/node/README.md) - Node context and coordination
+- [Chapter 2.9: Primitives](book-draft/bitcoin-blockchain/primitives/README.md) - Core data structures
 - [Chapter 2.9: Wallet System](book-draft/bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
 - [Chapter 3: Web API Architecture](book-draft/bitcoin-blockchain/web/README.md) - REST API implementation (10 sections)
   - [Introduction & Architecture Overview](book-draft/bitcoin-blockchain/web/01-Introduction.md)

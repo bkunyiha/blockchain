@@ -475,6 +475,11 @@ impl BlockchainFileSystem {
             if block_bytes.is_some() {
                 return Ok(());
             }
+
+            // FIXME: From bitcoint whitepaper, only add block if:
+            // A) “All transactions in it are valid”
+            // B) “Not already spent”
+            // See book-draft/bitcoin-blockchain/chain/02-Block-Acceptance-Whitepaper-Step-5.md
             let block_bytes = new_block.serialize()?;
             let tip_hash = self.get_tip_hash().await?;
             let transaction_result: TransactionResult<(), ()> =
