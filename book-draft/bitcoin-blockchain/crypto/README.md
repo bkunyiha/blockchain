@@ -46,7 +46,7 @@
 
 # Cryptography in Blockchain
 
-**Part I: Core Blockchain Implementation** | **Chapter 2.3: Cryptographic Primitives and Libraries**
+**Part I: Core Blockchain Implementation** | **Section 2.3: Cryptography (Cryptographic Primitives and Libraries)**
 
 <div align="center">
 
@@ -58,461 +58,296 @@
 
 ## Introduction
 
-Cryptography is the foundation of blockchain security. Every transaction must be signed, every address must be derived from keys, and every block must be hashed. In this chapter, we explore how our blockchain implementation uses cryptographic primitives to ensure security, authenticity, and integrity.
+Cryptography is the foundation of blockchain security. Every transaction must be signed, every address must be derived from keys, and every block must be hashed. In this section, we explore how our blockchain implementation uses cryptographic primitives to ensure security, authenticity, and integrity.
+This section examines the cryptographic libraries we use, why we chose them, and how they're applied throughout the blockchain. We'll see how Rust's type system and memory safety 
+enable secure cryptographic operations, and how different libraries serve different purposes in our implementation.
 
-This chapter examines the cryptographic libraries we use, why we chose them, and how they're applied throughout the blockchain. We'll see how Rust's type system and memory safety enable secure cryptographic operations, and how different libraries serve different purposes in our implementation.
+In the whitepaper, Satoshi’s system relies on a few cryptographic building blocks:
 
-### What You'll Learn
+- **Hashing** makes data tamper-evident and powers proof-of-work.
+- **Digital signatures** let a spender prove ownership of a key without revealing it.
+- **Key generation** gives users the material needed to sign.
+- **Address encoding** turns binary identifiers into human-usable strings.
 
-- **Hash Functions**: How SHA-256 creates unique identifiers for transactions and blocks
-- **Digital Signatures**: How Schnorr and ECDSA signatures authorize transactions
-- **Key Pair Generation**: How secure keys are generated and managed
-- **Address Encoding**: How Base58 encoding creates human-readable addresses
-- **Security Practices**: Best practices for cryptographic operations
-- **Performance Considerations**: Performance characteristics and optimization strategies
+In this project, the cryptography layer lives in `bitcoin/src/crypto/`.
 
----
+Cryptography is the part of a Bitcoin implementation that answers three practical questions:
 
-## Table of Contents
+- **How do we name things?** We use hashes as stable, tamper-evident identifiers (for transactions, blocks, and proof-of-work candidates).
+- **How do we prove authorization?** We use digital signatures so only the key holder can authorize spends.
+- **How do we represent these ideas as bytes?** We standardize key formats, signature formats, and address encodings so nodes can interoperate.
 
-This guide is organized into five main sections, each covering a specific cryptographic primitive:
+Some of this code is used by consensus-critical paths today (hashing and Schnorr verification). Some pieces exist as learning scaffolding or forward-looking building blocks (for example, alternative signature schemes), and we call that out explicitly where it matters.
+
+## Section map
+
+In this section, we provide a high-level tour of the cryptography layer. For detailed implementations and deeper explanations, we go part-by-part here:
 
 ### Section 1: Hash Functions
-**[01-Hash-Functions.md](01-Hash-Functions.md)** - SHA-256 hashing for transaction IDs, block hashes, and Merkle trees
 
-- SHA-256 Digest: General-purpose hashing with `ring` crate
-- Taproot Hash: P2TR address hashing with `sha2` crate
-- Usage in transaction ID generation
-- Usage in block hashing and Merkle tree calculation
-- Usage in proof-of-work mining
-- Hash function properties and security guarantees
+**[01-Hash-Functions.md](01-Hash-Functions.md)** — SHA-256 for transaction IDs, block hashes, and proof-of-work.
 
 ### Section 2: Digital Signatures
-**[02-Digital-Signatures.md](02-Digital-Signatures.md)** - Schnorr and ECDSA signatures for transaction authorization
 
-- Schnorr Signatures: Modern Bitcoin signatures (primary)
-- ECDSA Signatures: Legacy support
-- Transaction signing process
-- Transaction verification process
-- Signature schemes comparison
-- Usage in transaction inputs and outputs
+**[02-Digital-Signatures.md](02-Digital-Signatures.md)** — Schnorr signatures (primary) and ECDSA helpers (contrast/legacy).
 
 ### Section 3: Key Pair Generation
-**[03-Key-Pair-Generation.md](03-Key-Pair-Generation.md)** - Secure key pair generation and public key derivation
 
-- Schnorr Key Pairs: secp256k1 curve (Bitcoin standard)
-- ECDSA Key Pairs: Legacy PKCS#8 format
-- Public key derivation from private keys
-- Usage in wallet creation
-- Key pair security considerations
-- Random number generation
+**[03-Key-Pair-Generation.md](03-Key-Pair-Generation.md)** — generating private keys and deriving public keys (secp256k1 for Schnorr).
 
 ### Section 4: Address Encoding
-**[04-Address-Encoding.md](04-Address-Encoding.md)** - Base58 encoding for human-readable addresses
 
-- Base58 encoding and decoding
-- Address structure (version, hash, checksum)
-- P2TR address generation
-- Address validation
-- Error handling and checksum verification
+**[04-Address-Encoding.md](04-Address-Encoding.md)** — Base58 encoding/decoding building blocks and how address formats are constructed.
 
 ### Section 5: Security and Performance
-**[05-Security-and-Performance.md](05-Security-and-Performance.md)** - Security best practices and performance characteristics
 
-- Secure random number generation
-- Constant-time operations
-- Input validation
-- Error handling patterns
-- Performance benchmarks
-- Optimization strategies
+**[05-Security-and-Performance.md](05-Security-and-Performance.md)** — threat model, safe practices, and performance tradeoffs.
 
----
+## How the crypto layer is structured
 
-## Cryptographic Module Structure
+In Rust, a “module” is a namespace boundary. We use it here to keep cryptographic concerns isolated and easy to audit: application code calls a small set of cryptographic functions, and the crypto module owns the details of which library implements what.
 
-The `bitcoin/src/crypto` module is organized into four submodules:
+`bitcoin/src/crypto/mod.rs` is the entry point for this section’s code. It defines four submodules, each representing a concrete cryptographic responsibility:
 
-```rust
-pub mod address;   // Base58 encoding/decoding
-pub mod hash;      // SHA-256 hashing functions
-pub mod keypair;   // Key pair generation
-pub mod signature; // Digital signature operations
-```
+- **`hash`**: hashing bytes into fixed-size digests (identifiers and PoW work units)
+- **`signature`**: producing and verifying signatures (authorization)
+- **`keypair`**: generating private keys and deriving public keys (identity material)
+- **`address`**: converting binary payloads to and from human-facing strings (encoding/decoding)
 
-Each submodule provides focused functionality, making the codebase easier to understand and maintain. The module re-exports commonly used functions for convenience:
+We keep the crypto surface area explicit and small by re-exporting the functions we want the rest of the crate to call directly:
 
 ```rust
+pub mod address;
+pub mod hash;
+pub mod keypair;
+pub mod signature;
+
 pub use address::{base58_decode, base58_encode};
 pub use hash::{sha256_digest, taproot_hash};
 pub use keypair::{get_schnorr_public_key, new_key_pair, new_schnorr_key_pair};
 pub use signature::{
-    ecdsa_p256_sha256_sign_digest, ecdsa_p256_sha256_sign_verify,
-    schnorr_sign_digest, schnorr_sign_verify,
+    ecdsa_p256_sha256_sign_digest, ecdsa_p256_sha256_sign_verify, schnorr_sign_digest,
+    schnorr_sign_verify,
 };
 ```
 
-This design allows us to use cryptographic functions throughout the codebase while maintaining clear separation of concerns.
+Because `bitcoin/src/lib.rs` re-exports the crypto module (`pub use crypto::*;`), most call sites inside the crate simply use `crate::sha256_digest(...)` or `crate::schnorr_sign_verify(...)`. This is a deliberate ergonomics choice: it keeps cryptographic call sites readable while still letting us centralize cryptographic decisions inside `bitcoin/src/crypto/`.
 
----
+## Technical foundations (what this code is based on)
 
-## Cryptographic Primitives Overview
+This section provides the “why” behind each primitive, at the level you need to implement and review the code safely. We keep it grounded in the whitepaper’s model, but we also call out where our implementation currently differs from Bitcoin Core for simplicity.
 
-Our blockchain implementation uses four main cryptographic primitives, each chosen for specific reasons and solving critical problems in decentralized systems. In this section, we explore why these primitives are essential, how they're used in blockchain, and why these particular implementations were chosen.
+### Hashing: what properties we rely on
 
-### 1. Hash Functions: The Foundation of Blockchain Immutability
+**SHA-256** (Secure Hash Algorithm, 256-bit) is a *hash function*: a deterministic algorithm that takes any input bytes and produces a fixed 32-byte output (“digest”). You can think of it as a fingerprint of the input: easy to compute, hard to reverse, and extremely sensitive to changes.
 
-**Why Hash Functions Are Essential in Blockchain:**
+When we say “SHA-256,” we are relying on specific properties:
 
-Hash functions solve fundamental problems that make blockchain technology possible:
+- **Determinism**: same bytes in, same bytes out. That is what allows every node to agree on identifiers.
+- **Preimage resistance**: given \(h = \text{SHA256}(m)\), it is computationally infeasible to recover \(m\).
+- **Second-preimage resistance**: given \(m\), it is infeasible to find \(m' \ne m\) where \(\text{SHA256}(m) = \text{SHA256}(m')\).
+- **Collision resistance**: it is infeasible to find *any* \(m_1 \ne m_2\) with the same hash.
+- **Avalanche effect**: flipping 1 bit of input tends to flip ~50% of output bits, which makes tampering obvious.
 
-1. **Creating Immutable Identifiers**: Blockchain needs a way to uniquely identify transactions and blocks that cannot be altered. Hash functions provide deterministic, collision-resistant identifiers.
+**What the whitepaper uses hashing for**:
 
-2. **Ensuring Data Integrity**: Any modification to transaction or block data must be immediately detectable. Hash functions' avalanche effect ensures even tiny changes produce completely different hashes.
+- Block headers link together by including the previous block hash.
+- Proof-of-work is “try nonces until the hash is below a target.”
+- Transactions are identified by their hashes so that later spends can refer to them.
 
-3. **Enabling Efficient Verification**: Nodes need to verify transaction inclusion and block integrity without downloading entire datasets. Merkle trees built on hash functions enable O(log n) verification.
+**How our code maps to this**:
 
-4. **Supporting Consensus Mechanisms**: Proof-of-work requires a mechanism that's hard to compute but easy to verify. Hash functions provide this asymmetry perfectly.
+- `bitcoin/src/crypto/hash.rs` provides `sha256_digest(...)` and `taproot_hash(...)`.
+- `sha256_digest` is used by transaction ID generation and proof-of-work loops.
 
-**How Hash Functions Are Used in Blockchain:**
+#### Important implementation note: “Bitcoin-style” double hashing vs our current code
 
-- **Transaction IDs**: Every transaction is hashed to create a unique 32-byte identifier. This enables efficient transaction lookup, prevents duplicates, and allows nodes to reference specific transactions in inputs.
+In Bitcoin Core, many identifiers are computed using **double SHA-256** (often written as \(\text{SHA256}(\text{SHA256}(\cdot))\)). In this project, some places currently use a **single** SHA-256 for simplicity.
 
-- **Block Hashes**: Each block's header is hashed to create an immutable fingerprint. This hash is included in the next block's header, creating an unbreakable chain where modifying any block breaks the chain.
+This is not a moral failing; it is a deliberate scope choice. But it is consensus-relevant: if you want byte-for-byte compatibility with Bitcoin’s formats, you will need to align those hashing rules.
 
-- **Merkle Tree Roots**: Transaction hashes are combined pairwise and hashed repeatedly to form a Merkle tree. The root hash represents all transactions in the block, enabling efficient verification of transaction inclusion.
+### Proof-of-work: “hard to compute, easy to verify”
 
-- **Address Generation**: Public keys are hashed to create addresses, providing privacy (public keys aren't directly exposed) and security (one-way operation prevents key derivation).
+The whitepaper’s proof-of-work idea depends on a crucial asymmetry:
 
-- **Proof-of-Work Mining**: Miners repeatedly hash block data with different nonces until finding a hash below the target difficulty. This requires computational work but verification is instant.
+- **Mining**: requires many hash evaluations (brute force search).
+- **Validation**: requires one hash evaluation + a comparison.
 
-**Why SHA-256 Specifically:**
+This is why `sha256_digest` shows up in the PoW module: PoW is simply repeated hashing over candidate header bytes.
 
-SHA-256 was chosen for Bitcoin and blockchain systems for several critical reasons:
+### Digital signatures: what a signature means in this system
 
-1. **Security**: SHA-256 provides 256 bits of security, sufficient for blockchain applications. It's cryptographically secure and resistant to collision attacks.
+A **digital signature** is a mathematical proof that “someone who knows a private key approved these bytes.” It lets the network verify authorization without learning the private key.
 
-2. **Performance**: SHA-256 is fast to compute, enabling high transaction throughput. Modern CPUs and GPUs have hardware acceleration for SHA-256.
+A signature scheme gives us three things:
 
-3. **Standardization**: SHA-256 is a NIST-standardized algorithm, well-audited and widely trusted. It's been battle-tested in production systems.
+- **Authenticity**: “the holder of this private key authorized this message.”
+- **Integrity**: if the message changes, verification fails.
+- **Unforgeability**: without the private key, producing a valid signature is computationally infeasible.
 
-4. **Deterministic Output**: Same input always produces same output, essential for blockchain consistency across all nodes.
+In Bitcoin’s model, a spend is authorized by proving you can satisfy the previous output’s locking condition (usually “produce a valid signature under this public key / public key hash”).
 
-5. **Fixed Output Size**: Always produces 32 bytes, enabling predictable storage and efficient database indexing.
+### Curves and key formats: secp256k1, compressed keys, and x-only keys
 
-6. **One-Way Function**: Cannot reverse hash to recover input, providing security for address generation and transaction identification.
+An **elliptic curve** is the mathematical structure behind Bitcoin’s public/private keys. Bitcoin’s standard curve is **secp256k1** (defined in SEC 2). In practice, “using secp256k1” means we represent keys as specific byte formats and use curve operations to derive a public key from a private key.
 
-**Alternative Hash Functions and Why They Weren't Chosen:**
+Key material is commonly represented as:
 
-- **MD5/SHA-1**: Cryptographically broken, vulnerable to collision attacks
-- **SHA-3**: Newer standard but less hardware support, no significant advantage over SHA-256
-- **BLAKE2**: Faster but less standardized, Bitcoin ecosystem standardized on SHA-256
-- **RIPEMD160**: Used in legacy Bitcoin addresses but SHA-256 provides better security
+- **Private key**: 32 bytes
+- **Compressed public key**: 33 bytes (prefix byte 0x02/0x03 + 32-byte X coordinate)
+- **X-only public key** (Taproot/Schnorr context): 32 bytes
 
-**Libraries Used:**
-- `ring` crate: General-purpose SHA-256 hashing (BoringSSL-based, optimized C code, used for transaction IDs, block hashes, Merkle trees)
-- `sha2` crate: Taproot-specific SHA-256 hashing (pure Rust, Taproot compatibility, used for P2TR address generation)
+Our Schnorr verification path converts a compressed 33-byte public key into an x-only 32-byte representation for verification, because that is what Schnorr verification expects.
 
-### 2. Digital Signatures: Authorization Without Central Authority
+### Schnorr vs ECDSA (and a project-specific caveat)
 
-**Why Digital Signatures Are Essential in Blockchain:**
+**ECDSA** (Elliptic Curve Digital Signature Algorithm) and **Schnorr** are two different digital signature algorithms. Both can run on secp256k1 keys, but they have different properties and formats.
 
-Digital signatures solve the critical problem of authorizing transactions in a decentralized system without trusted third parties:
+Bitcoin historically used **ECDSA over secp256k1**. Modern Bitcoin (Taproot, BIP-340) uses **Schnorr over secp256k1**, which has advantages like fixed-size signatures and better composability.
 
-1. **Proving Ownership**: Users must prove they own the private key corresponding to a public key without revealing the private key. Digital signatures provide this proof.
+In this project:
 
-2. **Preventing Unauthorized Spending**: Without signatures, anyone could spend anyone else's funds. Signatures ensure only the private key owner can authorize spending.
+- **Schnorr (secp256k1)** is the primary path used by transaction signing/verification.
+- We also expose **ECDSA helpers** for experimentation and contrast.
 
-3. **Ensuring Transaction Integrity**: Signatures are tied to specific transaction hashes. Any modification to transaction data invalidates the signature, preventing tampering.
+**Caveat**: our ECDSA helpers use **P-256** via `ring`, not secp256k1. That makes them *not Bitcoin-standard*. Keep them as an educational/alternative module unless/until you swap them for secp256k1 ECDSA.
 
-4. **Enabling Non-Repudiation**: Once a transaction is signed and broadcast, the signer cannot deny having authorized it, providing accountability.
+### Address encoding: bytes humans can safely copy/paste
 
-**How Digital Signatures Are Used in Blockchain:**
+An **address** is not a key. It is a human-friendly string that encodes a binary payload (for example, a version byte plus a hash plus a checksum). In Bitcoin, the encoding choice is designed to reduce transcription errors and make addresses shorter than raw hex.
 
-- **Transaction Signing**: Every transaction input must be signed with the private key corresponding to the public key that locks the output being spent. The transaction hash (excluding signatures) is signed.
+Humans do not want to copy 32 raw bytes. Encodings like **Base58** are used to:
 
-- **Transaction Verification**: Nodes verify all signatures before accepting transactions. They re-hash transaction data and verify signatures against public keys from previous transaction outputs.
+- avoid ambiguous characters (0/O, I/l),
+- shorten representation vs hex,
+- support error-detection via a **checksum** (in Bitcoin’s “Base58Check” formats). A checksum is a few bytes derived from the payload; if you mistype the address, the checksum usually won’t match.
 
-- **Authorization**: Signatures prove the signer controls the private key, thus proving ownership and authorization to spend the funds.
+**Important distinction**: our `bitcoin/src/crypto/address.rs` currently provides *raw* `base58_encode` / `base58_decode`. Those are building blocks. The full Bitcoin “address format” includes versioning + payload + checksum rules, which live in the wallet/address layer in a full implementation.
 
-- **Integrity Checking**: Any modification to transaction data changes the hash, making the signature invalid. This ensures transaction integrity.
+## Hashing: making data tamper-evident (and powering mining)
 
-**Why Schnorr Signatures (Primary):**
+### `sha256_digest(data: &[u8]) -> Vec<u8>`
 
-Schnorr signatures were chosen for modern Bitcoin (Taproot) for several advantages:
+This is the “workhorse hash.” A hash function is a one-way compression function: it maps arbitrary-length input bytes to a fixed-length output (here, 32 bytes). In Bitcoin, that fixed-length output becomes a stable identifier and a proof-of-work work unit.
 
-1. **Smaller Size**: Fixed 64 bytes vs. variable 70-72 bytes for ECDSA, reducing blockchain size and transaction fees.
+In the running code, this hash shows up in several places:
 
-2. **Better Security Properties**: Schnorr signatures have better security properties including linearity, which enables signature aggregation.
+- **Transaction IDs**: `Transaction::hash()` serializes a trimmed copy of the transaction and hashes it.
+- **Mining / proof-of-work**: the PoW loop hashes candidate block header bytes repeatedly.
+- **Merkle-ish aggregation**: the block code hashes transaction hashes when computing a root/summary.
 
-3. **Signature Aggregation**: Multiple signatures can be combined into a single signature, reducing blockchain size and improving privacy.
+In other words: hashing is how we create *stable identifiers*, and those identifiers are what we chain together.
 
-4. **Batch Verification**: Multiple Schnorr signatures can be verified together more efficiently than individually, improving node performance.
+### `taproot_hash(data: &[u8]) -> Vec<u8>`
 
-5. **Taproot Compatibility**: Schnorr signatures are required for Bitcoin's Taproot upgrade, enabling improved privacy and efficiency.
+This function is also SHA-256, but implemented via a different library (`sha2` instead of `ring`). Conceptually, there is no new cryptographic primitive here; it is the same digest algorithm with a different implementation.
 
-6. **Bitcoin Standard**: Schnorr signatures are the modern Bitcoin standard, ensuring compatibility with the Bitcoin ecosystem.
+In this project, `taproot_hash` is used by the wallet address pipeline (via `wallet_impl.rs` → `hash_pub_key`), where we intentionally use a 32-byte public-key hash as part of a Taproot-style address construction.
 
-**Why ECDSA Signatures (Legacy Support):**
+That mismatch is useful in a book: it lets us discuss dependency choices and how a project evolves. But in production code, we usually want **one** SHA-256 implementation for consistency and smaller dependency surface area.
 
-ECDSA signatures are provided for backward compatibility:
+## Signatures: authorizing spends without a trusted party
 
-1. **Legacy Support**: Traditional Bitcoin addresses use ECDSA signatures, so support is needed for backward compatibility.
+### The important idea
 
-2. **Alternative Schemes**: Some systems may require ECDSA signatures for compatibility with other protocols.
+In Bitcoin’s model, an output is “locked” to a condition, and an input “unlocks” it by providing a valid signature. Verification is what lets every node agree on which spends are allowed.
 
-3. **Flexibility**: Provides flexibility for different signature requirements and testing different signature schemes.
+### What we actually use right now
 
-**Why secp256k1 Curve:**
+In the current implementation, the active signature path is **Schnorr over secp256k1**, exposed as:
 
-The secp256k1 elliptic curve was chosen for Bitcoin for specific reasons:
+- `schnorr_sign_digest(private_key, message) -> Result<Vec<u8>>`
+- `schnorr_sign_verify(public_key, signature, message) -> bool`
 
-1. **Bitcoin Standard**: secp256k1 is Bitcoin's standard curve, ensuring full compatibility with Bitcoin.
+These are used by the transaction code:
 
-2. **Security**: Provides 256 bits of security, sufficient for blockchain applications.
+- **Signing**: when a transaction is created, we build a “trimmed copy,” compute its hash, and sign that hash.
+- **Verification**: we rebuild the same trimmed copy and verify each input signature against the corresponding public key material.
 
-3. **Efficiency**: Optimized implementations available, enabling fast signature operations.
+One subtle (but important) implementation detail: `schnorr_sign_digest` hashes the provided `message` again internally (SHA-256), so today we effectively sign **SHA256(tx_hash_bytes)**. That is not “wrong” in itself, but it is a design choice worth calling out and revisiting as the project matures.
 
-4. **Ecosystem Support**: Extensive library support and hardware acceleration available.
+### Where signatures connect to the rest of the code
 
-**Libraries Used:**
-- `secp256k1` crate: Schnorr signatures (Bitcoin-optimized, secp256k1 curve, primary signature scheme)
-- `ring` crate: ECDSA signatures (BoringSSL-based, P-256 curve, legacy support)
+To keep the mental model tight, here is the dependency chain you should have in your head while reading the transaction code:
 
-### 3. Key Pair Generation: The Foundation of Cryptographic Ownership
+- **Transaction signing** (in `bitcoin/src/primitives/transaction.rs`) depends on:
+  - `sha256_digest` to compute the transaction ID/hash of a trimmed copy
+  - `schnorr_sign_digest` to authorize each input
+- **Transaction verification** depends on:
+  - reconstructing the same trimmed copy
+  - `schnorr_sign_verify` to validate each signature
 
-**Why Key Pairs Are Essential in Blockchain:**
+That is the “verify the math” heart of the whitepaper: validation is deterministic and local, even though creation is distributed.
 
-Key pairs enable the fundamental blockchain concept of cryptographic ownership:
+### ECDSA helpers (present, but not used)
 
-1. **Creating Decentralized Identities**: Users generate their own key pairs without central authority, enabling self-sovereign identity.
+We also expose ECDSA signing/verification via:
 
-2. **Enabling Ownership Proof**: Private keys prove ownership, public keys enable verification. This enables ownership without revealing identity.
+- `ecdsa_p256_sha256_sign_digest(...)`
+- `ecdsa_p256_sha256_sign_verify(...)`
 
-3. **Supporting Transaction Authorization**: Private keys are used to sign transactions, proving authorization to spend funds.
+These are **not used by the chain today**. They exist mainly as a comparison point and for experimentation. (Note: Bitcoin’s historical ECDSA is also over secp256k1; our ECDSA helpers use P-256 via `ring`, which is not Bitcoin-standard.)
 
-4. **Enabling Address Generation**: Public keys are hashed to create addresses, providing privacy and security.
+## Key generation and address encoding (how bytes become usable artifacts)
 
-**How Key Pairs Are Used in Blockchain:**
+Two more files exist because a Bitcoin implementation needs a bridge from “math” to “usable artifacts”:
 
-- **Wallet Creation**: Users generate key pairs to create wallets. The private key is kept secret, the public key is used to generate addresses.
+- **`keypair.rs`**: key generation and derivation. A private key is a 32-byte secret; the public key is derived from it and shared with the network.
+- **`address.rs`**: encoding and decoding. An address is not “a key”; it is a human-friendly encoding of a binary payload (version + hash + checksum, depending on format).
 
-- **Address Generation**: Public keys are hashed to create addresses. This provides privacy (public keys aren't directly exposed) and security (cannot derive private keys from addresses).
+These functions are used primarily through the wallet layer today (for example, Base58 encoding/decoding and Taproot-style public-key hashing). As we expand wallet and script functionality, this is where we will tighten format compatibility and add richer address types.
 
-- **Transaction Signing**: Private keys are used to sign transactions, proving ownership and authorization to spend funds.
+## Where to go next
 
-- **Transaction Verification**: Public keys are used to verify signatures, ensuring transactions are authorized by the key owner.
+- If you want the “hashing and mining” story: **[01-Hash-Functions.md](01-Hash-Functions.md)** then **[Chain (PoW)](../chain/01-Technical-Foundations.md)**.
+- If you want the “ownership and authorization” story: **[02-Digital-Signatures.md](02-Digital-Signatures.md)** then the transaction code in `bitcoin/src/primitives/transaction.rs`.
+- If you want the “wallet pipeline” story: **[03-Key-Pair-Generation.md](03-Key-Pair-Generation.md)** and **[04-Address-Encoding.md](04-Address-Encoding.md)**.
 
-**Why secp256k1 Curve for Key Pairs:**
+## Additional resources
 
-The secp256k1 curve is used for key pair generation for the same reasons as signatures:
+- **Internal docs**:
+  - **[01-Hash-Functions.md](01-Hash-Functions.md)**
+  - **[02-Digital-Signatures.md](02-Digital-Signatures.md)**
+  - **[03-Key-Pair-Generation.md](03-Key-Pair-Generation.md)**
+  - **[04-Address-Encoding.md](04-Address-Encoding.md)**
+  - **[05-Security-and-Performance.md](05-Security-and-Performance.md)**
 
-1. **Bitcoin Compatibility**: secp256k1 is Bitcoin's standard curve, ensuring full compatibility.
+## References and further reading
 
-2. **Security**: Provides 256 bits of security, sufficient for blockchain applications.
+In this section, we provide credible references you can use to validate the concepts behind the code and go deeper when you need more detail.
 
-3. **Efficiency**: Optimized implementations enable fast key generation and public key derivation.
+### Bitcoin foundations
 
-4. **Ecosystem Support**: Extensive library support and compatibility with Bitcoin tools.
+- **[Bitcoin: A Peer-to-Peer Electronic Cash System (whitepaper)](https://bitcoin.org/bitcoin.pdf)**
+- **[Bitcoin Core Developer Guide](https://developer.bitcoin.org/devguide/)**
 
-**Why 32-Byte Private Keys:**
+### Hashing and proof-of-work
 
-Private keys are 32 bytes (256 bits) for specific reasons:
+- **[FIPS 180-4: Secure Hash Standard (SHA-256)](https://csrc.nist.gov/publications/detail/fips/180/4/final)** (the SHA-2 specification)
+- **[Bitcoin Wiki: Proof of Work](https://en.bitcoin.it/wiki/Proof_of_work)** (high-level PoW intuition and terminology)
 
-1. **Security**: 256 bits provides sufficient security against brute-force attacks (2^256 possible keys).
+### Schnorr signatures and Taproot
 
-2. **Efficiency**: Compact size enables efficient storage and transmission.
+- **[BIP 340: Schnorr Signatures for secp256k1](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki)** (x-only keys, signature format, tagged hash details)
+- **[BIP 341: Taproot](https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki)** (Taproot output construction and spending paths)
+- **[BIP 342: Validation of Taproot Scripts](https://github.com/bitcoin/bips/blob/master/bip-0342.mediawiki)** (Tapscript semantics)
+- **[secp256k1 library (Bitcoin Core)](https://github.com/bitcoin-core/secp256k1)** (reference implementation used widely in the ecosystem)
 
-3. **Bitcoin Standard**: Matches Bitcoin's standard key size, ensuring compatibility.
+### ECDSA (background / contrast)
 
-4. **Balance**: Provides security while maintaining efficiency.
+- **[FIPS 186-5: Digital Signature Standard (DSS)](https://csrc.nist.gov/publications/detail/fips/186/5/final)** (ECDSA definition and security considerations)
+- **[SEC 2: Recommended Elliptic Curve Domain Parameters](https://www.secg.org/sec2-v2.pdf)** (includes secp256k1 parameters used by Bitcoin)
 
-**Why Compressed Public Keys:**
+### Address formats and encodings
 
-Public keys are stored in compressed format (33 bytes) for efficiency:
+- **[Bitcoin Wiki: Base58Check encoding](https://en.bitcoin.it/wiki/Base58Check_encoding)** (version + payload + checksum conventions)
+- **[Bitcoin Wiki: Address](https://en.bitcoin.it/wiki/Address)** (address types and high-level structure)
 
-1. **Storage Efficiency**: 33 bytes vs. 65 bytes uncompressed, reducing storage requirements.
+### Rust and implementation practice
 
-2. **Network Efficiency**: Smaller size reduces bandwidth for transaction transmission.
-
-3. **Bitcoin Standard**: Matches Bitcoin's compressed public key format.
-
-4. **Performance**: Faster serialization and deserialization.
-
-**Libraries Used:**
-- `secp256k1` crate: Schnorr key pairs (Bitcoin-optimized, secp256k1 curve, primary key pair type)
-- `ring` crate: ECDSA key pairs (BoringSSL-based, P-256 curve, legacy support)
-
-### 4. Address Encoding: Bridging Cryptography and Usability
-
-**Why Address Encoding Is Essential in Blockchain:**
-
-Address encoding solves the problem of making cryptographic hashes usable by humans:
-
-1. **Human Readability**: Raw cryptographic hashes (32 bytes of binary data) are difficult for humans to read, type, and share. Encoding makes them human-friendly.
-
-2. **Error Prevention**: Encoding schemes can avoid ambiguous characters and include error detection, preventing costly mistakes.
-
-3. **Compact Representation**: Encoding can be more compact than hexadecimal while remaining human-readable.
-
-4. **Network Identification**: Encoded addresses can include version bytes to identify address types and networks.
-
-**How Address Encoding Is Used in Blockchain:**
-
-- **Address Display**: Addresses are displayed to users in encoded format, making them easy to read and share.
-
-- **Address Entry**: Users can manually enter addresses in encoded format, with checksums detecting typos.
-
-- **Transaction Creation**: When creating transactions, addresses are decoded to extract public key hashes for output locking.
-
-- **Address Validation**: Nodes validate addresses by decoding and verifying checksums before processing transactions.
-
-**Why Base58 Specifically:**
-
-Base58 encoding was chosen for Bitcoin addresses for several reasons:
-
-1. **Human Readability**: Base58 uses alphanumeric characters that are easy to read and type.
-
-2. **Error Prevention**: Base58 excludes ambiguous characters (0/O, I/l) that could cause errors in manual entry.
-
-3. **Compactness**: Base58 is more compact than hexadecimal (fewer characters for same data).
-
-4. **Bitcoin Standard**: Base58 is Bitcoin's standard encoding, ensuring compatibility with Bitcoin tools and ecosystem.
-
-5. **Checksum Support**: Base58 addresses can include checksums for error detection.
-
-**Why Not Other Encodings:**
-
-- **Hexadecimal**: Too long, includes ambiguous characters, less user-friendly
-- **Base64**: Includes special characters (+/), not URL-safe, includes padding characters
-- **Base32**: Less compact than Base58, includes ambiguous characters
-- **QR Codes**: Not human-readable, requires scanning device
-
-**Address Structure and Why:**
-
-Bitcoin addresses have a specific structure for good reasons:
-
-1. **Version Byte**: Identifies address type (P2PKH/P2TR) and network (mainnet/testnet), enabling support for multiple address types.
-
-2. **Public Key Hash**: 32-byte hash of public key (for P2TR), providing privacy and security.
-
-3. **Checksum**: 4-byte checksum calculated using double SHA-256, detecting typos and transmission errors.
-
-**Why Double SHA-256 for Checksum:**
-
-Double SHA-256 is used for address checksums for specific reasons:
-
-1. **Security**: Double hashing provides additional security against certain attacks.
-
-2. **Bitcoin Standard**: Matches Bitcoin's checksum algorithm, ensuring compatibility.
-
-3. **Error Detection**: Strong error detection capabilities, catching most typos and transmission errors.
-
-4. **Efficiency**: Fast to compute and verify, minimal performance impact.
-
-**Libraries Used:**
-- `bs58` crate: Base58 encoding/decoding (Bitcoin standard, efficient implementation, supports checksums)
-
----
-
-## How to Use This Guide
-
-This guide is designed to be read sequentially, with each section building on previous concepts. However, each section is also self-contained, allowing you to jump to specific topics as needed.
-
-### Reading Paths
-
-**For Understanding Blockchain Security:**
-Start with **Hash Functions** → **Digital Signatures** → **Key Pair Generation** → **Address Encoding**. This path shows how cryptographic primitives work together to secure the blockchain.
-
-**For Implementing Cryptographic Operations:**
-Focus on **Key Pair Generation** → **Digital Signatures** → **Address Encoding** → **Security and Performance**. This path covers the practical implementation of cryptographic operations.
-
-**For Performance Optimization:**
-Emphasize **Security and Performance** → **Hash Functions** → **Digital Signatures**. This path covers performance characteristics and optimization strategies.
-
-**For Quick Reference:**
-Jump directly to specific topics:
-- **[Hash Functions](01-Hash-Functions.md)** - SHA-256 hashing
-- **[Digital Signatures](02-Digital-Signatures.md)** - Transaction signing and verification
-- **[Key Pair Generation](03-Key-Pair-Generation.md)** - Key generation and derivation
-- **[Address Encoding](04-Address-Encoding.md)** - Base58 encoding
-- **[Security and Performance](05-Security-and-Performance.md)** - Best practices
-
----
-
-## Key Concepts Covered
-
-**Hash Functions:**
-- SHA-256 algorithm and properties
-- Transaction ID generation
-- Block hashing and Merkle trees
-- Taproot address hashing
-- Hash function security guarantees
-
-**Digital Signatures:**
-- Schnorr signature scheme
-- ECDSA signature scheme
-- Transaction signing process
-- Transaction verification process
-- Signature aggregation and batch verification
-
-**Key Pair Generation:**
-- secp256k1 curve operations
-- Private key generation
-- Public key derivation
-- Key pair security
-- Random number generation
-
-**Address Encoding:**
-- Base58 encoding algorithm
-- Address structure and format
-- Checksum calculation and validation
-- P2TR address generation
-- Address validation
-
-**Security and Performance:**
-- Secure random number generation
-- Constant-time operations
-- Input validation
-- Error handling patterns
-- Performance benchmarks
-- Optimization strategies
-
----
-
-## Additional Resources
-
-**Internal Documentation:**
-- **[Hash Functions](01-Hash-Functions.md)**: SHA-256 hashing for transaction IDs and block hashes
-- **[Digital Signatures](02-Digital-Signatures.md)**: Schnorr and ECDSA signatures for transaction authorization
-- **[Key Pair Generation](03-Key-Pair-Generation.md)**: Secure key pair generation and public key derivation
-- **[Address Encoding](04-Address-Encoding.md)**: Base58 encoding for human-readable addresses
-- **[Security and Performance](05-Security-and-Performance.md)**: Security best practices and performance considerations
-
-**External Resources:**
-- **[The Rust Book](https://doc.rust-lang.org/book/)**: Comprehensive Rust programming guide
-- **[Bitcoin Wiki: Cryptography](https://en.bitcoin.it/wiki/Category:Cryptography)**: Bitcoin cryptographic concepts
-
----
-
-## Navigation
-
-**Start Here:**
-- **[Hash Functions](01-Hash-Functions.md)** - SHA-256 hashing
-- **[Digital Signatures](02-Digital-Signatures.md)** - Transaction signing
-
-**Core Concepts:**
-- **[Key Pair Generation](03-Key-Pair-Generation.md)** - Key generation
-- **[Address Encoding](04-Address-Encoding.md)** - Base58 encoding
-
-**Advanced Topics:**
-- **[Security and Performance](05-Security-and-Performance.md)** - Best practices
-
-**Related Guides:**
-- **[Hash Functions](01-Hash-Functions.md)** - SHA-256 hashing details
-- **[Digital Signatures](02-Digital-Signatures.md)** - Signature operations
-- **[Key Pair Generation](03-Key-Pair-Generation.md)** - Key generation details
-- **[Address Encoding](04-Address-Encoding.md)** - Base58 encoding details
-- **[Security and Performance](05-Security-and-Performance.md)** - Security best practices
+- **[The Rust Programming Language (“The Rust Book”)](https://doc.rust-lang.org/book/)** (language fundamentals)
+- **[ring crate documentation](https://docs.rs/ring/latest/ring/)** (the `ring` APIs used for SHA-256 and P-256 ECDSA helpers in this project)
+- **[secp256k1 crate documentation](https://docs.rs/secp256k1/latest/secp256k1/)** (the Rust wrapper used for secp256k1 and Schnorr in this project)
 
 ---
 
@@ -520,7 +355,7 @@ Jump directly to specific topics:
 
 <div align="center">
 
-**📚 [← Utilities](../util/README.md)** | **Chapter 2.1: Cryptography** | **[Start Reading: Hash Functions →](01-Hash-Functions.md)** 📚
+**📚 [← Utilities](../util/README.md)** | **Section 2.3: Cryptography** | **[Start Reading: Hash Functions →](01-Hash-Functions.md)** 📚
 
 </div>
 
@@ -536,4 +371,4 @@ Jump directly to specific topics:
 
 ---
 
-*This chapter has provided comprehensive coverage of the cryptographic primitives that secure our blockchain implementation. We've explored hash functions (SHA-256) that create transaction IDs and block hashes, digital signatures that authorize transactions, key pair generation and management, and address encoding using Base58. These cryptographic foundations are essential for understanding how blockchain security is achieved through mathematical guarantees rather than trust in intermediaries. The cryptographic libraries and their implementations form the bedrock upon which all blockchain operations are built. Continue reading the [Hash Functions](01-Hash-Functions.md) documentation to dive deeper into SHA-256 hashing, or explore any of the [cryptography documentation files](#table-of-contents) for detailed coverage of specific cryptographic concepts.*
+*In this section, we connected the whitepaper’s security model to real Rust code. We saw where hashing and Schnorr verification show up in the running system today, and we identified which crypto helpers are currently “book scaffolding” versus production dependencies. Next, we dive into [Hash Functions](01-Hash-Functions.md) and trace how SHA-256 shows up in transaction IDs, block linking, and proof-of-work.*

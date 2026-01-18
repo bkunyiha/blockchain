@@ -38,7 +38,7 @@
 ---
 # Address Encoding: Base58 for Human-Readable Addresses
 
-Bitcoin addresses are encoded using Base58, a human-readable encoding scheme that avoids ambiguous characters. In this section, we explore how Base58 encoding converts cryptographic hashes into human-readable addresses, how addresses are structured, and how address validation works.
+Address encoding is where raw key material becomes something a human can copy, paste, and exchange safely. In production Bitcoin, address formats vary (Base58Check for legacy scripts, Bech32/Bech32m for SegWit and Taproot). This project uses a **Base58Check-style** format for its wallet addresses: `version byte + public key hash + checksum`, then Base58-encode the bytes. The goal is to show the exact byte-level pipeline you would implement in a blockchain codebase.
 
 ## Table of Contents
 
@@ -54,7 +54,7 @@ Bitcoin addresses are encoded using Base58, a human-readable encoding scheme tha
 
 ## Overview: Address Encoding in Blockchain
 
-Addresses serve as identifiers for wallet recipients in the blockchain. They are derived from public keys but don't expose the public key directly, providing privacy and security.
+An address is a compact, checksummed identifier derived from a public key. It is *not* the public key itself. In this project, we hash the public key, attach a version byte and checksum, then encode the result into a Base58 string.
 
 ### Address Properties
 
@@ -78,6 +78,26 @@ Base58 Encode
     ↓
 Address (Base58 string)
 ```
+
+### Figure: Address payload layout (version + hash + checksum)
+
+In this project, we build an address by constructing a payload and then Base58-encoding it:
+
+```
+payload = version (1 byte) || pub_key_hash (N bytes) || checksum (4 bytes)
+
+┌──────────────┬────────────────────────────┬───────────────----─------------------------──────┐
+│ version (1)  │ pub_key_hash (project: 32) │               checksum (4)                       │
+├──────────────┼────────────────────────────┼──────────────────----------------------------────┤
+│ 0x01         │ SHA-256(pubkey)            │ first4(SHA256(SHA256(payload_without_checksum))) │
+└──────────────┴────────────────────────────┴───────────----------------------------───────────┘
+```
+
+This layout maps directly to `bitcoin/src/wallet/wallet_impl.rs`, where:
+- `VERSION` is `0x01`
+- `hash_pub_key(pubkey)` produces `pub_key_hash`
+- `checksum(payload)` produces 4 bytes
+- `base58_encode(payload)` produces the address string
 
 ---
 
@@ -177,7 +197,7 @@ let decoded = base58_decode(encoded)?;
 
 ## Address Structure
 
-Bitcoin addresses consist of three main components:
+In this project, addresses consist of three main components:
 
 1. **Version Byte**: Network identifier (mainnet/testnet)
 2. **Hash**: Public key hash (20 bytes for P2PKH, 32 bytes for P2TR)
@@ -191,10 +211,11 @@ Bitcoin addresses consist of three main components:
 
 ### Version Bytes
 
-- **0x00**: P2PKH (Pay-to-Public-Key-Hash) mainnet
-- **0x01**: P2TR (Pay-to-Taproot) mainnet
-- **0x6f**: P2PKH testnet
-- **0x01**: P2TR testnet
+The implementation uses a single version byte to tag the address format:
+
+- **`0x01`**: Project-specific **P2TR-style address tag** (Base58Check-style)
+
+For context, legacy Bitcoin Base58Check uses `0x00` (P2PKH mainnet) and `0x6f` (P2PKH testnet). Taproot addresses in production Bitcoin are Bech32m rather than Base58Check.
 
 ### Checksum Calculation
 
@@ -222,7 +243,7 @@ let checksum = &hash[..4]; // First 4 bytes
 
 ## P2TR Address Generation
 
-P2TR (Pay-to-Taproot) addresses are generated for modern Bitcoin addresses.
+P2TR (Pay-to-Taproot) addresses are generated from Schnorr public keys in this project, then encoded using the Base58Check-style format described above.
 
 ### Address Generation Flow
 
@@ -239,9 +260,9 @@ let version_byte = 0x01; // P2TR version
 let mut address_data = vec![version_byte];
 address_data.extend_from_slice(&pub_key_hash);
 
-// 4. Calculate checksum
-let checksum = sha256_digest(&sha256_digest(&address_data)[..4]);
-address_data.extend_from_slice(&checksum[..4]);
+// 4. Calculate checksum (double SHA-256, first 4 bytes)
+let checksum = checksum(&address_data);
+address_data.extend_from_slice(&checksum);
 
 // 5. Encode to Base58
 let address = base58_encode(&address_data)?;
@@ -261,7 +282,7 @@ let address = base58_encode(&address_data)?;
 Version: 0x01
 Hash: [32 bytes of public key hash]
 Checksum: [4 bytes]
-Encoded: "bc1p..." (Base58)
+Encoded: "<Base58 string>"
 ```
 
 ---
@@ -274,43 +295,31 @@ Address validation ensures addresses are correctly formatted and have valid chec
 
 ```rust
 // In validate_address()
-pub fn validate_address(address: &str) -> Result<()> {
+pub fn validate_address(address: &str) -> Result<bool> {
     // 1. Decode Base58
-    let decoded = base58_decode(address)?;
+    let payload = base58_decode(address)?;
 
-    // 2. Verify structure
-    if decoded.len() < 5 {
-        return Err(BtcError::InvalidAddress);
-    }
+    // 2. Extract components
+    let actual_checksum = payload[payload.len() - 4..].to_vec();
+    let version = payload[0];
+    let pub_key_hash = payload[1..payload.len() - 4].to_vec();
 
-    // 3. Extract components
-    let version = decoded[0];
-    let hash = &decoded[1..decoded.len()-4];
-    let checksum = &decoded[decoded.len()-4..];
+    // 3. Recompute checksum from version + hash
+    let mut target_vec = vec![version];
+    target_vec.extend(pub_key_hash);
+    let target_checksum = checksum(target_vec.as_slice());
 
-    // 4. Verify checksum
-    let payload = &decoded[..decoded.len()-4];
-    let expected_checksum = sha256_digest(&sha256_digest(payload)[..4]);
-    if checksum != &expected_checksum[..4] {
-        return Err(BtcError::InvalidAddress);
-    }
-
-    // 5. Verify version
-    if version != 0x01 {
-        return Err(BtcError::InvalidAddress);
-    }
-
-    Ok(())
+    // 4. Compare checksums
+    Ok(actual_checksum.eq(target_checksum.as_slice()))
 }
 ```
 
 ### Validation Steps
 
 1. **Decode Base58**: Convert address string to bytes
-2. **Check Length**: Ensure minimum length (5 bytes: version + hash + checksum)
-3. **Extract Components**: Separate version, hash, and checksum
-4. **Verify Checksum**: Recalculate and compare checksum
-5. **Verify Version**: Ensure version byte is valid
+2. **Extract Components**: Split version, hash, and checksum
+3. **Recompute Checksum**: Build `version || hash`, then double-SHA-256
+4. **Compare Checksums**: Return true if the checksum matches
 
 ### Why Validate?
 
@@ -393,7 +402,7 @@ Address encoding is essential for blockchain usability:
 ## Navigation
 
 - **[← Previous: Key Pair Generation](03-Key-Pair-Generation.md)** - Key generation and derivation
-- **[Next: Security and Performance →](05-Security-and-Performance.md)** - Security best practices
+- **[Next section: Security and Performance →](05-Security-and-Performance.md)** - Security best practices
 - **[Cryptography Index](README.md)** - Complete guide overview
 - **[Hash Functions](01-Hash-Functions.md)** - Address hashing details
 - **[Digital Signatures](02-Digital-Signatures.md)** - Signature operations
@@ -407,10 +416,19 @@ Address encoding is essential for blockchain usability:
 
 <div align="center">
 
-**📚 [← Previous: Key Pair Generation](03-Key-Pair-Generation.md)** | **Address Encoding** | **[Next: Security and Performance →](05-Security-and-Performance.md)** 📚
+**📚 [← Previous: Key Pair Generation](03-Key-Pair-Generation.md)** | **Address Encoding** | **[Next section: Security and Performance →](05-Security-and-Performance.md)** 📚
 
 </div>
 
 ---
 
-*This section covers address encoding used in our blockchain implementation. Continue to [Security and Performance](05-Security-and-Performance.md) to learn about security best practices.*
+*In the next part of this section, we zoom out from formats to operational reality: safe key handling, side channels, and performance. Continue to [Security and Performance](05-Security-and-Performance.md) to learn best practices for cryptographic code in production.*
+
+---
+
+## References
+
+In this section, we provide references for the canonical address/encoding conventions used in Bitcoin:
+
+- **[Bitcoin Wiki: Base58Check encoding](https://en.bitcoin.it/wiki/Base58Check_encoding)** (version byte + checksum convention)
+- **[Bitcoin Wiki: Address](https://en.bitcoin.it/wiki/Address)** (address types and high-level structure)

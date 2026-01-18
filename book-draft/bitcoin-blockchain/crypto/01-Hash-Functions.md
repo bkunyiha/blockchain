@@ -44,7 +44,7 @@ Hash functions are fundamental to blockchain operations. They create fixed-size 
 
 1. [Overview: Hash Functions in Blockchain](#overview-hash-functions-in-blockchain)
 2. [SHA-256 Digest: General-Purpose Hashing](#sha-256-digest-general-purpose-hashing)
-3. [Taproot Hash: P2TR Address Hashing](#taproot-hash-p2tr-address-hashing)
+3. [Taproot-related hashing: P2TR Address Hashing](#taproot-related-hashing-p2tr-address-hashing)
 4. [Usage in Transaction ID Format](#usage-in-transaction-system)
 5. [Usage in Block System](#usage-in-block-system)
 6. [Usage in Proof-of-Work Mining](#usage-in-proof-of-work-mining)
@@ -55,6 +55,16 @@ Hash functions are fundamental to blockchain operations. They create fixed-size 
 
 ## Overview: Hash Functions in Blockchain
 
+Before we talk about “hash functions,” it helps to define what a **hash** is in plain terms.
+
+A **hash** (also called a *digest*) is the fixed-size output of a hash function. You can think of it as a compact “fingerprint” of some input bytes:
+
+- **Same input → same hash** (deterministic)
+- **Small change in input → very different hash** (avalanche effect)
+- **Hash is easy to compute, but hard to reverse** (you can’t recover the original input from the hash in any practical way)
+
+In Bitcoin and in this project, hashes are used as *identifiers* (“this transaction / this block”), as *tamper-evidence* (“if the bytes change, the hash changes”), and as the work unit for proof-of-work (“find a hash below a target”).
+
 Hash functions serve multiple critical roles in blockchain systems:
 
 1. **Transaction Identification**: Every transaction gets a unique ID by hashing its contents
@@ -64,6 +74,32 @@ Hash functions serve multiple critical roles in blockchain systems:
 5. **Proof-of-Work**: Miners hash block data repeatedly to find valid nonces
 
 Our implementation uses SHA-256 (Secure Hash Algorithm 256-bit) for all these purposes. SHA-256 produces a 32-byte (256-bit) hash output, providing sufficient security for blockchain operations.
+
+### Figure: Where hashing shows up in the system
+
+```
+                 ┌───────────────────────────────┐
+                 │        Block header           │
+                 │ (prev_hash, merkle-ish root,  │
+                 │  timestamp, nonce, ...)       │
+                 └──────────────┬────────────────┘
+                                │
+                                │  sha256_digest(...)
+                                ▼
+                         block header hash
+                                │
+                ┌───────────────┴────────────────┐
+                │                                │
+                ▼                                ▼
+          proof-of-work loop                block linking
+   (search for nonce/target)      (next block references prev)
+
+  Transactions:
+  TX (minus id) ──serialize──▶ bytes ──sha256_digest──▶ txid
+
+  Wallet/address pipeline:
+  pubkey ──taproot_hash──▶ pubkey_hash ──Base58Check──▶ address string
+```
 
 ### Hash Function Requirements
 
@@ -120,16 +156,34 @@ The `ring` crate is a comprehensive cryptographic library based on BoringSSL. It
 
 Every transaction gets a unique identifier by hashing its serialized contents. This ID is used throughout the blockchain to reference transactions.
 
-**In `Transaction::hash()`:**
+**Why we use a transaction hash (instead of trusting the transaction’s own `id` field):**
+- **The `id` field is derived data, not authoritative**: the real “identity” of a transaction is its content (inputs, outputs, amounts, and the data being authorized). If we allowed an arbitrary `id` field to define identity, a sender could change `id` without changing the transaction’s meaning.
+- **Avoids a circular definition**: if the transaction ID were “the value stored in `tx.id`,” you immediately face a self-reference problem when defining “the bytes of the transaction,” because the transaction would have to include its own ID in its serialized form. In our code, we solve this by hashing a copy with `id: vec![]`.
+- **Content-addressed security model**: nodes do not need to *trust* the sender’s claimed ID. They recompute the hash locally and can reject any transaction where the claimed ID doesn’t match the bytes.
+- **Stable references**: later spends refer to earlier transactions by ID. Those references are only meaningful if “ID” is bound to the transaction bytes; otherwise, you could rewrite history by swapping IDs.
+
+> **Implementation note (Bitcoin Core vs this project): txid, wtxid, and “what exactly is hashed?”**
+>
+> In Bitcoin Core, there are two important identifiers:
+> - **txid**: computed from the transaction **without witness data** (historically using double-SHA256 over the legacy serialization).
+> - **wtxid**: computed from the transaction **including witness data** (also using double-SHA256), introduced with SegWit.
+>
+> This project uses a simplified model: we compute an “ID” by hashing a serialized copy with `id: []`. That is great for learning and for internal consistency, but it is not byte-for-byte compatible with Bitcoin Core’s txid/wtxid rules.
+
+**In `Transaction::hash()` (internal helper):**
 
 ```rust
 // From bitcoin/src/primitives/transaction.rs
-pub fn hash(&self) -> Result<Vec<u8>> {
+fn hash(&mut self) -> Result<Vec<u8>> {
+    // IMPORTANT: we must NOT hash the transaction including its own id,
+    // otherwise the definition becomes circular (the id would depend on itself).
     let tx_copy = Transaction {
+        // Exclude the id from the bytes we hash by setting it to empty.
         id: vec![],
         vin: self.vin.clone(),
         vout: self.vout.clone(),
     };
+    // The transaction ID is the SHA-256 hash of the serialized transaction (with id excluded).
     Ok(sha256_digest(tx_copy.serialize()?.as_slice()))
 }
 ```
@@ -139,6 +193,29 @@ pub fn hash(&self) -> Result<Vec<u8>> {
 2. Serialize the transaction to bytes
 3. Hash the serialized bytes using SHA-256
 4. Return the 32-byte hash as the transaction ID
+
+**Important note about the signature:**
+- In our code, `hash` is an internal helper (`fn`, not `pub fn`) and it takes `&mut self` because it is used during transaction construction/signing while updating the in-memory transaction ID.
+
+### Figure: How the transaction ID is computed and then stored
+
+The key idea is: we compute the ID from the transaction’s content, but we do **not** include the ID field itself in the bytes being hashed.
+
+```
+Transaction in memory:
+  tx = { id: ?, vin: [...], vout: [...] }
+
+Step 1: build a copy with an empty id
+  tx_copy_for_hash = { id: [], vin: tx.vin, vout: tx.vout }
+
+Step 2: serialize + hash
+  txid = SHA256( serialize(tx_copy_for_hash) )
+
+Step 3: store the derived value back onto the transaction
+  tx.id = txid
+```
+
+This pattern is used both when a new transaction is constructed and during signing/verification flows where we need to recompute the ID of a “trimmed copy” deterministically.
 
 **Why Hash the Transaction?**
 
@@ -150,15 +227,18 @@ pub fn hash(&self) -> Result<Vec<u8>> {
 **Example Usage:**
 
 ```rust
-// Create a transaction
-let mut tx = Transaction::new_utxo_transaction(...)?;
-
-// Generate transaction ID
-tx.id = tx.hash()?;
+// Conceptual example (pseudocode):
+// In this project, `Transaction::new_utxo_transaction(...)` is async and computes `tx.id`
+// internally after assembling inputs/outputs.
+let tx = Transaction::new_utxo_transaction(...).await?;
 
 // Transaction ID is now a 32-byte Vec<u8>
 // Can be converted to hex for display: HEXLOWER.encode(&tx.id)
 ```
+
+**Where this happens in the project:**
+- **Transaction construction**: `Transaction::new_utxo_transaction(...)` computes `tx.id = tx.hash()?` after assembling inputs/outputs (internally, by hashing a copy with `id: vec![]`).
+- **Signing and verification**: the transaction code computes `tx_copy.id = tx_copy.hash()?` on a trimmed copy while preparing the exact bytes that will be signed/verified.
 
 ### Usage in Block Hashing
 
@@ -192,6 +272,10 @@ pub fn hash_transactions(&self) -> Vec<u8> {
 
 ### Usage in Merkle Tree Construction
 
+**What a Merkle tree is (succinctly):**
+A **Merkle tree** is a binary hash tree: **leaves** are hashes of items (e.g., transaction IDs or transaction hashes), and each **internal node** is the hash of its two child hashes. The **Merkle root** is the final hash at the top and serves as a compact *commitment* to the entire set and ordering of leaves. Given a leaf and its **Merkle proof** (the sibling hashes along the path), any node can verify inclusion by recomputing hashes up to the root in \(O(\log n)\) time.
+
+If you are implementing this yourself, the important thing to remember is: you do *pairwise hashing bottom-up* until you get one hash, and that one hash is what you commit to in the block header.
 Merkle trees enable efficient verification of transaction inclusion in blocks. The root hash represents all transactions in the block.
 
 **Merkle Tree Structure:**
@@ -215,44 +299,104 @@ Merkle trees enable efficient verification of transaction inclusion in blocks. T
 **Implementation Pattern:**
 
 ```rust
-// Simplified Merkle tree construction
-fn calculate_merkle_root(transactions: &[Transaction]) -> Vec<u8> {
-    if transactions.is_empty() {
-        return vec![0u8; 32]; // Empty tree hash
+// Conceptual Merkle root construction (pseudocode):
+// 1) start with leaf hashes (transaction IDs or transaction hashes)
+// 2) hash pairs bottom-up until one hash remains
+fn calculate_merkle_root(leaf_hashes: &[Vec<u8>]) -> Vec<u8> {
+    if leaf_hashes.is_empty() {
+        return vec![0u8; 32];
     }
-    
-    if transactions.len() == 1 {
-        return transactions[0].hash()?;
-    }
-    
-    // Hash pairs of transactions
-    let mut level = transactions.iter()
-        .map(|tx| tx.hash()?)
-        .collect::<Vec<_>>();
-    
-    // Build tree bottom-up
+
+    let mut level = leaf_hashes.to_vec();
     while level.len() > 1 {
-        let mut next_level = Vec::new();
-        for chunk in level.chunks(2) {
-            if chunk.len() == 2 {
-                let combined = [chunk[0].as_slice(), chunk[1].as_slice()].concat();
-                next_level.push(sha256_digest(&combined));
-            } else {
-                next_level.push(chunk[0].clone());
-            }
+        let mut next = Vec::new();
+        for pair in level.chunks(2) {
+            let right = if pair.len() == 2 { &pair[1] } else { &pair[0] }; // duplicate last if odd
+            let combined = [pair[0].as_slice(), right.as_slice()].concat();
+            next.push(sha256_digest(&combined));
         }
-        level = next_level;
+        level = next;
     }
-    
     level[0].clone()
 }
 ```
 
+> **Implementation note (Bitcoin Core vs this project): Merkle root construction details**
+>
+> Bitcoin’s Merkle root is built from **double-SHA256** hashes of transaction IDs, and when a level has an odd number of nodes, the last hash is **duplicated** before hashing the pair. The pseudocode above shows the “duplicate last if odd” rule.
+>
+> In this project, `Block::hash_transactions()` currently computes a simplified “Merkle-ish” root by concatenating all transaction IDs and hashing once. That is useful for learning, but it is not the same as Bitcoin’s Merkle root construction.
+
 ---
 
-## Taproot Hash: P2TR Address Hashing
+## Taproot-related hashing: P2TR Address Hashing
 
-The `taproot_hash` function provides SHA-256 hashing specifically for Taproot (P2TR) addresses using the `sha2` crate. It's used for public key hashing in modern Bitcoin addresses.
+### What Taproot is (and why it exists)
+
+Taproot is easiest to understand if we separate three ideas that often get mixed together:
+
+- **Output types** (how an output is locked)
+- **Signature algorithms** (how authorization is proven)
+- **Protocol upgrades** (new rules that introduce new output types and signature checks)
+
+In practical terms: **for Taproot (P2TR) spends, Bitcoin uses Schnorr instead of the legacy ECDSA (Elliptic Curve Digital Signature Algorithm) signature scheme** (legacy output types still use ECDSA).
+
+#### What an output type is
+
+An **output type** is a standard pattern for the *locking condition* of a transaction output—i.e., the rule that says what data must be provided later to spend the output. In implementation terms, an output contains a **locking script** (`scriptPubKey`). Different standard `scriptPubKey` patterns are what developers call output types.
+For example: 
+    - **P2PKH** (Pay-to-PubKey-Hash): locks to a public-key hash; typically spent with an ECDSA signature + public key.
+    - **P2SH** (Pay-to-Script-Hash): locks to a script hash; spending reveals the redeem script plus required data (often signatures).
+    - **P2WPKH** (Pay-to-Witness-PubKey-Hash, SegWit v0): P2PKH-style lock, but signatures move to witness (fixes malleability for these spends).
+    - **P2TR** (Pay-to-Taproot, SegWit v1): Taproot output; typically spent with Schnorr (key-path) or via Tapscript (script-path).
+
+#### What Taproot / P2TR is
+
+**Taproot** is a Bitcoin protocol upgrade that introduced a new **output type** (**P2TR**, Pay-to-Taproot) and a new signature scheme (**Schnorr**, BIP 340). Conceptually, Taproot changes how spending conditions are committed to and revealed:
+- **Key-path spending**: authorize with a single Schnorr signature, making complex policies look like a simple “single-sig” spend on-chain.
+- **Script-path spending (Tapscript)**: if a script is needed, reveal only the branch you used (via a Merkle commitment over script branches—often described as MAST), which improves privacy and can reduce on-chain data.
+
+**Was Taproot in the original Bitcoin whitepaper?** No. The 2008 whitepaper describes ECDSA-style signatures for authorization and does not define Taproot/P2TR/Schnorr/MAST. Taproot was introduced later and is specified primarily by the following **BIP**(*Bitcoin Improvement Proposal*):
+- **BIP 340** (Schnorr signatures)
+- **BIP 341** (Taproot/P2TR output construction)
+- **BIP 342** (Tapscript validation rules)
+
+#### Signature algorithms by output type (what is “ECDSA-based” vs “Schnorr-based”?)
+
+Output types are not “ECDSA” or “Schnorr” by themselves, but standard spend paths tend to require one or the other:
+
+- **ECDSA-based spend types (legacy + SegWit v0)**:
+  - **P2PKH**: spend provides an ECDSA signature + public key
+  - **P2WPKH (SegWit v0)**: spend provides an ECDSA signature + public key (in witness)
+  - **P2SH / P2WSH (SegWit v0)**: the redeem/witness script can require many conditions; common scripts (e.g., multisig) require ECDSA signatures
+
+- **Schnorr-based spend types (Taproot / SegWit v1)**:
+  - **P2TR (Taproot)**:
+    - **Key-path**: spend provides a Schnorr signature
+    - **Script-path (Tapscript)**: signature checks use Schnorr where signatures apply
+
+**Why Taproot was introduced (high level):**
+- **Privacy**: complex spending policies can be hidden behind the key-path, and script-path spends reveal less information.
+- **Efficiency**: many spends become smaller on-chain (less script data, fixed-size Schnorr signatures).
+- **Upgradeability**: Taproot provides a cleaner path to extend scripting rules (Tapscript) while preserving backward compatibility.
+
+**Important terminology note (to avoid confusion):** Taproot is *not* a hash function. The phrase “Taproot-related hashing” in this section refers to **SHA-256 hashing used in Taproot/P2TR-related code paths**.
+
+In our codebase, the `taproot_hash` function is simply a SHA-256 digest implemented via the `sha2` crate. We use it in the wallet/address pipeline (via `hash_pub_key`) to produce the `pub_key_hash` bytes that are later encoded into an address payload.
+
+### Table: Legacy (ECDSA) vs Taproot (P2TR/Schnorr) at a glance
+
+| Dimension | Legacy / SegWit v0 (mostly ECDSA-based) | Taproot / SegWit v1 (P2TR, Schnorr-based) |
+|---|---|---|
+| **Output types (examples)** | P2PK, P2PKH, P2SH, P2WPKH, P2WSH, nested SegWit (P2SH-P2WPKH/P2WSH) | P2TR (Taproot) |
+| **Signature algorithm** | ECDSA over secp256k1 (typical) | Schnorr over secp256k1 (BIP 340) |
+| **What “authorization” looks like on-chain** | Script patterns often reveal the spending policy (e.g., multisig script and pubkeys) | Key-path spends often look like a single key + single signature; script-path reveals only the used branch (MAST-style) |
+| **Witness version** | Legacy (no witness) or **SegWit v0** witness programs | **SegWit v1** witness programs (Taproot) |
+| **Script system** | Legacy Script + SegWit v0 rules (e.g., BIP 141/143) | Taproot + Tapscript rules (BIP 341/342) |
+| **Hashing used in the spend rules** | Transaction signatures sign a *sighash* derived from the transaction; txids and many identifiers use hashing | Taproot introduces new hashing constructions (e.g., tagged hashes in BIP 340/341) and commits scripts via Merkle roots |
+| **Address encoding (Bitcoin network)** | Base58Check (legacy), bech32 (SegWit v0) | bech32m (Taproot / SegWit v1) |
+| **Addresses/encoding in this project** | We implement Base58 encoding utilities and a simplified wallet address payload format | Our wallet currently encodes a Taproot-style pubkey hash into a Base58 payload (educational/simplified, not bech32m) |
+| **Why it exists** | Original design + incremental improvements | Privacy, efficiency, and a cleaner upgrade path for scripts |
 
 ### Implementation
 
@@ -289,7 +433,7 @@ The `sha2` crate is a focused hashing library that:
 
 Public keys are hashed to create Taproot addresses. This provides privacy (public keys aren't directly exposed) and enables address validation.
 
-**In `hash_pub_key()`:**
+**In `hash_pub_key()` (wallet address pipeline):**
 
 ```rust
 // From bitcoin/src/wallet/wallet_impl.rs
@@ -302,6 +446,9 @@ pub fn hash_pub_key(pub_key: &[u8]) -> Vec<u8> {
 1. Take a public key (33 bytes compressed)
 2. Hash it using `taproot_hash`
 3. Return the 32-byte hash
+
+**Where the result is used next:**
+- `Wallet::get_address()` and `convert_address(...)` build `version || pub_key_hash || checksum` and then call `crate::base58_encode(...)` to produce the human-readable address string.
 
 **Why Hash Public Keys?**
 
@@ -558,7 +705,7 @@ assert_eq!(hash1, hash2); // Always true
 
 ### Recommendation for Future Refactoring
 
-Ideally, the codebase should use a single SHA-256 implementation for:
+In a production system, we typically want a single SHA-256 implementation for:
 - **Consistency**: Single implementation to maintain
 - **Reduced Dependencies**: Fewer dependencies to manage
 - **Improved Maintainability**: Less code to maintain
@@ -587,6 +734,16 @@ Hash functions are fundamental to blockchain operations:
 **Next Steps:**
 
 - Continue to [Digital Signatures](02-Digital-Signatures.md) to learn about transaction signing
+
+---
+
+## References
+
+In this section, we provide references that describe the standards and Bitcoin conventions behind the code:
+
+- **[FIPS 180-4: Secure Hash Standard (SHA-256)](https://csrc.nist.gov/publications/detail/fips/180/4/final)**
+- **[Bitcoin: A Peer-to-Peer Electronic Cash System (whitepaper)](https://bitcoin.org/bitcoin.pdf)** (sections on PoW and block chaining)
+- **[Bitcoin Wiki: Proof of Work](https://en.bitcoin.it/wiki/Proof_of_work)**
 - Explore [Key Pair Generation](03-Key-Pair-Generation.md) to see how keys are generated
 - Review [Address Encoding](04-Address-Encoding.md) to understand address generation
 - Check [Security and Performance](05-Security-and-Performance.md) for performance considerations
@@ -596,7 +753,7 @@ Hash functions are fundamental to blockchain operations:
 ## Navigation
 
 - **[← Previous: Cryptography Index](README.md)** - Cryptographic primitives overview
-- **[Next: Digital Signatures →](02-Digital-Signatures.md)** - Transaction signing and verification
+- **[Next section: Digital Signatures →](02-Digital-Signatures.md)** - Transaction signing and verification
 - **[Cryptography Index](README.md)** - Complete guide overview
 - **[Key Pair Generation](03-Key-Pair-Generation.md)** - Key generation and derivation
 - **[Address Encoding](04-Address-Encoding.md)** - Base58 encoding
@@ -610,10 +767,10 @@ Hash functions are fundamental to blockchain operations:
 
 <div align="center">
 
-**📚 [← Cryptography Index](README.md)** | **Hash Functions** | **[Next: Digital Signatures →](02-Digital-Signatures.md)** 📚
+**📚 [← Cryptography Index](README.md)** | **Hash Functions** | **[Next section: Digital Signatures →](02-Digital-Signatures.md)** 📚
 
 </div>
 
 ---
 
-*This section covers hash functions used in our blockchain implementation. Continue to [Digital Signatures](02-Digital-Signatures.md) to learn about transaction signing and verification.*
+*In the next part of this section, we move from tamper-evident identifiers (hashes) to authorization (signatures). Continue to [Digital Signatures](02-Digital-Signatures.md) to learn about transaction signing and verification.*

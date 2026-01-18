@@ -11,7 +11,7 @@
 4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
 5. [Chapter 2.0: Rust Blockchain Project](../Rust-Project-Index.md) - Blockchain Project
 6. [Chapter 2.1: Primitives](../primitives/README.md) - Core data structures
-7. **Chapter 2.2: Utilities** ← *You are here*
+7. **Section 2.2: Utilities** ← *You are here*
 8. [Chapter 2.3: Cryptography](../crypto/README.md) - Cryptographic primitives and libraries
 9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../chain/01-Technical-Foundations.md) - Proof Of Work
 10. [Chapter 2.5: Storage Layer](../store/README.md) - Persistent storage implementation
@@ -38,11 +38,11 @@
 ---
 # Utilities and Helpers
 
-**Part I: Core Blockchain Implementation** | **Chapter 2.8: Utilities**
+**Part I: Core Blockchain Implementation** | **Section 2.2: Utilities**
 
 <div align="center">
 
-**📚 [← Chapter 2.1: Primitives](../primitives/README.md)** | **Chapter 2.2: Utilities** | **[Chapter 2.3: Cryptography →](../crypto/README.md)** 📚
+**📚 [← Section 2.1: Primitives](../primitives/README.md)** | **Section 2.2: Utilities** | **[Section 2.3: Cryptography →](../crypto/README.md)** 📚
 
 </div>
 
@@ -50,155 +50,111 @@
 
 ## Overview
 
-The utilities module (`bitcoin/src/util`) provides helper functions and utility operations used throughout the blockchain system. This module contains common functionality that doesn't belong to any specific domain but is needed across multiple modules.
+In this section, we build the shared “glue” that keeps the rest of the codebase readable.
 
-Following common software architecture patterns, this module provides reusable utilities for timestamp generation, functional programming operations, and other cross-cutting concerns.
+When we implemented the primitives (blocks, transactions, and related types), we deliberately avoided mixing in “random helpful functions.” The `util` module is where those helpers live—functions that are not a blockchain domain concept by themselves, but that multiple layers can depend on without creating circular dependencies.
 
-## Key Components
+The code for this section lives in `bitcoin/src/util/`:
 
-### Timestamp Utilities
+- `mod.rs`: module wiring + re-exports
+- `utils.rs`: small, concrete helpers (currently: time)
+- `functional_operations.rs`: optional functional-style helpers (map/filter/reduce patterns)
 
-The `current_timestamp()` function provides Unix timestamp generation:
+Because `bitcoin/src/lib.rs` re-exports the util module (`pub use util::*;`), utilities are typically called from within the crate as `crate::...`.
 
-**Usage:**
-- Block creation timestamps
-- Transaction timestamps
-- Event logging timestamps
-- Temporal ordering of blockchain events
+## Why utilities matter in a Bitcoin implementation
 
-**Implementation:**
-- Uses `SystemTime` and `UNIX_EPOCH`
-- Returns milliseconds since epoch
-- Thread-safe operation
-- Used throughout the system
+The Bitcoin whitepaper frames the system in terms of a few big ideas—transactions, blocks, proof-of-work, and a shared notion of ordering over time. In practice, an implementation needs “small but everywhere” pieces:
 
-### Functional Operations
+- **Time**: We need a consistent way to place a timestamp into a block header when we create a new block.
+- **Common transformations**: We frequently map/filter collections (transactions, outputs, UTXOs). Helpers can keep these pipelines explicit and readable.
 
-The `functional_operations` module provides functional programming utilities:
+The goal of `util` is not to be a dumping ground. The goal is to keep the core modules focused, while still making the rest of the code ergonomic.
 
-**Transaction Utilities:**
-- Functional transaction operations
-- Higher-order functions for transaction processing
-- Immutable data transformations
-- Functional composition patterns
+## Module wiring: `util/mod.rs`
 
-### General Utilities
+The `util` module exposes a small public surface area:
 
-The `utils` module contains various helper functions:
+- `current_timestamp` is re-exported as a top-level util function.
+- The `transaction` submodule in `functional_operations.rs` is re-exported as `functional_transaction` (an alias).
 
-**Common Operations:**
-- Data encoding/decoding
-- Format conversions
-- Validation helpers
-- Type conversions
+This is what lets us write code like `crate::current_timestamp()` instead of `crate::util::utils::current_timestamp()`.
 
-## Topics to Cover
+## Timestamp utility: `current_timestamp()`
 
-### Core Concepts
+The smallest utility in the codebase is also one of the most important: time.
 
-1. **Timestamp Management**
-   - Unix timestamp generation
-   - Timestamp usage in blocks
-   - Temporal ordering
-   - Clock synchronization considerations
-
-2. **Functional Programming Patterns**
-   - Functional operations on transactions
-   - Immutable transformations
-   - Higher-order functions
-   - Composition patterns
-
-3. **Utility Function Design**
-   - Reusable helper functions
-   - Cross-module utilities
-   - Error handling in utilities
-   - Performance considerations
-
-### Implementation Details
-
-4. **Time Operations**
-   - System time access
-   - Epoch calculations
-   - Time formatting
-   - Time zone handling
-
-5. **Data Transformations**
-   - Encoding/decoding utilities
-   - Format conversions
-   - Data validation helpers
-   - Type conversions
-
-6. **Functional Utilities**
-   - Map/filter/reduce patterns
-   - Transaction processing utilities
-   - Immutable data operations
-   - Functional composition
-
-### Advanced Topics
-
-7. **Performance Optimization**
-   - Efficient utility implementations
-   - Caching strategies
-   - Zero-cost abstractions
-   - Inlining considerations
-
-8. **Testing Utilities**
-   - Test helper functions
-   - Mock data generation
-   - Test fixtures
-   - Assertion utilities
-
-9. **Error Handling**
-   - Utility error types
-   - Error conversion helpers
-   - Error formatting
-   - Error propagation patterns
-
-## Related Chapters
-
-- **[Primitives](../primitives/README.md)**: Utilities used with data structures
-- **[Blockchain State Management](../chain/01-Technical-Foundations.md)**: Utilities in chain operations
-- **[Transaction ID Format](../primitives/02-Transaction-ID-Format.md)**: Transaction ID utilities
-
-## Code Examples
-
-**Timestamp Generation:**
+In the whitepaper’s language, the system uses proof-of-work to create a single history, and blocks include a timestamp as part of their header metadata. In our implementation, `current_timestamp()` produces a Unix timestamp in **milliseconds**:
 
 ```rust
-use blockchain::util::current_timestamp;
+use blockchain::current_timestamp;
 
-// Get current timestamp
-let timestamp = current_timestamp();
-
-// Use in block creation
-let block = Block::new_block(
-    transactions,
-    previous_hash,
-    current_timestamp(),  // Block timestamp
-    height
-)?;
+let now_ms = current_timestamp();
 ```
 
-**Functional Operations:**
+### Where the timestamp is used
+
+Right now, the timestamp is set when a new block is constructed:
 
 ```rust
-use blockchain::util::functional_transaction;
-
-// Functional transaction processing
-let processed_txs = transactions
-    .iter()
-    .map(|tx| functional_transaction::process(tx))
-    .collect();
+// bitcoin/src/primitives/block.rs
+timestamp: crate::current_timestamp(),
 ```
+
+Because `Block::new_block(...)` assigns the timestamp internally, callers do not pass a timestamp; they pass the previous block hash, the transactions to include, and the height:
+
+```rust
+use blockchain::primitives::block::Block;
+
+let block = Block::new_block(previous_hash, &transactions, height);
+```
+
+### A note on determinism
+
+Time is a classic source of non-determinism. For consensus-critical code, we want deterministic behavior given the same inputs. In this project, the timestamp is part of block creation, so it is expected to vary across nodes and across runs; we keep the timestamp helper isolated in `util` so it does not “leak” unpredictability into unrelated code paths.
+
+## Functional helpers: `functional_operations.rs`
+
+This file contains small, composable helpers that demonstrate a functional style: pass in a slice, pass in a function, get back transformed data.
+
+The transaction helpers are re-exported as `functional_transaction`:
+
+```rust
+use blockchain::functional_transaction;
+
+// Keep only non-coinbase transactions (pure/synchronous predicate).
+let non_coinbase = functional_transaction::process_transactions(&transactions, |tx| tx.not_coinbase());
+```
+
+### Current status in the codebase
+
+At the time of writing, these functional helpers are **not used by the production code** in `bitcoin/src/` (they are exercised in `#[cfg(test)]` unit tests). We keep them in the book for two reasons:
+
+- They provide a clean, “library-like” pattern that many Rust developers enjoy for collection-heavy code.
+- They are a good refactoring target: readers can replace ad-hoc loops in mempool/chain logic with explicit `process_transactions` / `validate_transactions` pipelines.
+
+If we decide not to use them, the right move is to delete them. Utilities should earn their place.
+
+## Related sections
+
+- **[Primitives](../primitives/README.md)**: The data structures we timestamp and transform
+- **[Blockchain State Management](../chain/01-Technical-Foundations.md)**: Where block headers and validation rules begin to matter
+- **[Transaction ID Format](../primitives/02-Transaction-ID-Format.md)**: How transaction identifiers are derived and represented
+
+## Exercises
+
+1. **Make the mempool pipeline explicit**: pick one place where we filter transactions and rewrite it using `functional_transaction::process_transactions`.
+2. **Introduce a “time source” for tests**: refactor code so tests can inject a fixed timestamp, while production uses `current_timestamp()`.
+3. **Prune utilities**: identify any utility that is unused and remove it, then rerun the test suite.
 
 ---
 
 <div align="center">
 
-**📚 [← Previous: Storage Layer](../store/README.md)** | **Chapter 2.2: Utilities** | **[Next: Cryptography](../crypto/README.md)** 📚
+**📚 [← Previous: Primitives](../primitives/README.md)** | **Section 2.2: Utilities** | **[Next: Cryptography](../crypto/README.md)** 📚
 
 </div>
 
 ---
 
-*This chapter has explored the utilities module, which provides helper functions and utility operations used throughout the blockchain system. We've examined timestamp generation utilities, functional programming operations, and other cross-cutting concerns that don't belong to any specific domain but are needed across multiple modules. These utilities follow common software architecture patterns, providing reusable functionality for timestamp management, data transformations, and functional composition. In the next chapter, we'll explore the [Wallet System](../wallet/README.md) to understand how cryptocurrency wallets are created, managed, and used for transaction signing.*
+*In this section, we introduced the utilities layer: a small, intentionally-scoped module for shared helpers. We implemented `current_timestamp()` and connected it to block construction, then explored functional helper patterns that can make transaction-heavy code easier to reason about. In the next section, we move into [Cryptography](../crypto/README.md), where we build the primitives that make signatures, hashes, and addresses possible.*

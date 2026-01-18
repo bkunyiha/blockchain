@@ -38,17 +38,17 @@
 ---
 # Key Pair Generation: Secure Key Management
 
-Key pairs are the foundation of blockchain security. Every address is derived from a public key, and every transaction is signed with a private key. In this section, we explore how secure key pairs are generated, how public keys are derived from private keys, and how keys are used throughout the blockchain.
+Key pairs are the foundation of blockchain security. Every address is derived from a public key, and every transaction is signed with a private key. In this section, we focus on the exact key formats and libraries used by the code, and how those keys flow into wallets, addresses, and transaction signatures. The main wallet flow in this project uses **Schnorr key pairs** (secp256k1) for Taproot-style behavior, while **ECDSA key pairs** are retained for legacy compatibility and comparison.
 
 ## Table of Contents
 
 1. [Overview: Key Pairs in Blockchain](#overview-key-pairs-in-blockchain)
 2. [Schnorr Key Pair Generation](#schnorr-key-pair-generation)
-3. [ECDSA Key Pair Generation](#ecdsa-key-pair-generation)
-4. [Public Key Derivation](#public-key-derivation)
-5. [Usage in Wallet Creation](#usage-in-wallet-creation)
-6. [Key Pair Security](#key-pair-security)
-7. [Random Number Generation](#random-number-generation)
+3. [Public Key Derivation](#public-key-derivation)
+4. [Usage in Wallet Creation](#usage-in-wallet-creation)
+5. [Key Pair Security](#key-pair-security)
+6. [Random Number Generation](#random-number-generation)
+7. [ECDSA Key Pair Generation (Legacy)](#ecdsa-key-pair-generation-legacy)
 
 ---
 
@@ -84,11 +84,23 @@ Transaction Signing (uses private key)
 Transaction Verification (uses public key)
 ```
 
+### Figure: Key material and where it flows
+
+```
+32-byte private key (secp256k1) ──get_schnorr_public_key──▶ 33-byte compressed pubkey
+           │                                                    │
+           │                                                    ├──hash_pub_key(pubkey)──▶ 32-byte pubkey_hash
+           │                                                    │        │
+           │                                                    │        └──(version||hash||checksum)──base58──▶ address
+           │                                                    │
+           └──schnorr_sign_digest(priv, message)──▶ 64-byte signature ──verify──▶ accept/reject
+```
+
 ---
 
 ## Schnorr Key Pair Generation
 
-Schnorr key pairs use the `secp256k1` crate and generate raw 32-byte private keys. This is the primary key pair type used in our blockchain.
+Schnorr key pairs use the `secp256k1` crate and generate raw 32-byte private keys. This is the primary key pair type used for wallet creation in this project and the default path for modern Bitcoin-style operations.
 
 ### Implementation
 
@@ -127,37 +139,6 @@ pub fn new_schnorr_key_pair() -> Result<Vec<u8>> {
 - **Security**: Well-tested and secure
 - **Efficiency**: Optimized implementations available
 - **Compatibility**: Works with Schnorr signatures
-
----
-
-## ECDSA Key Pair Generation
-
-ECDSA key pairs use the `ring` crate and generate keys in PKCS#8 format. This is provided for legacy compatibility.
-
-### Implementation
-
-```rust
-use ring::signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair};
-
-pub fn new_key_pair() -> Result<Vec<u8>> {
-    let rng = SystemRandom::new();
-    let pkcs8 = EcdsaKeyPair::generate_pkcs8(
-        &ECDSA_P256_SHA256_FIXED_SIGNING,
-        &rng
-    )?;
-    Ok(pkcs8.as_ref().to_vec())
-}
-```
-
-**Key Characteristics:**
-- **Format**: PKCS#8 (variable length, standardized)
-- **Curve**: P-256 (secp256r1)
-- **Randomness**: Uses system random number generator
-- **Library**: `ring` crate
-
-### Current Usage
-
-ECDSA key pairs are available but not currently used in the primary transaction flow. The codebase primarily uses Schnorr key pairs for modern Bitcoin operations.
 
 ---
 
@@ -323,6 +304,37 @@ rng.fill(&mut bytes)?;
 
 ---
 
+## ECDSA Key Pair Generation (Legacy)
+
+ECDSA key pairs use the `ring` crate and generate keys in PKCS#8 format. This path exists for legacy compatibility and is not used by the main wallet creation flow.
+
+### Implementation
+
+```rust
+use ring::signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair};
+
+pub fn new_key_pair() -> Result<Vec<u8>> {
+    let rng = SystemRandom::new();
+    let pkcs8 = EcdsaKeyPair::generate_pkcs8(
+        &ECDSA_P256_SHA256_FIXED_SIGNING,
+        &rng
+    )?;
+    Ok(pkcs8.as_ref().to_vec())
+}
+```
+
+**Key Characteristics:**
+- **Format**: PKCS#8 (variable length, standardized)
+- **Curve**: P-256 (secp256r1)
+- **Randomness**: Uses system random number generator
+- **Library**: `ring` crate
+
+### Current Usage
+
+ECDSA key pairs are available but not currently used in the primary transaction flow. The codebase primarily uses Schnorr key pairs for modern Bitcoin operations, while ECDSA remains as a backward-compatible option.
+
+---
+
 ## Summary
 
 Key pairs are fundamental to blockchain security:
@@ -352,7 +364,7 @@ Key pairs are fundamental to blockchain security:
 ## Navigation
 
 - **[← Previous: Digital Signatures](02-Digital-Signatures.md)** - Transaction signing and verification
-- **[Next: Address Encoding →](04-Address-Encoding.md)** - Base58 encoding
+- **[Next section: Address Encoding →](04-Address-Encoding.md)** - Base58 encoding
 - **[Cryptography Index](README.md)** - Complete guide overview
 - **[Hash Functions](01-Hash-Functions.md)** - SHA-256 hashing
 - **[Digital Signatures](02-Digital-Signatures.md)** - Signature operations
@@ -366,10 +378,20 @@ Key pairs are fundamental to blockchain security:
 
 <div align="center">
 
-**📚 [← Previous: Digital Signatures](02-Digital-Signatures.md)** | **Key Pair Generation** | **[Next: Address Encoding →](04-Address-Encoding.md)** 📚
+**📚 [← Previous: Digital Signatures](02-Digital-Signatures.md)** | **Key Pair Generation** | **[Next section: Address Encoding →](04-Address-Encoding.md)** 📚
 
 </div>
 
 ---
 
-*This section covers key pair generation used in our blockchain implementation. Continue to [Address Encoding](04-Address-Encoding.md) to learn about address generation.*
+*In the next part of this section, we take these raw bytes and turn them into something humans can safely share: addresses. Continue to [Address Encoding](04-Address-Encoding.md) to learn how we construct and validate address strings.*
+
+---
+
+## References
+
+In this section, we provide references for the standards and Bitcoin conventions behind the key formats:
+
+- **[SEC 2: Recommended Elliptic Curve Domain Parameters](https://www.secg.org/sec2-v2.pdf)** (includes secp256k1 parameters used by Bitcoin)
+- **[BIP 340: Schnorr Signatures for secp256k1](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki)** (x-only keys and signature context)
+- **[secp256k1 crate documentation](https://docs.rs/secp256k1/latest/secp256k1/)** (the Rust API used by this project)

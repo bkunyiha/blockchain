@@ -38,7 +38,11 @@
 ---
 # Digital Signatures: Transaction Authorization
 
-Digital signatures prove ownership and authorize transactions in the blockchain. Every transaction input must be signed with the private key corresponding to the public key that locks the output being spent. In this section, we explore how Schnorr and ECDSA signatures are used to secure transactions in our blockchain implementation.
+Digital signatures prove ownership and authorize transactions in the blockchain. Every transaction input must be signed with the private key corresponding to the public key that locks the output being spent. In this section, we connect the whitepaper’s “ownership” model to the actual signing and verification code paths in this project.
+
+### Signature vs Hash: identity vs fingerprint
+
+In the previous section we learned about digital hashes, which give us a compact, one-way fingerprint of data. In this section we move one step further and introduce digital signatures, which prove *who* authorized that data. A hash tells you what bytes you have, but it says nothing about identity or intent. A signature is produced with a private key, and anyone can verify it with the public key to confirm the data was authorized by the key holder and has not been altered since.
 
 ## Table of Contents
 
@@ -55,6 +59,8 @@ Digital signatures prove ownership and authorize transactions in the blockchain.
 
 ## Overview: Digital Signatures in Blockchain
 
+A **digital signature** is a cryptographic primitive that binds a message to a keypair: the signer uses a private key to produce a signature over a message (or message digest), and anyone can use the corresponding public key to verify that (1) the signer knew the private key and (2) the message was not modified. Digital signatures provide authenticity and integrity, but they do not provide confidentiality.
+
 Digital signatures serve three critical functions in blockchain systems:
 
 1. **Authentication**: Prove that the signer owns the private key
@@ -63,7 +69,7 @@ Digital signatures serve three critical functions in blockchain systems:
 
 ### How Digital Signatures Work
 
-1. **Signing**: Transaction data is hashed, then signed with private key
+1. **Signing**: Construct a deterministic message digest (often called a *sighash*) from the transaction data, then run a signature algorithm with the private key to produce a signature over that digest.
 2. **Verification**: Signature is verified against public key and transaction hash
 3. **Validation**: Only valid signatures allow spending of outputs
 
@@ -86,11 +92,31 @@ If Valid: Transaction Accepted
 If Invalid: Transaction Rejected
 ```
 
+### Figure: Signing vs verification (what the network checks)
+
+This diagram contrasts the wallet's signing flow with the network's deterministic verification flow using the same transaction hash. `schnorr_sign_digest` uses the private key to create a signature over the hash, while `schnorr_sign_verify` uses the public key to check that signature by re-deriving the expected verification equation without revealing the private key.
+
+```
+          signer (wallet / transaction creator)              verifier (every node)
+┌───────────────────────────────────────────────┐    ┌───────────────────────────────────────────┐
+│ Build a "trimmed copy" of the transaction     │    │ Rebuild the same trimmed copy             │
+│ (no signatures, pubkey field set per-input)   │    │ deterministically from chain context      │
+└───────────────────┬──------------─────────────┘    └──────────────-┬-──────────────────────────┘
+                    │                                                │
+                    │ tx_copy.hash()                                 │ tx_copy.hash()
+                    ▼                                                ▼
+                      txid_bytes (32)                                  txid_bytes (32)
+                    │                                                │
+                    │ schnorr_sign_digest(priv, txid_bytes)          │ schnorr_sign_verify(pub, sig, txid_bytes)
+                    ▼                                                ▼
+               signature (64)                                     accept / reject
+```
+
 ---
 
 ## Schnorr Signatures: Modern Bitcoin
 
-Schnorr signatures are the modern signature scheme introduced with Bitcoin's Taproot upgrade. They provide better security properties, smaller signatures, and support for signature aggregation.
+Schnorr signatures are the modern signature scheme introduced with Bitcoin's Taproot upgrade. They provide better security properties, smaller signatures, and support for signature aggregation. Legacy Bitcoin used ECDSA signatures, which we cover next.
 
 ### Implementation
 
@@ -135,6 +161,9 @@ pub fn schnorr_sign_digest(private_key: &[u8], message: &[u8]) -> Result<Vec<u8>
 - **Library**: `secp256k1` crate (Bitcoin-optimized)
 - **Signature Size**: Fixed 64 bytes (more efficient than ECDSA)
 - **Message**: Transaction hash (32 bytes)
+
+**Important note about our current implementation:**
+- `schnorr_sign_digest` hashes the provided `message` internally using `sha256_digest(message)`. In the transaction code path, we pass `tx_copy.get_id()` as the message, which means we currently sign **SHA256(txid_bytes)** (a “hash of a hash”). This can be a reasonable design, but it is not the same as “sign the txid directly,” and it is worth keeping in mind if you aim for strict Bitcoin compatibility.
 
 **Verification:**
 
@@ -550,7 +579,7 @@ Digital signatures are essential for blockchain security:
 ## Navigation
 
 - **[← Previous: Hash Functions](01-Hash-Functions.md)** - SHA-256 hashing
-- **[Next: Key Pair Generation →](03-Key-Pair-Generation.md)** - Key generation and derivation
+- **[Next section: Key Pair Generation →](03-Key-Pair-Generation.md)** - Key generation and derivation
 - **[Cryptography Index](README.md)** - Complete guide overview
 - **[Hash Functions](01-Hash-Functions.md)** - SHA-256 hashing details
 - **[Address Encoding](04-Address-Encoding.md)** - Base58 encoding
@@ -564,10 +593,20 @@ Digital signatures are essential for blockchain security:
 
 <div align="center">
 
-**📚 [← Previous: Hash Functions](01-Hash-Functions.md)** | **Digital Signatures** | **[Next: Key Pair Generation →](03-Key-Pair-Generation.md)** 📚
+**📚 [← Previous: Hash Functions](01-Hash-Functions.md)** | **Digital Signatures** | **[Next section: Key Pair Generation →](03-Key-Pair-Generation.md)** 📚
 
 </div>
 
 ---
 
-*This section covers digital signatures used in our blockchain implementation. Continue to [Key Pair Generation](03-Key-Pair-Generation.md) to learn about key generation and derivation.*
+*In the next part of this section, we move from “how signatures work” to “where keys come from.” Continue to [Key Pair Generation](03-Key-Pair-Generation.md) to learn how we generate and derive the keys used for signing and verification.*
+
+---
+
+## References
+
+In this section, we provide references for the exact standards and Bitcoin conventions behind the signature code:
+
+- **[BIP 340: Schnorr Signatures for secp256k1](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki)** (Taproot Schnorr signing and verification model)
+- **[SEC 2: Recommended Elliptic Curve Domain Parameters](https://www.secg.org/sec2-v2.pdf)** (includes secp256k1 parameters used by Bitcoin)
+- **[FIPS 186-5: Digital Signature Standard (DSS)](https://csrc.nist.gov/publications/detail/fips/186/5/final)** (ECDSA definition and security considerations)
