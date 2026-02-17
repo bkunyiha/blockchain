@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../util/README.md) - Utility functions and helpers
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
+2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
+3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
+6. Chapter 2.1: Primitives - Core data structures
+7. Chapter 2.2: Utilities - Utility functions and helpers
 8. **Chapter 2.3: Cryptography** ← *You are here*
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../chain/01-Technical-Foundations.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](../web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
+10. Chapter 2.5: Storage Layer - Persistent storage implementation
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
+15. Chapter 3: Web API Architecture - REST API implementation
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -354,37 +354,37 @@ Key pairs are fundamental to blockchain security:
 
 **Next Steps:**
 
-- Continue to [Address Encoding](04-Address-Encoding.md) to learn about address generation
-- Review [Digital Signatures](02-Digital-Signatures.md) to see how keys are used for signing
-- Explore [Hash Functions](01-Hash-Functions.md) to understand address hashing
-- Check [Security and Performance](05-Security-and-Performance.md) for security best practices
+- Continue to Address Encoding to learn about address generation
+- Review Digital Signatures to see how keys are used for signing
+- Explore Hash Functions to understand address hashing
+- Check Security and Performance for security best practices
 
 ---
 
 ## Navigation
 
-- **[← Previous: Digital Signatures](02-Digital-Signatures.md)** - Transaction signing and verification
-- **[Next section: Address Encoding →](04-Address-Encoding.md)** - Base58 encoding
-- **[Cryptography Index](README.md)** - Complete guide overview
-- **[Hash Functions](01-Hash-Functions.md)** - SHA-256 hashing
-- **[Digital Signatures](02-Digital-Signatures.md)** - Signature operations
-- **[Security and Performance](05-Security-and-Performance.md)** - Security best practices
+- **← Previous: Digital Signatures** - Transaction signing and verification
+- **Next section: Address Encoding →** - Base58 encoding
+- **Cryptography Index** - Complete guide overview
+- **Hash Functions** - SHA-256 hashing
+- **Digital Signatures** - Signature operations
+- **Security and Performance** - Security best practices
 
 **Related Guides:**
-- **[Rust Language Guide](../../rust/README.md)** - Rust language features
-- **[Web API Architecture](../web/README.md)** - Cryptographic operations in APIs
+- **Rust Language Guide** - Rust language features
+- **Web API Architecture** - Cryptographic operations in APIs
 
 ---
 
 <div align="center">
 
-**📚 [← Previous: Digital Signatures](02-Digital-Signatures.md)** | **Key Pair Generation** | **[Next section: Address Encoding →](04-Address-Encoding.md)** 📚
+**[📚 ← Previous: Digital Signatures](02-Digital-Signatures.md)** | **[Key Pair Generation](03-Key-Pair-Generation.md)** | **[Next section: Address Encoding →](04-Address-Encoding.md)** 📚
 
 </div>
 
 ---
 
-*In the next part of this section, we take these raw bytes and turn them into something humans can safely share: addresses. Continue to [Address Encoding](04-Address-Encoding.md) to learn how we construct and validate address strings.*
+*In the next part of this section, we take these raw bytes and turn them into something humans can safely share: addresses. Continue to Address Encoding to learn how we construct and validate address strings.*
 
 ---
 

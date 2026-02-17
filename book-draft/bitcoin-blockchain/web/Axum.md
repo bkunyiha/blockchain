@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](../crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../chain/01-Technical-Foundations.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../wallet/README.md) - Wallet implementation and key management
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
+2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
+3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
+6. Chapter 2.1: Primitives - Core data structures
+7. Chapter 2.2: Utilities - Utility functions and helpers
+8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
+10. Chapter 2.5: Storage Layer - Persistent storage implementation
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
 15. **Chapter 3: Web API Architecture** ← *You are here*
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -42,7 +42,7 @@
 
 <div align="center">
 
-**📚 [← Web Index](README.md)** | **Axum Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
+**[📚 ← Web Index](README.md)** | **Axum Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
 
 </div>
 
@@ -54,7 +54,7 @@ This guide provides detailed explanations of Axum framework features used in our
 
 Throughout this guide, we'll explore the specific Axum features used in our implementation, with code examples from our blockchain API to illustrate each concept.
 
-> **📘 See the full implementation**: This guide explains the Axum concepts. To see how these features are used together in our complete web API architecture, see the [Web API Architecture chapter](01-Introduction.md), which covers server setup, routing, handlers, middleware, and more.
+> **📘 See the full implementation**: This guide explains the Axum concepts. To see how these features are used together in our complete web API architecture, see the Web API Architecture chapter, which covers server setup, routing, handlers, middleware, and more.
 
 ---
 
@@ -71,7 +71,7 @@ Throughout this guide, we'll explore the specific Axum features used in our impl
 9. [Response Types](#response-types) - Return various response formats
    - [Understanding IntoResponse](#understanding-intoresponse) - The trait that enables flexible handler return types
 
-> **💡 Tip**: Throughout this guide, you'll find links to specific sections in the [Web API Architecture chapter](01-Introduction.md) where these Axum features are actually implemented. Use these links to see real-world examples and understand how theory translates to practice.
+> **💡 Tip**: Throughout this guide, you'll find links to specific sections in the Web API Architecture chapter where these Axum features are actually implemented. Use these links to see real-world examples and understand how theory translates to practice.
 
 ---
 
@@ -1033,7 +1033,7 @@ Content-Length: 156
 
 This conversion happens automatically—you never need to manually construct HTTP responses. The type system ensures everything is correct at compile time.
 
-> **See the actual implementation**: The `create_wallet()` handler in [Wallet Handlers](04-Handlers.md#wallet-handlers) demonstrates this exact pattern. For more details on serialization, see the [Serde Framework Guide](Serde.md).
+> **See the actual implementation**: The `create_wallet()` handler in [Wallet Handlers](04-Handlers.md#wallet-handlers) demonstrates this exact pattern. For more details on serialization, see the Serde Framework Guide.
 
 ### Status Code Only
 
@@ -1124,7 +1124,7 @@ Axum provides a powerful, type-safe foundation for building web APIs:
 - **CORS**: Enable cross-origin requests securely - see [CORS Middleware](01-Introduction.md#cors-middleware)
 - **Compression**: Improve performance automatically - see [Creating the Application Router](01-Introduction.md#creating-the-application-router)
 
-These features work together to create a robust, maintainable web API. For more details on how we use these features in our blockchain API, see the [Web API Architecture](01-Introduction.md) chapter, which provides:
+These features work together to create a robust, maintainable web API. For more details on how we use these features in our blockchain API, see the Web API Architecture chapter, which provides:
 
 - Complete server setup and configuration
 - Detailed handler implementations
@@ -1138,13 +1138,13 @@ These features work together to create a robust, maintainable web API. For more 
 
 ### Internal Documentation
 
-- **[Web API Architecture Index](README.md)**: Overview and navigation for the web API section
-- **[Web API Architecture Overview](01-Introduction.md)**: Chapter overview and navigation
-- **[Introduction & Architecture](01-Introduction.md)**: Architecture overview and design principles
-- **[Server Setup](02-Server-Setup.md)**: Server initialization and configuration
-- **[Routing](03-Routing.md)**: Route definitions and organization
-- **[Handlers](04-Handlers.md)**: Request handler implementations
-- **[Middleware](05-Middleware.md)**: Middleware layer implementation
+- **Web API Architecture Index**: Overview and navigation for the web API section
+- **Web API Architecture Overview**: Chapter overview and navigation
+- **Introduction & Architecture**: Architecture overview and design principles
+- **Server Setup**: Server initialization and configuration
+- **Routing**: Route definitions and organization
+- **Handlers**: Request handler implementations
+- **Middleware**: Middleware layer implementation
 
 ### External Resources
 
@@ -1156,6 +1156,6 @@ These features work together to create a robust, maintainable web API. For more 
 
 <div align="center">
 
-**📚 [← Web API Index](README.md)** | **Axum Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **[Tower](Tower.md)** | **[Serde](Serde.md)** | **[Utoipa](Utoipa.md)** | **[Tracing](Tracing.md)** | **[Tokio](../Tokio.md)** 📚
+**[📚 ← Web API Index](README.md)** | **Axum Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Tower** | **Serde** | **Utoipa** | **Tracing** | **Tokio** 📚
 
 </div>

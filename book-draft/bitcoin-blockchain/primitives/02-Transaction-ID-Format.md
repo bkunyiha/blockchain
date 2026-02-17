@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../Rust-Project-Index.md) - Blockchain Project
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
+2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
+3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
 6. **Chapter 2.1: Primitives** ← *You are here*
-7. [Chapter 2.2: Utilities](../util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](../crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../chain/01-Technical-Foundations.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](../web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+7. Chapter 2.2: Utilities - Utility functions and helpers
+8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
+10. Chapter 2.5: Storage Layer - Persistent storage implementation
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
+15. Chapter 3: Web API Architecture - REST API implementation
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -50,7 +50,7 @@
 
 <div align="center">
 
-**📚 [← Primitives](README.md)** | **Chapter 2.1: Transaction ID Format** 📚
+**[📚 ← Primitives](README.md)** | **[Chapter 2.1: Transaction ID Format](02-Transaction-ID-Format.md)** 📚
 
 </div>
 
@@ -1292,13 +1292,13 @@ Now that we understand how to represent transaction identifiers efficiently, we'
 
 <div align="center">
 
-**📚 [← Primitives](README.md)** | **Chapter 2.2: Transaction ID Format** 📚
+**[📚 ← Primitives](README.md)** | **[Chapter 2.2: Transaction ID Format](02-Transaction-ID-Format.md)** 📚
 
 </div>
 
 ---
 
-*This chapter has explored the fundamental aspects of transaction representation and storage in our blockchain implementation. We've examined why transaction IDs are stored as `Vec<u8>` rather than strings, understanding the critical differences between bytes and hex representations and their implications for memory efficiency, performance, and code clarity. We've compared our implementation with Bitcoin Core, explored best practices and performance benchmarks, and delved deep into the UTXO model implementation, script execution, verification, and the complete transaction lifecycle. These design decisions cascade through the entire architecture, affecting everything from network protocol efficiency to database query performance. In the next chapter, we'll explore [Blockchain State Management](../chain/01-Technical-Foundations.md) to understand how the UTXO set is maintained and how blockchain state operations are coordinated.*
+*This chapter has explored the fundamental aspects of transaction representation and storage in our blockchain implementation. We've examined why transaction IDs are stored as `Vec<u8>` rather than strings, understanding the critical differences between bytes and hex representations and their implications for memory efficiency, performance, and code clarity. We've compared our implementation with Bitcoin Core, explored best practices and performance benchmarks, and delved deep into the UTXO model implementation, script execution, verification, and the complete transaction lifecycle. These design decisions cascade through the entire architecture, affecting everything from network protocol efficiency to database query performance. In the next chapter, we'll explore Blockchain State Management to understand how the UTXO set is maintained and how blockchain state operations are coordinated.*
 
 **Last Updated:** December 2024  
 **Version:** 1.0  

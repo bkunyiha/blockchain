@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](../crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../chain/01-Technical-Foundations.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../wallet/README.md) - Wallet implementation and key management
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
+2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
+3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
+6. Chapter 2.1: Primitives - Core data structures
+7. Chapter 2.2: Utilities - Utility functions and helpers
+8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
+10. Chapter 2.5: Storage Layer - Persistent storage implementation
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
 15. **Chapter 3: Web API Architecture** ← *You are here*
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -50,7 +50,7 @@
 
 <div align="center">
 
-**📚 [← Rate Limiting](08-Rate-Limiting.md)** | **Chapter 3.9: OpenAPI Documentation** | **[Security →](10-Security.md)** 📚
+**[📚 ← Rate Limiting](08-Rate-Limiting.md)** | **[Chapter 3.9: OpenAPI Documentation](09-OpenAPI.md)** | **[Security →](10-Security.md)** 📚
 
 </div>
 
@@ -58,7 +58,7 @@
 
 ## OpenAPI Documentation
 
-The web layer includes automatic OpenAPI/Swagger documentation generation using the `utoipa` crate. For detailed explanations of Utoipa features, see the [Utoipa Framework Guide](Utoipa.md).
+The web layer includes automatic OpenAPI/Swagger documentation generation using the `utoipa` crate. For detailed explanations of Utoipa features, see the Utoipa Framework Guide.
 
 ### OpenAPI Definition
 
@@ -298,28 +298,28 @@ Once the server is running, the OpenAPI documentation is available at:
 - **Swagger UI**: `http://localhost:8080/swagger-ui` - Interactive API documentation
 - **OpenAPI JSON**: `http://localhost:8080/api-docs/openapi.json` - Raw OpenAPI specification
 
-> **See the complete implementation**: For details on how data models are structured, see the [Data Models chapter](06-Data-Models.md). For Utoipa framework details, see the [Utoipa Framework Guide](Utoipa.md).
+> **See the complete implementation**: For details on how data models are structured, see the Data Models chapter. For Utoipa framework details, see the Utoipa Framework Guide.
 
 ---
 
 ## Navigation
 
-- **[← Previous: Rate Limiting](08-Rate-Limiting.md)** - Rate limiting implementation
-- **[Next: Security Architecture →](10-Security.md)** - Authentication, authorization, and security
-- **[Web API Index](README.md)** - Overview and navigation
-- **[Utoipa Framework Guide](Utoipa.md)** - Detailed Utoipa feature explanations
-- **[Serde Framework Guide](Serde.md)** - Schema serialization details
+- **← Previous: Rate Limiting** - Rate limiting implementation
+- **Next: Security Architecture →** - Authentication, authorization, and security
+- **Web API Index** - Overview and navigation
+- **Utoipa Framework Guide** - Detailed Utoipa feature explanations
+- **Serde Framework Guide** - Schema serialization details
 
 ---
 
 <div align="center">
 
-**📚 [← Previous: Rate Limiting](08-Rate-Limiting.md)** | **Chapter 3.9: OpenAPI Documentation** | **[Next: Security →](10-Security.md)** 📚
+**[📚 ← Previous: Rate Limiting](08-Rate-Limiting.md)** | **[Chapter 3.9: OpenAPI Documentation](09-OpenAPI.md)** | **[Next: Security →](10-Security.md)** 📚
 
-**[← Web API Index](README.md)** | **[Introduction & Architecture Overview](01-Introduction.md)**
+**[← Web API Index](README.md)** | **Introduction & Architecture Overview**
 
 </div>
 
 ---
 
-*This chapter covers OpenAPI documentation. Continue to [Security Architecture](10-Security.md) to learn about authentication, authorization, and security measures.*
+*This chapter covers OpenAPI documentation. Continue to Security Architecture to learn about authentication, authorization, and security measures.*

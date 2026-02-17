@@ -13,9 +13,9 @@
 6. [Chapter 2.1: Primitives](../../bitcoin-blockchain/primitives/README.md) - Core data structures
 7. [Chapter 2.2: Utilities](../../bitcoin-blockchain/util/README.md) - Utility functions and helpers
 8. [Chapter 2.3: Cryptography](../../bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../../bitcoin-blockchain/chain/01-Technical-Foundations.md) - Proof Of Work
+9. [Chapter 2.4: Blockchain (Technical Foundations)](../../bitcoin-blockchain/chain/README.md) - Proof Of Work
 10. [Chapter 2.5: Storage Layer](../../bitcoin-blockchain/store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../../bitcoin-blockchain/chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
+11. [Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)](../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md) - Proof Of Work
 12. [Chapter 2.7: Network Layer](../../bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
 13. [Chapter 2.8: Node Orchestration](../../bitcoin-blockchain/node/README.md) - Node context and coordination
 14. [Chapter 2.9: Wallet System](../../bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
@@ -209,7 +209,7 @@ Each instance automatically configures unique internal ports:
 - Instance 3: Web port 8082, P2P port 2103
 - ... and so on
 
-For detailed information about port mapping and external access, see [Port Mapping & External Access](#port-mapping--external-access) and [05-Port-Mapping.md](05-Port-Mapping.md).
+For detailed information about port mapping and external access, see [Port Mapping & External Access](#port-mapping--external-access) and [Section 6: Port Mapping & External Access](05-Port-Mapping.md).
 
 ### Data Directories
 
@@ -638,7 +638,7 @@ docker compose exec miner_1 ls -la /app/data1
 
 ## Architecture & Container System
 
-See [02-Architecture.md](02-Architecture.md) for detailed information about:
+See [Section 2: Architecture & Container System](02-Architecture.md) for detailed information about:
 - Container naming conventions
 - Instance number detection
 - Service type identification
@@ -649,7 +649,7 @@ See [02-Architecture.md](02-Architecture.md) for detailed information about:
 
 ## Execution Flow & Startup Process
 
-See [03-Execution-Flow.md](03-Execution-Flow.md) for detailed information about:
+See [Section 3: Execution Flow & Startup Process](03-Execution-Flow.md) for detailed information about:
 - Complete code execution order
 - Docker Compose initialization
 - Container startup sequence
@@ -661,7 +661,7 @@ See [03-Execution-Flow.md](03-Execution-Flow.md) for detailed information about:
 
 ## Network Configuration & Node Connections
 
-See [04-Network-Configuration.md](04-Network-Configuration.md) for detailed information about:
+See [Section 4: Network Configuration & Node Connections](04-Network-Configuration.md) for detailed information about:
 - How nodes connect to each other
 - Miner connection chain
 - Webserver connection behavior
@@ -672,7 +672,7 @@ See [04-Network-Configuration.md](04-Network-Configuration.md) for detailed info
 
 ## Port Mapping & External Access
 
-See [05-Port-Mapping.md](05-Port-Mapping.md) for detailed information about:
+See [Section 6: Port Mapping & External Access](05-Port-Mapping.md) for detailed information about:
 - Port mapping limitations with `--scale`
 - Using the scaling helper script
 - Manual port override generation
@@ -683,7 +683,7 @@ See [05-Port-Mapping.md](05-Port-Mapping.md) for detailed information about:
 
 ## Scaling & Deployment
 
-See [06-Scaling.md](06-Scaling.md) for detailed information about:
+See [Section 7: Scaling & Deployment](06-Scaling.md) for detailed information about:
 - Scaling methods comparison
 - Scaling running containers
 - Helper script usage
@@ -694,7 +694,7 @@ See [06-Scaling.md](06-Scaling.md) for detailed information about:
 
 ## Sequential Startup
 
-See [07-Sequential-Startup.md](07-Sequential-Startup.md) for detailed information about:
+See [Section 5: Sequential Startup](07-Sequential-Startup.md) for detailed information about:
 - How sequential startup works
 - Wait script behavior
 - Health checks and timeouts
@@ -705,7 +705,7 @@ See [07-Sequential-Startup.md](07-Sequential-Startup.md) for detailed informatio
 
 ## Deployment Scenarios & Examples
 
-See [08-Deployment-Scenarios.md](08-Deployment-Scenarios.md) for detailed information about:
+See [Section 8: Deployment Scenarios & Examples](08-Deployment-Scenarios.md) for detailed information about:
 - Common deployment scenarios
 - 1 Miner + 3 Webservers example
 - Separate services approach

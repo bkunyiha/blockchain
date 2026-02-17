@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](../crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../chain/01-Technical-Foundations.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../wallet/README.md) - Wallet implementation and key management
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
+2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
+3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
+6. Chapter 2.1: Primitives - Core data structures
+7. Chapter 2.2: Utilities - Utility functions and helpers
+8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
+10. Chapter 2.5: Storage Layer - Persistent storage implementation
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
 15. **Chapter 3: Web API Architecture** ← *You are here*
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -50,7 +50,7 @@
 
 <div align="center">
 
-**📚 [← Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Chapter 3.1: Introduction** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
+**[📚 ← Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Chapter 3.1: Introduction** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
 
 </div>
 
@@ -62,7 +62,7 @@ The web API layer serves as the primary interface between clients and our blockc
 
 This chapter provides a comprehensive overview of the web API architecture, exploring its structure, design principles, and the technical foundations that make it production-ready. We'll examine how components are organized, how requests flow through the system, and the architectural decisions that enable security, scalability, and maintainability.
 
-> **📘 Prerequisites**: This chapter assumes familiarity with Bitcoin and blockchain fundamentals. If you're new to blockchain technology, start with [Chapter 2: Introduction to Bitcoin & Blockchain](../README.md) to understand the foundational concepts.
+> **📘 Prerequisites**: This chapter assumes familiarity with Bitcoin and blockchain fundamentals. If you're new to blockchain technology, start with Chapter 2: Introduction to Bitcoin & Blockchain to understand the foundational concepts.
 
 ---
 
@@ -104,15 +104,15 @@ bitcoin/src/web/
 
 ### Component Responsibilities
 
-**Routes** (`routes/`): Define endpoint paths and HTTP methods, connecting URLs to handler functions. Routes are organized by functionality (API routes, web routes) and can be nested or merged. See [Routing System](03-Routing.md) for details.
+**Routes** (`routes/`): Define endpoint paths and HTTP methods, connecting URLs to handler functions. Routes are organized by functionality (API routes, web routes) and can be nested or merged. See Routing System for details.
 
-**Handlers** (`handlers/`): Contain the business logic for processing requests. Each handler is an async function that extracts data from requests, performs operations using the blockchain node context, and returns structured responses. See [Request Handlers](04-Handlers.md) for implementation patterns.
+**Handlers** (`handlers/`): Contain the business logic for processing requests. Each handler is an async function that extracts data from requests, performs operations using the blockchain node context, and returns structured responses. See Request Handlers for implementation patterns.
 
-**Middleware** (`middleware/`): Provide cross-cutting concerns like authentication, CORS, logging, and error handling. Middleware wraps handlers, processing requests before they reach handlers and responses after handlers complete. See [Middleware Layer](05-Middleware.md) for details.
+**Middleware** (`middleware/`): Provide cross-cutting concerns like authentication, CORS, logging, and error handling. Middleware wraps handlers, processing requests before they reach handlers and responses after handlers complete. See Middleware Layer for details.
 
-**Models** (`models/`): Define the structure of requests and responses using Rust types. Models provide type safety, automatic serialization/deserialization, and validation. See [Data Models](06-Data-Models.md) for model design.
+**Models** (`models/`): Define the structure of requests and responses using Rust types. Models provide type safety, automatic serialization/deserialization, and validation. See Data Models for model design.
 
-**Server** (`server.rs`): Orchestrates the entire web layer, combining routes, middleware, and state into a complete application. Handles server lifecycle, graceful shutdown, and configuration management. See [Server Setup and Configuration](02-Server-Setup.md) for implementation.
+**Server** (`server.rs`): Orchestrates the entire web layer, combining routes, middleware, and state into a complete application. Handles server lifecycle, graceful shutdown, and configuration management. See Server Setup and Configuration for implementation.
 
 ---
 
@@ -143,7 +143,7 @@ For technical details on type-safe request extraction, see [Request Extractors i
 
 The entire web layer is built on async/await, enabling efficient concurrent request handling. All handlers are async functions, and the server uses Tokio's async runtime to manage concurrency. This design allows the server to handle thousands of concurrent requests efficiently.
 
-For detailed information on async patterns in Axum, see [Async/Await in Axum](Axum.md#asyncawait). For Tokio runtime details, see [Tokio Runtime Guide](../Tokio.md).
+For detailed information on async patterns in Axum, see [Async/Await in Axum](Axum.md#asyncawait). For Tokio runtime details, see Tokio Runtime Guide.
 
 ### 4. Security by Default
 
@@ -153,13 +153,13 @@ Security measures are built into the architecture from the ground up:
 - **Error Sanitization**: Internal errors don't leak sensitive information
 - **Input Validation**: Request data is validated before processing
 
-For CORS implementation details, see [CORS Configuration in Axum](Axum.md#cors-configuration). For comprehensive security coverage, see [Security Architecture](10-Security.md).
+For CORS implementation details, see [CORS Configuration in Axum](Axum.md#cors-configuration). For comprehensive security coverage, see Security Architecture.
 
 ### 5. Automatic Documentation
 
 OpenAPI/Swagger documentation is automatically generated from code, ensuring documentation stays synchronized with implementation. The documentation includes request/response schemas, endpoint descriptions, and interactive testing capabilities.
 
-For OpenAPI implementation details, see [OpenAPI Documentation](09-OpenAPI.md) and the [Utoipa Framework Guide](Utoipa.md).
+For OpenAPI implementation details, see OpenAPI Documentation and the Utoipa Framework Guide.
 
 ---
 
@@ -223,19 +223,19 @@ The web API is built on a carefully selected technology stack:
 - **Routing**: Organize endpoints with nesting and merging - See [Routing in Axum](Axum.md#routing)
 - **Error Handling**: Consistent error conversion and formatting - See [Error Handling in Axum](Axum.md#error-handling)
 
-For comprehensive Axum documentation, see the [Axum Framework Guide](Axum.md).
+For comprehensive Axum documentation, see the Axum Framework Guide.
 
 ### Supporting Frameworks
 
-**Tower**: Provides middleware abstractions and HTTP-specific components like CORS and compression. See [Tower Framework Guide](Tower.md).
+**Tower**: Provides middleware abstractions and HTTP-specific components like CORS and compression. See Tower Framework Guide.
 
-**Serde**: Handles JSON serialization and deserialization for request/response bodies. See [Serde Framework Guide](Serde.md).
+**Serde**: Handles JSON serialization and deserialization for request/response bodies. See Serde Framework Guide.
 
-**Utoipa**: Generates OpenAPI documentation from Rust types. See [Utoipa Framework Guide](Utoipa.md).
+**Utoipa**: Generates OpenAPI documentation from Rust types. See Utoipa Framework Guide.
 
-**Tracing**: Provides structured logging and diagnostics for monitoring and debugging. See [Tracing Framework Guide](Tracing.md).
+**Tracing**: Provides structured logging and diagnostics for monitoring and debugging. See Tracing Framework Guide.
 
-**Tokio**: Powers all async operations, providing the runtime for concurrent request handling. See [Tokio Runtime Guide](../Tokio.md).
+**Tokio**: Powers all async operations, providing the runtime for concurrent request handling. See Tokio Runtime Guide.
 
 ---
 
@@ -245,47 +245,47 @@ This Web API Architecture section is organized into three parts:
 
 ### Part 1: Core Concepts
 
-**[02: Server Setup and Configuration](02-Server-Setup.md)**
+**02: Server Setup and Configuration**
 
 Explores how the web server is initialized and configured. Covers the `WebServer` struct, route and middleware assembly, state injection, and graceful shutdown. See [State Injection in Axum](Axum.md#state-injection) and [Middleware Layers in Axum](Axum.md#middleware-layers) for technical details.
 
-**[03: Routing System](03-Routing.md)**
+**03: Routing System**
 
 Examines how endpoints are organized into logical groups. Covers route definitions, nesting, merging, and how different route categories (public, admin, wallet) are structured. See [Routing in Axum](Axum.md#routing) for routing patterns.
 
 ### Part 2: Request Processing
 
-**[04: Request Handlers](04-Handlers.md)**
+**04: Request Handlers**
 
 Details the handler pattern used throughout the API. Explores how handlers extract data from requests, execute business logic, and build responses. Includes examples from blockchain, wallet, transaction, and mining handlers. See [Request Extractors in Axum](Axum.md#request-extractors) and [Response Types in Axum](Axum.md#response-types) for technical information.
 
-**[05: Middleware Layer](05-Middleware.md)**
+**05: Middleware Layer**
 
 Covers cross-cutting concerns implemented as middleware: authentication, CORS, logging, and error handling. Explores how middleware components work together to create a secure, robust API. See [Middleware Layers in Axum](Axum.md#middleware-layers) for middleware composition and execution order.
 
-**[06: Data Models](06-Data-Models.md)**
+**06: Data Models**
 
 Examines how request and response structures are defined using Rust types. Covers type safety, validation, and how models integrate with Axum's extractors and response types. See [Request Extractors in Axum](Axum.md#request-extractors) for JSON extraction details.
 
 ### Part 3: Advanced Topics
 
-**[07: Error Handling](07-Error-Handling.md)**
+**07: Error Handling**
 
 Explores error handling patterns that provide clear feedback to clients while maintaining security. Covers error flows, common error patterns, and error logging. See [Error Handling in Axum](Axum.md#error-handling) for error conversion and middleware.
 
-**[08: Rate Limiting Implementation](08-Rate-Limiting.md)**
+**08: Rate Limiting Implementation**
 
 Details rate limiting implementation using the `axum_rate_limiter` crate. Covers token bucket algorithm, configuration, multiple strategies (IP, URL, header, query, body), Redis integration, and production deployment considerations.
 
-**[09: OpenAPI Documentation](09-OpenAPI.md)**
+**09: OpenAPI Documentation**
 
 Details how OpenAPI/Swagger documentation is automatically generated from code. Covers API documentation, Swagger UI integration, and the benefits of automatic documentation.
 
-**[10: Security Architecture](10-Security.md)**
+**10: Security Architecture**
 
 Examines security measures built into the web layer: authentication mechanisms, role-based access control, CORS configuration, error sanitization, and rate limiting strategies. See [CORS Configuration in Axum](Axum.md#cors-configuration) for CORS implementation.
 
-**[11: Best Practices and Patterns](11-Best-Practices.md)**
+**11: Best Practices and Patterns**
 
 Summarizes design patterns, conventions, and principles that make the API secure, scalable, and maintainable. See [Async/Await in Axum](Axum.md#asyncawait) for async patterns.
 
@@ -297,29 +297,29 @@ Summarizes design patterns, conventions, and principles that make the API secure
 
 Continue reading to understand how the web API is built:
 
-- **[Next: Server Setup and Configuration →](02-Server-Setup.md)** - Learn how the web server is initialized and configured
-- **[Routing System →](03-Routing.md)** - Understand how endpoints are organized
-- **[Request Handlers →](04-Handlers.md)** - See how requests are processed
-- **[Middleware Layer →](05-Middleware.md)** - Explore authentication, CORS, and error handling
+- **Next: Server Setup and Configuration →** - Learn how the web server is initialized and configured
+- **Routing System →** - Understand how endpoints are organized
+- **Request Handlers →** - See how requests are processed
+- **Middleware Layer →** - Explore authentication, CORS, and error handling
 
 For framework-specific technical details:
-- **[Axum Framework Guide →](Axum.md)** - Comprehensive Axum reference
-- **[Tower Framework Guide →](Tower.md)** - Middleware framework details
-- **[Serde Framework Guide →](Serde.md)** - Serialization framework details
-- **[Utoipa Framework Guide →](Utoipa.md)** - OpenAPI framework details
-- **[Tracing Framework Guide →](Tracing.md)** - Structured logging and diagnostics
-- **[Tokio Runtime Guide →](../Tokio.md)** - Async runtime details
+- **Axum Framework Guide →** - Comprehensive Axum reference
+- **Tower Framework Guide →** - Middleware framework details
+- **Serde Framework Guide →** - Serialization framework details
+- **Utoipa Framework Guide →** - OpenAPI framework details
+- **Tracing Framework Guide →** - Structured logging and diagnostics
+- **Tokio Runtime Guide →** - Async runtime details
 
 ---
 
 <div align="center">
 
-**📚 [← Web API Index](README.md)** | **Chapter 3.1: Introduction** | **[Next: Server Setup →](02-Server-Setup.md)** 📚
+**[📚 ← Web API Index](README.md)** | **Chapter 3.1: Introduction** | **[Next: Server Setup →](02-Server-Setup.md)** 📚
 
-**[Axum Framework Guide](Axum.md)** | **[Tower Framework Guide](Tower.md)** | **[Serde Framework Guide](Serde.md)** | **[Utoipa Framework Guide](Utoipa.md)** | **[Tracing Framework Guide](Tracing.md)**
+**Axum Framework Guide** | **Tower Framework Guide** | **Serde Framework Guide** | **Utoipa Framework Guide** | **Tracing Framework Guide**
 
 </div>
 
 ---
 
-*This chapter has provided a comprehensive overview of the web API architecture that powers our blockchain node. We've explored the design principles that guide our implementation, examined how requests flow through the system from client to handler and back, and understood the technology stack that enables secure, scalable, and maintainable API development. The architecture leverages Rust's type safety, Axum's ergonomic routing, Tokio's async capabilities, and Tower's middleware system to create a production-ready web layer. Understanding this architecture is crucial for debugging, extending, and maintaining the API. In the next chapter, we'll examine [Server Setup and Configuration](02-Server-Setup.md) to understand how the server is initialized, configured, and started.*
+*This chapter has provided a comprehensive overview of the web API architecture that powers our blockchain node. We've explored the design principles that guide our implementation, examined how requests flow through the system from client to handler and back, and understood the technology stack that enables secure, scalable, and maintainable API development. The architecture leverages Rust's type safety, Axum's ergonomic routing, Tokio's async capabilities, and Tower's middleware system to create a production-ready web layer. Understanding this architecture is crucial for debugging, extending, and maintaining the API. In the next chapter, we'll examine Server Setup and Configuration to understand how the server is initialized, configured, and started.*

@@ -13,9 +13,9 @@
 6. [Chapter 2.1: Primitives](bitcoin-blockchain/primitives/README.md) - Core data structures
 7. [Chapter 2.2: Utilities](bitcoin-blockchain/util/README.md) - Utility functions and helpers
 8. [Chapter 2.3: Cryptography](bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](bitcoin-blockchain/chain/01-Technical-Foundations.md) - Proof Of Work
+9. [Chapter 2.4: Blockchain (Technical Foundations)](bitcoin-blockchain/chain/README.md) - Proof Of Work
 10. [Chapter 2.5: Storage Layer](bitcoin-blockchain/store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](bitcoin-blockchain/chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
+11. [Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)](bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md) - Proof Of Work
 12. [Chapter 2.7: Network Layer](bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
 13. [Chapter 2.8: Node Orchestration](bitcoin-blockchain/node/README.md) - Node context and coordination
 14. [Chapter 2.9: Wallet System](bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
@@ -52,7 +52,7 @@
 **Main Book Index**
 
 [![Book](https://img.shields.io/badge/Book-10%20Chapters-blue)](README.md)
-[![Part I](https://img.shields.io/badge/Part%20I-Core%20Implementation-green)](#chapter-1-introduction--overview)
+[![Part I](https://img.shields.io/badge/Part%20I-Core%20Implementation-green)](#chapter-1-introduction-overview)
 [![Part II](https://img.shields.io/badge/Part%20II-Deployment-orange)](#chapter-8-docker-compose-deployment)
 [![Part III](https://img.shields.io/badge/Part%20III-Language%20Reference-blue)](#chapter-10-rust-language-guide)
 
@@ -60,6 +60,7 @@
 
 ---
 
+<a id="table-of-contents"></a>
 ## 🗺️ Quick Navigation - All Chapters
 
 <div align="center">
@@ -76,10 +77,10 @@
 | 2.1 | **Primitives** | Core data structures (Block, Transaction, Blockchain) | **[📄 Read Chapter 2.1 →](bitcoin-blockchain/primitives/README.md)** |
 | 2.2 | **Utilities** | Utility functions and helpers | **[📄 Read Chapter 2.2 →](bitcoin-blockchain/util/README.md)** |
 | 2.3 | **Cryptography** | Cryptographic primitives, hash functions, signatures, and key pairs | **[📄 Read Chapter 2.3 →](bitcoin-blockchain/crypto/README.md)** |
-| 2.4 | **Blockchain(POW & Block Acceptance)** | POW & Block Acceptance | **[📄 Read Chapter 2.4 →](bitcoin-blockchain/chain/01-Technical-Foundations.md)** |
-| 2.4B | **Blockchain(Block Acceptance)** | Chain state and UTXO management | **[📄 Read Chapter 2.4B →](bitcoin-blockchain/chain/02-Block-Acceptance-Whitepaper-Step-5.md)** |
+| 2.4 | **Blockchain (Project Code Walkthrogh)** | POW & Block Acceptance | **[📄 Read Chapter 2.4 →](bitcoin-blockchain/chain/README.md)** |
+| 2.4B | **Blockchain(Bitcoin Whitepaper - Block Acceptance)** | Chain state and UTXO management | **[📄 Read Chapter 2.4B →](bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md)** |
 | 2.5 | **Storage Layer** | Persistent storage implementation | **[📄 Read Chapter 2.5 →](bitcoin-blockchain/store/README.md)** |
-| 2.6 | **Blockchain State Management** | Chain state and UTXO management | **[📄 Read Chapter 2.6 →](bitcoin-blockchain/chain/Blockchain-State-Management.md)** |
+| 2.6 | **Blockchain State Management** | Chain state and UTXO management | **[📄 Read Chapter 2.6 →](bitcoin-blockchain/chain/02-Blockchain-State-Management.md)** |
 | 2.7 | **Network Layer** | Peer-to-peer networking and protocol | **[📄 Read Chapter 2.7 →](bitcoin-blockchain/net/README.md)** |
 | 2.8 | **Node Orchestration** | Node context and coordination | **[📄 Read Chapter 2.8 →](bitcoin-blockchain/node/README.md)** |
 | 2.9 | **Wallet System** | Wallet implementation and key management | **[📄 Read Chapter 2.9 →](bitcoin-blockchain/wallet/README.md)** |
@@ -291,7 +292,7 @@ In Chapter 2.2, we explore the foundation of our blockchain: the transaction sys
 
 ## Chapter 2.3: Blockchain State Management
 
-**[→ Read Full Chapter 2.3: Blockchain State Management](bitcoin-blockchain/chain/01-Technical-Foundations.md)**
+**[→ Read Full Chapter 2.3: Blockchain State Management](bitcoin-blockchain/chain/README.md)**
 
 In Chapter 2.3, we explore how blockchain state is managed and maintained. We'll understand how the UTXO (Unspent Transaction Output) set is tracked, how blockchain state operations are coordinated, and how the chain module provides services for querying and managing blockchain state. This chapter covers the foundational services that bridge blockchain data structures and higher-level node operations.
 

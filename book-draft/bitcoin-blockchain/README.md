@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../01-Introduction.md) - Book introduction, project structure, technical stack
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
 2. **Chapter 1.2: Introduction to Bitcoin & Blockchain** ← *You are here*
-3. [Chapter 1.3: Bitcoin Whitepaper](00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](chain/01-Technical-Foundations.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
+6. Chapter 2.1: Primitives - Core data structures
+7. Chapter 2.2: Utilities - Utility functions and helpers
+8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
+10. Chapter 2.5: Storage Layer - Persistent storage implementation
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
+15. Chapter 3: Web API Architecture - REST API implementation
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -79,7 +79,7 @@ In this chapter, we will:
 
 Bitcoin is a decentralized digital currency and payment system that operates without a central authority or intermediary. It was introduced in 2008 through a whitepaper published by an individual or group using the pseudonym Satoshi Nakamoto. Bitcoin enables peer-to-peer transactions over the internet, allowing users to send and receive value directly without relying on traditional financial institutions.
 
-> **📖 Understanding the Foundation**: In the next section we will go through **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** and gain a comprehensive understanding of how Bitcoin and blockchain technology work. The next section provides a detailed explanation of Satoshi Nakamoto's original paper: [Bitcoin: A Peer-to-Peer Electronic Cash System](https://bitcoin.org/bitcoin.pdf). The current section summary covers the double-spending problem, proof-of-work, network operation, security analysis, and all key concepts that form the foundation of blockchain technology.
+> **📖 Understanding the Foundation**: In the next section we will go through **Bitcoin Whitepaper Summary** and gain a comprehensive understanding of how Bitcoin and blockchain technology work. The next section provides a detailed explanation of Satoshi Nakamoto's original paper: [Bitcoin: A Peer-to-Peer Electronic Cash System](https://bitcoin.org/bitcoin.pdf). The current section summary covers the double-spending problem, proof-of-work, network operation, security analysis, and all key concepts that form the foundation of blockchain technology.
 
 At its core, Bitcoin is three things:
 
@@ -167,7 +167,7 @@ In the next section, we go through the whitepaper end-to-end, focusing on the co
 
 We provide a detailed summary of the Bitcoin whitepaper that explains the key ideas in accessible, implementation-oriented language:
 
-**[📖 Bitcoin Whitepaper Summary →](00-Bitcoin-Whitepaper-Summary.md)**
+**📖 Bitcoin Whitepaper Summary →**
 
 This summary covers:
 
@@ -182,7 +182,7 @@ This summary covers:
 
 **Why read it?** Understanding the whitepaper provides the theoretical foundation we use throughout the rest of this project. It helps us separate consensus-critical rules (must be implemented correctly) from engineering details (can vary without breaking consensus).
 
-**Next section**: [Bitcoin Whitepaper Summary →](00-Bitcoin-Whitepaper-Summary.md)
+**Next section**: Bitcoin Whitepaper Summary →
 
 ## System Architecture: Centralized vs. Decentralized vs. Distributed
 
@@ -562,28 +562,28 @@ Now that you understand the foundational concepts of Bitcoin and blockchain, exp
 
 ### Core Implementation Modules
 
-- **[Cryptography](crypto/README.md)**: See how cryptographic primitives (hash functions, digital signatures, key pairs) are implemented
-- **[Transaction ID Format](primitives/02-Transaction-ID-Format.md)**: Understand how transaction IDs are represented and stored
-- **[Blockchain State Management](chain/01-Technical-Foundations.md)**: Learn how blockchain state, UTXO set, and chain operations are managed
-- **[Network Layer](net/README.md)**: Explore peer-to-peer networking, message processing, and network synchronization
-- **[Node Orchestration](node/README.md)**: Understand how node context coordinates blockchain, mempool, mining, and network operations
-- **[Primitives](primitives/README.md)**: Study the core data structures (Block, Transaction, Blockchain) that form the foundation
-- **[Storage Layer](store/README.md)**: Learn about persistent storage using file system databases and block persistence
-- **[Utilities](util/README.md)**: Discover utility functions and helpers used throughout the system
-- **[Wallet System](wallet/README.md)**: Explore wallet creation, key management, address generation, and transaction signing
+- **Cryptography**: See how cryptographic primitives (hash functions, digital signatures, key pairs) are implemented
+- **Transaction ID Format**: Understand how transaction IDs are represented and stored
+- **Blockchain State Management**: Learn how blockchain state, UTXO set, and chain operations are managed
+- **Network Layer**: Explore peer-to-peer networking, message processing, and network synchronization
+- **Node Orchestration**: Understand how node context coordinates blockchain, mempool, mining, and network operations
+- **Primitives**: Study the core data structures (Block, Transaction, Blockchain) that form the foundation
+- **Storage Layer**: Learn about persistent storage using file system databases and block persistence
+- **Utilities**: Discover utility functions and helpers used throughout the system
+- **Wallet System**: Explore wallet creation, key management, address generation, and transaction signing
 
 ### Interface Layers
 
-- **[Web API Architecture](web/README.md)**: Learn how we build a REST API interface to interact with the blockchain, implementing the concepts covered in this chapter
+- **Web API Architecture**: Learn how we build a REST API interface to interact with the blockchain, implementing the concepts covered in this chapter
 
 ---
 
 <div align="center">
 
-**📚 [← Back to Main Book](../README.md)** | **Chapter 1.2: Introduction to Bitcoin & Blockchain** | **[Bitcoin Whitepaper Summary →](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](whitepaper-rust/README.md)** 📚
+**[📚 ← Back to Main Book](../README.md)** | **Chapter 1.2: Introduction to Bitcoin & Blockchain** | **[Bitcoin Whitepaper Summary →](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](whitepaper-rust/README.md)** 📚
 
 </div>
 
 ---
 
-*This chapter has provided comprehensive foundational knowledge about Bitcoin and blockchain technology, covering their origins, core concepts, system architectures, technical foundations, applications, and challenges. We’ve explored the principles that make blockchain systems work: decentralization, immutability, transparency, security, and trustlessness. Understanding these concepts matters before we dive deeper into implementation, because they inform the design decisions we make throughout this Rust project. Next, we’ll walk through the **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)**, then connect the whitepaper to concrete **Rust encoding** and implementation-oriented reasoning in **[Bitcoin Whitepaper → Rust Encoding](whitepaper-rust/README.md)**. After that, we’ll move into **[Cryptography](crypto/README.md)** to study the primitives that secure transactions and blocks, or we can jump directly into the **[implementation chapters](#related-implementation-chapters)** to see how these concepts appear in the codebase.*
+*This chapter has provided comprehensive foundational knowledge about Bitcoin and blockchain technology, covering their origins, core concepts, system architectures, technical foundations, applications, and challenges. We’ve explored the principles that make blockchain systems work: decentralization, immutability, transparency, security, and trustlessness. Understanding these concepts matters before we dive deeper into implementation, because they inform the design decisions we make throughout this Rust project. Next, we’ll walk through the **Bitcoin Whitepaper Summary**, then connect the whitepaper to concrete **Rust encoding** and implementation-oriented reasoning in **Bitcoin Whitepaper → Rust Encoding**. After that, we’ll move into **Cryptography** to study the primitives that secure transactions and blocks, or we can jump directly into the **[implementation chapters](#related-implementation-chapters)** to see how these concepts appear in the codebase.*

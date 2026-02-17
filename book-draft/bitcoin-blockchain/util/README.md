@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../primitives/README.md) - Core data structures
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
+2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
+3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
+6. Chapter 2.1: Primitives - Core data structures
 7. **Section 2.2: Utilities** ← *You are here*
-8. [Chapter 2.3: Cryptography](../crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../chain/01-Technical-Foundations.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](../web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
+10. Chapter 2.5: Storage Layer - Persistent storage implementation
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
+15. Chapter 3: Web API Architecture - REST API implementation
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -42,7 +42,7 @@
 
 <div align="center">
 
-**📚 [← Section 2.1: Primitives](../primitives/README.md)** | **Section 2.2: Utilities** | **[Section 2.3: Cryptography →](../crypto/README.md)** 📚
+**[📚 ← Section 2.1: Primitives](../primitives/README.md)** | **Section 2.2: Utilities** | **[Section 2.3: Cryptography →](../crypto/README.md)** 📚
 
 </div>
 
@@ -137,9 +137,9 @@ If we decide not to use them, the right move is to delete them. Utilities should
 
 ## Related sections
 
-- **[Primitives](../primitives/README.md)**: The data structures we timestamp and transform
-- **[Blockchain State Management](../chain/01-Technical-Foundations.md)**: Where block headers and validation rules begin to matter
-- **[Transaction ID Format](../primitives/02-Transaction-ID-Format.md)**: How transaction identifiers are derived and represented
+- **Primitives**: The data structures we timestamp and transform
+- **Blockchain State Management**: Where block headers and validation rules begin to matter
+- **Transaction ID Format**: How transaction identifiers are derived and represented
 
 ## Exercises
 
@@ -151,10 +151,10 @@ If we decide not to use them, the right move is to delete them. Utilities should
 
 <div align="center">
 
-**📚 [← Previous: Primitives](../primitives/README.md)** | **Section 2.2: Utilities** | **[Next: Cryptography](../crypto/README.md)** 📚
+**[📚 ← Previous: Primitives](../primitives/README.md)** | **Section 2.2: Utilities** | **Next: Cryptography** 📚
 
 </div>
 
 ---
 
-*In this section, we introduced the utilities layer: a small, intentionally-scoped module for shared helpers. We implemented `current_timestamp()` and connected it to block construction, then explored functional helper patterns that can make transaction-heavy code easier to reason about. In the next section, we move into [Cryptography](../crypto/README.md), where we build the primitives that make signatures, hashes, and addresses possible.*
+*In this section, we introduced the utilities layer: a small, intentionally-scoped module for shared helpers. We implemented `current_timestamp()` and connected it to block construction, then explored functional helper patterns that can make transaction-heavy code easier to reason about. In the next section, we move into Cryptography, where we build the primitives that make signatures, hashes, and addresses possible.*

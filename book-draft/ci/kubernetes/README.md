@@ -13,9 +13,9 @@
 6. [Chapter 2.1: Primitives](../../bitcoin-blockchain/primitives/README.md) - Core data structures
 7. [Chapter 2.2: Utilities](../../bitcoin-blockchain/util/README.md) - Utility functions and helpers
 8. [Chapter 2.3: Cryptography](../../bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../../bitcoin-blockchain/chain/01-Technical-Foundations.md) - Proof Of Work
+9. [Chapter 2.4: Blockchain (Technical Foundations)](../../bitcoin-blockchain/chain/README.md) - Proof Of Work
 10. [Chapter 2.5: Storage Layer](../../bitcoin-blockchain/store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../../bitcoin-blockchain/chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
+11. [Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)](../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md) - Proof Of Work
 12. [Chapter 2.7: Network Layer](../../bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
 13. [Chapter 2.8: Node Orchestration](../../bitcoin-blockchain/node/README.md) - Node context and coordination
 14. [Chapter 2.9: Wallet System](../../bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
@@ -620,7 +620,7 @@ kubectl top pods -n blockchain
 
 ## Section 2: Architecture & Core Concepts
 
-See [02-Architecture.md](02-Architecture.md) for detailed information about:
+See [Section 2: Architecture & Core Concepts](02-Architecture.md) for detailed information about:
 - Kubernetes architecture overview
 - Core concepts (Namespaces, ConfigMaps, Secrets, Deployments, StatefulSets, Services)
 - Differences from Docker Compose
@@ -630,7 +630,7 @@ See [02-Architecture.md](02-Architecture.md) for detailed information about:
 
 ## Section 3: Migration Guide
 
-See [03-Migration.md](03-Migration.md) for detailed information about:
+See [Section 3: Migration Guide](03-Migration.md) for detailed information about:
 - Step-by-step migration from Docker Compose
 - Image preparation and registry setup
 - Creating Kubernetes resources
@@ -641,7 +641,7 @@ See [03-Migration.md](03-Migration.md) for detailed information about:
 
 ## Section 4: Kubernetes Manifests
 
-See [04-Manifests.md](04-Manifests.md) for detailed information about:
+See [Section 4: Kubernetes Manifests](04-Manifests.md) for detailed information about:
 - Complete manifest examples with explanations
 - Namespace configuration
 - ConfigMaps and Secrets
@@ -654,7 +654,7 @@ See [04-Manifests.md](04-Manifests.md) for detailed information about:
 
 ## Section 5: Deployment & Operations
 
-See [05-Deployment.md](05-Deployment.md) for detailed information about:
+See [Section 5: Deployment & Operations](05-Deployment.md) for detailed information about:
 - Step-by-step deployment process
 - Verification and monitoring
 - Accessing services
@@ -666,7 +666,7 @@ See [05-Deployment.md](05-Deployment.md) for detailed information about:
 
 ## Section 6: Autoscaling
 
-See [06-Autoscaling.md](06-Autoscaling.md) for detailed information about:
+See [Section 6: Autoscaling](06-Autoscaling.md) for detailed information about:
 - HPA (Horizontal Pod Autoscaler) configuration
 - Scaling policies and thresholds
 - Metrics and monitoring
@@ -677,7 +677,7 @@ See [06-Autoscaling.md](06-Autoscaling.md) for detailed information about:
 
 ## Section 7: Production & Advanced Topics
 
-See [07-Production.md](07-Production.md) for detailed information about:
+See [Section 7: Production & Advanced Topics](07-Production.md) for detailed information about:
 - Production considerations
 - Security best practices
 - Monitoring and alerting

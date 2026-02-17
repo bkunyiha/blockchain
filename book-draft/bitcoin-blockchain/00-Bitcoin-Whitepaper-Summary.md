@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](README.md) - Bitcoin and blockchain fundamentals
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
+2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
 3. **Chapter 1.3: Bitcoin Whitepaper** ← *You are here*
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](chain/01-Technical-Foundations.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
+6. Chapter 2.1: Primitives - Core data structures
+7. Chapter 2.2: Utilities - Utility functions and helpers
+8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
+10. Chapter 2.5: Storage Layer - Persistent storage implementation
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
+15. Chapter 3: Web API Architecture - REST API implementation
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -42,7 +42,7 @@
 
 <div align="center">
 
-**📚 [← Introduction to Bitcoin & Blockchain](README.md)** | **Bitcoin Whitepaper Summary** | **[Bitcoin Whitepaper → Rust Encoding →](whitepaper-rust/README.md)** | **[Blockchain Rust Project →](Rust-Project-Index.md)** 📚
+**[📚 ← Introduction to Bitcoin & Blockchain](README.md)** | **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](whitepaper-rust/README.md)** | **[Blockchain Rust Project →](Rust-Project-Index.md)** 📚
 
 </div>
 
@@ -89,11 +89,11 @@ This section systematically examines each section of the Bitcoin whitepaper, pro
 **Citation Convention**: Throughout this section, citations follow the format `([Bitcoin Whitepaper, Section X](https://bitcoin.org/bitcoin.pdf))`, where X denotes the section number in the original paper. Direct quotations are presented verbatim with appropriate attribution.
 
 **Cross-References**: This chapter serves as foundational material for understanding the implementation details presented in subsequent chapters:
-- [Technical Foundations: Blockchain Architecture](chain/01-Technical-Foundations.md) - Implementation architecture and domain model
-- [Cryptography Documentation](crypto/README.md) - Cryptographic primitives and algorithms
-- [Transaction ID Format](primitives/02-Transaction-ID-Format.md) - Transaction representation and encoding
-- [Network Layer](net/README.md) - Peer-to-peer protocol implementation
-- [Node Orchestration](node/README.md) - Node coordination and state management
+- Technical Foundations: Blockchain Architecture - Implementation architecture and domain model
+- Cryptography Documentation - Cryptographic primitives and algorithms
+- Transaction ID Format - Transaction representation and encoding
+- Network Layer - Peer-to-peer protocol implementation
+- Node Orchestration - Node coordination and state management
 
 ---
 
@@ -243,7 +243,7 @@ Verification of Tᵢ requires:
 - Verify(σᵢ, Hash(Tᵢ₋₁), pkᵢ₋₁) = true
 - Tᵢ₋₁ exists and is valid
 
-**Related Documentation**: For implementation details on digital signatures and cryptographic primitives, see [Digital Signatures](crypto/02-Digital-Signatures.md) and [Key Pair Generation](crypto/03-Key-Pair-Generation.md).
+**Related Documentation**: For implementation details on digital signatures and cryptographic primitives, see Digital Signatures and Key Pair Generation.
 
 ---
 
@@ -305,7 +305,7 @@ The blockchain solution addresses double-spending through four mechanisms:
 
 In the centralized model: "In the mint based model, the mint was aware of all transactions and decided which arrived first" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)). The blockchain replaces this single authority with a **distributed consensus** mechanism where multiple nodes collectively determine transaction ordering.
 
-**Related Documentation**: For implementation details on transaction validation and ordering, see [Technical Foundations: Blockchain Architecture](chain/01-Technical-Foundations.md).
+**Related Documentation**: For implementation details on transaction validation and ordering, see Technical Foundations: Blockchain Architecture.
 
 ---
 
@@ -416,7 +416,7 @@ The whitepaper specifies: "To compensate for increasing hardware speed and varyi
 
 **Property 7.3** (Self-Regulation): The difficulty adjustment mechanism automatically maintains consistent block generation intervals regardless of network hash rate changes.
 
-**Related Documentation**: For implementation details on proof-of-work mining, see [Proof of Work](chain/01-Technical-Foundations.md) and [Miner Implementation](../../bitcoin/src/node/miner.rs).
+**Related Documentation**: For implementation details on proof-of-work mining, see Proof of Work and [Miner Implementation](../../bitcoin/src/node/miner.rs).
 
 ---
 
@@ -484,7 +484,7 @@ The whitepaper specifies: "If two nodes broadcast different versions of the next
 
 **Property 8.6** (Message Loss Recovery): The protocol recovers from lost messages through block request mechanisms when nodes detect gaps in their chain.
 
-**Related Documentation**: For implementation details on fork handling and chain reorganization, see [Blockchain State Management](chain/01-Technical-Foundations.md) and [Network Layer](net/README.md).
+**Related Documentation**: For implementation details on fork handling and chain reorganization, see Blockchain State Management and Network Layer.
 
 ---
 
@@ -567,7 +567,7 @@ Its bottom-up process, starting with raw data (transactions in a blockchain cont
 - Enables simplified payment verification (SPV)
 - Logarithmic proof size: Proving transaction inclusion requires only log₂(n) hashes
 
-**Related Documentation**: For implementation details on Merkle trees and block structures, see [Block Primitives](../../bitcoin/src/primitives/block.rs) and [Blockchain State Management](chain/01-Technical-Foundations.md).
+**Related Documentation**: For implementation details on Merkle trees and block structures, see [Block Primitives](../../bitcoin/src/primitives/block.rs) and Blockchain State Management.
 
 ---
 
@@ -610,7 +610,7 @@ Its bottom-up process, starting with raw data (transactions in a blockchain cont
 - Personal wallets
 - Low-security use cases
 
-**Related Documentation**: For implementation details on SPV and lightweight clients, see [Wallet System](wallet/README.md).
+**Related Documentation**: For implementation details on SPV and lightweight clients, see Wallet System.
 
 **How It Works**:
 1. Keep only block headers (80 bytes each)
@@ -665,7 +665,7 @@ Its bottom-up process, starting with raw data (transactions in a blockchain cont
 - You don't need the full history of each input
 - The UTXO model makes verification efficient
 
-**Related Documentation**: For implementation details on transaction structures, see [Transaction Primitives](../../bitcoin/src/primitives/transaction.rs) and [UTXO Set Management](../../bitcoin/src/chain/utxo_set.rs).
+**Related documentation**: For implementation details on transaction structures, see `bitcoin/src/primitives/transaction.rs` (transactions/inputs/outputs) and `bitcoin/src/chain/utxo_set.rs` (UTXO set management).
 
 ---
 
@@ -711,7 +711,7 @@ Its bottom-up process, starting with raw data (transactions in a blockchain cont
 
 **Privacy vs. Transparency**: The whitepaper acknowledges this trade-off: "The traditional banking model achieves a level of privacy by limiting access to information to the parties involved and the trusted third party. The necessity to announce all transactions publicly precludes this method" ([Bitcoin Whitepaper, Section 10](https://bitcoin.org/bitcoin.pdf)). Blockchain's transparency enables verification but limits privacy compared to traditional banking.
 
-**Related Documentation**: For implementation details on address generation and key management, see [Address Encoding](crypto/04-Address-Encoding.md) and [Key Pair Generation](crypto/03-Key-Pair-Generation.md).
+**Related Documentation**: For implementation details on address generation and key management, see Address Encoding and Key Pair Generation.
 
 ---
 
@@ -782,7 +782,7 @@ The whitepaper calculates how long a recipient should wait before being certain 
 
 **Why This Matters**: This analysis provides mathematical proof that blockchain security increases with confirmations, giving users confidence in how long to wait before considering transactions final.
 
-**Related Documentation**: For implementation details on confirmation counting and transaction finality, see [Blockchain State Management](chain/01-Technical-Foundations.md).
+**Related Documentation**: For implementation details on confirmation counting and transaction finality, see Blockchain State Management.
 
 ---
 
@@ -866,18 +866,18 @@ This summary has covered the fundamental concepts from the Bitcoin whitepaper. H
 
 Now that we’ve covered the whitepaper’s core ideas, we’re ready for the part where most implementations succeed or fail: turning concepts into **precise data structures and bytes**. The paper tells us what the system must achieve; encoding is where we make those requirements interoperable—where we decide how hashes, identifiers, scripts, and integers are represented so every node can compute the same txids, Merkle roots, and block hashes. In the next section, we translate the whitepaper’s “business objects” into **Rust types** and the **byte-level encoding rules** they imply.
 
-- **Bitcoin Whitepaper → Rust Encoding**: [Bitcoin Whitepaper → Rust Encoding](whitepaper-rust/README.md)
+- **Bitcoin Whitepaper → Rust Encoding**: Bitcoin Whitepaper → Rust Encoding
 
 ### Next Steps
 
 If we want to keep going beyond this summary, we can:
 
 - **Read the original whitepaper**: [Bitcoin: A Peer-to-Peer Electronic Cash System](https://bitcoin.org/bitcoin.pdf)
-- **Explore implementation architecture**: [Technical Foundations: Blockchain Architecture](chain/01-Technical-Foundations.md)
-- **Study cryptography**: [Cryptography Documentation](crypto/README.md)
-- **Understand transactions and txids**: [Transaction ID Format](primitives/02-Transaction-ID-Format.md)
-- **Explore the network layer**: [Network Layer](net/README.md)
-- **Study node orchestration**: [Node Orchestration](node/README.md)
+- **Explore implementation architecture**: Technical Foundations: Blockchain Architecture
+- **Study cryptography**: Cryptography Documentation
+- **Understand transactions and txids**: Transaction ID Format
+- **Explore the network layer**: Network Layer
+- **Study node orchestration**: Node Orchestration
 
 If we want the primary source open while reading, we can keep the original whitepaper handy:
 [Bitcoin: A Peer-to-Peer Electronic Cash System](https://bitcoin.org/bitcoin.pdf).
@@ -904,12 +904,12 @@ The Bitcoin whitepaper itself references several foundational works:
 
 For implementation details and deeper technical coverage:
 
-- **[Technical Foundations: Blockchain Architecture](chain/01-Technical-Foundations.md)**: Detailed explanation of blockchain architecture, domain objects, and component interactions
-- **[Cryptography Documentation](crypto/README.md)**: Cryptographic primitives including hash functions, digital signatures, and key pair generation
-- **[Transaction ID Format](primitives/02-Transaction-ID-Format.md)**: Technical details on transaction representation
-- **[Blockchain State Management](chain/01-Technical-Foundations.md)**: Implementation details on chain state and UTXO management
-- **[Network Layer](net/README.md)**: Peer-to-peer networking and protocol implementation
-- **[Node Orchestration](node/README.md)**: Node context and coordination mechanisms
+- **Technical Foundations: Blockchain Architecture**: Detailed explanation of blockchain architecture, domain objects, and component interactions
+- **Cryptography Documentation**: Cryptographic primitives including hash functions, digital signatures, and key pair generation
+- **Transaction ID Format**: Technical details on transaction representation
+- **Blockchain State Management**: Implementation details on chain state and UTXO management
+- **Network Layer**: Peer-to-peer networking and protocol implementation
+- **Node Orchestration**: Node context and coordination mechanisms
 
 ### Citation Format
 
@@ -935,6 +935,6 @@ All section numbers correspond to the original whitepaper structure:
 
 <div align="center">
 
-**📚 [← Introduction to Bitcoin & Blockchain](README.md)** | **Bitcoin Whitepaper Summary** | **[Bitcoin Whitepaper → Rust Encoding →](whitepaper-rust/README.md)** | **[Rust Project →](Rust-Project-Index.md)** 📚
+**[📚 ← Introduction to Bitcoin & Blockchain](README.md)** | **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](whitepaper-rust/README.md)** | **[Rust Project →](Rust-Project-Index.md)** 📚
 
 </div>

@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../util/README.md) - Utility functions and helpers
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
+2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
+3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
+6. Chapter 2.1: Primitives - Core data structures
+7. Chapter 2.2: Utilities - Utility functions and helpers
 8. **Chapter 2.3: Cryptography** ← *You are here*
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../chain/01-Technical-Foundations.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](../web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
+10. Chapter 2.5: Storage Layer - Persistent storage implementation
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
+15. Chapter 3: Web API Architecture - REST API implementation
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -50,7 +50,7 @@
 
 <div align="center">
 
-**[← Utilities](../util/README.md)** | **Cryptography** | **[Chain(POW and Block Acceptance) →](../chain/01-Technical-Foundations.md)** 📚
+**[← Utilities](../util/README.md)** | **Cryptography** | **[Blockchain (Technical Foundations) →](../chain/README.md)** 📚
 
 </div>
 
@@ -85,23 +85,23 @@ In this section, we provide a high-level tour of the cryptography layer. For det
 
 ### Section 1: Hash Functions
 
-**[01-Hash-Functions.md](01-Hash-Functions.md)** — SHA-256 for transaction IDs, block hashes, and proof-of-work.
+**01-Hash-Functions** — SHA-256 for transaction IDs, block hashes, and proof-of-work.
 
 ### Section 2: Digital Signatures
 
-**[02-Digital-Signatures.md](02-Digital-Signatures.md)** — Schnorr signatures (primary) and ECDSA helpers (contrast/legacy).
+**02-Digital-Signatures** — Schnorr signatures (primary) and ECDSA helpers (contrast/legacy).
 
 ### Section 3: Key Pair Generation
 
-**[03-Key-Pair-Generation.md](03-Key-Pair-Generation.md)** — generating private keys and deriving public keys (secp256k1 for Schnorr).
+**03-Key-Pair-Generation** — generating private keys and deriving public keys (secp256k1 for Schnorr).
 
 ### Section 4: Address Encoding
 
-**[04-Address-Encoding.md](04-Address-Encoding.md)** — Base58 encoding/decoding building blocks and how address formats are constructed.
+**04-Address-Encoding** — Base58 encoding/decoding building blocks and how address formats are constructed.
 
 ### Section 5: Security and Performance
 
-**[05-Security-and-Performance.md](05-Security-and-Performance.md)** — threat model, safe practices, and performance tradeoffs.
+**05-Security-and-Performance** — threat model, safe practices, and performance tradeoffs.
 
 ## How the crypto layer is structured
 
@@ -299,18 +299,18 @@ These functions are used primarily through the wallet layer today (for example, 
 
 ## Where to go next
 
-- If you want the “hashing and mining” story: **[01-Hash-Functions.md](01-Hash-Functions.md)** then **[Chain (PoW)](../chain/01-Technical-Foundations.md)**.
-- If you want the “ownership and authorization” story: **[02-Digital-Signatures.md](02-Digital-Signatures.md)** then the transaction code in `bitcoin/src/primitives/transaction.rs`.
-- If you want the “wallet pipeline” story: **[03-Key-Pair-Generation.md](03-Key-Pair-Generation.md)** and **[04-Address-Encoding.md](04-Address-Encoding.md)**.
+- If you want the “hashing and mining” story: **01-Hash-Functions** then **Chain (PoW)**.
+- If you want the “ownership and authorization” story: **02-Digital-Signatures** then the transaction code in `bitcoin/src/primitives/transaction.rs`.
+- If you want the “wallet pipeline” story: **03-Key-Pair-Generation** and **04-Address-Encoding**.
 
 ## Additional resources
 
 - **Internal docs**:
-  - **[01-Hash-Functions.md](01-Hash-Functions.md)**
-  - **[02-Digital-Signatures.md](02-Digital-Signatures.md)**
-  - **[03-Key-Pair-Generation.md](03-Key-Pair-Generation.md)**
-  - **[04-Address-Encoding.md](04-Address-Encoding.md)**
-  - **[05-Security-and-Performance.md](05-Security-and-Performance.md)**
+  - **01-Hash-Functions**
+  - **02-Digital-Signatures**
+  - **03-Key-Pair-Generation**
+  - **04-Address-Encoding**
+  - **05-Security-and-Performance**
 
 ## References and further reading
 
@@ -355,7 +355,7 @@ In this section, we provide credible references you can use to validate the conc
 
 <div align="center">
 
-**📚 [← Utilities](../util/README.md)** | **Section 2.3: Cryptography** | **[Start Reading: Hash Functions →](01-Hash-Functions.md)** 📚
+**[📚 ← Utilities](../util/README.md)** | **Section 2.3: Cryptography** | **[Start Reading: Hash Functions →](01-Hash-Functions.md)** 📚
 
 </div>
 
@@ -363,12 +363,12 @@ In this section, we provide credible references you can use to validate the conc
 
 **📖 Continue Reading Cryptography Documentation:**
 
-- **[01: Hash Functions](01-Hash-Functions.md)** - SHA-256 hashing for transaction IDs, block hashes, and Merkle trees
-- **[02: Digital Signatures](02-Digital-Signatures.md)** - Schnorr and ECDSA signatures for transaction authorization
-- **[03: Key Pair Generation](03-Key-Pair-Generation.md)** - Secure key pair generation and public key derivation
-- **[04: Address Encoding](04-Address-Encoding.md)** - Base58 encoding for human-readable addresses
-- **[05: Security and Performance](05-Security-and-Performance.md)** - Security best practices and performance considerations
+- **01: Hash Functions** - SHA-256 hashing for transaction IDs, block hashes, and Merkle trees
+- **02: Digital Signatures** - Schnorr and ECDSA signatures for transaction authorization
+- **03: Key Pair Generation** - Secure key pair generation and public key derivation
+- **04: Address Encoding** - Base58 encoding for human-readable addresses
+- **05: Security and Performance** - Security best practices and performance considerations
 
 ---
 
-*In this section, we connected the whitepaper’s security model to real Rust code. We saw where hashing and Schnorr verification show up in the running system today, and we identified which crypto helpers are currently “book scaffolding” versus production dependencies. Next, we dive into [Hash Functions](01-Hash-Functions.md) and trace how SHA-256 shows up in transaction IDs, block linking, and proof-of-work.*
+*In this section, we connected the whitepaper’s security model to real Rust code. We saw where hashing and Schnorr verification show up in the running system today, and we identified which crypto helpers are currently “book scaffolding” versus production dependencies. Next, we dive into Hash Functions and trace how SHA-256 shows up in transaction IDs, block linking, and proof-of-work.*

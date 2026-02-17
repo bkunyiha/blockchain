@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](../crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../chain/01-Technical-Foundations.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../wallet/README.md) - Wallet implementation and key management
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
+2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
+3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
+6. Chapter 2.1: Primitives - Core data structures
+7. Chapter 2.2: Utilities - Utility functions and helpers
+8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
+10. Chapter 2.5: Storage Layer - Persistent storage implementation
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
 15. **Chapter 3: Web API Architecture** ← *You are here*
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -50,7 +50,7 @@
 
 <div align="center">
 
-**📚 [← Security](10-Security.md)** | **Chapter 3.11: Best Practices and Patterns** | **[Web API Index](README.md)** 📚
+**[📚 ← Security](10-Security.md)** | **Chapter 3.11: Best Practices and Patterns** | **[Web API Index](README.md)** 📚
 
 </div>
 
@@ -80,7 +80,7 @@ See [Async/Await in Axum](Axum.md#asyncawait) for detailed technical information
 - Structured error responses
 - Comprehensive error logging with full context
 
-For detailed error handling patterns, see [Error Handling](07-Error-Handling.md). For error logging best practices, see [Error Logging](Tracing.md#examples-from-our-project) in the Tracing Framework Guide.
+For detailed error handling patterns, see Error Handling. For error logging best practices, see [Error Logging](Tracing.md#examples-from-our-project) in the Tracing Framework Guide.
 
 ### 4. Separation of Concerns
 
@@ -95,7 +95,7 @@ For detailed error handling patterns, see [Error Handling](07-Error-Handling.md)
 - Inline documentation for all public functions
 - Examples in documentation
 
-For OpenAPI documentation details, see [OpenAPI Documentation](09-OpenAPI.md).
+For OpenAPI documentation details, see OpenAPI Documentation.
 
 ### 6. Structured Logging and Observability
 
@@ -149,7 +149,7 @@ async fn process_transaction(txid: String) {
 - **DEBUG**: Detailed diagnostics (disabled in production)
 - **TRACE**: Very detailed tracing (disabled in production)
 
-For comprehensive logging patterns and configuration, see [Tracing Framework Guide](Tracing.md). For HTTP request/response logging, see [Logging Middleware](Tower.md#logging-middleware) in the Tower Framework Guide.
+For comprehensive logging patterns and configuration, see Tracing Framework Guide. For HTTP request/response logging, see [Logging Middleware](Tower.md#logging-middleware) in the Tower Framework Guide.
 
 ### 7. Testing Considerations
 
@@ -163,16 +163,16 @@ For comprehensive logging patterns and configuration, see [Tracing Framework Gui
 
 In this Web API Architecture section, we've explored:
 
-- **[Introduction & Architecture Overview](01-Introduction.md)**: Understanding the structure and design principles
-- **[Server Setup and Configuration](02-Server-Setup.md)**: Initialization and configuration
-- **[Routing System](03-Routing.md)**: Organizing endpoints and route definitions
-- **[Request Handlers](04-Handlers.md)**: Processing requests and implementing business logic
-- **[Middleware Layer](05-Middleware.md)**: Cross-cutting concerns: authentication, CORS, logging
-- **[Data Models](06-Data-Models.md)**: Request and response structures with type safety
-- **[Error Handling](07-Error-Handling.md)**: Comprehensive error management strategies
-- **[OpenAPI Documentation](09-OpenAPI.md)**: Automatic API documentation generation
-- **[Security Architecture](10-Security.md)**: Authentication, authorization, and security
-- **[Best Practices and Patterns](11-Best-Practices.md)**: Design patterns and conventions
+- **Introduction & Architecture Overview**: Understanding the structure and design principles
+- **Server Setup and Configuration**: Initialization and configuration
+- **Routing System**: Organizing endpoints and route definitions
+- **Request Handlers**: Processing requests and implementing business logic
+- **Middleware Layer**: Cross-cutting concerns: authentication, CORS, logging
+- **Data Models**: Request and response structures with type safety
+- **Error Handling**: Comprehensive error management strategies
+- **OpenAPI Documentation**: Automatic API documentation generation
+- **Security Architecture**: Authentication, authorization, and security
+- **Best Practices and Patterns**: Design patterns and conventions
 
 The web layer is designed to be:
 - **Secure**: Authentication, authorization, and error sanitization
@@ -188,24 +188,24 @@ As we continue building blockchain applications, these patterns will serve as a 
 
 ## Navigation
 
-- **[← Previous: Security Architecture](10-Security.md)** - Authentication, authorization, and security
-- **[Web API Index](README.md)** - Overview and navigation
-- **[Introduction & Architecture Overview](01-Introduction.md)** - Overview and chapter summaries
-- **[Axum Framework Guide](Axum.md)** - Detailed Axum feature explanations
-- **[Tracing Framework Guide](Tracing.md)** - Structured logging and diagnostics
-- **[Tower Framework Guide](Tower.md)** - Middleware framework details
-- **[Serde Framework Guide](Serde.md)** - Serialization framework details
+- **← Previous: Security Architecture** - Authentication, authorization, and security
+- **Web API Index** - Overview and navigation
+- **Introduction & Architecture Overview** - Overview and chapter summaries
+- **Axum Framework Guide** - Detailed Axum feature explanations
+- **Tracing Framework Guide** - Structured logging and diagnostics
+- **Tower Framework Guide** - Middleware framework details
+- **Serde Framework Guide** - Serialization framework details
 
 ---
 
 <div align="center">
 
-**📚 [← Previous: Security](10-Security.md)** | **Chapter 3.11: Best Practices and Patterns** | **[Web API Index](README.md)** 📚
+**[📚 ← Previous: Security](10-Security.md)** | **Chapter 3.11: Best Practices and Patterns** | **[Web API Index](README.md)** 📚
 
-**[← Web API Architecture Index](01-Introduction.md)** | **[Axum Framework Guide](Axum.md)** | **[Tracing Framework Guide](Tracing.md)**
+**[← Web API Architecture Index](README.md)** | **[Axum Framework Guide](Axum.md)** | **[Tracing Framework Guide](Tracing.md)**
 
 </div>
 
 ---
 
-*This chapter covers best practices and patterns. For a complete overview, see the [Web API Index](README.md).*
+*This chapter covers best practices and patterns. For a complete overview, see the Web API Index.*

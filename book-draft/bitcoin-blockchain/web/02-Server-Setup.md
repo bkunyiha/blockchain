@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](../crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../chain/01-Technical-Foundations.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../wallet/README.md) - Wallet implementation and key management
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
+2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
+3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
+6. Chapter 2.1: Primitives - Core data structures
+7. Chapter 2.2: Utilities - Utility functions and helpers
+8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
+10. Chapter 2.5: Storage Layer - Persistent storage implementation
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
 15. **Chapter 3: Web API Architecture** ← *You are here*
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -50,7 +50,7 @@
 
 <div align="center">
 
-**📚 [← Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Chapter 3.2: Server Setup** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
+**[📚 ← Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Chapter 3.2: Server Setup** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** 📚
 
 </div>
 
@@ -148,7 +148,7 @@ The `create_app()` method builds the router in several steps:
    - Compression layer (from `tower_http`) - see [Compression in Axum](Axum.md#compression) for compression details and [Compression Middleware in Tower](Tower.md#compression-middleware) for Tower-specific implementation
    - Error handling middleware (`handle_errors()` function in `server.rs`) - see [Error Handling in Axum](Axum.md#error-handling) for error handling patterns and middleware
    
-   Each layer wraps the previous one, creating a request processing pipeline. See [Middleware Layers in Axum](Axum.md#middleware-layers) for detailed technical information on middleware execution order, creating custom middleware, and middleware composition. For comprehensive Tower middleware information, see [Tower Framework Guide](Tower.md). The server runs on Tokio's async runtime - see [Tokio Runtime Guide](../Tokio.md) for details on async operations.
+   Each layer wraps the previous one, creating a request processing pipeline. See [Middleware Layers in Axum](Axum.md#middleware-layers) for detailed technical information on middleware execution order, creating custom middleware, and middleware composition. For comprehensive Tower middleware information, see Tower Framework Guide. The server runs on Tokio's async runtime - see Tokio Runtime Guide for details on async operations.
 
 ### Starting the Server
 
@@ -189,28 +189,28 @@ The server listens for `CTRL+C` signals and shuts down gracefully. This means:
 - New connections are rejected
 - The server exits cleanly
 
-This is crucial for production deployments where you need to update the server without dropping active requests. The graceful shutdown is handled by Axum's `with_graceful_shutdown()` method, which integrates with Tokio's signal handling. For more details on Axum server lifecycle and graceful shutdown, see the [Axum Framework Guide](Axum.md).
+This is crucial for production deployments where you need to update the server without dropping active requests. The graceful shutdown is handled by Axum's `with_graceful_shutdown()` method, which integrates with Tokio's signal handling. For more details on Axum server lifecycle and graceful shutdown, see the Axum Framework Guide.
 
 ---
 
 ## Navigation
 
-- **[← Previous: Introduction & Architecture Overview](01-Introduction.md)** - Understanding the structure and design principles
-- **[Next: Routing System →](03-Routing.md)** - Organizing endpoints and route definitions
-- **[Web API Index](README.md)** - Overview and navigation
-- **[Axum Framework Guide](Axum.md)** - Detailed Axum feature explanations
-- **[Tower Framework Guide](Tower.md)** - Middleware framework details
+- **← Previous: Introduction & Architecture Overview** - Understanding the structure and design principles
+- **Next: Routing System →** - Organizing endpoints and route definitions
+- **Web API Index** - Overview and navigation
+- **Axum Framework Guide** - Detailed Axum feature explanations
+- **Tower Framework Guide** - Middleware framework details
 
 ---
 
 <div align="center">
 
-**📚 [← Previous: Introduction](01-Introduction.md)** | **Chapter 3.2: Server Setup** | **[Next: Routing →](03-Routing.md)** 📚
+**[📚 ← Previous: Introduction](01-Introduction.md)** | **[Chapter 3.2: Server Setup](02-Server-Setup.md)** | **[Next: Routing →](03-Routing.md)** 📚
 
-**[← Web API Index](README.md)** | **[Introduction & Architecture Overview](01-Introduction.md)**
+**[← Web API Index](README.md)** | **Introduction & Architecture Overview**
 
 </div>
 
 ---
 
-*This chapter covers server setup and configuration. Continue to [Routing System](03-Routing.md) to learn how endpoints are organized.*
+*This chapter covers server setup and configuration. Continue to Routing System to learn how endpoints are organized.*

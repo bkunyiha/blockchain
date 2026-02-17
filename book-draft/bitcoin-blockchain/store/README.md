@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](../crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](../chain/01-Technical-Foundations.md) - Proof Of Work
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
+2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
+3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
+6. Chapter 2.1: Primitives - Core data structures
+7. Chapter 2.2: Utilities - Utility functions and helpers
+8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
 10. **Chapter 2.5: Storage Layer** ← *You are here*
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](../chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](../web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
+15. Chapter 3: Web API Architecture - REST API implementation
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -42,7 +42,7 @@
 
 <div align="center">
 
-**📚 [← Chapter 2.4: Chain(POW & BLockchain)](../chain/01-Technical-Foundations.md)** | **Chapter 2.5: Storage Layer** | **[Chapter 2.6: Chainstate / UTXO →](../chain/Blockchain-State-Management.md)** 📚
+**[📚 ← Chapter 2.4: Chain(POW & BLockchain)](../chain/README.md)** | **[Chapter 2.5: Storage Layer](README.md)** | **[Chapter 2.6: Chainstate / UTXO →](../chain/02-Blockchain-State-Management.md)** 📚
 
 </div>
 
@@ -160,9 +160,9 @@ This module aligns with Bitcoin Core's storage architecture:
 
 ## Related Chapters
 
-- **[Blockchain State Management](../chain/01-Technical-Foundations.md)**: Using storage layer
-- **[Primitives](../primitives/README.md)**: Data structures being stored
-- **[Node Orchestration](../node/README.md)**: Storage access patterns
+- **Blockchain State Management**: Using storage layer
+- **Primitives**: Data structures being stored
+- **Node Orchestration**: Storage access patterns
 
 ## Code Examples
 
@@ -207,10 +207,10 @@ let blockchain = BlockchainFileSystem::open_blockchain().await?;
 
 <div align="center">
 
-**📚 [← Chapter 2.4: Chain(POW & BLockchain)](../chain/01-Technical-Foundations.md)** | **Chapter 2.5: Storage Layer** | **[Chapter 2.6: Chainstate / UTXO →](../chain/Blockchain-State-Management.md)** 📚
+**[📚 ← Chapter 2.4: Chain(POW & BLockchain)](../chain/README.md)** | **[Chapter 2.5: Storage Layer](README.md)** | **[Chapter 2.6: Chainstate / UTXO →](../chain/02-Blockchain-State-Management.md)** 📚
 
 </div>
 
 ---
 
-*This chapter has explored the storage layer that provides persistent storage for blockchain data using a file system-based database. We've examined how the `BlockchainFileSystem` structure uses the Sled embedded database to store blocks, chain state, and UTXO data on disk, following Bitcoin Core's storage architecture patterns. The storage layer handles low-level storage operations, providing a clean interface for the chain module to persist and retrieve blockchain data efficiently. In the next chapter, we'll examine the [Utilities](../util/README.md) module to understand the helper functions and utility operations used throughout the blockchain system.*
+*This chapter has explored the storage layer that provides persistent storage for blockchain data using a file system-based database. We've examined how the `BlockchainFileSystem` structure uses the Sled embedded database to store blocks, chain state, and UTXO data on disk, following Bitcoin Core's storage architecture patterns. The storage layer handles low-level storage operations, providing a clean interface for the chain module to persist and retrieve blockchain data efficiently. In the next chapter, we'll examine the Utilities module to understand the helper functions and utility operations used throughout the blockchain system.*

@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain(POW & Block Acceptance)](chain/01-Technical-Foundations.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Blockchain(POW & Block Acceptance)](chain/02-Block-Acceptance-Whitepaper-Step-5.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](wallet/README.md) - Wallet implementation and key management
+1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
+2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
+3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+4. Chapter 1.4: Bitcoin Whitepaper In Rust - Bitcoin Whitepaper In Rust
+5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
+6. Chapter 2.1: Primitives - Core data structures
+7. Chapter 2.2: Utilities - Utility functions and helpers
+8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
+9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
+10. Chapter 2.5: Storage Layer - Persistent storage implementation
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
+13. Chapter 2.8: Node Orchestration - Node context and coordination
+14. Chapter 2.9: Wallet System - Wallet implementation and key management
 15. **Chapter 3: Web API Architecture** ← *You are here*
-16. [Chapter 4: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+16. Chapter 4: Desktop Admin Interface - Iced framework architecture
+17. Chapter 5: Wallet User Interface - Wallet UI implementation
+18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
+19. Chapter 7: Web Admin Interface - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../rust/README.md) - Rust programming language reference
+20. Chapter 8: Docker Compose Deployment - Docker Compose guide
+21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
+22. Chapter 10: Rust Language Guide - Rust programming language reference
 
 </details>
 
@@ -50,7 +50,7 @@
 
 <div align="center">
 
-**[← Back to Web API Index](web/README.md)** | **Tokio Runtime Guide** | **[Web API Architecture Index →](web/01-Introduction.md)** 📚
+**[← Back to Web API Index](web/README.md)** | **[Tokio Runtime Guide](Tokio.md)** | **[Web API Architecture Index →](web/README.md)** 📚
 
 </div>
 
@@ -68,7 +68,7 @@ In our blockchain project, Tokio powers:
 - **Signal Handling**: Graceful shutdown on Ctrl+C
 - **Task Coordination**: Task spawning, synchronization, cancellation
 
-> **📘 See the full implementation**: This guide explains Tokio concepts with examples from our codebase. To see how Tokio integrates with our web API, see the [Server Setup](web/02-Server-Setup.md) chapter. For network operations, see the blockchain node implementation.
+> **📘 See the full implementation**: This guide explains Tokio concepts with examples from our codebase. To see how Tokio integrates with our web API, see the Server Setup chapter. For network operations, see the blockchain node implementation.
 
 ---
 
@@ -843,19 +843,19 @@ Tokio's design allows our blockchain to handle thousands of concurrent connectio
 - **[Tokio Documentation](https://tokio.rs/)**: Official Tokio documentation and guides
 - **[Tokio API Documentation](https://docs.rs/tokio/)**: Complete API reference
 - **[Async Book](https://rust-lang.github.io/async-book/)**: Comprehensive async programming guide
-- **[Server Setup](web/02-Server-Setup.md)**: How Tokio is used in our web server
-- **[Axum Framework Guide](web/Axum.md)**: How Axum uses Tokio for async operations
-- **[Tower Framework Guide](web/Tower.md)**: How Tower middleware runs on Tokio
-- **[Rust Language Guide](../rust/README.md)**: Rust language features including async/await
+- **Server Setup**: How Tokio is used in our web server
+- **Axum Framework Guide**: How Axum uses Tokio for async operations
+- **Tower Framework Guide**: How Tower middleware runs on Tokio
+- **Rust Language Guide**: Rust language features including async/await
 
 ---
 
 <div align="center">
 
-**📚 [← Back to Web API Index](web/README.md)** | **Tokio Runtime Guide** | **[Web API Architecture Index →](web/01-Introduction.md)** | **[Tower](web/Tower.md)** | **[Serde](web/Serde.md)** | **[Utoipa](web/Utoipa.md)** 📚
+**[📚 ← Back to Web API Index](web/README.md)** | **[Tokio Runtime Guide](Tokio.md)** | **[Web API Architecture Index →](web/README.md)** | **Tower** | **Serde** | **Utoipa** 📚
 
 </div>
 
 ---
 
-*This guide provides detailed explanations of Tokio runtime features used in our blockchain implementation. For implementation details, see the [Server Setup](web/02-Server-Setup.md) chapter and the blockchain node implementation.*
+*This guide provides detailed explanations of Tokio runtime features used in our blockchain implementation. For implementation details, see the Server Setup chapter and the blockchain node implementation.*
