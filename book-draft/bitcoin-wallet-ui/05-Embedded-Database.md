@@ -22,14 +22,16 @@
 15. [Chapter 3: Web API Architecture](../bitcoin-blockchain/web/README.md) - REST API implementation
 16. [Chapter 4: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
 17. [Chapter 5: Wallet User Interface](04-Wallet-UI.md) - Wallet UI implementation
-18. **Chapter 6: Embedded Database & Persistence** ← *You are here*
-19. [Chapter 7: Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+18. [Chapter 5A: Wallet UI — Complete Code Listings](04A-Wallet-UI-Code-Listings.md) - Full, verbatim source listings
+19. **Chapter 6: Embedded Database & Persistence** ← *You are here*
+20. [Chapter 6A: Embedded Database — Complete Code Listings](05A-Embedded-Database-Code-Listings.md) - Full, verbatim persistence code
+21. [Chapter 7: Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../rust/README.md) - Rust programming language reference
+22. [Chapter 8: Docker Compose Deployment](../ci/docker-compose/01-Introduction.md) - Docker Compose guide
+23. [Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md) - Kubernetes production guide
+24. [Chapter 10: Rust Language Guide](../rust/README.md) - Rust programming language reference
 
 </details>
 
@@ -44,7 +46,7 @@
 
 ---
 
-# Chapter 6: Embedded Database & Persistence
+## Chapter 6: Embedded Database & Persistence
 
 **Part I: Core Blockchain Implementation**
 
@@ -58,593 +60,396 @@
 
 ## Overview
 
-In this chapter, we'll explore one of the most critical aspects of wallet applications: secure data persistence. We'll dive deep into the SQLCipher-based persistence layer we've added to `bitcoin-wallet-ui`. This implementation enables secure, encrypted storage of application settings and wallet addresses using SQLCipher—an encrypted SQLite database. As we'll discover, storing sensitive data like wallet addresses and API keys requires careful consideration of security, performance, and user experience. We'll understand not just how to implement encrypted storage, but why each design decision matters.
+> **Methods involved**
+> - `database::init_database` (`bitcoin-wallet-ui/src/database.rs`, [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+> - `load_settings`, `save_settings` ([Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+> - `save_wallet_address`, `load_wallet_addresses` ([Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+> - `generate_database_password` (`bitcoin-wallet-ui/src/main.rs`, [Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
+
+This chapter explains the persistence layer used by `bitcoin-wallet-ui`. The application stores user configuration and wallet addresses in an **encrypted SQLite database** built via SQLCipher (`rusqlite` with the `bundled-sqlcipher` feature).
+
+The two reader-facing goals are:
+
+- **Security**: sensitive values (like API keys) are stored encrypted at rest.
+- **Continuity**: wallet addresses and settings survive process restarts.
+
+To keep this chapter readable without a repository open, the complete, verbatim module is provided in **[Chapter 6A: Embedded Database — Complete Code Listings](05A-Embedded-Database-Code-Listings.md)**.
 
 ---
 
-## Table of Contents
+## What we store (and why)
 
-1. [What is SQLCipher?](#what-is-sqlcipher)
-2. [Architecture Overview](#architecture-overview)
-3. [Dependencies and Setup](#dependencies-and-setup)
-4. [Database Module Implementation](#database-module-implementation)
-5. [Security Architecture](#security-architecture)
-6. [Integration Points](#integration-points)
-7. [Database Schema](#database-schema)
-8. [Code Walkthrough](#code-walkthrough)
-9. [Error Handling](#error-handling)
-10. [Future Considerations](#future-considerations)
+> **Methods involved**
+> - `create_tables` ([Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
 
----
+This persistence layer is intentionally small and pragmatic:
 
-## What is SQLCipher?
-
-Before we dive into our implementation, let's understand what SQLCipher is and why we chose it for our wallet application.
-
-**SQLCipher** is an open-source extension to SQLite that provides transparent 256-bit AES encryption of database files. Unlike standard SQLite, SQLCipher encrypts the entire database file, including:
-
-- Table schemas
-- Indexes
-- Data pages
-- Metadata
-
-### Key Features
-
-SQLCipher offers several compelling features that make it ideal for our use case:
-
-- **Transparent Encryption**: Applications use standard SQLite APIs; encryption is handled automatically behind the scenes
-- **AES-256 Encryption**: Industry-standard encryption algorithm that provides strong security
-- **Zero Configuration**: Works with existing SQLite code—we don't need to rewrite our database logic
-- **Cross-Platform**: Available on all major platforms, ensuring our wallet works everywhere
-
-### Why SQLCipher for Bitcoin Wallet UI?
-
-When we were designing the persistence layer for our wallet application, we considered several options. SQLCipher emerged as the clear choice for several important reasons:
-
-1. **Security**: Wallet addresses and API keys are sensitive data that must be encrypted. SQLCipher provides this encryption transparently.
-
-2. **Compliance**: It meets security best practices for financial applications, which is crucial when dealing with blockchain assets.
-
-3. **Transparency**: We don't need to change our application logic—the encryption happens automatically, making our code cleaner and easier to maintain.
-
-4. **Performance**: There's minimal overhead compared to unencrypted SQLite, so our users won't notice any performance impact.
+- **Settings**: `base_url`, `api_key`
+  - required so the UI can reconnect to the node without retyping configuration each time.
+- **Wallet addresses**: `address`, optional `label`, `created_at`
+  - required so the wallet list is stable and selectable after restart.
+- **Schema version**: `schema_version.version`
+  - required so the database can evolve safely over time.
+- **User profile table**: `users`
+  - present to support future UI work; in the current code, the persistence primitives exist (schema + migrations), even if UI integration is minimal.
 
 ---
 
-## Architecture Overview
+## Architecture: a single encrypted database + a single guarded connection
 
+> **Methods involved**
+> - `init_database` ([Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+> - `get_connection` ([Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+
+The module uses a single global connection:
+
+- `DB_CONN: OnceLock<Mutex<Connection>>`
+
+This is a deliberate trade-off suitable for a GUI application:
+
+- it avoids passing a connection through every call,
+- it ensures access is serialized (SQLite `Connection` is not safe to share without synchronization),
+- and it keeps the API of the module simple.
+
+```mermaid
+flowchart TB
+  UI["Wallet UI\n(update.rs / app.rs)"] -->|"calls"| DB["database.rs module"]
+  DB -->|"get_connection() locks"| Guard["MutexGuard<Connection>"]
+  Guard -->|"SQLCipher pragmas + queries"| File["Encrypted DB file\nbitcoin-wallet.db"]
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Application Layer                         │
-│  (app.rs, update.rs, view.rs)                              │
-└───────────────────────┬─────────────────────────────────────┘
-                        │
-                        │ Calls database functions
-                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   Database Module                           │
-│  (database.rs)                                              │
-│  - init_database()                                          │
-│  - save_settings()                                          │
-│  - load_settings()                                          │
-│  - save_wallet_address()                                    │
-│  - load_wallet_addresses()                                  │
-└───────────────────────┬─────────────────────────────────────┘
-                        │
-                        │ Uses rusqlite with SQLCipher
-                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│              SQLCipher (Encrypted SQLite)                    │
-│  - Encrypted database file                                   │
-│  - AES-256 encryption                                        │
-│  - Platform-specific storage location                       │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Data Flow
-
-1. **Initialization**: Database is initialized once at application startup
-2. **Read Operations**: Settings loaded from database when app starts
-3. **Write Operations**: Settings and wallet addresses saved automatically on changes
-4. **Encryption**: All data encrypted transparently by SQLCipher
 
 ---
 
-## Dependencies and Setup
+## Key derivation and database initialization
 
-### Cargo.toml Changes
+> **Methods involved**
+> - `generate_database_password` ([Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
+> - `init_database` ([Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+> - `get_database_path` ([Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
 
-```toml
-# Database persistence with SQLCipher encryption
-rusqlite = { version = "0.31", features = ["bundled-sqlcipher"] }
+The database password is generated by `generate_database_password` (Listing 5.1) and passed into `init_database`. This design emphasizes **zero-interaction UX**: the user is not prompted for a passphrase, but the file is still encrypted at rest.
 
-# Directory utilities for finding data directory
-dirs = "5.0"
-```
+### Annotated listing: `init_database`
 
-### Dependency Explanation
-
-#### `rusqlite` with `bundled-sqlcipher`
-
-- **rusqlite**: Rust bindings for SQLite
-- **bundled-sqlcipher**: Feature flag that:
-  - Compiles SQLCipher from source
-  - Links SQLCipher instead of standard SQLite
-  - Provides encryption capabilities
-  - No external dependencies needed
-
-**Why `bundled-sqlcipher`?**
-- Self-contained: No need to install SQLCipher separately
-- Cross-platform: Works on all platforms
-- Version control: Ensures consistent SQLCipher version
-- Simpler deployment: Single binary includes everything
-
-#### `dirs` Crate
-
-- Provides platform-specific directory paths
-- `data_dir()`: Returns application data directory
-  - macOS: `~/Library/Application Support/`
-  - Linux: `~/.local/share/`
-  - Windows: `%APPDATA%\`
-
----
-
-## Database Module Implementation
-
-### Module Structure
-
-The database module (`src/database.rs`) provides:
-
-1. **Initialization**: Database setup and encryption
-2. **Schema Management**: Table creation and migrations
-3. **Settings Persistence**: Save/load application settings
-4. **Wallet Address Persistence**: Save/load wallet addresses
-5. **User Profile Persistence**: Save/load user profile information
-6. **Thread Safety**: Global connection with mutex protection
-
-### Global Connection Management
-
-```rust
-use std::sync::Mutex;
-use std::sync::OnceLock;
-
-static DB_CONN: OnceLock<Mutex<Connection>> = OnceLock::new();
-```
-
-**Technical Details:**
-
-- **`OnceLock`**: Ensures database is initialized exactly once
-  - Thread-safe initialization
-  - Lazy initialization (only when first accessed)
-  - Prevents race conditions
-
-- **`Mutex<Connection>`**: Protects database connection
-  - SQLite connections are not thread-safe
-  - Mutex ensures only one thread accesses database at a time
-  - Prevents data corruption from concurrent access
-
-- **Why Global?**
-  - Database operations happen from multiple places
-  - Avoids passing connection through entire call stack
-  - Simplifies API (no need to manage connection lifetime)
-
-### Mutex vs RwLock: Design Decision
-
-**Why `Mutex` instead of `RwLock`?**
-
-The implementation uses `std::sync::Mutex` rather than `std::sync::RwLock` for protecting the database connection. This is the correct choice for this application.
-
-#### Technical Reasons
-
-1. **SQLite Connection Thread Safety**:
-   - SQLite `Connection` objects are **not thread-safe** at the Rust API level
-   - Even read operations require exclusive access to the connection object
-   - SQLite has file-level locking internally, but the Rust `Connection` wrapper must still be protected
-   - Multiple concurrent readers on the same connection would cause data races
-
-2. **Operation Characteristics**:
-   - All database operations are **fast** (milliseconds):
-     - `load_settings()`: Simple SELECT on singleton table
-     - `save_settings()`: Single-row UPDATE
-     - `load_wallet_addresses()`: SELECT with small result set
-     - `save_wallet_address()`: INSERT/UPDATE on indexed table
-   - Exclusive locking doesn't cause noticeable delays
-   - Operations complete before users would notice any blocking
-
-3. **Application Context**:
-   - **GUI Application**: Iced framework runs primarily on main thread
-   - **Low Contention**: Operations are user-driven, not high-throughput
-   - **Infrequent Access**: Database operations happen on user actions (button clicks, settings changes)
-   - **No Concurrent Readers**: GUI operations are sequential, not parallel
-
-4. **Performance Considerations**:
-   - **Mutex Overhead**: Lower overhead for low-contention scenarios
-   - **RwLock Overhead**: Additional coordination overhead for reader/writer management
-   - **Lock Duration**: Locks are held for microseconds (query execution time)
-   - **No Starvation**: With fast operations, no risk of writer starvation
-
-#### When RwLock Would Be Appropriate
-
-`RwLock` would be beneficial if:
-
-- **Many Concurrent Readers**: Multiple threads frequently reading simultaneously
-- **Long-Running Reads**: Read operations take significant time (seconds)
-- **High-Throughput Server**: Server handling many concurrent requests
-- **Read-Heavy Workload**: 90%+ of operations are reads
-
-**Example scenario where RwLock helps:**
-```rust
-// High-throughput server with many concurrent readers
-// Thread 1: Reading large dataset (takes 100ms)
-// Thread 2: Reading large dataset (takes 100ms)  // Can run concurrently with RwLock
-// Thread 3: Reading large dataset (takes 100ms)  // Can run concurrently with RwLock
-```
-
-#### Current Implementation Benefits
-
-**Mutex Advantages for This Use Case:**
-
-1. **Simplicity**: 
-   - Single lock type (no reader/writer distinction)
-   - Simpler error handling
-   - Less cognitive overhead
-
-2. **Lower Overhead**:
-   - No reader/writer coordination logic
-   - Faster lock acquisition for low contention
-   - Better cache locality
-
-3. **Correctness**:
-   - Matches SQLite's connection model (exclusive access needed)
-   - No risk of deadlocks from reader/writer interactions
-   - Guaranteed exclusive access prevents subtle bugs
-
-4. **Future-Proof**:
-   - If operations become write-heavy, Mutex is already optimal
-   - No need to refactor if usage patterns change
-   - Consistent locking model
-
-#### Performance Analysis
-
-**Typical Operation Times:**
-- `load_settings()`: ~0.1ms (single row SELECT)
-- `save_settings()`: ~0.2ms (single row UPDATE)
-- `load_wallet_addresses()`: ~0.5ms (small SELECT with ORDER BY)
-- `save_wallet_address()`: ~0.3ms (INSERT with constraint check)
-
-**Lock Contention:**
-- GUI operations are sequential (user clicks button → waits for result)
-- No concurrent database access from multiple threads
-- Lock is held for microseconds, released immediately
-
-**Conclusion**: `Mutex` is the optimal choice for this application. The overhead difference between `Mutex` and `RwLock` is negligible for this use case, and `Mutex` provides simplicity and correctness guarantees.
-
-### Database Path Resolution
-
-```rust
-fn get_database_path() -> PathBuf {
-    // Use application data directory
-    let mut path = dirs::data_dir().unwrap_or_else(|| PathBuf::from("."));
-    path.push("bitcoin-wallet-ui");
-    path.push(DB_FILENAME);
-    path
-}
-```
-
-**Path Examples:**
-- macOS: `~/Library/Application Support/bitcoin-wallet-ui/bitcoin-wallet.db`
-- Linux: `~/.local/share/bitcoin-wallet-ui/bitcoin-wallet.db`
-- Windows: `C:\Users\Username\AppData\Roaming\bitcoin-wallet-ui\bitcoin-wallet.db`
-
-**Why Application Data Directory?**
-- Platform-standard location for application data
-- User-specific (not system-wide)
-- Automatically backed up on some platforms
-- Respects user privacy settings
-
----
-
-## Security Architecture
-
-### Password Generation
-
-```rust
-fn generate_database_password() -> String {
-    use std::collections::hash_map::DefaultHasher;
-    use std::hash::{Hash, Hasher};
-    
-    let mut hasher = DefaultHasher::new();
-    
-    // Use username
-    if let Ok(username) = std::env::var("USER") {
-        username.hash(&mut hasher);
-    } else if let Ok(username) = std::env::var("USERNAME") {
-        username.hash(&mut hasher);
-    }
-    
-    // Use home directory
-    if let Some(home) = dirs::home_dir() {
-        home.to_string_lossy().hash(&mut hasher);
-    }
-    
-    // Use application name
-    "bitcoin-wallet-ui".hash(&mut hasher);
-    
-    // Convert to hex string
-    format!("{:x}", hasher.finish())
-}
-```
-
-**Security Design Decisions:**
-
-1. **Machine-Specific Password**:
-   - Combines user-specific data (username, home directory)
-   - Same user on same machine gets same password
-   - Different users or machines get different passwords
-   - No user input required (better UX)
-
-2. **Deterministic but Unique**:
-   - Same inputs always produce same password
-   - Different users/machines produce different passwords
-   - Prevents cross-user data access
-
-3. **Hash Function**:
-   - `DefaultHasher`: Rust's standard hasher
-   - Produces consistent 64-bit hash
-   - Converted to hex string for password
-
-**Security Considerations:**
-
-- ✅ **Encryption**: Database is encrypted with AES-256
-- ✅ **User Isolation**: Each user has separate database
-- ✅ **No Hardcoded Keys**: Password generated from user context
-- ⚠️ **Not User-Provided**: Trade-off for convenience vs. security
-- ⚠️ **Local Only**: Password is machine-specific, not portable
-
-### Database Initialization
+> **Methods involved**
+> - `init_database` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
 
 ```rust
 pub fn init_database(password: &str) -> SqliteResult<()> {
     let db_path = get_database_path();
-    
-    // Create database directory if it doesn't exist
+
+    // 1) Ensure the parent directory exists. This makes the module robust on first run.
     if let Some(parent) = db_path.parent() {
         std::fs::create_dir_all(parent).map_err(|e| {
+            // Map an I/O error into a rusqlite error so we keep one error domain.
             rusqlite::Error::SqliteFailure(
                 rusqlite::ffi::Error::new(rusqlite::ffi::SQLITE_CANTOPEN),
                 Some(format!("Failed to create database directory: {}", e)),
             )
         })?;
     }
-    
-    // Open or create the database
+
+    // 2) Open (or create) the SQLite file.
     let conn = Connection::open(&db_path)?;
-    
-    // Set SQLCipher key
+
+    // 3) Critical SQLCipher step: set the encryption key *immediately* after opening.
+    //    If the key is wrong, subsequent reads will fail with “file is encrypted…”.
     conn.pragma_update(None, "key", password)?;
-    
-    // Enable foreign keys
+
+    // 4) Enable foreign keys (good SQLite hygiene; harmless if unused).
     conn.pragma_update(None, "foreign_keys", "ON")?;
-    
-    // Create tables
+
+    // 5) Create base schema + apply migrations before the connection is exposed.
     create_tables(&conn)?;
-    
-    // Run migrations
     run_migrations(&conn)?;
-    
-    // Store connection globally
+
+    // 6) Store the connection globally for the rest of the process lifetime.
     DB_CONN.set(Mutex::new(conn)).map_err(|_| {
         rusqlite::Error::SqliteFailure(
             rusqlite::ffi::Error::new(rusqlite::ffi::SQLITE_MISUSE),
             Some("Database already initialized".to_string()),
         )
     })?;
-    
+
     Ok(())
 }
 ```
 
-**Step-by-Step Explanation:**
-
-1. **Get Database Path**: Resolves platform-specific path
-2. **Create Directory**: Ensures parent directory exists
-   - Error handling converts `std::io::Error` to `rusqlite::Error`
-3. **Open Connection**: Opens or creates database file
-4. **Set Encryption Key**: **Critical step** - enables SQLCipher encryption
-   ```rust
-   conn.pragma_update(None, "key", password)?;
-   ```
-   - Sets the encryption key for the database
-   - Must be called before any other operations
-   - If key is wrong, database operations will fail
-5. **Enable Foreign Keys**: Ensures referential integrity
-6. **Create Tables**: Sets up database schema
-7. **Run Migrations**: Handles schema versioning
-8. **Store Connection**: Saves connection globally for later use
-
-**SQLCipher Key Setting:**
-
-The `pragma key` command is SQLCipher-specific:
-- Sets the encryption key for the database
-- Must be called immediately after opening connection
-- If incorrect, all subsequent operations fail with "file is encrypted or is not a database"
-- Key is used for both encryption and decryption
-
 ---
 
-## Database Schema
+## Connection acquisition: one line that matters (`get_connection`)
 
-### Settings Table
+> **Methods involved**
+> - `get_connection` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
 
-```rust
-conn.execute(
-    "CREATE TABLE IF NOT EXISTS settings (
-        id INTEGER PRIMARY KEY CHECK (id = 1),
-        base_url TEXT NOT NULL DEFAULT 'http://127.0.0.1:8080',
-        api_key TEXT NOT NULL DEFAULT '',
-        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-    )",
-    [],
-)?;
-```
+`get_connection` is the narrow waist of the module: every read/write operation goes through it. It ensures:
 
-**Schema Design:**
+- the database was initialized,
+- the global mutex is acquired,
+- and errors are mapped to one domain (`rusqlite::Error`).
 
-- **`id INTEGER PRIMARY KEY CHECK (id = 1)`**:
-  - Singleton pattern: Only one row allowed
-  - `CHECK (id = 1)` enforces this constraint
-  - Simplifies queries (no WHERE clause needed)
+### Annotated listing: `get_connection`
 
-- **`base_url TEXT NOT NULL DEFAULT '...'`**:
-  - Stores API server URL
-  - Default value for new installations
-  - NOT NULL ensures value always exists
-
-- **`api_key TEXT NOT NULL DEFAULT ''`**:
-  - Stores API authentication key
-  - Default empty string
-  - Sensitive data (encrypted by SQLCipher)
-
-- **Timestamps**:
-  - `created_at`: When settings were first created
-  - `updated_at`: Last modification time
-  - Automatically updated on changes
-
-**Default Settings Insertion:**
+> **Methods involved**
+> - `get_connection` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
 
 ```rust
-let count: i64 = conn.query_row(
-    "SELECT COUNT(*) FROM settings",
-    [],
-    |row| row.get(0),
-)?;
-
-if count == 0 {
-    conn.execute(
-        "INSERT INTO settings (id, base_url, api_key) VALUES (1, 'http://127.0.0.1:8080', ?)",
-        params![std::env::var("BITCOIN_API_WALLET_KEY").unwrap_or_else(|_| "wallet-secret".to_string())],
-    )?;
+fn get_connection() -> SqliteResult<std::sync::MutexGuard<'static, Connection>> {
+    // 1) Ensure initialization happened.
+    //    This is a runtime requirement: the UI must call `init_database` at startup.
+    DB_CONN
+        .get()
+        .ok_or_else(|| {
+            rusqlite::Error::SqliteFailure(
+                rusqlite::ffi::Error::new(rusqlite::ffi::SQLITE_MISUSE),
+                Some("Database not initialized".to_string()),
+            )
+        })?
+        // 2) Serialize access to the single Connection.
+        //    SQLite connections are not safe to share without synchronization.
+        .lock()
+        .map_err(|_| {
+            // A poisoned mutex implies a previous panic while holding the lock.
+            // For a UI process, we surface this as a database misuse error.
+            rusqlite::Error::SqliteFailure(
+                rusqlite::ffi::Error::new(rusqlite::ffi::SQLITE_MISUSE),
+                Some("Failed to acquire database lock".to_string()),
+            )
+        })
 }
 ```
 
-- Checks if table is empty
-- Inserts default values if empty
-- Uses environment variable for API key if available
+---
 
-### Wallet Addresses Table
+## Schema and defaults (`create_tables`)
 
-```rust
-conn.execute(
-    "CREATE TABLE IF NOT EXISTS wallet_addresses (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        address TEXT NOT NULL UNIQUE,
-        label TEXT,
-        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-    )",
-    [],
-)?;
+> **Methods involved**
+> - `create_tables` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
 
-// Create index on address for faster lookups
-conn.execute(
-    "CREATE INDEX IF NOT EXISTS idx_wallet_addresses_address ON wallet_addresses(address)",
-    [],
-)?;
-```
+Read `create_tables` (Listing 6.1) with three lenses:
 
-**Schema Design:**
+- **Singleton settings**: `settings.id` has `CHECK (id = 1)` so there can be only one row.
+- **Uniqueness**: `wallet_addresses.address` is `UNIQUE` to prevent duplicates.
+- **Schema versioning**: `schema_version` is created and initialized to `SCHEMA_VERSION`.
 
-- **`id INTEGER PRIMARY KEY AUTOINCREMENT`**:
-  - Auto-incrementing primary key
-  - Unique identifier for each address
+This is the typical baseline for a durable embedded store: create-if-not-exists plus safe defaults.
 
-- **`address TEXT NOT NULL UNIQUE`**:
-  - Wallet address (Bitcoin address)
-  - UNIQUE constraint prevents duplicates
-  - NOT NULL ensures address always present
+### Annotated listing: `create_tables`
 
-- **`label TEXT`**:
-  - Optional user-provided label
-  - NULL allowed (addresses can be unlabeled)
-  - Useful for organizing multiple addresses
-
-- **Index on `address`**:
-  - Speeds up lookups by address
-  - Important for large address lists
-  - UNIQUE constraint automatically creates index, but explicit index helps with queries
-
-### User Table
+> **Methods involved**
+> - `create_tables` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
 
 ```rust
-conn.execute(
-    "CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY CHECK (id = 1),
-        first_name TEXT,
-        last_name TEXT,
-        profile_picture_path TEXT,
-        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-    )",
-    [],
-)?;
+fn create_tables(conn: &Connection) -> SqliteResult<()> {
+    // The settings table is a singleton: enforced by CHECK(id = 1).
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS settings (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            base_url TEXT NOT NULL DEFAULT 'http://127.0.0.1:8080',
+            api_key TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL DEFAULT (datetime('now')),
+            updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+        )",
+        [],
+    )?;
+
+    // Populate the singleton row once (first-run initialization).
+    let count: i64 = conn.query_row("SELECT COUNT(*) FROM settings", [], |row| row.get(0))?;
+    if count == 0 {
+        conn.execute(
+            "INSERT INTO settings (id, base_url, api_key) VALUES (1, 'http://127.0.0.1:8080', ?)",
+            params![
+                std::env::var(\"BITCOIN_API_WALLET_KEY\")
+                    .unwrap_or_else(|_| \"wallet-secret\".to_string())
+            ],
+        )?;
+    }
+
+    // Wallet addresses: UNIQUE(address) prevents duplicates across restarts and re-creates.
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS wallet_addresses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            address TEXT NOT NULL UNIQUE,
+            label TEXT,
+            created_at TEXT NOT NULL DEFAULT (datetime('now')),
+            updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+        )",
+        [],
+    )?;
+
+    // Optional performance: a lookup index (also helps with ORDER BY / WHERE patterns).
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_wallet_addresses_address ON wallet_addresses(address)",
+        [],
+    )?;
+
+    // User profile table for future features; profile_picture is stored as a BLOB.
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            first_name TEXT,
+            last_name TEXT,
+            profile_picture BLOB,
+            created_at TEXT NOT NULL DEFAULT (datetime('now')),
+            updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+        )",
+        [],
+    )?;
+
+    // Schema versioning enables safe evolution over time.
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS schema_version (
+            version INTEGER PRIMARY KEY
+        )",
+        [],
+    )?;
+
+    let version_count: i64 =
+        conn.query_row("SELECT COUNT(*) FROM schema_version", [], |row| row.get(0))?;
+
+    if version_count == 0 {
+        conn.execute(
+            "INSERT INTO schema_version (version) VALUES (?)",
+            params![SCHEMA_VERSION],
+        )?;
+    }
+
+    Ok(())
+}
 ```
-
-**Schema Design:**
-
-- **`id INTEGER PRIMARY KEY CHECK (id = 1)`**:
-  - Singleton pattern: Only one user profile allowed
-  - `CHECK (id = 1)` enforces this constraint
-  - Simplifies queries (no WHERE clause needed)
-
-- **`first_name TEXT`**:
-  - User's first name
-  - Optional (NULL allowed)
-  - Can be updated independently
-
-- **`last_name TEXT`**:
-  - User's last name
-  - Optional (NULL allowed)
-  - Can be updated independently
-
-- **`profile_picture_path TEXT`**:
-  - Path to user's profile picture file
-  - Optional (NULL allowed)
-  - Stores file path, not binary data
-
-- **Timestamps**:
-  - `created_at`: When user profile was first created
-  - `updated_at`: Last modification time
-  - Automatically updated on changes
-
-### Schema Version Table
-
-```rust
-conn.execute(
-    "CREATE TABLE IF NOT EXISTS schema_version (
-        version INTEGER PRIMARY KEY
-    )",
-    [],
-)?;
-```
-
-**Purpose:**
-- Tracks database schema version
-- Enables migration system
-- Allows schema updates in future versions
 
 ---
 
-## Code Walkthrough
+## Migrations: evolving the database safely (`run_migrations`)
 
-### Settings Persistence
+> **Methods involved**
+> - `run_migrations` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
 
-#### Loading Settings
+Migrations exist to handle one of the most common real-world problems: shipping a new binary against a database created by an older version.
+
+The current code includes a migration to schema version 2:
+
+- change `users.profile_picture_path` (TEXT) into `users.profile_picture` (BLOB).
+
+The key engineering detail is that SQLite does not support changing a column type in place, so the migration uses either:
+
+- table recreation via `execute_batch` within a transaction, or
+- adding a missing column and then recreating the table to remove the old column.
+
+### Annotated listing: `run_migrations` (overview-level comments)
+
+> **Methods involved**
+> - `run_migrations` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+
+```rust
+fn run_migrations(conn: &Connection) -> SqliteResult<()> {
+    // Read the version from schema_version; missing row defaults to 0.
+    let current_version: i32 = conn
+        .query_row("SELECT version FROM schema_version LIMIT 1", [], |row| {
+            row.get(0)
+        })
+        .unwrap_or(0);
+
+    // Migration 1 -> 2:
+    // - detect whether legacy column `profile_picture_path` exists
+    // - ensure new column `profile_picture` exists (BLOB)
+    // - when necessary, recreate the table because SQLite cannot ALTER COLUMN types.
+    if current_version < 2 {
+        let table_info: Vec<TableColumnInfo> = conn
+            .prepare("PRAGMA table_info(users)")?
+            .query_map([], |row| {
+                Ok((
+                    row.get::<_, String>(1)?,
+                    row.get::<_, String>(2)?,
+                    row.get(3)?,
+                    row.get(4)?,
+                    row.get(5)?,
+                    false,
+                ))
+            })?
+            .collect::<Result<Vec<_>, _>>()?;
+
+        let has_old_column = table_info
+            .iter()
+            .any(|(name, _, _, _, _, _)| name == "profile_picture_path");
+        let has_new_column = table_info
+            .iter()
+            .any(|(name, _, _, _, _, _)| name == "profile_picture");
+
+        if has_old_column && !has_new_column {
+            // Recreate users table in a transaction, copying compatible columns.
+            conn.execute_batch(
+                "BEGIN TRANSACTION;
+                 CREATE TABLE users_new (
+                     id INTEGER PRIMARY KEY CHECK (id = 1),
+                     first_name TEXT,
+                     last_name TEXT,
+                     profile_picture BLOB,
+                     created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+                 );
+                 INSERT INTO users_new (id, first_name, last_name, created_at, updated_at)
+                 SELECT id, first_name, last_name, created_at, updated_at FROM users;
+                 DROP TABLE users;
+                 ALTER TABLE users_new RENAME TO users;
+                 COMMIT;",
+            )?;
+        } else if !has_new_column {
+            // If the new column is missing, add it. If old column also exists,
+            // recreate to remove the old column (SQLite cannot DROP COLUMN).
+            conn.execute("ALTER TABLE users ADD COLUMN profile_picture BLOB", [])?;
+
+            if has_old_column {
+                conn.execute_batch(
+                    "BEGIN TRANSACTION;
+                     CREATE TABLE users_new (
+                         id INTEGER PRIMARY KEY CHECK (id = 1),
+                         first_name TEXT,
+                         last_name TEXT,
+                         profile_picture BLOB,
+                         created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                         updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+                     );
+                     INSERT INTO users_new (id, first_name, last_name, created_at, updated_at)
+                     SELECT id, first_name, last_name, created_at, updated_at FROM users;
+                     DROP TABLE users;
+                     ALTER TABLE users_new RENAME TO users;
+                     COMMIT;",
+                )?;
+            }
+        }
+
+        conn.execute("UPDATE schema_version SET version = ?", params![2])?;
+    }
+
+    // Finally, ensure schema_version reflects the latest known version.
+    if current_version < SCHEMA_VERSION {
+        conn.execute(
+            "UPDATE schema_version SET version = ?",
+            params![SCHEMA_VERSION],
+        )?;
+    }
+
+    Ok(())
+}
+```
+
+---
+
+## Settings persistence: load and save
+
+> **Methods involved**
+> - `load_settings` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+> - `save_settings` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+
+### Annotated listing: `load_settings`
 
 ```rust
 pub fn load_settings() -> SqliteResult<Settings> {
+    // Acquire the global connection mutex.
     let conn = get_connection()?;
-    
+
+    // Because settings is a singleton table, the query expects exactly one row.
     conn.query_row(
         "SELECT base_url, api_key FROM settings WHERE id = 1",
         [],
@@ -658,80 +463,110 @@ pub fn load_settings() -> SqliteResult<Settings> {
 }
 ```
 
-**Technical Details:**
-
-1. **`get_connection()`**: Acquires mutex lock on global connection
-2. **`query_row()`**: Executes query expecting exactly one row
-   - Returns error if zero or multiple rows
-   - Perfect for singleton settings table
-3. **Closure**: Maps database row to `Settings` struct
-   - `row.get(0)`: Gets first column (base_url)
-   - `row.get(1)`: Gets second column (api_key)
-   - `?` operator propagates errors
-
-#### Saving Settings
+### Annotated listing: `save_settings`
 
 ```rust
 pub fn save_settings(settings: &Settings) -> SqliteResult<()> {
     let conn = get_connection()?;
-    
+
+    // Use positional parameters to avoid string concatenation and injection hazards.
     conn.execute(
         "UPDATE settings SET base_url = ?, api_key = ?, updated_at = datetime('now') WHERE id = 1",
         params![settings.base_url, settings.api_key],
     )?;
-    
+
     Ok(())
 }
 ```
 
-**Technical Details:**
+---
 
-1. **Parameterized Query**: Uses `?` placeholders
-   - Prevents SQL injection
-   - Type-safe parameter binding
-   - `params![]` macro provides values
+## Wallet address persistence: insert-or-update (“upsert”) behavior
 
-2. **UPDATE Statement**: Modifies existing row
-   - `WHERE id = 1`: Targets singleton row
-   - `updated_at = datetime('now')`: Auto-updates timestamp
+> **Methods involved**
+> - `WalletAddress::new` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+> - `save_wallet_address` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+> - `load_wallet_addresses` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
 
-3. **Error Handling**: `?` operator propagates errors
-   - Connection errors
-   - Constraint violations
-   - Other SQLite errors
+The wallet list must be stable under these operations:
 
-### Wallet Address Persistence
+- creating a new wallet (insert),
+- creating another wallet with the same address (update label; should not duplicate),
+- loading all wallets (display list, newest first).
 
-#### Saving Wallet Address
+### Annotated listing: `WalletAddress::new`
 
 ```rust
-pub fn save_wallet_address(address: &str, label: Option<&str>) -> SqliteResult<i64> {
+impl WalletAddress {
+    pub fn new(address: String, label: Option<String>) -> Self {
+        // created_at is intentionally empty here: the DB sets it on insert.
+        Self {
+            address,
+            label,
+            created_at: String::new(),
+        }
+    }
+}
+```
+
+### Reading guide: `save_wallet_address`
+
+`save_wallet_address` is implemented as:
+
+- attempt an `INSERT`,
+- if we hit a uniqueness constraint violation, fall back to an `UPDATE`,
+- then return the full record by querying the row.
+
+This gives a stable call pattern for the UI: the caller always gets a complete `WalletAddress` back, regardless of whether the operation was insert or update.
+
+### Annotated listing: `save_wallet_address`
+
+> **Methods involved**
+> - `save_wallet_address` (verbatim in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+
+```rust
+pub fn save_wallet_address(wallet: &WalletAddress) -> SqliteResult<WalletAddress> {
     let conn = get_connection()?;
-    
-    // Try to insert, or update if exists
+
+    // Try an insert first. This covers the common “new wallet created” path.
     match conn.execute(
         "INSERT INTO wallet_addresses (address, label, updated_at) VALUES (?, ?, datetime('now'))",
-        params![address, label],
+        params![wallet.address, wallet.label],
     ) {
         Ok(_) => {
-            // Get the inserted ID
+            // Re-query to return a complete record, including created_at assigned by SQLite.
             conn.query_row(
-                "SELECT id FROM wallet_addresses WHERE address = ?",
-                params![address],
-                |row| row.get(0),
+                "SELECT address, label, created_at FROM wallet_addresses WHERE address = ?",
+                params![wallet.address],
+                |row| {
+                    Ok(WalletAddress {
+                        address: row.get(0)?,
+                        label: row.get(1)?,
+                        created_at: row.get(2)?,
+                    })
+                },
             )
         }
-        Err(rusqlite::Error::SqliteFailure(err, _)) if err.code == rusqlite::ErrorCode::ConstraintViolation => {
-            // Address already exists, update it
+        Err(rusqlite::Error::SqliteFailure(err, _))
+            if err.code == rusqlite::ErrorCode::ConstraintViolation =>
+        {
+            // If the address already exists, update mutable fields (label + updated_at).
             conn.execute(
                 "UPDATE wallet_addresses SET label = ?, updated_at = datetime('now') WHERE address = ?",
-                params![label, address],
+                params![wallet.label, wallet.address],
             )?;
-            // Return existing ID
+
+            // Return the updated record so the caller can refresh its model.
             conn.query_row(
-                "SELECT id FROM wallet_addresses WHERE address = ?",
-                params![address],
-                |row| row.get(0),
+                "SELECT address, label, created_at FROM wallet_addresses WHERE address = ?",
+                params![wallet.address],
+                |row| {
+                    Ok(WalletAddress {
+                        address: row.get(0)?,
+                        label: row.get(1)?,
+                        created_at: row.get(2)?,
+                    })
+                },
             )
         }
         Err(e) => Err(e),
@@ -739,493 +574,58 @@ pub fn save_wallet_address(address: &str, label: Option<&str>) -> SqliteResult<i
 }
 ```
 
-**Technical Details:**
+---
 
-1. **Upsert Pattern**: Insert or update
-   - Tries INSERT first
-   - If UNIQUE constraint violation, does UPDATE instead
-   - Returns ID in both cases
+## Integration points in the UI
 
-2. **Error Matching**:
-   ```rust
-   Err(rusqlite::Error::SqliteFailure(err, _)) if err.code == rusqlite::ErrorCode::ConstraintViolation
-   ```
-   - Matches specific error type
-   - Checks error code for constraint violation
-   - Handles duplicate addresses gracefully
+> **Methods involved**
+> - `database::init_database` call site in `main` ([Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
+> - `WalletApp::new` call to `load_settings`/`load_wallet_addresses` ([Listing 5.4](04A-Wallet-UI-Code-Listings.md#listing-54-srcapprs))
+> - `update` call to `save_settings` and `save_wallet_address` ([Listing 5.6](04A-Wallet-UI-Code-Listings.md#listing-56-srcupdaters))
 
-3. **ID Retrieval**: Returns database ID
-   - Useful for future operations
-   - Allows tracking of saved addresses
+This database layer is integrated at three points:
 
-#### Loading Wallet Addresses
+- **Startup**: `main` initializes the database.
+- **Initial model construction**: `WalletApp::new` loads settings and saved wallets.
+- **Update loop commits**:
+  - `Message::SaveSettings` persists the current base URL and API key.
+  - `Message::WalletCreated` persists the newly created wallet address.
 
-```rust
-pub fn load_wallet_addresses() -> SqliteResult<Vec<WalletAddress>> {
-    let conn = get_connection()?;
-    
-    let mut stmt = conn.prepare(
-        "SELECT id, address, label, created_at FROM wallet_addresses ORDER BY created_at DESC",
-    )?;
-    
-    let addresses = stmt.query_map([], |row| {
-        Ok(WalletAddress {
-            id: row.get(0)?,
-            address: row.get(1)?,
-            label: row.get(2)?,
-            created_at: row.get(3)?,
-        })
-    })?;
-    
-    let mut result = Vec::new();
-    for address in addresses {
-        result.push(address?);
-    }
-    
-    Ok(result)
-}
-```
-
-**Technical Details:**
-
-1. **Prepared Statement**: `prepare()` compiles query once
-   - More efficient for repeated queries
-   - Can be reused multiple times
-
-2. **`query_map()`**: Maps each row to `WalletAddress`
-   - Returns iterator over results
-   - Closure converts row to struct
-
-3. **Error Handling**: `?` operator in closure and loop
-   - Row parsing errors
-   - Iterator errors
-
-4. **Ordering**: `ORDER BY created_at DESC`
-   - Most recent addresses first
-   - Better UX for users
-
-### User Persistence
-
-#### Loading User
-
-```rust
-pub fn load_user() -> SqliteResult<Option<User>> {
-    let conn = get_connection()?;
-    
-    match conn.query_row(
-        "SELECT id, first_name, last_name, profile_picture_path, created_at, updated_at FROM users WHERE id = 1",
-        [],
-        |row| {
-            Ok(User {
-                id: row.get(0)?,
-                first_name: row.get(1)?,
-                last_name: row.get(2)?,
-                profile_picture_path: row.get(3)?,
-                created_at: row.get(4)?,
-                updated_at: row.get(5)?,
-            })
-        },
-    ) {
-        Ok(user) => Ok(Some(user)),
-        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
-        Err(e) => Err(e),
-    }
-}
-```
-
-**Technical Details:**
-
-1. **Optional Return**: Returns `Option<User>` because user may not exist yet
-2. **Error Handling**: Distinguishes between "no user" and actual errors
-   - `QueryReturnedNoRows`: User doesn't exist (returns `None`)
-   - Other errors: Propagated up
-3. **All Fields**: Loads all user fields including timestamps
-
-#### Saving User
-
-```rust
-pub fn save_user(user: &User) -> SqliteResult<()> {
-    let conn = get_connection()?;
-    
-    // Try to update first (if user exists)
-    let rows_affected = conn.execute(
-        "UPDATE users SET first_name = ?, last_name = ?, profile_picture_path = ?, updated_at = datetime('now') WHERE id = 1",
-        params![user.first_name, user.last_name, user.profile_picture_path],
-    )?;
-    
-    // If no rows were updated, insert new user
-    if rows_affected == 0 {
-        conn.execute(
-            "INSERT INTO users (id, first_name, last_name, profile_picture_path) VALUES (1, ?, ?, ?)",
-            params![user.first_name, user.last_name, user.profile_picture_path],
-        )?;
-    }
-    
-    Ok(())
-}
-```
-
-**Technical Details:**
-
-1. **Upsert Pattern**: Update if exists, insert if not
-   - Tries UPDATE first
-   - Checks `rows_affected` to see if update succeeded
-   - If no rows updated, performs INSERT
-
-2. **Atomic Operation**: Either update or insert, never both
-   - Prevents duplicate user records
-   - Ensures singleton pattern is maintained
-
-#### Updating Individual Fields
-
-```rust
-pub fn update_user_first_name(first_name: Option<&str>) -> SqliteResult<()> {
-    let conn = get_connection()?;
-    
-    let rows_affected = conn.execute(
-        "UPDATE users SET first_name = ?, updated_at = datetime('now') WHERE id = 1",
-        params![first_name],
-    )?;
-    
-    if rows_affected == 0 {
-        // User doesn't exist, create with just first name
-        conn.execute(
-            "INSERT INTO users (id, first_name) VALUES (1, ?)",
-            params![first_name],
-        )?;
-    }
-    
-    Ok(())
-}
-```
-
-**Technical Details:**
-
-1. **Partial Updates**: Allows updating individual fields
-   - `update_user_first_name()`: Updates only first name
-   - `update_user_last_name()`: Updates only last name
-   - `update_user_profile_picture()`: Updates profile picture path
-
-2. **Auto-Creation**: Creates user if doesn't exist
-   - Useful for progressive profile building
-   - User can fill in fields over time
-
-3. **Timestamp Update**: `updated_at` automatically updated
-   - Tracks when each field was last modified
-   - Useful for audit trails
+This placement is intentional: persistence is a side effect, so it happens in startup wiring (`main`) and in the state machine (`update`), not in the view.
 
 ---
 
-## Integration Points
+## Summary
 
-### Application Initialization
+> **Methods involved**
+> - All methods listed in [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers)
 
-**main.rs:**
+The persistence module provides a minimal but production-appropriate foundation:
 
-```rust
-fn main() -> iced::Result {
-    // Initialize Tokio runtime for async operations
-    init_runtime();
+- encryption at rest (SQLCipher),
+- a small schema with defaults and constraints,
+- migrations for schema evolution,
+- and a simple API that the UI can call from `WalletApp::new` and `update`.
 
-    // Initialize database with SQLCipher encryption
-    let db_password = generate_database_password();
-    if let Err(e) = database::init_database(&db_password) {
-        eprintln!("Failed to initialize database: {}", e);
-        // Continue anyway - settings will use defaults
-    }
-
-    // Run the application
-    application("Bitcoin Wallet UI", update, view)
-        .theme(|_| Theme::Dark)
-        .run_with(WalletApp::new)
-}
-```
-
-**Integration Flow:**
-
-1. **Runtime Initialization**: Tokio runtime for async operations
-2. **Database Initialization**: SQLCipher database setup
-   - Generates machine-specific password
-   - Creates encrypted database
-   - Sets up schema
-3. **Application Start**: Iced GUI starts
-   - `WalletApp::new` loads settings from database
-
-### Settings Loading
-
-**app.rs:**
-
-```rust
-impl WalletApp {
-    pub fn new() -> (Self, iced::Task<crate::types::Message>) {
-        // Load settings from database
-        let (base_url, api_key) = match crate::database::load_settings() {
-            Ok(settings) => (settings.base_url, settings.api_key),
-            Err(_) => {
-                // Use defaults if database load fails
-                (
-                    "http://127.0.0.1:8080".into(),
-                    std::env::var("BITCOIN_API_WALLET_KEY")
-                        .unwrap_or_else(|_| "wallet-secret".into()),
-                )
-            }
-        };
-        
-        // ... rest of initialization
-    }
-}
-```
-
-**Error Handling Strategy:**
-
-- **Graceful Degradation**: If database load fails, use defaults
-- **User Experience**: Application still works without database
-- **Logging**: Errors printed to stderr (could be enhanced with proper logging)
-
-### Automatic Persistence
-
-**update.rs - Settings Changes:**
-
-```rust
-Message::BaseUrlChanged(v) => {
-    app.base_url = v.clone();
-    // Save settings to database
-    if let Err(e) = crate::database::save_settings(&crate::database::Settings {
-        base_url: app.base_url.clone(),
-        api_key: app.api_key.clone(),
-    }) {
-        eprintln!("Failed to save settings: {}", e);
-    }
-    Task::none()
-}
-```
-
-**Automatic Save Pattern:**
-
-- Settings saved immediately on change
-- No user action required
-- Silent failure (logs error, continues)
-- State updated first, then persisted
-
-**update.rs - Wallet Creation:**
-
-```rust
-Message::WalletCreated(res) => {
-    match res {
-        Ok(api) => {
-            if api.success {
-                app.new_address = api.data.map(|d| d.address.clone());
-                if let Some(addr) = &app.new_address {
-                    // ... update UI ...
-                    // Save wallet address to database
-                    if let Err(e) = crate::database::save_wallet_address(addr, None) {
-                        eprintln!("Failed to save wallet address: {}", e);
-                    }
-                }
-            }
-        }
-    }
-}
-```
-
-**Wallet Address Persistence:**
-
-- Saved when wallet is successfully created
-- No label initially (can be added later)
-- Error handling doesn't block UI update
-
-**update.rs - User Profile Updates:**
-
-```rust
-Message::FirstNameChanged(v) => {
-    if let Err(e) = crate::database::update_user_first_name(Some(&v)) {
-        eprintln!("Failed to save first name: {}", e);
-    }
-    Task::none()
-}
-
-Message::LastNameChanged(v) => {
-    if let Err(e) = crate::database::update_user_last_name(Some(&v)) {
-        eprintln!("Failed to save last name: {}", e);
-    }
-    Task::none()
-}
-
-Message::ProfilePictureUploaded(path) => {
-    // Copy file to secure location and store path
-    match crate::database::update_user_profile_picture(Some(&path)) {
-        Ok(()) => {
-            app.status = "Profile picture saved successfully".into();
-        }
-        Err(e) => {
-            app.status = format!("Failed to save profile picture: {}", e);
-        }
-    }
-    
-    Task::none()
-}
-```
-
-**User Profile Persistence:**
-
-- Individual fields can be updated independently
-- Profile picture path stored after file is copied to secure location
-- Auto-creates user record if it doesn't exist
-- All updates automatically update `updated_at` timestamp
-
----
-
-## Error Handling
-
-### Error Types
-
-**rusqlite::Error** variants:
-
-1. **`SqliteFailure`**: SQLite-specific errors
-   - Constraint violations
-   - I/O errors
-   - SQL syntax errors
-
-2. **`InvalidColumnType`**: Type mismatch
-   - Wrong type in `row.get()`
-   - Column doesn't exist
-
-3. **`InvalidColumnIndex`**: Index out of bounds
-   - Column index too large
-   - Negative index
-
-4. **`InvalidColumnName`**: Column name not found
-   - Typo in column name
-   - Column doesn't exist
-
-### Error Propagation
-
-```rust
-pub fn load_settings() -> SqliteResult<Settings> {
-    let conn = get_connection()?;  // ? propagates error
-    conn.query_row(/* ... */)?;     // ? propagates error
-}
-```
-
-**`?` Operator:**
-- Returns early on error
-- Converts error types if possible
-- Keeps code clean
-
-### Error Conversion
-
-```rust
-std::fs::create_dir_all(parent).map_err(|e| {
-    rusqlite::Error::SqliteFailure(
-        rusqlite::ffi::Error::new(rusqlite::ffi::SQLITE_CANTOPEN),
-        Some(format!("Failed to create database directory: {}", e)),
-    )
-})?;
-```
-
-**Manual Error Conversion:**
-- `std::io::Error` → `rusqlite::Error`
-- Preserves error information
-- Uses appropriate SQLite error code
-
----
-
-## Future Considerations
-
-### Potential Enhancements
-
-1. **User-Provided Password**:
-   - Optional password prompt
-   - More secure than machine-specific
-   - Trade-off: worse UX
-
-2. **User Profile UI**:
-   - UI for editing first name, last name
-   - Profile picture upload/display
-   - Profile management screen
-
-3. **Wallet Address Labels**:
-   - UI for adding/editing labels
-   - Better organization of addresses
-
-4. **Address History**:
-   - Track when addresses were used
-   - Show transaction counts per address
-
-5. **Backup/Restore**:
-   - Export database for backup
-   - Import from backup
-   - Password management
-
-6. **Migration System**:
-   - Schema versioning
-   - Automatic migrations
-   - Data transformation
-
-7. **Connection Pooling**:
-   - Multiple connections for performance
-   - Read-only connections for queries
-   - Write connection for updates
-
-8. **Transaction Support**:
-   - Batch operations
-   - Atomic updates
-   - Rollback on errors
-
-### Security Improvements
-
-1. **Key Derivation**:
-   - Use PBKDF2 or Argon2
-   - More secure than simple hash
-   - Slower (intentional)
-
-2. **Key Storage**:
-   - Store key in system keychain
-   - macOS: Keychain Services
-   - Linux: Secret Service API
-   - Windows: Credential Manager
-
-3. **Encryption Verification**:
-   - Verify database is encrypted
-   - Detect tampering
-   - Integrity checks
-
----
-
-## Conclusion
-
-The SQLCipher persistence implementation provides:
-
-✅ **Secure Storage**: AES-256 encryption for sensitive data  
-✅ **Automatic Persistence**: Settings and addresses saved automatically  
-✅ **Cross-Platform**: Works on macOS, Linux, and Windows  
-✅ **Zero Configuration**: No user setup required  
-✅ **Production Ready**: Error handling, migrations, thread safety  
-
-The implementation follows Rust best practices and provides a solid foundation for future enhancements.
+Complete code is in [Chapter 6A](05A-Embedded-Database-Code-Listings.md).
 
 ---
 
 <div align="center">
 
-**📚 [← Previous: Wallet User Interface](04-Wallet-UI.md)** | **Chapter 6: Embedded Database & Persistence** | **[Next: Web Admin Interface →](../bitcoin-web-ui/06-Web-Admin-UI.md)** 📚
+**📚 [← Previous: Wallet UI — Code Listings](04A-Wallet-UI-Code-Listings.md)** | **Chapter 6: Embedded Database & Persistence** | **[Next: Embedded Database — Code Listings →](05A-Embedded-Database-Code-Listings.md)** 📚
 
 </div>
-
----
-
-*This chapter has explored one of the most critical aspects of wallet applications: secure data persistence using SQLCipher. We've examined how the SQLCipher-based persistence layer enables secure, encrypted storage of application settings and wallet addresses, understanding not just how to implement encrypted storage, but why each design decision matters. The implementation demonstrates how AES-256 encryption, automatic persistence, cross-platform support, and thread safety combine to create a production-ready storage solution. Security considerations, performance optimization, and error handling patterns ensure that sensitive data is protected while maintaining excellent user experience. In the next chapter, we'll explore the [Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md) to understand how modern web technologies like React and TypeScript create a comprehensive administrative interface for blockchain node management.*
 
 ---
 
 <div align="center">
 
-**Local Navigation - Table of Contents**
+**Reading order**
 
-| [← First Section: What is SQLCipher?](#what-is-sqlcipher) | [↑ Table of Contents](#table-of-contents) | [Last Section: Future Considerations →](#future-considerations) |
-|:---:|:---:|:---:|
-| *Start of Chapter* | *Current Chapter* | *End of Chapter* |
+**[← Previous: Wallet UI — Code Listings](04A-Wallet-UI-Code-Listings.md)** | **[Next: Embedded Database — Code Listings →](05A-Embedded-Database-Code-Listings.md)**
 
 </div>
 
 ---
+

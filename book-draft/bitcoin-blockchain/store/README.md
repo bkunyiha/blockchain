@@ -15,7 +15,7 @@
 8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
 9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
 10. **Chapter 2.5: Storage Layer** ← *You are here*
-11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
+11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)
 12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
 13. Chapter 2.8: Node Orchestration - Node context and coordination
 14. Chapter 2.9: Wallet System - Wallet implementation and key management
@@ -36,181 +36,64 @@
 </div>
 
 ---
-# Storage Layer
 
-**Part I: Core Blockchain Implementation** | **Chapter 2.7: Storage Layer**
+# Storage Layer — Persistence for Blocks, Tip, and Derived State
+
+**Part I: Core Blockchain Implementation** | **Chapter 2.5: Storage Layer**
+
+This chapter explains `bitcoin/src/store` as an implementer reads it: **how blocks become durable bytes on disk**, how we track the **tip**, and which write paths must be **atomic** to keep the node consistent after crashes.
+
+The goal is that you can read this chapter without the repository open:
+
+- every referenced method is printed in full in the code walkthrough chapter below, or is explicitly marked **defined earlier** with a link
+- each section uses a consistent **Methods involved** box
+- diagrams illustrate the DB layout and the “write path” for mined blocks vs inbound blocks
+
+---
+
+## What “storage” means in our Rust Bitcoin implementation
+
+In this codebase, “storage” is not a separate service; it is an embedded key-value database (**sled**) with a small set of conventions:
+
+- a **blocks tree** that maps `block_hash -> serialized Block bytes`
+- a stable **tip key** (`"tip_block_hash"`) that points at the canonical tip hash
+- atomic updates for “insert block + move tip” (sled transactions)
+
+> **Methods involved**
+>
+> - `BlockchainFileSystem::{create_blockchain, open_blockchain}`
+> - `BlockchainFileSystem::{get_tip_hash, get_last_block}`
+> - `BlockchainFileSystem::{get_block, get_best_height}`
+> - `BlockchainFileSystem::update_blocks_tree` (internal atomic write)
+
+---
+
+## Diagram: sled layout (the minimum schema)
+
+```
+sled::Db at ./<TREE_DIR>/
+  |
+  └─ Tree "<BLOCKS_TREE>"  (default: "blocks1")
+       |
+       |-- key: "<block_hash_string>"  -> value: serialized Block (bytes)
+       |
+       └-- key: "tip_block_hash"       -> value: "<block_hash_string>" (bytes)
+```
+
+This chapter is about making those two invariants true:
+
+- if a block exists, it can be fetched by hash
+- tip always points at a block that exists (or a known “empty” sentinel)
+
+---
+
+
 
 <div align="center">
 
-**[📚 ← Chapter 2.4: Chain(POW & BLockchain)](../chain/README.md)** | **[Chapter 2.5: Storage Layer](README.md)** | **[Chapter 2.6: Chainstate / UTXO →](../chain/02-Blockchain-State-Management.md)** 📚
+**📚 [← Chapter 2.4: Blockchain (Technical Foundations)](../chain/README.md)** | **Chapter 2.5: Storage Layer** | **[Next: Chapter 2.5.A: Storage Layer — Code Walkthrough →](01-Storage-Layer-Code-Walkthrough.md)** 📚
 
 </div>
 
 ---
 
-## Overview
-
-The storage layer (`bitcoin/src/store`) provides persistent storage for blockchain data using a file system-based database. This module implements the `BlockchainFileSystem` structure, which uses the Sled embedded database to store blocks, chain state, and UTXO data on disk.
-
-Following Bitcoin Core's architecture, this module handles the low-level storage operations, providing a clean interface for the chain module to persist and retrieve blockchain data efficiently.
-
-## Key Components
-
-### BlockchainFileSystem
-
-The `BlockchainFileSystem` is the primary storage interface:
-
-**Storage Structure:**
-- **Blocks Tree**: Stores blocks indexed by hash
-- **Tip Hash Key**: Tracks the current chain tip
-- **Database Path**: Configurable storage location
-- **Sled Database**: Embedded key-value database
-
-**Key Operations:**
-- Blockchain creation and initialization
-- Block persistence and retrieval
-- Tip hash management
-- Database transaction support
-- Chain state persistence
-
-### Storage Architecture
-
-**Database Organization:**
-- Blocks stored in Sled tree structure
-- Hash-based block indexing
-- Efficient block retrieval
-- Transaction-safe operations
-
-**File System Integration:**
-- Configurable data directory
-- Environment variable configuration
-- Directory creation and management
-- Data persistence guarantees
-
-## Relationship to Bitcoin Core
-
-This module aligns with Bitcoin Core's storage architecture:
-
-- **Bitcoin Core's `chainstate/`**: UTXO set storage
-- **Bitcoin Core's `blocks/`**: Block file storage
-- **Bitcoin Core's LevelDB**: Similar to our Sled database usage
-- **Bitcoin Core's `CBlockIndex`**: Block indexing functionality
-
-## Topics to Cover
-
-### Core Concepts
-
-1. **Storage Architecture**
-   - File system-based storage design
-   - Database tree organization
-   - Block indexing strategies
-   - Storage path management
-
-2. **Sled Database Integration**
-   - Sled database usage patterns
-   - Tree creation and management
-   - Key-value storage patterns
-   - Transaction support
-
-3. **Block Persistence**
-   - Block serialization for storage
-   - Hash-based block retrieval
-   - Block file organization
-   - Storage efficiency
-
-### Implementation Details
-
-4. **Blockchain Initialization**
-   - Genesis block creation
-   - Database setup
-   - Initial state persistence
-   - Empty blockchain handling
-
-5. **Block Operations**
-   - Adding blocks to storage
-   - Retrieving blocks by hash
-   - Tip hash updates
-   - Block chain traversal
-
-6. **State Persistence**
-   - Chain state storage
-   - Tip hash management
-   - State recovery
-   - Checkpoint mechanisms
-
-### Advanced Topics
-
-7. **Database Transactions**
-   - Atomic operations
-   - Transaction batching
-   - Rollback handling
-   - Consistency guarantees
-
-8. **Performance Optimization**
-   - Batch operations
-   - Caching strategies
-   - Index optimization
-   - Storage compaction
-
-9. **Data Migration and Upgrades**
-   - Schema evolution
-   - Data migration patterns
-   - Version compatibility
-   - Backup and recovery
-
-## Related Chapters
-
-- **Blockchain State Management**: Using storage layer
-- **Primitives**: Data structures being stored
-- **Node Orchestration**: Storage access patterns
-
-## Code Examples
-
-**Creating Blockchain Storage:**
-
-```rust
-use blockchain::store::BlockchainFileSystem;
-use blockchain::WalletAddress;
-
-// Create new blockchain with genesis block
-let blockchain = BlockchainFileSystem::create_blockchain(&genesis_address).await?;
-
-// Open existing blockchain
-let blockchain = BlockchainFileSystem::open_blockchain().await?;
-```
-
-**Block Storage Operations:**
-
-```rust
-// Add block to storage
-blockchain.add_block(block).await?;
-
-// Get block by hash
-let block = blockchain.get_block(&hash).await?;
-
-// Get tip hash
-let tip_hash = blockchain.get_tip_hash().await?;
-```
-
-**Database Configuration:**
-
-```rust
-// Set storage directory via environment variable
-std::env::set_var("TREE_DIR", "./blockchain_data");
-std::env::set_var("BLOCKS_TREE", "blocks");
-
-// Open blockchain (uses environment variables)
-let blockchain = BlockchainFileSystem::open_blockchain().await?;
-```
-
----
-
-<div align="center">
-
-**[📚 ← Chapter 2.4: Chain(POW & BLockchain)](../chain/README.md)** | **[Chapter 2.5: Storage Layer](README.md)** | **[Chapter 2.6: Chainstate / UTXO →](../chain/02-Blockchain-State-Management.md)** 📚
-
-</div>
-
----
-
-*This chapter has explored the storage layer that provides persistent storage for blockchain data using a file system-based database. We've examined how the `BlockchainFileSystem` structure uses the Sled embedded database to store blocks, chain state, and UTXO data on disk, following Bitcoin Core's storage architecture patterns. The storage layer handles low-level storage operations, providing a clean interface for the chain module to persist and retrieve blockchain data efficiently. In the next chapter, we'll examine the Utilities module to understand the helper functions and utility operations used throughout the blockchain system.*

@@ -687,16 +687,9 @@ You have already studied these methods in detail in **Section 2.4.7 (Consensus a
 
 ---
 
-## Navigation
-
-- **Previous**: Section 2.4.8 (Node Orchestration and Runtime Wiring)
-- **Next**: None (this is the final walkthrough for `chain/`)
-
----
-
 <div align="center">
 
-**[← Previous: Node Orchestration](08-Node-Orchestration.md)** | **Transaction to Block (End-to-End)** | **End**
+**📚 [← Previous: Section 2.4.8 (Node Orchestration)](08-Node-Orchestration.md)** | **Section 2.4.9: Transaction to Block (End-to-End)** | **[Next: Chapter 2.5 (Storage Layer) →](../store/README.md)** 📚
 
 </div>
 

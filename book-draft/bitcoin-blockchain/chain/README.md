@@ -261,7 +261,11 @@ We read this section in the following order (each item is a deep-dive into a seg
 8. **Section 2.4.7: Consensus and Validation** — chain selection and where validity is enforced
 9. **Section 2.4.8: Node Orchestration and Runtime Wiring** — runtime routing of network messages into chainstate/mempool/mining
 10. **Section 2.4.9: Transaction to Block (End-to-End Runtime Walkthrough)** — follow `main` to block creation across the runtime
-11. **Section 2.6: Block Acceptance (Whitepaper §5, Step 5)** — capstone “validate → connect” contract
+
+After you complete Chapter 2.4, continue in book order with:
+
+- **Chapter 2.5: Storage Layer** — persistence and storage primitives
+- **Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)** — the capstone “validate → connect” contract
 
 ---
 

@@ -185,14 +185,4 @@ All code examples in this section are taken from the actual implementation:
 
 ---
 
-<div align="center">
-
-**[📚 Web API Index](README.md)** | **[Introduction & Architecture Overview →](01-Introduction.md)** 📚
-
-**Routing** | **Handlers** | **Middleware** | **Data Models** | **Error Handling** | **Rate Limiting** | **OpenAPI** | **Security** | **Best Practices**
-
-</div>
-
----
-
 *This index provides comprehensive navigation for the Web API Architecture section. The web API layer serves as the interface enabling clients—desktop applications, web UIs, and other services—to interact with the blockchain through HTTP endpoints. Built using Rust's Axum framework, this section explores how we've structured the REST API, how requests flow through handlers and middleware, and the architectural decisions that make it secure, scalable, and maintainable. Begin with Introduction & Architecture Overview to understand the complete architecture, design principles, and component organization before diving into specific implementation details.*

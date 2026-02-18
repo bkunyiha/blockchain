@@ -356,17 +356,10 @@ That’s the moment where consensus becomes state.
 
 ---
 
-## Navigation
-
-- **← Previous: Consensus & Validation** - chain selection rules
-- **Section 2.4 Index** - Section map and reading order
-- **Next: Network Layer →** - peer-to-peer protocol and syncing
-
----
-
 <div align="center">
 
-**📚 [← Previous: Section 2.4.7 (Consensus & Validation)](07-Consensus-and-Validation.md)** | **Block Acceptance (Whitepaper §5, Step 5)** | **[Next: Section 2.7 (Network Layer) →](../net/README.md)** 📚
+**📚 [← Chapter 2.5 (Storage Layer)](../store/README.md)** | **Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)** | **[Next: Chapter 2.7 (Network Layer) →](../net/README.md)** 📚  
+**[Up: Book Index](../../README.md#table-of-contents)**
 
 </div>
 

@@ -394,6 +394,6 @@ Takeaway: networking is propagation; consensus is validation + chain selection.
 
 <div align="center">
 
-**[← nBits / Target Expansion (Math + Bytes)](nBits-Target-Expansion.md)** | Network operation (Bitcoin Whitepaper Section 5) | **[Incentive mechanism (Bitcoin Whitepaper Section 6) →](06-Incentive-mechanism-Bitcoin-Whitepaper-Section-6.md)**
+**[← nBits / Target Expansion (Math + Bytes)](04A-nBits-Target-Expansion.md)** | Network operation (Bitcoin Whitepaper Section 5) | **[Incentive mechanism (Bitcoin Whitepaper Section 6) →](06-Incentive-mechanism-Bitcoin-Whitepaper-Section-6.md)**
 
 </div>

@@ -36,177 +36,97 @@
 </div>
 
 ---
-# Network Layer
 
-**Part I: Core Blockchain Implementation** | **Chapter 2.4: Network Layer**
+# Network Layer (P2P) — Message Routing, Inventory, and Sync
 
-<div align="center">
+**Part I: Core Blockchain Implementation** | **Chapter 2.7: Network Layer**
 
-**📚 [← Chapter 2.4: Blockchain (Technical Foundations)](../chain/README.md)** | **[Chapter 2.7: Network Layer](README.md)** | **[Chapter 2.8: Node Orchestration →](../node/README.md)** 📚
+This chapter explains the network layer as an implementer reads it in Rust: **as a pipeline of concrete methods** that transform bytes on a TCP stream into node actions (mempool admission, block download, block connection).
 
-</div>
+The goal is that you can read this chapter without the repository open:
+
+- every method we reference is printed in full in the walkthrough chapter below
+- every flow is accompanied by a diagram and a “Methods involved” box
 
 ---
 
-## Overview
+## Chapter map (what “network” means in this repo)
 
-The network layer (`bitcoin/src/net`) implements the peer-to-peer (P2P) networking protocol that enables blockchain nodes to communicate, synchronize, and maintain consensus. This module handles all network communication, message processing, and peer management operations.
+This repository’s P2P layer is deliberately small:
 
-Following Bitcoin Core's architecture, this module mirrors the functionality of Bitcoin Core's `net_processing.cpp`, which is responsible for processing P2P messages, managing peer connections, and coordinating network operations.
+- **Transport**: TCP streams
+- **Encoding**: JSON via `serde_json`
+- **Message model**: `Package` enum + `OpType` enum
+- **Dispatcher**: `process_stream(...)` (routes each inbound package to the right action)
+- **Send primitives**: `send_data(...)` and typed wrappers (`send_inv`, `send_get_data`, `send_block`, `send_tx`, `send_version`, …)
+- **Peer bootstrap**: central-node concept + “known nodes” exchange
 
-## Whitepaper → Code Map
+The core implementation lives in:
 
-- **Network Operation (Whitepaper §5) — Six-Step Protocol in Rust**: end-to-end mapping of transaction propagation → mining → block broadcast → validation → chain extension.
+- `bitcoin/src/net/net_processing.rs`
+- `bitcoin/src/node/server.rs` (TCP accept loop + bootstrap wiring)
 
-## Key Components
+---
 
-### Network Processing
+## What you will be able to do after this chapter
 
-The `net_processing` module handles the core P2P protocol operations:
+You will be able to:
 
-**Message Types:**
-- **Version Messages**: Initial handshake between nodes
-- **Block Messages**: Block propagation and synchronization
-- **Transaction Messages**: Transaction broadcasting and relay
-- **GetData Messages**: Requesting blocks or transactions
-- **Inventory Messages**: Announcing available blocks/transactions
+- trace **INV → GETDATA → (TX|BLOCK)** in code, by method name
+- explain how `process_stream(...)` turns a TCP stream into a sequence of `Package` values
+- identify where peer discovery happens (`KnownNodes` + `process_known_nodes`)
+- understand which parts of the pipeline are **network-only** vs delegated to node/chain logic
 
-**Key Operations:**
-- Stream processing from TCP connections
-- Message deserialization and validation
-- Block and transaction relay
-- Peer discovery and connection management
-- Network synchronization
+---
 
-### Peer-to-Peer Protocol
+## Diagram: the minimal protocol loop in this implementation
 
-The P2P protocol enables:
-- **Node Discovery**: Finding and connecting to other nodes
-- **Block Propagation**: Broadcasting new blocks to the network
-- **Transaction Relay**: Spreading transactions across the network
-- **Chain Synchronization**: Downloading blockchain history from peers
-- **Network Consensus**: Coordinating with peers to maintain consensus
-
-## Relationship to Bitcoin Core
-
-This module aligns with Bitcoin Core's network architecture:
-
-- **Bitcoin Core's `net_processing.cpp`**: Core message processing logic
-- **Bitcoin Core's `net.h/net.cpp`**: Network connection management
-- **Bitcoin Core's P2P Protocol**: Message format and protocol specification
-
-## Topics to Cover
-
-### Core Concepts
-
-1. **P2P Network Architecture**
-   - Peer-to-peer network topology
-   - Node discovery mechanisms
-   - Connection establishment and handshaking
-   - Network resilience and fault tolerance
-
-2. **Message Protocol**
-   - Message serialization (JSON/Serde)
-   - Message types and formats
-   - Protocol version negotiation
-   - Message validation and error handling
-
-3. **Stream Processing**
-   - TCP stream handling
-   - Async I/O with Tokio
-   - Message parsing and deserialization
-   - Stream lifecycle management
-
-### Implementation Details
-
-4. **Block Propagation**
-   - Block broadcasting mechanisms
-   - Block validation before relay
-   - Orphan block handling
-   - Block request/response patterns
-
-5. **Transaction Relay**
-   - Transaction broadcasting
-   - Mempool synchronization
-   - Transaction validation before relay
-   - Transaction request/response patterns
-
-6. **Network Synchronization**
-   - Initial blockchain download
-   - Block chain synchronization
-   - Catching up to network tip
-   - Handling chain reorganizations
-
-### Advanced Topics
-
-7. **Peer Management**
-   - Peer connection lifecycle
-   - Peer discovery strategies
-   - Connection limits and management
-   - Peer reputation and banning
-
-8. **Network Security**
-   - Message validation
-   - DoS attack prevention
-   - Rate limiting
-   - Malicious peer detection
-
-9. **Performance Optimization**
-   - Efficient message serialization
-   - Bandwidth optimization
-   - Connection pooling
-   - Parallel block/transaction processing
-
-## Related Chapters
-
-- **Node Orchestration**: Node context and coordination
-- **Blockchain State Management**: State queries during network operations
-- **Primitives**: Block and transaction structures
-- **Transaction ID Format**: Transaction ID representation
-
-## Code Examples
-
-**Processing Network Stream:**
-
-```rust
-use blockchain::net::process_stream;
-use tokio::net::TcpStream;
-
-// Process incoming network stream
-let stream = TcpStream::connect(peer_addr).await?;
-process_stream(node_context, stream).await?;
+```
+Peer A has an object (tx or block)
+  |
+  | 1) announce inventory (hash only)
+  v
+INV { op_type, items=[id] }  ----->  Peer B
+                                     |
+                                     | 2) request bytes for missing object
+                                     v
+                               GETDATA { op_type, id }  ----->  Peer A
+                                                                |
+                                                                | 3) send full bytes
+                                                                v
+                                                         (TX | BLOCK)  ----->  Peer B
+                                                                                 |
+                                                                                 | 4) hand off to node logic
+                                                                                 v
+                                                                           mempool / add_block
 ```
 
-**Message Types:**
+This loop is the core of the “gossip + fetch” strategy used throughout Bitcoin-like systems.
 
-```rust
-// Version message for handshake
-let version_msg = Package {
-    op_type: OpType::Version,
-    data: version_data,
-};
+> **Methods involved**
+>
+> - `process_stream(...)` (dispatcher)
+> - `send_inv(...)`, `send_get_data(...)` (announce + request)
+> - `send_tx(...)`, `send_block(...)` (deliver full bytes)
+> - `process_known_nodes(...)` (peer discovery)
+>
+> Full listings: **Chapter 2.7.A** (linked below).
 
-// Block message for propagation
-let block_msg = Package {
-    op_type: OpType::Block,
-    data: block_data,
-};
+---
 
-// Transaction message for relay
-let tx_msg = Package {
-    op_type: OpType::Transaction,
-    data: transaction_data,
-};
-```
+## Where the full walkthrough lives
+
+The full, code-centric walkthrough (with complete method listings) is in:
+
+- **[Chapter 2.7.A: Network Layer — Code Walkthrough](01-Network-Operation-Code-Walkthrough.md)**
 
 ---
 
 <div align="center">
 
-📚  | **Chapter 2.7: Network Layer** | 📚
+**📚 [← Chapter 2.6: Block Acceptance (Whitepaper Step 5)](../chain/10-Whitepaper-Step-5-Block-Acceptance.md)** | **Chapter 2.7: Network Layer** | **[Chapter 2.7.A: Network Layer — Code Walkthrough →](01-Network-Operation-Code-Walkthrough.md)** 📚
 
 </div>
 
 ---
 
-*This chapter has examined the network layer that implements the peer-to-peer networking protocol enabling blockchain nodes to communicate, synchronize, and maintain consensus. We've explored how P2P messages are processed, how peer connections are managed, and how network operations coordinate blockchain synchronization. The network processing module handles the core protocol operations including version handshakes, block propagation, transaction relay, and chain synchronization. In the next chapter, we'll explore Node Orchestration to understand how the `NodeContext` coordinates all these subsystems into a unified blockchain node.*

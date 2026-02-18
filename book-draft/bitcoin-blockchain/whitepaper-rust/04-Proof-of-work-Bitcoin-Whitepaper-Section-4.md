@@ -290,6 +290,6 @@ Takeaway: PoW is a verifiable cost that makes rewriting history expensive.
 
 <div align="center">
 
-**[← Timestamp server (Bitcoin Whitepaper Section 3)](03-Timestamp-server-block-header-chaining-Bitcoin-Whitepaper-Section-3.md)** | Proof-of-work (Bitcoin Whitepaper Section 4) | **[nBits / Target Expansion (Math + Bytes) →](nBits-Target-Expansion.md)**
+**[← Timestamp server (Bitcoin Whitepaper Section 3)](03-Timestamp-server-block-header-chaining-Bitcoin-Whitepaper-Section-3.md)** | Proof-of-work (Bitcoin Whitepaper Section 4) | **[nBits / Target Expansion (Math + Bytes) →](04A-nBits-Target-Expansion.md)**
 
 </div>

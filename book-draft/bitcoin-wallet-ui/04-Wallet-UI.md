@@ -22,14 +22,15 @@
 15. [Chapter 3: Web API Architecture](../bitcoin-blockchain/web/README.md) - REST API implementation
 16. [Chapter 4: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
 17. **Chapter 5: Wallet User Interface** ← *You are here*
-18. [Chapter 6: Embedded Database & Persistence](05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+18. [Chapter 5A: Wallet UI — Complete Code Listings](04A-Wallet-UI-Code-Listings.md) - Full, verbatim source listings
+19. [Chapter 6: Embedded Database & Persistence](05-Embedded-Database.md) - SQLCipher integration
+20. [Chapter 7: Web Admin Interface](../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](../ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../rust/README.md) - Rust programming language reference
+21. [Chapter 8: Docker Compose Deployment](../ci/docker-compose/01-Introduction.md) - Docker Compose guide
+22. [Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md) - Kubernetes production guide
+23. [Chapter 10: Rust Language Guide](../rust/README.md) - Rust programming language reference
 
 </details>
 
@@ -44,7 +45,7 @@
 
 ---
 
-# Chapter 5: Wallet User Interface
+## Chapter 5: Wallet User Interface
 
 **Part I: Core Blockchain Implementation**
 
@@ -58,837 +59,608 @@
 
 ## Overview
 
-In this chapter, we'll explore the Bitcoin Wallet UI—a user-facing application that allows individuals to interact with the blockchain. Unlike the admin interface we built in Chapter 4, this application focuses on wallet operations from a user's perspective. The Wallet UI has been refactored from a single-file monolithic structure into a modular, professional architecture that matches the design patterns we learned in the desktop admin UI. As we journey through this chapter, we'll understand the architecture, data flow, and implementation details that make this application both powerful and user-friendly.
+> **Methods involved**
+> - `main` (`bitcoin-wallet-ui/src/main.rs`, [Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
+> - `WalletApp::new` (`bitcoin-wallet-ui/src/app.rs`, [Listing 5.4](04A-Wallet-UI-Code-Listings.md#listing-54-srcapprs))
+> - `update` (`bitcoin-wallet-ui/src/update.rs`, [Listing 5.6](04A-Wallet-UI-Code-Listings.md#listing-56-srcupdaters))
+> - `view` (`bitcoin-wallet-ui/src/view.rs`, [Listing 5.7](04A-Wallet-UI-Code-Listings.md#listing-57-srcviewrs))
 
-## Architecture Overview
+This walks through the `bitcoin-wallet-ui` application. The UI is built with the Iced framework which is a Rust library for building desktop applications, and the program is organized around the **Model–View–Update (MVU)** pattern:
 
-As we explore the Wallet UI, we'll see that it follows the **Model-View-Update (MVU)** pattern we learned about in Chapter 3. This pattern provides clear separation of concerns across multiple modules, making the codebase maintainable and easy to understand. Let's see how the modules are organized:
+- **Model**: one `WalletApp` value holds all state.
+- **View**: the UI is rendered from `&WalletApp`.
+- **Update**: the program reacts to `Message` values and returns `Task<Message>` for async work.
 
+
+---
+
+## How to read this chapter (and where the code lives)
+
+> **Methods involved**
+> - All functions referenced in this chapter are defined in [Chapter 5A](04A-Wallet-UI-Code-Listings.md)
+
+This chapter explains *how the code works*. The full, verbatim source is in Chapter 5A:
+
+- `src/main.rs` ([Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
+- `src/runtime.rs` ([Listing 5.2](04A-Wallet-UI-Code-Listings.md#listing-52-srcruntimers))
+- `src/types.rs` ([Listing 5.3](04A-Wallet-UI-Code-Listings.md#listing-53-srctypesrs))
+- `src/app.rs` ([Listing 5.4](04A-Wallet-UI-Code-Listings.md#listing-54-srcapprs))
+- `src/api.rs` ([Listing 5.5](04A-Wallet-UI-Code-Listings.md#listing-55-srcapirs))
+- `src/update.rs` ([Listing 5.6](04A-Wallet-UI-Code-Listings.md#listing-56-srcupdaters))
+- `src/view.rs` ([Listing 5.7](04A-Wallet-UI-Code-Listings.md#listing-57-srcviewrs))
+
+In the rest of the chapter, when a method is mentioned, it is always linked to the listing that contains its complete body.
+
+---
+
+## Architectural map (MVU + async tasks)
+
+> **Methods involved**
+> - `update` ([Listing 5.6](04A-Wallet-UI-Code-Listings.md#listing-56-srcupdaters))
+> - `spawn_on_tokio` ([Listing 5.2](04A-Wallet-UI-Code-Listings.md#listing-52-srcruntimers))
+> - `create_wallet`, `send_tx`, `fetch_wallet_info`, `fetch_balance`, `fetch_address_transactions` ([Listing 5.5](04A-Wallet-UI-Code-Listings.md#listing-55-srcapirs))
+
+This wallet UI is a message-driven state machine. The key mechanical idea is that **asynchronous work is expressed as a return value of `update`**, not as a thread that mutates state directly.
+
+```mermaid
+flowchart LR
+  V["View\nview(&WalletApp) → Element<Message>"]
+  U["Update\nupdate(&mut WalletApp, Message) → Task<Message>"]
+  M["Model\nWalletApp"]
+  T["Task<Message>\nTask::perform / Task::batch"]
+  R["Tokio bridge\nspawn_on_tokio(...)"]
+  A["API calls\napi::* async fns"]
+  N["Node API\n(WalletClient HTTP)"]
+
+  V -->|"User action produces Message"| U
+  U -->|"Mutates model"| M
+  M -->|"Re-render"| V
+
+  U -->|"Returns task"| T
+  T --> R
+  R --> A
+  A --> N
+  N -->|"ApiResponse<T> → Message::...Loaded"| U
 ```
-bitcoin-wallet-ui/
-├── src/
-│   ├── main.rs          # Application entry point
-│   ├── app.rs           # Application state (Model)
-│   ├── types.rs         # Type definitions (Menu, Message enums)
-│   ├── update.rs        # Business logic (Update function)
-│   ├── view.rs          # UI rendering (View function)
-│   ├── api.rs           # Async API client functions
-│   └── runtime.rs       # Tokio runtime management
-```
 
-## Module-by-Module Breakdown
+---
 
-Now let's walk through each module, understanding how they work together to create a cohesive application.
+## Boot sequence and wiring (`main.rs`)
 
-### 1. `main.rs` - Application Entry Point
+> **Methods involved**
+> - `main` ([Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
+> - `generate_database_password` ([Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
+> - `init_runtime` ([Listing 5.2](04A-Wallet-UI-Code-Listings.md#listing-52-srcruntimers))
+> - `WalletApp::new` ([Listing 5.4](04A-Wallet-UI-Code-Listings.md#listing-54-srcapprs))
 
-The `main.rs` file is where our application begins. Its purpose is to initialize the application and wire everything together. Let's see how it works:
+Read `main` (Listing 5.1) as a wiring function with three responsibilities:
+
+- **Initialize async execution**: `init_runtime` creates a Tokio runtime and stores a global handle (Listing 5.2).
+- **Initialize persistence**: the encrypted database is created/opened using a password from `generate_database_password` (Listing 5.1). The database itself is explained in Chapter 6.
+- **Start the MVU loop**: `application("Bitcoin Wallet UI", update, view).run_with(WalletApp::new)` hands control to Iced.
+
+After `run_with` is called, the application is driven by messages through `update` and rendering through `view`.
+
+### Annotated listing: `main` and `generate_database_password`
+
+> **Methods involved**
+> - `main` (verbatim in [Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
+> - `generate_database_password` (verbatim in [Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
+>
+> This annotated version is intended to be read alongside the verbatim source listing.
 
 ```rust
 fn main() -> iced::Result {
-    // Initialize Tokio runtime for async operations
+    // 1) Async precondition: the API client needs a Tokio runtime.
+    //    We start it *before* the GUI event loop begins.
     init_runtime();
 
-    // Run the application
+    // 2) Persistence precondition: initialize the encrypted database.
+    //    The password is generated deterministically from local machine/user context
+    //    so the UI can start without prompting the user for a passphrase.
+    let db_password = generate_database_password();
+    if let Err(e) = database::init_database(&db_password) {
+        // The UI is usable without persistence; failures degrade gracefully.
+        eprintln!("Failed to initialize database: {}", e);
+    }
+
+    // 3) Enter Iced’s MVU loop.
+    //    - `update` is the state machine.
+    //    - `view` renders `&WalletApp` into widgets.
+    //    - `WalletApp::new` constructs initial state.
     application("Bitcoin Wallet UI", update, view)
         .theme(|_| Theme::Dark)
         .run_with(WalletApp::new)
 }
-```
 
-**How it works:**
+fn generate_database_password() -> String {
+    use std::collections::hash_map::DefaultHasher;
+    use std::hash::{Hash, Hasher};
 
-Let's trace through the execution flow:
+    let mut hasher = DefaultHasher::new();
 
-1. **`init_runtime()`**: First, we set up a global Tokio runtime that will handle all async operations (HTTP requests). This must be done before the Iced application starts, as Iced needs the runtime to be available.
+    // The inputs are chosen so:
+    // - the same user on the same machine gets the same DB key (so the DB can be reopened),
+    // - different users/machines get different DB keys (so copies are not trivially portable).
+    if let Ok(username) = std::env::var("USER") {
+        username.hash(&mut hasher);
+    } else if let Ok(username) = std::env::var("USERNAME") {
+        username.hash(&mut hasher);
+    }
 
-2. **`application()`**: Next, we create an Iced application with:
-   - Title: "Bitcoin Wallet UI"
-   - Update function: `update` (from `update.rs`) - this handles all state changes
-   - View function: `view` (from `view.rs`) - this renders the UI
-   - Theme: Dark mode for a modern look
+    if let Some(home) = dirs::home_dir() {
+        home.to_string_lossy().hash(&mut hasher);
+    }
 
-3. **`run_with(WalletApp::new)`**: Finally, we start the application with the initial state provided by `WalletApp::new()`, which creates our starting application state.
+    "bitcoin-wallet-ui".hash(&mut hasher);
 
-**Data Flow**: 
-
-Here's how the data flows when the application starts:
-
-```
-main() 
-  → init_runtime() [sets up Tokio]
-  → application() [creates Iced app]
-  → WalletApp::new() [creates initial state]
-  → Iced event loop starts
-```
-
-Once the event loop starts, the application is ready to handle user interactions and API responses.
-
----
-
-### 2. `runtime.rs` - Tokio Runtime Management
-
-**Purpose**: Manages the Tokio async runtime that powers all HTTP requests.
-
-**Key Components**:
-
-#### Global Runtime Handle Storage
-```rust
-static TOKIO_HANDLE: OnceLock<tokio::runtime::Handle> = OnceLock::new();
-```
-
-**Why `OnceLock`?**
-- `OnceLock` ensures the runtime handle is initialized exactly once
-- Thread-safe: can be accessed from any thread after initialization
-- Prevents multiple runtime creation (which would cause errors)
-
-#### Runtime Initialization
-```rust
-pub fn init_runtime() {
-    let rt = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
-    
-    TOKIO_HANDLE.set(rt.handle().clone())
-        .expect("Failed to set Tokio handle");
-    
-    // Keep the runtime alive in a background thread
-    std::thread::spawn(move || {
-        rt.block_on(async {
-            std::future::pending::<()>().await; // Run forever
-        });
-    });
+    // The final password is just the hex representation of a 64-bit hash.
+    // SQLCipher will derive an internal encryption key from this passphrase.
+    format!("{:x}", hasher.finish())
 }
 ```
 
-**How it works**:
-1. Creates a new Tokio runtime
-2. Stores the runtime handle globally (so any thread can access it)
-3. Spawns a background thread that keeps the runtime alive indefinitely
-   - The runtime must stay alive for async operations to work
-   - `std::future::pending::<()>().await` creates a future that never completes, keeping the thread alive
+---
 
-#### Spawning Tasks on Tokio
+## The async runtime bridge (`runtime.rs`)
+
+> **Methods involved**
+> - `init_runtime` ([Listing 5.2](04A-Wallet-UI-Code-Listings.md#listing-52-srcruntimers))
+> - `spawn_on_tokio` ([Listing 5.2](04A-Wallet-UI-Code-Listings.md#listing-52-srcruntimers))
+
+The wallet UI uses Tokio because the HTTP client stack expects a Tokio runtime. The implementation chooses a pragmatic architecture:
+
+- create one Tokio runtime at startup,
+- keep it alive in a background thread,
+- provide a wrapper (`spawn_on_tokio`) that guarantees futures are executed on Tokio.
+
+This isolates runtime concerns from the rest of the GUI. The update loop can simply write:
+
+- `Task::perform(spawn_on_tokio(api::some_call(...)), Message::SomeLoaded)`
+
+and remain agnostic about runtime details.
+
+### Annotated listing: `spawn_on_tokio`
+
+> **Methods involved**
+> - `spawn_on_tokio` (verbatim in [Listing 5.2](04A-Wallet-UI-Code-Listings.md#listing-52-srcruntimers))
+
 ```rust
 pub fn spawn_on_tokio<F>(fut: F) -> impl std::future::Future<Output = F::Output> + Send
 where
     F: std::future::Future + Send + 'static,
     F::Output: Send + 'static,
 {
-    let handle = TOKIO_HANDLE.get().expect("Tokio runtime not initialized").clone();
+    // The Tokio runtime was created in `init_runtime()` and its handle was stored globally.
+    // If we reach this point without initialization, it is a program invariant violation.
+    let handle = TOKIO_HANDLE
+        .get()
+        .expect("Tokio runtime not initialized")
+        .clone();
+
+    // We return a future that:
+    // - spawns the provided future onto Tokio,
+    // - awaits the JoinHandle,
+    // - unwraps because we treat panics as fatal here (this is a UI process).
     async move { handle.spawn(fut).await.unwrap() }
 }
 ```
 
-**How it works**:
-1. Retrieves the global Tokio handle
-2. Spawns the provided future onto the Tokio runtime
-3. Returns a new future that will yield the result when the spawned task completes
-
-**Why this is needed**: 
-- Iced's `Task::perform` runs futures on its own executor
-- But `reqwest` (HTTP client) requires a Tokio runtime
-- `spawn_on_tokio` ensures HTTP requests run on the Tokio runtime
-
-**Data Flow**:
-```
-Iced Task::perform
-  → spawn_on_tokio(future)
-  → Tokio runtime spawns task
-  → HTTP request executes
-  → Result returned to Iced
-```
-
 ---
 
-### 3. `types.rs` - Type Definitions
+## The UI’s event protocol (`types.rs`)
 
-**Purpose**: Defines all enums and types used throughout the application.
+> **Methods involved**
+> - `Menu::submenu_items` ([Listing 5.3](04A-Wallet-UI-Code-Listings.md#listing-53-srctypesrs))
+> - `Menu::fmt` via `Display` ([Listing 5.3](04A-Wallet-UI-Code-Listings.md#listing-53-srctypesrs))
 
-#### Menu Enum
+In MVU, `Message` is the program’s *event protocol* and must be read as such. A useful discipline is to treat `Message` the way you would treat public API endpoints: it is the complete set of things that can happen.
+
+Two design details stand out in this application:
+
+- **Navigation is hierarchical**: `Menu::ALL` defines the top row, and `Menu::Wallet` exposes a submenu via `Menu::submenu_items`.
+- **Async completions are explicit**: API responses are turned into `Message::...Loaded(Result<ApiResponse<...>, String>)` values, which return to `update` like any other event.
+
+The full `Menu` and `Message` definitions are in Listing 5.3.
+
+### Annotated listing: `Menu::submenu_items` and `Display`
+
+> **Methods involved**
+> - `Menu::submenu_items` (verbatim in [Listing 5.3](04A-Wallet-UI-Code-Listings.md#listing-53-srctypesrs))
+> - `Menu::fmt` via `Display` (verbatim in [Listing 5.3](04A-Wallet-UI-Code-Listings.md#listing-53-srctypesrs))
+
 ```rust
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Menu {
-    Wallet,
-    Send,
-    History,
-    Settings,
-}
-```
+impl Menu {
+    pub const ALL: [Menu; 5] = [
+        // This array is the top-level navigation row.
+        // Notably, it does *not* include submenu items like WalletCreate/WalletInfo.
+        Menu::Wallet,
+        Menu::GetBalance,
+        Menu::Send,
+        Menu::History,
+        Menu::Settings,
+    ];
 
-**Purpose**: Represents the different sections/screens of the application.
-
-**Implementation Details**:
-- `Copy`: Can be copied cheaply (no heap allocation)
-- `PartialEq, Eq`: Can be compared for equality
-- `Display` trait: Converts to string for UI display
-
-#### Message Enum
-```rust
-#[derive(Debug, Clone)]
-pub enum Message {
-    // UI interaction messages
-    MenuChanged(Menu),
-    BaseUrlChanged(String),
-    ApiKeyChanged(String),
-    FromChanged(String),
-    ToChanged(String),
-    AmountChanged(String),
-    
-    // Action messages
-    CreateWallet,
-    SendTx,
-    
-    // Async result messages
-    WalletCreated(Result<ApiResponse<CreateWalletResponse>, String>),
-    TxSent(Result<ApiResponse<SendTransactionResponse>, String>),
-    
-    // Clipboard messages
-    CopyToClipboard(String),
-    ClipboardCopied(bool),
-    
-    // Text editor messages
-    WalletAddressEditorAction(iced::widget::text_editor::Action),
-    TransactionIdEditorAction(iced::widget::text_editor::Action),
-}
-```
-
-**Purpose**: All possible events/actions in the application. This is the communication mechanism between the View and Update functions.
-
-**Message Categories**:
-1. **Input Messages**: User typing in text fields (`BaseUrlChanged`, `FromChanged`, etc.)
-2. **Action Messages**: User clicking buttons (`CreateWallet`, `SendTx`)
-3. **Async Result Messages**: HTTP requests completing (`WalletCreated`, `TxSent`)
-4. **Clipboard Messages**: Copy operations
-5. **Editor Messages**: Text selection/copying in text editors
-
-**Data Flow**:
-```
-User Action → View generates Message → Update processes Message → State changes → View re-renders
-```
-
----
-
-### 4. `app.rs` - Application State (Model)
-
-**Purpose**: Holds all application state/data.
-
-#### WalletApp Structure
-```rust
-pub struct WalletApp {
-    // Navigation
-    pub menu: Menu,
-    
-    // Configuration
-    pub base_url: String,
-    pub api_key: String,
-    
-    // Send transaction form
-    pub from: String,
-    pub to: String,
-    pub amount: String,
-    
-    // Status and results
-    pub status: String,
-    pub new_address: Option<String>,
-    pub last_txid: Option<String>,
-    
-    // Text editor states (for selectable displays)
-    pub wallet_address_editor: iced::widget::text_editor::Content,
-    pub transaction_id_editor: iced::widget::text_editor::Content,
-}
-```
-
-**Key Fields Explained**:
-
-1. **`menu`**: Current active section (Wallet, Send, History, Settings)
-2. **`base_url`, `api_key`**: API configuration
-3. **`from`, `to`, `amount`**: Form inputs for sending transactions
-4. **`status`**: User-facing status messages
-5. **`new_address`**: Wallet address after creation (None if not created yet)
-6. **`last_txid`**: Transaction ID after sending (None if not sent yet)
-7. **`wallet_address_editor`**: Text editor content for the wallet address display
-   - Allows users to select and copy the address
-   - Maintains selection state
-8. **`transaction_id_editor`**: Text editor content for transaction ID display
-
-#### Initialization
-```rust
-pub fn new() -> (Self, iced::Task<crate::types::Message>) {
-    (
-        Self {
-            menu: Menu::Wallet,
-            base_url: "http://127.0.0.1:8080".into(),
-            api_key: std::env::var("BITCOIN_API_WALLET_KEY")
-                .unwrap_or_else(|_| "wallet-secret".into()),
-            // ... other fields initialized
-        },
-        iced::Task::none(), // No initial task
-    )
-}
-```
-
-**Returns**: A tuple of (initial state, initial task)
-- The task can be used to perform async operations on startup (we don't need any)
-
----
-
-### 5. `update.rs` - Business Logic (Update Function)
-
-**Purpose**: Processes all messages and updates application state. This is the "brain" of the application.
-
-#### Function Signature
-```rust
-pub fn update(app: &mut WalletApp, message: Message) -> Task<Message>
-```
-
-**Parameters**:
-- `app`: Mutable reference to application state (will be modified)
-- `message`: The event/action to process
-
-**Returns**: `Task<Message>` - An async task that may produce a future message
-
-#### Message Handling Patterns
-
-##### 1. Simple State Updates
-```rust
-Message::MenuChanged(m) => {
-    app.menu = m;
-    Task::none() // No async work needed
-}
-```
-
-**Flow**: User clicks menu button → View sends `MenuChanged` → Update changes `app.menu` → View re-renders with new section
-
-##### 2. Input Field Updates
-```rust
-Message::BaseUrlChanged(v) => {
-    app.base_url = v;
-    Task::none()
-}
-```
-
-**Flow**: User types in text field → View sends `BaseUrlChanged` with new value → Update stores it in state
-
-##### 3. Async Operations (Creating Wallet)
-```rust
-Message::CreateWallet => {
-    let cfg = ApiConfig {
-        base_url: app.base_url.clone(),
-        api_key: Some(app.api_key.clone()),
-    };
-    let req = CreateWalletRequest { label: None };
-    Task::perform(
-        spawn_on_tokio(api::create_wallet(cfg, req)), 
-        Message::WalletCreated
-    )
-}
-```
-
-**Flow**:
-1. User clicks "Create Wallet" button
-2. Update function creates API config and request
-3. `Task::perform` starts an async operation:
-   - `spawn_on_tokio(api::create_wallet(...))` - Runs HTTP request on Tokio
-   - `Message::WalletCreated` - Message to send when request completes
-4. HTTP request executes in background
-5. When complete, Iced sends `Message::WalletCreated(Result<...>)` back to update
-
-##### 4. Handling Async Results
-```rust
-Message::WalletCreated(res) => {
-    match res {
-        Ok(api) => {
-            if api.success {
-                app.new_address = api.data.map(|d| d.address.clone());
-                // Update text editor with new address
-                if let Some(addr) = &app.new_address {
-                    app.wallet_address_editor =
-                        iced::widget::text_editor::Content::with_text(addr);
-                }
-                app.status = "Wallet created successfully".into();
-            } else {
-                app.status = api.error.unwrap_or_else(|| "Error creating wallet".into());
-                app.wallet_address_editor = iced::widget::text_editor::Content::new();
-            }
-        }
-        Err(e) => {
-            app.status = format!("Error: {}", e);
-            app.wallet_address_editor = iced::widget::text_editor::Content::new();
+    pub fn submenu_items(&self) -> Vec<Menu> {
+        match self {
+            // Only the Wallet entry has a submenu; other sections are leaf nodes.
+            Menu::Wallet => vec![Menu::WalletCreate, Menu::WalletInfo],
+            _ => vec![],
         }
     }
-    Task::none()
+}
+
+impl core::fmt::Display for Menu {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        // The view layer uses `to_string()` to label buttons.
+        // Keeping this logic here prevents string literals from spreading across `view.rs`.
+        let s = match self {
+            Menu::Wallet => "Wallet",
+            Menu::WalletCreate => "Create Wallet",
+            Menu::WalletInfo => "Get Wallet Info",
+            Menu::GetBalance => "Get Balance",
+            Menu::Send => "Send",
+            Menu::History => "History",
+            Menu::Settings => "Settings",
+        };
+        write!(f, "{}", s)
+    }
 }
 ```
 
-**Flow**:
-1. HTTP request completes (success or failure)
-2. Update function receives result
-3. Updates state:
-   - Stores wallet address in `app.new_address`
-   - Populates text editor with address (for selectable display)
-   - Sets status message
-4. View re-renders with new data
+---
 
-##### 5. Clipboard Operations
+## The model (`app.rs`)
+
+> **Methods involved**
+> - `WalletApp::new` ([Listing 5.4](04A-Wallet-UI-Code-Listings.md#listing-54-srcapprs))
+
+`WalletApp` is the entire application state. There is no hidden global state, and the view does not “own” state.
+
+When you read `WalletApp::new` (Listing 5.4), focus on the state that is established before the first render:
+
+- persisted **settings** are loaded (base URL, API key);
+- persisted **wallet addresses** are loaded into `saved_wallets`;
+- an **active wallet** is selected automatically only if exactly one exists;
+- status text is derived from what was loaded.
+
+The remainder of the model fields exist to support rendering and interaction: input values, cached JSON responses, and `text_editor::Content` instances for selectable displays.
+
+### Annotated listing: `WalletApp::new` (startup state)
+
+> **Methods involved**
+> - `WalletApp::new` (verbatim in [Listing 5.4](04A-Wallet-UI-Code-Listings.md#listing-54-srcapprs))
+
 ```rust
-Message::CopyToClipboard(text) => {
-    let text_clone = text.clone();
-    Task::perform(
-        async move {
-            // Platform-specific clipboard copy
-            #[cfg(target_os = "macos")]
-            {
-                use std::process::Command;
-                let mut cmd = Command::new("pbcopy");
-                // ... copy logic
+impl WalletApp {
+    pub fn new() -> (Self, iced::Task<crate::types::Message>) {
+        // Load configuration from the encrypted database (Chapter 6).
+        // If anything fails, we fall back to defaults so the UI can still start.
+        let (base_url, api_key) = match crate::database::load_settings() {
+            Ok(settings) => (settings.base_url, settings.api_key),
+            Err(_) => {
+                (
+                    "http://127.0.0.1:8080".into(),
+                    std::env::var("BITCOIN_API_WALLET_KEY")
+                        .unwrap_or_else(|_| "wallet-secret".into()),
+                )
             }
-            // ... other platforms
-            true // or false on failure
-        },
-        Message::ClipboardCopied,
-    )
-}
-```
+        };
 
-**How it works**:
-1. User clicks copy button
-2. Update spawns async task to copy to clipboard
-3. Uses platform-specific command (`pbcopy` on macOS, `xclip` on Linux, `clip` on Windows)
-4. When complete, sends `Message::ClipboardCopied(bool)` back
-5. Update sets status message based on success/failure
+        // Load saved wallet addresses. A UI should not crash because persistence failed;
+        // the result is simply an empty wallet list and a status message.
+        let saved_wallets = crate::database::load_wallet_addresses().unwrap_or_else(|e| {
+            eprintln!("Failed to load wallet addresses: {}", e);
+            Vec::new()
+        });
 
-##### 6. Text Editor Actions
-```rust
-Message::WalletAddressEditorAction(action) => {
-    app.wallet_address_editor.perform(action);
-    Task::none()
-}
-```
+        // UX rule: if there is exactly one wallet, select it automatically.
+        // If there are multiple, require explicit user selection.
+        let (active_wallet_address, from_field) = if saved_wallets.len() == 1 {
+            let addr = saved_wallets[0].address.clone();
+            (Some(addr.clone()), addr)
+        } else {
+            (None, String::new())
+        };
 
-**Purpose**: Handles text selection, copying, and other editor interactions. The `action` contains information about what the user did (selected text, copied, etc.).
+        // Status is a display-only field; it does not affect program logic.
+        let status = if saved_wallets.is_empty() {
+            String::new()
+        } else {
+            format!("Loaded {} saved wallet(s)", saved_wallets.len())
+        };
 
-**Data Flow Summary**:
-```
-User Action
-  ↓
-View generates Message
-  ↓
-Update processes Message
-  ↓
-[If async needed] Task::perform spawns async operation
-  ↓
-State updated (app modified)
-  ↓
-[If async] Result comes back as new Message
-  ↓
-Update processes result Message
-  ↓
-State updated again
-  ↓
-View re-renders with new state
-```
+        (
+            Self {
+                // Initial navigation state.
+                menu: Menu::Wallet,
+                wallet_submenu_open: false,
 
----
+                // Loaded configuration.
+                base_url,
+                api_key,
 
-### 6. `api.rs` - Async API Client Functions
+                // Form state.
+                from: from_field,
+                to: String::new(),
+                amount: String::new(),
 
-**Purpose**: Contains all HTTP API calls. These are pure async functions that make requests to the Bitcoin node.
+                // User feedback/status.
+                status,
 
-#### Example: Creating a Wallet
-```rust
-pub async fn create_wallet(
-    cfg: ApiConfig,
-    req: CreateWalletRequest,
-) -> Result<ApiResponse<CreateWalletResponse>, String> {
-    let client = WalletClient::new(cfg).map_err(|e| e.to_string())?;
-    client.create_wallet(&req).await.map_err(|e| e.to_string())
-}
-```
+                // Wallet creation form state and results.
+                wallet_label: String::new(),
+                new_address: None,
+                last_txid: None,
 
-**How it works**:
-1. Creates a `WalletClient` with the provided config (base URL, API key)
-2. Calls `create_wallet` async method
-3. Returns `Result` - either success with response data, or error as String
+                // Persisted wallets and selection state.
+                saved_wallets,
+                active_wallet_address,
 
-**Error Handling**:
-- `map_err(|e| e.to_string())`: Converts API errors to user-friendly strings
-- Errors bubble up to the update function as `Err(String)` in the Result
+                // Cached JSON responses (filled by async fetch tasks).
+                wallet_info_data: None,
+                wallet_balance_data: None,
+                transaction_history_data: None,
 
-**Data Flow**:
-```
-update() calls api::create_wallet()
-  ↓
-WalletClient created
-  ↓
-HTTP POST request to /api/wallet/create
-  ↓
-Server processes request
-  ↓
-Response received
-  ↓
-Parsed into ApiResponse<CreateWalletResponse>
-  ↓
-Returned to update() as Result
-```
-
----
-
-### 7. `view.rs` - UI Rendering (View Function)
-
-**Purpose**: Renders the UI based on current application state. This is a pure function - it doesn't modify state, only displays it.
-
-#### Main View Function
-```rust
-pub fn view(app: &WalletApp) -> Element<Message> {
-    // Build UI components
-    let menu_buttons = ...;
-    let config_toolbar = ...;
-    let section = match app.menu { ... };
-    let status_bar = ...;
-    
-    // Combine into final layout
-    column![config_toolbar, menu_buttons, section, status_bar]
-        .spacing(15)
-        .padding(20)
-        .into()
-}
-```
-
-**How it works**:
-1. Takes immutable reference to `WalletApp` (read-only)
-2. Builds UI components based on state
-3. Returns an `Element<Message>` - the rendered UI
-
-**Key UI Components**:
-
-##### 1. Menu Buttons
-```rust
-let menu_buttons: Element<Message> = row(
-    Menu::ALL
-        .iter()
-        .map(|&menu_item| {
-            let menu_label = menu_item.to_string();
-            button(text(menu_label))
-                .on_press(Message::MenuChanged(menu_item))
-                .into()
-        })
-        .collect::<Vec<_>>(),
-)
-.spacing(10)
-.into();
-```
-
-**How it works**:
-- Iterates over all menu items
-- Creates a button for each
-- `.on_press(Message::MenuChanged(menu_item))`: When clicked, sends message to update function
-- Arranges buttons in a horizontal row
-
-##### 2. Wallet Address Display (Selectable)
-```rust
-if app.new_address.is_some() {
-    column![
-        row![
-            text("Wallet Address:").size(14),
-            button("📋 Copy")
-                .on_press(Message::CopyToClipboard(
-                    app.new_address.as_ref().unwrap().clone()
-                ))
-                .style(...), // Professional styling
-        ],
-        scrollable(
-            container(
-                text_editor(&app.wallet_address_editor)
-                    .on_action(Message::WalletAddressEditorAction)
-                    .height(iced::Length::Fixed(80.0))
-            )
-            .padding(12)
-            .style(|_theme| container::Style {
-                background: Some(iced::Background::Color(iced::Color {
-                    r: 0.95, g: 0.95, b: 0.95, a: 1.0, // Light gray
-                })),
-                border: iced::Border {
-                    radius: 6.0.into(), // Rounded corners
-                    width: 1.0,
-                    color: iced::Color { r: 0.8, g: 0.8, b: 0.8, a: 1.0 },
-                },
-                ..container::Style::default()
-            })
+                // Selectable displays. These “contents” are part of the model so that
+                // selection/copy behavior survives re-renders.
+                wallet_address_editor: iced::widget::text_editor::Content::new(),
+                transaction_id_editor: iced::widget::text_editor::Content::new(),
+                wallet_info_editor: iced::widget::text_editor::Content::new(),
+                wallet_balance_editor: iced::widget::text_editor::Content::new(),
+                transaction_history_editor: iced::widget::text_editor::Content::new(),
+            },
+            // No async work is required at startup; fetches happen upon navigation/selection.
+            iced::Task::none(),
         )
-    ]
-}
-```
-
-**Key Features**:
-- **`text_editor`**: Makes the address selectable and copyable
-- **`.on_action(...)`**: Handles text selection events
-- **Styled container**: Light gray background with border for visual distinction
-- **Copy button**: Quick copy functionality
-- **Scrollable**: Handles long addresses gracefully
-
-**Professional Styling Details**:
-- **Background Color**: RGB(0.95, 0.95, 0.95) - Light gray, easy to read on dark theme
-- **Border**: Subtle gray border with 6px radius for modern look
-- **Padding**: 12px for comfortable spacing
-- **Height**: Fixed 80px - enough to display address without taking too much space
-
-##### 3. Button Styling
-```rust
-button("Create New Wallet")
-    .on_press(Message::CreateWallet)
-    .style(|_theme, _status| {
-        iced::widget::button::Style {
-            background: Some(iced::Background::Color(iced::Color {
-                r: 0.2, g: 0.6, b: 0.9, a: 1.0, // Blue
-            })),
-            text_color: iced::Color::WHITE,
-            border: iced::Border {
-                radius: 6.0.into(),
-                width: 1.0,
-                color: iced::Color { r: 0.3, g: 0.7, b: 1.0, a: 1.0 },
-            },
-            ..iced::widget::button::Style::default()
-        }
-    })
-    .padding([10, 20]) // Vertical: 10px, Horizontal: 20px
-```
-
-**Color Scheme**:
-- **Create Wallet**: Blue (RGB 0.2, 0.6, 0.9) - Primary action
-- **Send Transaction**: Green (RGB 0.2, 0.7, 0.3) - Success/action
-- **Copy Button**: Gray (RGB 0.3, 0.3, 0.3) - Secondary action
-
-##### 4. Status Bar
-```rust
-let status_bar: Element<Message> = if !app.status.is_empty() {
-    container(text(&app.status).size(14))
-        .padding(12)
-        .style(|_theme| container::Style {
-            background: Some(iced::Background::Color(iced::Color {
-                r: 0.2, g: 0.2, b: 0.2, a: 1.0, // Dark gray
-            })),
-            border: iced::Border {
-                radius: 4.0.into(),
-                width: 1.0,
-                color: iced::Color { r: 0.4, g: 0.4, b: 0.4, a: 1.0 },
-            },
-            ..container::Style::default()
-        })
-        .width(iced::Length::Fill)
-        .into()
-} else {
-    container(text("")).height(iced::Length::Fixed(0.0)).into()
-};
-```
-
-**Features**:
-- Only displays when `app.status` is not empty
-- Dark background with border for visibility
-- Full width to match layout
-- Hidden (0 height) when no status message
-
----
-
-## Complete Data Flow Example: Creating a Wallet
-
-Let's trace through what happens when a user creates a wallet:
-
-### Step 1: User Clicks Button
-```
-User clicks "Create New Wallet" button in UI
-```
-
-### Step 2: View Generates Message
-```rust
-// In view.rs
-button("Create New Wallet")
-    .on_press(Message::CreateWallet)  // ← Message sent here
-```
-
-### Step 3: Iced Routes Message to Update
-```
-Iced framework receives Message::CreateWallet
-  ↓
-Calls update(&mut app, Message::CreateWallet)
-```
-
-### Step 4: Update Function Processes Message
-```rust
-// In update.rs
-Message::CreateWallet => {
-    let cfg = ApiConfig { ... };
-    let req = CreateWalletRequest { label: None };
-    Task::perform(
-        spawn_on_tokio(api::create_wallet(cfg, req)), 
-        Message::WalletCreated
-    )
-}
-```
-
-**What happens**:
-- Creates API configuration from app state
-- Creates request object
-- Spawns async task that will:
-  1. Run `api::create_wallet()` on Tokio runtime
-  2. When complete, send `Message::WalletCreated(result)` back
-
-### Step 5: HTTP Request Executes
-```rust
-// In api.rs
-pub async fn create_wallet(...) -> Result<...> {
-    let client = WalletClient::new(cfg)?;
-    client.create_wallet(&req).await  // ← HTTP POST request
-        .map_err(|e| e.to_string())
-}
-```
-
-**What happens**:
-- Creates HTTP client
-- Makes POST request to `{base_url}/api/wallet/create`
-- Server processes request and returns response
-- Response parsed into `ApiResponse<CreateWalletResponse>`
-
-### Step 6: Result Sent Back to Update
-```
-HTTP request completes
-  ↓
-Result<ApiResponse<CreateWalletResponse>, String> created
-  ↓
-Iced sends Message::WalletCreated(result) to update()
-```
-
-### Step 7: Update Processes Result
-```rust
-// In update.rs
-Message::WalletCreated(res) => {
-    match res {
-        Ok(api) => {
-            if api.success {
-                app.new_address = api.data.map(|d| d.address.clone());
-                // Update text editor
-                if let Some(addr) = &app.new_address {
-                    app.wallet_address_editor =
-                        iced::widget::text_editor::Content::with_text(addr);
-                }
-                app.status = "Wallet created successfully".into();
-            }
-        }
     }
-    Task::none()
 }
 ```
 
-**What happens**:
-- Extracts wallet address from response
-- Stores in `app.new_address`
-- Populates text editor with address (for selectable display)
-- Sets success status message
+---
 
-### Step 8: View Re-renders
-```
-State changed (app.new_address is now Some(...))
-  ↓
-Iced calls view(&app) again
-  ↓
-View sees app.new_address.is_some() == true
-  ↓
-Renders wallet address display with text_editor
+## Update: the state machine (`update.rs`)
+
+> **Methods involved**
+> - `update` ([Listing 5.6](04A-Wallet-UI-Code-Listings.md#listing-56-srcupdaters))
+
+The wallet UI’s behavioral logic is concentrated in `update` (Listing 5.6). Read it as an explicit state machine with three recurring patterns:
+
+- **Guarded navigation**: some sections require an active wallet; `MenuChanged` enforces those preconditions and sets a status message rather than transitioning.
+- **Auto-fetch on transition**: entering `WalletInfo`, `GetBalance`, or `History` returns a task that fetches and populates JSON views.
+- **Parallel IO for responsiveness**: selecting a wallet launches multiple fetch tasks using `Task::batch`.
+
+The benefit is auditability: each message is handled once, and every state mutation is visible in one place.
+
+### Reading guide: `update` as a “transaction script”
+
+> **Methods involved**
+> - `update` (verbatim in [Listing 5.6](04A-Wallet-UI-Code-Listings.md#listing-56-srcupdaters))
+
+When you read `update`, read each match arm as a small “transaction script”:
+
+- **Input messages** (e.g., `BaseUrlChanged`, `AmountChanged`) should only mutate fields.
+- **Command messages** (e.g., `CreateWallet`, `SendTx`) should:
+  - validate preconditions (wallet selected, amount parses),
+  - build request objects,
+  - return `Task::perform(...)` or `Task::batch(...)`.
+- **Completion messages** (e.g., `WalletCreated`, `TxSent`) should:
+  - interpret `success` vs. `error`,
+  - update cached JSON/editor content,
+  - update status messages,
+  - and return `Task::none()`.
+
+### Message-by-message walkthrough (what changes, what tasks are spawned)
+
+> **Methods involved**
+> - `update` (verbatim in [Listing 5.6](04A-Wallet-UI-Code-Listings.md#listing-56-srcupdaters))
+> - `api::create_wallet`, `api::send_tx`, `api::fetch_wallet_info`, `api::fetch_balance`, `api::fetch_address_transactions` ([Listing 5.5](04A-Wallet-UI-Code-Listings.md#listing-55-srcapirs))
+
+This section explains the intent behind the most important `Message` variants. Keep Listing 5.6 open as you read; you should be able to locate each match arm by its enum variant name.
+
+#### Navigation: `Message::MenuChanged(Menu)`
+
+- **Why it exists**: navigation in MVU is state; the current screen is `app.menu`.
+- **Key invariants enforced**:
+  - leaving the **Send** screen clears `to`, `amount`, and any displayed `txid` so the UI does not show stale send state when you come back later.
+  - `GetBalance`, `Send`, and `History` require an active wallet; the update loop refuses to enter these screens until the user selects one.
+  - `WalletInfo` is refused if no wallets exist at all.
+- **Side effects**:
+  - when entering `WalletInfo`, `GetBalance`, or `History`, the update loop immediately spawns a fetch task (and clears prior JSON/editor content first).
+
+In practice, this makes screen transitions behave like “entering a page with a fresh query,” which is the mental model users already have from web applications.
+
+#### Hover-driven UI: `WalletSubmenuMouseEnter` / `WalletSubmenuMouseExit`
+
+- **Why it exists**: the Wallet menu is a parent with a submenu; the submenu is driven by pointer hover state.
+- **What it changes**: only `app.wallet_submenu_open`.
+- **What it does not do**: it does not navigate or spawn tasks.
+
+This separation matters because it keeps “UI chrome state” (hover open/close) distinct from “application state” (which screen and which wallet).
+
+#### Settings editing: `BaseUrlChanged`, `ApiKeyChanged`, and `SaveSettings`
+
+- `BaseUrlChanged` / `ApiKeyChanged`:
+  - **What it changes**: updates fields in the model as the user types.
+  - **What it does not do**: intentionally does not persist on every keystroke.
+- `SaveSettings`:
+  - **What it does**: persists the current settings via the database module, then sets a status message.
+
+The intent is to avoid writing to disk during typing while still keeping the UI state always up to date.
+
+#### Wallet creation: `CreateWallet` → `WalletCreated(Result<...>)`
+
+- `CreateWallet`:
+  - builds an `ApiConfig` from `app.base_url` and `app.api_key`.
+  - derives an optional wallet label from the wallet creation form.
+  - spawns an HTTP request via `Task::perform(spawn_on_tokio(api::create_wallet(...)))`.
+- `WalletCreated`:
+  - on success:
+    - persists the returned address to the database,
+    - reloads the wallet list,
+    - possibly auto-selects it if it is the only wallet,
+    - updates `wallet_address_editor` so the address is selectable/copyable,
+    - navigates back to the wallet list.
+  - on failure:
+    - sets a status message and leaves state otherwise stable.
+
+Conceptually, the “create wallet” path is a multi-step commit: remote call → local persistence → local model refresh.
+
+#### Wallet selection: `SelectWallet(address)` and the three-way fan-out
+
+- **Why it exists**: selection is the bridge between “a list of wallets” and “the rest of the application.”
+- **What it changes**:
+  - sets `active_wallet_address`,
+  - populates `from` for the send form,
+  - clears cached JSON data + editors to avoid displaying stale responses.
+- **What it spawns**:
+  - a batch of three parallel tasks: wallet info, balance, transaction history.
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant User
+  participant View as wallet_list_section
+  participant Update as update (SelectWallet)
+  participant API as api.rs
+
+  User->>View: Click "Select" on a wallet card
+  View->>Update: Message::SelectWallet(address)
+  Update->>Update: Set active wallet + clear cached JSON/editors
+  Update->>API: fetch_wallet_info(address)
+  Update->>API: fetch_balance(address)
+  Update->>API: fetch_address_transactions(address)
+  API-->>Update: WalletInfoLoaded(...)
+  API-->>Update: BalanceLoaded(...)
+  API-->>Update: TransactionHistoryLoaded(...)
 ```
 
-### Step 9: User Sees Result
-```
-User sees:
-- "Wallet created successfully" in status bar
-- Wallet address displayed in selectable text editor
-- Copy button available
-```
+The key observation is that *selection does not navigate by itself*; instead it makes the rest of the application eligible to navigate, and it begins warming the data that the next screens will show.
+
+#### Sending: `SendTx` → `TxSent(Result<...>)`
+
+- `SendTx`:
+  - enforces the invariant “an active wallet must exist” (otherwise it refuses the command).
+  - parses satoshis from `app.amount` (`u64`, defaulting to `0` on parse failure).
+  - constructs `SendTransactionRequest { from_address, to_address, amount }`.
+  - spawns the HTTP request.
+- `TxSent`:
+  - on success: fills `last_txid` and updates `transaction_id_editor` so it is selectable/copyable.
+  - on failure: clears the editor and sets the error status message.
+
+Because the view is pure, all “success/failure” UI state must be represented explicitly in the model. The `*_editor` fields are a good example: they exist solely so the view can display selectable content.
+
+#### Clipboard and selectable text: `CopyToClipboard` → `ClipboardCopied`
+
+The copy path is intentionally asynchronous, even though it often completes quickly:
+
+- it keeps UI interactions uniform (“button press triggers a task”),
+- it allows platform-specific commands without blocking the UI thread,
+- and it routes completion back through the update loop to set a consistent status message.
 
 ---
 
-## Key Design Patterns
+## View: pure rendering (`view.rs`)
 
-### 1. Separation of Concerns
-- **State** (`app.rs`): What the app knows
-- **Logic** (`update.rs`): How the app responds to events
-- **Presentation** (`view.rs`): How the app looks
-- **API** (`api.rs`): How the app communicates with server
-- **Runtime** (`runtime.rs`): How async operations are managed
+> **Methods involved**
+> - `view` and helpers (`json_data_display`, `wallet_list_section`, `create_wallet_section`, `wallet_info_section`, `get_balance_section`, `send_section`, `history_section`, `settings_section`) ([Listing 5.7](04A-Wallet-UI-Code-Listings.md#listing-57-srcviewrs))
 
-### 2. Immutability in View
-- View function takes `&WalletApp` (immutable reference)
-- View never modifies state directly
-- All state changes go through `update()` function
+The view layer (Listing 5.7) is structured as:
 
-### 3. Message-Driven Architecture
-- All user actions become Messages
-- All async results become Messages
-- Update function is a pure message processor
-- Makes the application predictable and testable
+- a single public `view(app)` that builds the overall layout;
+- one helper per screen/section;
+- a shared JSON display helper that standardizes “copy + scroll + selectable” JSON panels.
 
-### 4. Async Task Pattern
-```rust
-Task::perform(
-    spawn_on_tokio(async_operation()),
-    Message::ResultHandler
-)
-```
-- `spawn_on_tokio`: Ensures operation runs on Tokio runtime
-- `Message::ResultHandler`: Message type to send when operation completes
-- Result comes back as `Message::ResultHandler(Result<...>)`
+The view is intentionally pure: it reads `&WalletApp` and returns `Element<Message>`. All intent is expressed via emitted `Message` values, which return to `update`.
 
-### 5. Professional Styling Pattern
-- Consistent color scheme (blue for primary, green for success, gray for secondary)
-- Rounded corners (6px radius)
-- Proper padding and spacing (12-20px)
-- Light gray backgrounds for text displays (RGB 0.95, 0.95, 0.95)
-- Dark theme with good contrast
+### How the view stays predictable
+
+> **Methods involved**
+> - `view` and helpers (verbatim in [Listing 5.7](04A-Wallet-UI-Code-Listings.md#listing-57-srcviewrs))
+
+To fully understand `view.rs`, read it with these rules in mind:
+
+- **No mutation**: if you are looking for “what happens when I click,” you should not search in the view; you should look for the `Message` emitted and then find that variant in `update`.
+- **UI gating is duplicated intentionally**:
+  - the view disables certain buttons when there is no active wallet,
+  - the update loop also refuses navigation/commands without an active wallet.
+
+This double layer is not redundant: the view improves UX (disabled buttons communicate affordances), while the update loop enforces correctness (no invalid transitions are possible).
 
 ---
 
-## Benefits of This Architecture
+## Diagrammed flow: Create wallet
 
-1. **Maintainability**: Each module has a single, clear responsibility
-2. **Testability**: Update function can be tested with different messages
-3. **Scalability**: Easy to add new features by adding new messages and handlers
-4. **Type Safety**: Rust's type system ensures messages are handled correctly
-5. **Performance**: Async operations don't block the UI
-6. **User Experience**: Professional styling and selectable text editors
+> **Methods involved**
+> - `create_wallet_section` ([Listing 5.7](04A-Wallet-UI-Code-Listings.md#listing-57-srcviewrs))
+> - `update` branches for `Message::CreateWallet` and `Message::WalletCreated` ([Listing 5.6](04A-Wallet-UI-Code-Listings.md#listing-56-srcupdaters))
+> - `api::create_wallet` ([Listing 5.5](04A-Wallet-UI-Code-Listings.md#listing-55-srcapirs))
+> - `spawn_on_tokio` ([Listing 5.2](04A-Wallet-UI-Code-Listings.md#listing-52-srcruntimers))
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant User
+  participant View as view.rs
+  participant Update as update.rs
+  participant Tokio as runtime.rs
+  participant API as api.rs
+  participant Node as Node HTTP API
+  participant DB as database.rs (Chapter 6)
+
+  User->>View: Click create wallet
+  View->>Update: Message::CreateWallet
+  Update->>Tokio: Task::perform(spawn_on_tokio(api::create_wallet(...)))
+  Tokio->>API: run on Tokio runtime
+  API->>Node: HTTP request (WalletClient)
+  Node-->>API: ApiResponse<CreateWalletResponse>
+  API-->>Update: Message::WalletCreated(Result<...>)
+  Update->>DB: persist address + reload wallet list
+  Update-->>View: UI re-renders with updated WalletApp
+```
+
+This flow is implemented entirely through message passing and task completion—no UI thread blocking, no background thread mutating shared state.
 
 ---
 
 ## Summary
 
-The refactored Bitcoin Wallet UI follows modern Rust GUI patterns with:
-- **Modular architecture** for maintainability
-- **MVU pattern** for predictable state management
-- **Async runtime integration** for non-blocking HTTP requests
-- **Professional styling** matching the desktop admin UI
-- **Selectable text displays** for better user experience
-- **Clear data flow** from user actions to state updates
+> **Methods involved**
+> - `main` ([Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
+> - `WalletApp::new` ([Listing 5.4](04A-Wallet-UI-Code-Listings.md#listing-54-srcapprs))
+> - `update` ([Listing 5.6](04A-Wallet-UI-Code-Listings.md#listing-56-srcupdaters))
+> - `view` ([Listing 5.7](04A-Wallet-UI-Code-Listings.md#listing-57-srcviewrs))
 
-This architecture makes the codebase easier to understand, maintain, and extend.
+The Wallet UI is best understood as an MVU program with explicit, typed boundaries:
 
----
+- `types.rs` defines the event protocol (`Message`) and navigation (`Menu`).
+- `app.rs` defines the full model (`WalletApp`).
+- `update.rs` defines state transitions and orchestrates async work.
+- `view.rs` renders and emits messages, without state mutation.
 
-<div align="center">
-
-**📚 [← Previous: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** | **Chapter 5: Wallet User Interface** | **[Next: Embedded Database & Persistence →](05-Embedded-Database.md)** 📚
-
-</div>
-
----
-
-*This chapter has examined the Bitcoin Wallet UI, a user-facing application that allows individuals to interact with the blockchain. We've explored how the application was refactored from a monolithic structure into a modular, professional architecture following the Model-View-Update (MVU) pattern. The wallet UI demonstrates how similar architectural patterns from the desktop admin interface can be adapted for user-facing applications, focusing on wallet operations, transaction management, and user experience. The modular design, async runtime integration, and professional styling create a maintainable and user-friendly application. In the next chapter, we'll explore [Embedded Database & Persistence](05-Embedded-Database.md) to understand how sensitive wallet data is securely stored using SQLCipher encryption.*
+In the next chapter, we will focus on the encrypted embedded database that supports persistence for settings and wallet addresses.
 
 ---
 
 <div align="center">
 
-**Local Navigation - Table of Contents**
-
-| [← First Section: Overview](#overview) | [↑ Table of Contents](#overview) | [Last Section: Summary →](#summary) |
-|:---:|:---:|:---:|
-| *Start of Chapter* | *Current Chapter* | *End of Chapter* |
+**📚 [← Previous: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** | **Chapter 5: Wallet User Interface** | **[Chapter 5A: Wallet UI — Complete Code Listings  →](04A-Wallet-UI-Code-Listings.md)** 📚
 
 </div>
 
 ---
+
+*This chapter has presented the Wallet UI in a code-first manner, with complete method listings provided in [Chapter 5A](04A-Wallet-UI-Code-Listings.md). The next chapter examines the embedded SQLCipher persistence layer that allows this UI to retain configuration and wallet state across restarts.*
+
+---
+
+<div align="center">
+
+**Reading order**
+
+**[← Previous: Desktop Admin UI](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** | **[Next: Wallet UI — Code Listings →](04A-Wallet-UI-Code-Listings.md)**
+
+</div>
+
+---
+

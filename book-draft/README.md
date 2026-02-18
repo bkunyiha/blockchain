@@ -77,7 +77,7 @@
 | 2.1 | **Primitives** | Core data structures (Block, Transaction, Blockchain) | **[📄 Read Chapter 2.1 →](bitcoin-blockchain/primitives/README.md)** |
 | 2.2 | **Utilities** | Utility functions and helpers | **[📄 Read Chapter 2.2 →](bitcoin-blockchain/util/README.md)** |
 | 2.3 | **Cryptography** | Cryptographic primitives, hash functions, signatures, and key pairs | **[📄 Read Chapter 2.3 →](bitcoin-blockchain/crypto/README.md)** |
-| 2.4 | **Blockchain (Project Code Walkthrogh)** | POW & Block Acceptance | **[📄 Read Chapter 2.4 →](bitcoin-blockchain/chain/README.md)** |
+| 2.4 | **Blockchain (Rust Project Code Walkthrogh)** | POW & Block Acceptance | **[📄 Read Chapter 2.4 →](bitcoin-blockchain/chain/README.md)** |
 | 2.4B | **Blockchain(Bitcoin Whitepaper - Block Acceptance)** | Chain state and UTXO management | **[📄 Read Chapter 2.4B →](bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md)** |
 | 2.5 | **Storage Layer** | Persistent storage implementation | **[📄 Read Chapter 2.5 →](bitcoin-blockchain/store/README.md)** |
 | 2.6 | **Blockchain State Management** | Chain state and UTXO management | **[📄 Read Chapter 2.6 →](bitcoin-blockchain/chain/02-Blockchain-State-Management.md)** |

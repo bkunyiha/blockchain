@@ -38,7 +38,7 @@
 ---
 # Bitcoin Whitepaper Summary: Rust Implementation (Rust Encoding)
 
-**Part III: Chapter 1.4** Bitcoin Whitepaper → Rust Implementation (Rust Encoding)
+**Part III: Chapter 1.4** Bitcoin Whitepaper To(→) Rust Implementation (Rust Encoding)
 <div align="center">
 
 **[← Bitcoin Whitepaper Summary](../00-Bitcoin-Whitepaper-Summary.md)** | Bitcoin Whitepaper → Rust Implementation (Rust Encoding) | **[Business Objects →](00-business-objects.md)**
@@ -50,7 +50,7 @@
 
 ## **Chapter 1.4** Bitcoin Whitepaper → Rust Implementation (Rust Encoding)
 
-This page is the entry point. It links to the split section files so we don't have to read one huge page.
+Now that we’ve walked through the Bitcoin whitepaper, we’ll switch from **theory to implementation**. In the sections that follow, we’ll translate the whitepaper’s ideas into **concrete Rust modules and methods**, with complete code listings and explanations—calling out what we implement exactly, what we intentionally simplify, and where real-world Bitcoin Core adds additional rules.
 
 ### Rust refresher (optional)
 
