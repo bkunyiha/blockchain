@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../../bitcoin-blockchain/README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../../bitcoin-blockchain/00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../../bitcoin-blockchain/whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../../bitcoin-blockchain/Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../../bitcoin-blockchain/primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../../bitcoin-blockchain/util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](../../bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain (Technical Foundations)](../../bitcoin-blockchain/chain/README.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../../bitcoin-blockchain/store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)](../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../../bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../../bitcoin-blockchain/node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../../bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](../../bitcoin-blockchain/web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
+2. <a href="../../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
+3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
+4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
+5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
+6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
+7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
+8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
+9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
+10. <a href="../../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
+11. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
+12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
+13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
+14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
+15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
+16. <a href="../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
+17. <a href="../../bitcoin-wallet-ui/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
+18. <a href="../../bitcoin-wallet-ui/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
+19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
 20. **Chapter 8: Docker Compose Deployment** ← *You are here*
-21. [Chapter 9: Kubernetes Deployment](../kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+21. <a href="../kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
+22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
 
 </details>
 
@@ -44,7 +44,7 @@
 
 ---
 
-# Chapter 8: Docker Compose Deployment - Complete Guide
+## Chapter 8: Docker Compose Deployment - Complete Guide
 
 **Part II: Deployment & Operations**
 
@@ -67,17 +67,18 @@ cd ci/docker-compose/configs  # Navigate to configs directory first
 **Learning Path - Read in Order:**
 
 1. [Introduction & Quick Start](#introduction--quick-start) - *Start here*
-2. [Architecture & Container System](02-Architecture.md) - *Understand the system structure*
-3. [Execution Flow & Startup Process](03-Execution-Flow.md) - *Learn how the system operates*
-4. [Network Configuration & Node Connections](04-Network-Configuration.md) - *Understand networking fundamentals*
-5. [Sequential Startup](07-Sequential-Startup.md) - *Learn startup coordination*
-6. [Port Mapping & External Access](05-Port-Mapping.md) - *Configure external connectivity*
-7. [Scaling & Deployment](06-Scaling.md) - *Scale your deployment*
-8. [Deployment Scenarios & Examples](08-Deployment-Scenarios.md) - *Practical deployment patterns*
-9. [Accessing Webserver](09-Accessing-Webserver.md) - *Use the web interface*
-10. [Deployment Guide](10-Deployment-Guide.md) - *Production deployment procedures*
-11. [Deployment Execution Walkthrough](11-Deployment-Execution-Walkthrough.md) - *Deep dive into execution details*
-12. [DNS Resolution Mechanism](12-DNS-Resolution-Mechanism.md) - *Advanced networking internals*
+2. [Docker Compose Code Listings (verbatim)](01A-Docker-Compose-Code-Listings.md) - *Source of truth for scripts + compose files*
+3. [Architecture & Container System](02-Architecture.md) - *Understand the system structure*
+4. [Execution Flow & Startup Process](03-Execution-Flow.md) - *Learn how the system operates*
+5. [Network Configuration & Node Connections](04-Network-Configuration.md) - *Understand networking fundamentals*
+6. [Sequential Startup](07-Sequential-Startup.md) - *Learn startup coordination*
+7. [Port Mapping & External Access](05-Port-Mapping.md) - *Configure external connectivity*
+8. [Scaling & Deployment](06-Scaling.md) - *Scale your deployment*
+9. [Deployment Scenarios & Examples](08-Deployment-Scenarios.md) - *Practical deployment patterns*
+10. [Accessing Webserver](09-Accessing-Webserver.md) - *Use the web interface*
+11. [Deployment Guide](10-Deployment-Guide.md) - *Production deployment procedures*
+12. [Deployment Execution Walkthrough](11-Deployment-Execution-Walkthrough.md) - *Deep dive into execution details*
+13. [DNS Resolution Mechanism](12-DNS-Resolution-Mechanism.md) - *Advanced networking internals*
 
 ---
 
@@ -85,7 +86,21 @@ cd ci/docker-compose/configs  # Navigate to configs directory first
 
 ### Overview
 
-In this chapter, we'll learn how to deploy and manage our blockchain network using Docker Compose. We'll discover how the system supports multiple miners and webservers, with automatic port configuration, sequential startup, and flexible scaling options. By the end of this chapter, you'll be able to deploy a fully functional blockchain network and understand how all the pieces work together.
+> **Methods involved**
+> - `docker-compose.yml` (`ci/docker-compose/configs/docker-compose.yml`, [Listing 8.1](01A-Docker-Compose-Code-Listings.md#listing-81-cidocker-composeconfigsdocker-composeyml))
+> - `docker-entrypoint.sh` (`ci/docker-compose/configs/docker-entrypoint.sh`, [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
+> - `wait-for-node.sh` (`ci/docker-compose/configs/wait-for-node.sh`, [Listing 8.3](01A-Docker-Compose-Code-Listings.md#listing-83-cidocker-composeconfigswait-for-nodesh))
+> - `docker-compose.scale.sh` (`ci/docker-compose/configs/docker-compose.scale.sh`, [Listing 8.4](01A-Docker-Compose-Code-Listings.md#listing-84-cidocker-composeconfigsdocker-composescalesh))
+> - `generate-compose-ports.sh` (`ci/docker-compose/configs/generate-compose-ports.sh`, [Listing 8.5](01A-Docker-Compose-Code-Listings.md#listing-85-cidocker-composeconfigsgenerate-compose-portssh))
+> - `scale-up.sh`, `scale-down.sh` ([Listings 8.6–8.7](01A-Docker-Compose-Code-Listings.md))
+> - Alternative files: `docker-compose.miner.yml`, `docker-compose.webserver.yml` ([Listings 8.8–8.9](01A-Docker-Compose-Code-Listings.md))
+> - Rate limiting config: `Settings.toml` ([Listing 8.10](01A-Docker-Compose-Code-Listings.md#listing-810-cidocker-composeconfigssettingstoml))
+
+This chapter explains how to deploy and operate the blockchain network using Docker Compose. The deployment is intentionally **code-driven**: Compose describes the container topology, while the real orchestration logic (instance numbering, port selection, sequential startup, hostname resolution) lives in the **entrypoint and helper scripts**.
+
+Every referenced artifact is printed in full in the companion listings chapter:
+
+- **[Chapter 8A: Docker Compose — Complete Code Listings](01A-Docker-Compose-Code-Listings.md)**
 
 ### Our Learning Journey
 
@@ -190,6 +205,11 @@ There are also standalone alternative compose files that can be used instead:
   Note: this file also starts a `redis` service for rate limiting.
 
 **Note:** These alternative files are **NOT automatically called**. They're manual alternatives you can use with the `-f` flag if you want to run only miners or only webservers separately. The main `docker-compose.yml` is recommended for most use cases as it supports scaling both services together.
+
+Full listings:
+
+- `docker-compose.miner.yml`: [Listing 8.8](01A-Docker-Compose-Code-Listings.md#listing-88-cidocker-composeconfigsdocker-composemineryml)
+- `docker-compose.webserver.yml`: [Listing 8.9](01A-Docker-Compose-Code-Listings.md#listing-89-cidocker-composeconfigsdocker-composewebserveryml)
 
 ### Port Assignments
 
@@ -733,3 +753,15 @@ See [Section 8: Deployment Scenarios & Examples](08-Deployment-Scenarios.md) for
 - Docker Compose documentation: https://docs.docker.com/compose/
 - Docker networking: https://docs.docker.com/network/
 - Volume management: https://docs.docker.com/storage/volumes/
+
+---
+
+<div align="center">
+
+**Reading order**
+
+**[← Previous: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md)** | **[Next: Docker Compose — Code Listings →](01A-Docker-Compose-Code-Listings.md)**
+
+</div>
+
+---

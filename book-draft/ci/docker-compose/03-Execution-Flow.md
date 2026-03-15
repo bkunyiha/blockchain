@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../../bitcoin-blockchain/README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../../bitcoin-blockchain/00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../../bitcoin-blockchain/whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../../bitcoin-blockchain/Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../../bitcoin-blockchain/primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../../bitcoin-blockchain/util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](../../bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain (Technical Foundations)](../../bitcoin-blockchain/chain/README.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../../bitcoin-blockchain/store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)](../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../../bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../../bitcoin-blockchain/node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../../bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](../../bitcoin-blockchain/web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
+2. <a href="../../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
+3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
+4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
+5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
+6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
+7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
+8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
+9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
+10. <a href="../../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
+11. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
+12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
+13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
+14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
+15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
+16. <a href="../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
+17. <a href="../../bitcoin-wallet-ui/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
+18. <a href="../../bitcoin-wallet-ui/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
+19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
 20. **Chapter 8: Docker Compose Deployment** ← *You are here*
-21. [Chapter 9: Kubernetes Deployment](../kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+21. <a href="../kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
+22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
 
 </details>
 
@@ -44,7 +44,7 @@
 
 ---
 
-# Chapter 7, Section 3: Execution Flow & Startup Process
+## Chapter 8, Section 3: Execution Flow & Startup Process
 
 **Part II: Deployment & Operations** | **Chapter 8: Docker Compose Deployment**
 
@@ -75,29 +75,63 @@ After reading this section, you will understand:
 
 This section provides a detailed walkthrough of the complete execution flow when starting containers, from Docker Compose initialization through to the blockchain nodes running.
 
+> **Methods involved**
+> - `docker-compose.yml` (`ci/docker-compose/configs/docker-compose.yml`, [Listing 8.1](01A-Docker-Compose-Code-Listings.md#listing-81-cidocker-composeconfigsdocker-composeyml))
+> - Docker image build: `Dockerfile` (`ci/docker-compose/configs/Dockerfile`, [Listing 8.11](01A-Docker-Compose-Code-Listings.md#listing-811-cidocker-composeconfigsdockerfile))
+> - `docker-entrypoint.sh` (`ci/docker-compose/configs/docker-entrypoint.sh`, [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
+> - `wait-for-node.sh` (`ci/docker-compose/configs/wait-for-node.sh`, [Listing 8.3](01A-Docker-Compose-Code-Listings.md#listing-83-cidocker-composeconfigswait-for-nodesh))
+
 ## Code Execution Order Overview
 
 ```
 1. docker-compose.yml (Docker Compose reads configuration)
    ↓
-2. Dockerfile (Multi-stage build)
-   ├─ Stage 1: rust-builder (Builds Rust blockchain binary)
-   ├─ Stage 2: web-ui-builder (Builds React web UI)
-   └─ Stage 3: Runtime (Combines binary + web UI)
+2. Dockerfile (builds the `blockchain` binary into an image)
    ↓
 3. docker-entrypoint.sh (Container startup script)
-   ├─ wait-for-node.sh (if sequential startup, instance > 1)
+   ├─ wait-for-node.sh (if sequential startup requires waiting)
    ↓
-4. bitcoin/src/main.rs (Rust binary entry point)
-   ├─ bitcoin/src/config.rs (Configuration loading)
-   ├─ bitcoin/src/lib.rs (Library initialization)
-   ├─ bitcoin/src/node/context.rs (NodeContext creation)
-   ├─ bitcoin/src/node/server.rs (P2P network server)
-   └─ bitcoin/src/web/server.rs (Web server, if enabled)
-      ├─ bitcoin/src/web/routes/*.rs (Route definitions)
-      │  └─ bitcoin/src/web/routes/web.rs (Serves React app from /app/bitcoin-web-ui/dist)
-      ├─ bitcoin/src/web/handlers/*.rs (Request handlers)
-      └─ bitcoin/src/web/middleware/*.rs (Middleware)
+4. /app/blockchain startnode ... (Rust binary entry point)
+```
+
+In this deployment chapter, we stop at the boundary where the entrypoint hands control to the Rust binary. The Rust runtime behavior (P2P networking, storage, web API) is covered in the earlier implementation chapters.
+
+---
+
+## Startup timeline (sequence view)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant User as Operator
+  participant Compose as docker compose
+  participant Docker as Docker daemon
+  participant Miner as miner container
+  participant Web as webserver container
+  participant Entry as docker-entrypoint.sh
+  participant Wait as wait-for-node.sh
+  participant Bin as ./blockchain
+
+  User->>Compose: docker compose up -d
+  Compose->>Docker: build image (Dockerfile)
+  Docker-->>Compose: image ready
+
+  Compose->>Docker: start redis + miner + webserver
+  Docker-->>Miner: container starts
+  Miner->>Entry: ENTRYPOINT /app/docker-entrypoint.sh
+  alt sequential wait required
+    Entry->>Wait: /app/wait-for-node.sh ...
+    Wait-->>Entry: PREV_NODE_ADDRESS=...
+  end
+  Entry->>Bin: exec ./blockchain startnode ...
+
+  Docker-->>Web: container starts
+  Web->>Entry: ENTRYPOINT /app/docker-entrypoint.sh
+  alt webserver waits for miner
+    Entry->>Wait: /app/wait-for-node.sh miner ...
+    Wait-->>Entry: PREV_NODE_ADDRESS=miner_1:2001
+  end
+  Entry->>Bin: exec ./blockchain startnode ...
 ```
 
 ## Phase 1: Docker Compose Initialization
@@ -278,38 +312,14 @@ Starting blockchain node
 exec ./blockchain startnode yes no local
 ```
 
-### Step 2.3: Blockchain Binary Execution
+### Step 2.3: Entrypoint hands control to the Rust binary
 
-**File**: `bitcoin/src/main.rs`
+The entrypoint’s responsibility ends at an `exec` of the Rust binary:
 
-The Rust binary receives arguments: `["startnode", "yes", "no", "local"]`
+- **exact command construction** is in `docker-entrypoint.sh` ([Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
+- the binary’s internal behavior (P2P server, storage, optional web server) is covered in the earlier implementation chapters, not repeated here
 
-**Line 349-357**: Parse command
-```rust
-Command::StartNode {
-    is_miner: IsMiner::Yes,
-    is_web_server: IsWebServer::No,
-    connect_nodes: vec![ConnectNode::Local],
-    wlt_mining_addr: "3npBNyKSEwhCQWTXHFjwR8Rb66kjq6khfZSdmLPm8Gde9XoTwW".to_string(),  // REQUIRED
-}
-```
-
-**Line 240-250**: Start node function
-- Opens or creates blockchain
-- Creates NodeContext
-- Gets node address from config (0.0.0.0:2001)
-
-**Line 265-273**: Start network server
-- Binds to 0.0.0.0:2001
-- Starts P2P network server
-- Since `connect_nodes` contains `Local`, it acts as seed node
-
-**Line 280-337**: Since `is_web_server = No` and `is_miner = Yes`:
-- Skips web server startup
-- Runs only network server
-- Waits for Ctrl+C or shutdown signal
-
-**Miner is now running** on P2P port 2001, ready to accept connections.
+At this point, the miner is “up” once it binds its P2P socket and begins accepting connections. Docker Compose health checks then determine when dependent services may start.
 
 ## Phase 3: Webserver Container Startup
 
@@ -424,44 +434,20 @@ Starting blockchain node
 ```
 
 **Line 232**: Execute blockchain binary
-```bash
-exec ./blockchain startnode no yes miner_1:2001
-```
 
-### Step 3.3: Blockchain Binary Execution
+The entrypoint resolves hostnames to IP addresses (where needed) before calling the Rust binary. This is operationally important because the Rust CLI expects `IP:port` socket addresses.
 
-**File**: `bitcoin/src/main.rs`
+See the exact resolution and the final `exec` in [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh).
 
-**Line 349-357**: Parse command
-```rust
-Command::StartNode {
-    is_miner: IsMiner::No,
-    is_web_server: IsWebServer::Yes,
-    connect_nodes: vec![ConnectNode::Remote("miner_1:2001".parse().unwrap())],
-    wlt_mining_addr: "3npBNyKSEwhCQWTXHFjwR8Rb66kjq6khfZSdmLPm8Gde9XoTwW".to_string(),  // REQUIRED
-}
-```
+### Step 3.3: Entrypoint hands control to the Rust binary
 
-**Line 240-250**: Start node
-- Opens or creates blockchain
-- Creates NodeContext
-- Gets node address: 0.0.0.0:2101 (from NODE_ADDR env var)
+From the perspective of “deployment code,” the webserver container is “up” once:
 
-**Line 265-273**: Start network server
-- Binds to 0.0.0.0:2101
-- Starts P2P server
-- Connects to `miner_1:2001` (from connect_nodes parameter)
+- the process starts,
+- it binds the HTTP port and P2P port in-container,
+- and its readiness endpoint begins returning success (see health checks below).
 
-**Line 280-313**: Since `is_web_server = Yes` and `is_miner = No`:
-- Creates web server with NodeContext
-- Starts web server on port 8080 (from WebServerConfig default)
-- Runs both network server and web server concurrently
-- Webserver is connected to miner via P2P network
-
-**Webserver is now running**:
-- Web API on port 8080
-- P2P network on port 2101
-- Connected to miner at `miner_1:2001` via P2P network
+The Rust implementation details are explained in the earlier blockchain chapters.
 
 ## Phase 4: Health Checks (Background)
 
@@ -470,77 +456,31 @@ Docker Compose starts health checks after containers start:
 **Note**: The miner health check must pass before the webserver container starts (due to `depends_on: condition: service_healthy`).
 
 ### Miner Health Check
-**Line 39-46** in `docker-compose.yml`:
+Defined in `docker-compose.yml` ([Listing 8.1](01A-Docker-Compose-Code-Listings.md#listing-81-cidocker-composeconfigsdocker-composeyml)):
 ```bash
 # Every 10 seconds, check if port 2001 is listening
 timeout 1 bash -c 'echo > /dev/tcp/localhost/2001'
 ```
 
 ### Webserver Health Check
-**Line 81-86** in `docker-compose.yml`:
+Defined in `docker-compose.yml` ([Listing 8.1](01A-Docker-Compose-Code-Listings.md#listing-81-cidocker-composeconfigsdocker-composeyml)):
 ```bash
 # Every 10 seconds, check HTTP health endpoint
 curl -f http://localhost:8080/api/health/ready
 ```
 
-## Execution Timeline
+## What changes when you scale
 
-```
-Time 0ms:   docker-compose.yml read
-Time 100ms: Dockerfile image built (if needed)
-            ├─ Stage 1: Rust binary built
-            ├─ Stage 2: React web UI built (npm install + npm run build)
-            └─ Stage 3: Runtime image created (binary + web UI copied)
-Time 200ms: Miner container starts
-Time 201ms: docker-entrypoint.sh executes (miner)
-Time 202ms: bitcoin/src/main.rs::main() called (miner)
-Time 203ms: Blockchain initialized (miner)
-Time 204ms: P2P server starts (miner, port 2001)
-Time 5000ms: Miner health check passes
-Time 5001ms: Webserver container starts
-Time 5002ms: docker-entrypoint.sh executes (webserver)
-Time 5003ms: bitcoin/src/main.rs::main() called (webserver)
-Time 5004ms: Blockchain initialized (webserver)
-Time 5005ms: P2P server starts (webserver, port 2101)
-Time 5006ms: Web server starts (webserver, port 8080)
-Time 5007ms: Both containers running
-```
+Scaling does not introduce new execution phases; it changes **parameterization** inside `docker-entrypoint.sh`:
 
-## Key File Responsibilities
+- **Instance identity**: derived from container name → `INSTANCE_NUMBER`
+- **Per-instance ports**:
+  - miners: \(2001 + (INSTANCE\_NUMBER - 1)\)
+  - webservers: HTTP \(8080 + (INSTANCE\_NUMBER - 1)\), P2P mapping \(2101 + (INSTANCE\_NUMBER - 1)\)
+- **Per-instance storage**: the entrypoint chooses `dataN` / `blocksN` so each instance gets an isolated view of chain state
+- **Sequential startup decision**: miners wait only if `INSTANCE_NUMBER > 1`, while webservers wait for miners when enabled
 
-| File | Responsibility | When Executed |
-|------|---------------|---------------|
-| `docker-compose.yml` | Service configuration | Before container creation |
-| `Dockerfile` | Container image build (multi-stage: Rust + React) | Build time |
-| `docker-entrypoint.sh` | Container startup logic | Container start |
-| `wait-for-node.sh` | Sequential startup wait | Conditional (instance > 1) |
-| `bitcoin/src/main.rs` | Application entry point | Container start |
-| `bitcoin/src/config.rs` | Configuration management | Application initialization |
-| `bitcoin/src/node/server.rs` | P2P network server | Runtime (continuous) |
-| `bitcoin/src/web/server.rs` | HTTP web server | Runtime (continuous, webserver only) |
-| `bitcoin/src/web/routes/web.rs` | Serves React web UI from `/app/bitcoin-web-ui/dist` | Runtime (webserver only) |
-| `bitcoin/src/web/handlers/*.rs` | HTTP request handlers | On HTTP request |
-| `bitcoin/src/store/file_system_db_chain.rs` | Blockchain storage | On blockchain operations |
-
-## Additional Instances
-
-When scaling to multiple instances, the execution flow is similar but with these differences:
-
-### Additional Miners (Instance 2+)
-
-1. **Sequential startup enabled**: Waits for previous miner
-2. **NODE_CONNECT_NODES**: Auto-configured to previous miner (not "local")
-3. **Port calculation**: Uses instance number (2002, 2003, etc.)
-4. **Data directory**: Uses instance-specific directory (data2, data3, etc.)
-
-### Additional Webservers (Instance 2+)
-
-1. **Sequential startup enabled**: Waits for miner_1 (not previous webserver)
-2. **NODE_CONNECT_NODES**: Always connects to miner_1:2001
-3. **Port calculation**: Uses instance number (8081/2102, 8082/2103, etc.)
-4. **Data directory**: Uses instance-specific directory (data2, data3, etc.)
-
-For detailed information about how additional instances connect, see [Chapter 4: Network Configuration & Node Connections](04-Network-Configuration.md).
+All of this logic is in [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh) and [Listing 8.3](01A-Docker-Compose-Code-Listings.md#listing-83-cidocker-composeconfigswait-for-nodesh).
 
 ---
 

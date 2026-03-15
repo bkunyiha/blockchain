@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. Chapter 1: Introduction & Overview - Book introduction, project structure, technical stack
-2. Chapter 1.2: Introduction to Bitcoin & Blockchain - Bitcoin and blockchain fundamentals
-3. Chapter 1.3: Bitcoin Whitepaper - Bitcoin Whitepaper
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
+2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
+3. <a href="00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
 4. **Chapter 1.4: Bitcoin Whitepaper In Rust** ← *You are here*
-5. Chapter 2.0: Rust Blockchain Project - Blockchain Project
-6. Chapter 2.1: Primitives - Core data structures
-7. Chapter 2.2: Utilities - Utility functions and helpers
-8. Chapter 2.3: Cryptography - Cryptographic primitives and libraries
-9. Chapter 2.4: Blockchain (Technical Foundations) - Proof Of Work
-10. Chapter 2.5: Storage Layer - Persistent storage implementation
-11. Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5) - Proof Of Work
-12. Chapter 2.7: Network Layer - Peer-to-peer networking and protocol
-13. Chapter 2.8: Node Orchestration - Node context and coordination
-14. Chapter 2.9: Wallet System - Wallet implementation and key management
-15. Chapter 3: Web API Architecture - REST API implementation
-16. Chapter 4: Desktop Admin Interface - Iced framework architecture
-17. Chapter 5: Wallet User Interface - Wallet UI implementation
-18. Chapter 6: Embedded Database & Persistence - SQLCipher integration
-19. Chapter 7: Web Admin Interface - React/TypeScript web UI
+5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
+6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
+7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
+8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
+9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
+10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
+11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
+12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
+13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
+14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
+15. <a href="../web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
+16. <a href="../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
+17. <a href="../../bitcoin-wallet-ui/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
+18. <a href="../../bitcoin-wallet-ui/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
+19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. Chapter 8: Docker Compose Deployment - Docker Compose guide
-21. Chapter 9: Kubernetes Deployment - Kubernetes production guide
-22. Chapter 10: Rust Language Guide - Rust programming language reference
+20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
+21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
+22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
 
 </details>
 

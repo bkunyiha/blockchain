@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../../bitcoin-blockchain/README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../../bitcoin-blockchain/00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../../bitcoin-blockchain/whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../../bitcoin-blockchain/Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../../bitcoin-blockchain/primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../../bitcoin-blockchain/util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](../../bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain (Technical Foundations)](../../bitcoin-blockchain/chain/README.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../../bitcoin-blockchain/store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)](../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../../bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../../bitcoin-blockchain/node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../../bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](../../bitcoin-blockchain/web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
+2. <a href="../../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
+3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
+4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
+5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
+6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
+7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
+8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
+9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
+10. <a href="../../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
+11. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
+12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
+13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
+14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
+15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
+16. <a href="../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
+17. <a href="../../bitcoin-wallet-ui/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
+18. <a href="../../bitcoin-wallet-ui/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
+19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
 20. **Chapter 8: Docker Compose Deployment** ← *You are here*
-21. [Chapter 9: Kubernetes Deployment](../kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+21. <a href="../kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
+22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
 
 </details>
 
@@ -44,7 +44,7 @@
 
 ---
 
-# Chapter 7, Section 4: Network Configuration & Node Connections
+## Chapter 8, Section 4: Network Configuration & Node Connections
 
 **Part II: Deployment & Operations** | **Chapter 8: Docker Compose Deployment**
 
@@ -75,12 +75,30 @@ After reading this section, you will understand:
 
 This section explains how nodes connect to each other, the network topology, and how `NODE_CONNECT_NODES` is configured for different scenarios.
 
+> **Methods involved**
+> - `docker-entrypoint.sh` connection normalization + resolution (`ci/docker-compose/configs/docker-entrypoint.sh`, [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
+> - `wait-for-node.sh` (sequential startup address selection, [Listing 8.3](01A-Docker-Compose-Code-Listings.md#listing-83-cidocker-composeconfigswait-for-nodesh))
+
 ## Overview
 
 The blockchain network uses a peer-to-peer (P2P) architecture where:
 - **Miners** form a chain, with each miner connecting to the previous one
 - **Webservers** always connect to miners (specifically `miner_1:2001`), never to other webservers
 - The first miner acts as a **seed node** using `NODE_CONNECT_NODES=local`
+
+```mermaid
+flowchart LR
+  subgraph DockerNetwork["Docker Compose network"]
+    M1["miner_1\nP2P: 2001\nconnect: local"] --> M2["miner_2\nP2P: 2002\nconnect: miner_1"]
+    M2 --> M3["miner_3\nP2P: 2003\nconnect: miner_2"]
+
+    W1["webserver_1\nHTTP: 8080\nP2P: 2101\nconnect: miner_1"] --> M1
+    W2["webserver_2\nHTTP: 8081\nP2P: 2102\nconnect: miner_1"] --> M1
+  end
+
+  note["In Docker Compose, the entrypoint resolves\nservice hostnames to IP:port before exec."]
+  note -.-> M1
+```
 
 ## Miner Connection Chain
 
@@ -104,11 +122,8 @@ When scaling miners, they form a sequential chain:
 - Sequential startup skipped (first instance)
 
 **Entrypoint Logic**:
-```bash
-# Line 126: Sequential startup check
-# INSTANCE_NUMBER=1, so condition is false
-# NODE_CONNECT_NODES remains "local"
-```
+
+The exact conditional and the “seed node” behavior are implemented in `docker-entrypoint.sh` ([Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh)).
 
 **Result**: Miner 1 acts as seed node, creates genesis block if needed.
 

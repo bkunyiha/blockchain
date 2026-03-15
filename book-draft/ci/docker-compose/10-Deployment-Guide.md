@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../../bitcoin-blockchain/README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../../bitcoin-blockchain/00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../../bitcoin-blockchain/whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../../bitcoin-blockchain/Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../../bitcoin-blockchain/primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../../bitcoin-blockchain/util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](../../bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain (Technical Foundations)](../../bitcoin-blockchain/chain/README.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../../bitcoin-blockchain/store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)](../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../../bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../../bitcoin-blockchain/node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../../bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](../../bitcoin-blockchain/web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
+2. <a href="../../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
+3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
+4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
+5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
+6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
+7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
+8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
+9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
+10. <a href="../../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
+11. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
+12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
+13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
+14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
+15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
+16. <a href="../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
+17. <a href="../../bitcoin-wallet-ui/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
+18. <a href="../../bitcoin-wallet-ui/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
+19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
 20. **Chapter 8: Docker Compose Deployment** ← *You are here*
-21. [Chapter 9: Kubernetes Deployment](../kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+21. <a href="../kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
+22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
 
 </details>
 
@@ -44,7 +44,7 @@
 
 ---
 
-# Chapter 7, Section 10: Deployment Guide
+## Chapter 8, Section 10: Deployment Guide
 
 **Part II: Deployment & Operations** | **Chapter 8: Docker Compose Deployment**
 
@@ -59,6 +59,11 @@
 ## Deploying Script Changes
 
 The `docker-entrypoint.sh` and `wait-for-node.sh` scripts are copied into the Docker image during build. To deploy changes to these scripts, you **MUST rebuild the Docker image** - Docker will use cached layers otherwise and your changes won't be applied.
+
+> **Methods involved**
+> - `docker-entrypoint.sh` ([Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
+> - `wait-for-node.sh` ([Listing 8.3](01A-Docker-Compose-Code-Listings.md#listing-83-cidocker-composeconfigswait-for-nodesh))
+> - Docker image build: `Dockerfile` ([Listing 8.11](01A-Docker-Compose-Code-Listings.md#listing-811-cidocker-composeconfigsdockerfile))
 
 ### ⚠️ IMPORTANT: Always Rebuild
 
@@ -148,39 +153,22 @@ environment:
   - DEBUG=1
 ```
 
-## Building the React Web UI
+## Image Build (Rust Binary + Runtime Scripts)
 
-The React web UI is automatically built during the Docker image build process. The Dockerfile uses a multi-stage build:
+Docker Compose builds a container image that contains:
 
-1. **Stage 1 (rust-builder):** Builds the Rust blockchain binary
-2. **Stage 2 (web-ui-builder):** Builds the React web UI using Node.js
-3. **Stage 3 (runtime):** Combines the binary and built web UI
+- the release `blockchain` binary,
+- the startup scripts (`docker-entrypoint.sh`, `wait-for-node.sh`),
+- and minimal runtime dependencies used by health checks and orchestration.
 
-**No manual build step is required** - the React app is built automatically when you run `docker compose build`.
+The authoritative Dockerfile is printed in full in [Listing 8.11](01A-Docker-Compose-Code-Listings.md#listing-811-cidocker-composeconfigsdockerfile).
 
-### Verifying Web UI Build
-
-To verify the web UI was built correctly:
+To rebuild the image:
 
 ```bash
-# Check if dist directory exists in container
-docker compose exec webserver-1 ls -la /app/bitcoin-web-ui/dist/
-
-# Should show:
-# - index.html
-# - assets/ directory with JS and CSS files
-```
-
-### Rebuilding Web UI
-
-If you need to rebuild the web UI (e.g., after making changes to React source code):
-
-```bash
-# Rebuild the webserver image (includes React build)
-docker compose build --no-cache webserver
-
-# Restart the webserver container
-docker compose up -d webserver
+cd ci/docker-compose/configs
+docker compose build --no-cache
+docker compose up -d
 ```
 
 ## Troubleshooting
@@ -207,25 +195,17 @@ If containers fail to start:
    docker compose up -d
    ```
 
-### Web UI Not Loading
+### Webserver Not Responding
 
-If the web UI shows "React app not built" message:
+If the webserver is running but you cannot reach it on `localhost:8080`, start with the readiness endpoint (the same endpoint Compose uses for health checks):
 
-1. **Verify the build completed:**
-   ```bash
-   docker compose exec webserver-1 test -d /app/bitcoin-web-ui/dist && echo "dist exists" || echo "dist missing"
-   ```
+```bash
+curl -v http://localhost:8080/api/health/ready
+docker compose ps
+docker compose logs -f webserver
+```
 
-2. **Rebuild the webserver image:**
-   ```bash
-   docker compose build --no-cache webserver
-   docker compose up -d webserver
-   ```
-
-3. **Check build logs** for React build errors:
-   ```bash
-   docker compose build --no-cache webserver 2>&1 | grep -i "npm\|react\|build"
-   ```
+If you are trying to use the **Web Admin Interface**, note that it is a separate UI (`bitcoin-web-ui`) covered in Chapter 7; Docker Compose here is focused on the node services and API.
 
 ### Script Changes Not Applied
 
@@ -316,7 +296,7 @@ docker compose up -d
 ## Summary
 
 - Script changes require Docker image rebuild with `--no-cache`
-- React web UI is built automatically during Docker build
+- The image build produces the Rust `blockchain` binary and bundles the runtime scripts (see [Listing 8.11](01A-Docker-Compose-Code-Listings.md#listing-811-cidocker-composeconfigsdockerfile))
 - Always verify deployment by checking logs and health endpoints
 - Use environment variables for configuration
 - Follow production deployment practices for production environments

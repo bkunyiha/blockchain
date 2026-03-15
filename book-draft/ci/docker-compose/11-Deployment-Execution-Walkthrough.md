@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](../../01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](../../bitcoin-blockchain/README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](../../bitcoin-blockchain/00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](../../bitcoin-blockchain/whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](../../bitcoin-blockchain/Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](../../bitcoin-blockchain/primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](../../bitcoin-blockchain/util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](../../bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain (Technical Foundations)](../../bitcoin-blockchain/chain/README.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](../../bitcoin-blockchain/store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)](../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](../../bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](../../bitcoin-blockchain/node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](../../bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](../../bitcoin-blockchain/web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](../../bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](../../bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](../../bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
+2. <a href="../../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
+3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
+4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
+5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
+6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
+7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
+8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
+9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
+10. <a href="../../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
+11. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
+12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
+13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
+14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
+15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
+16. <a href="../../bitcoin-desktop-ui/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
+17. <a href="../../bitcoin-wallet-ui/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
+18. <a href="../../bitcoin-wallet-ui/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
+19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
 20. **Chapter 8: Docker Compose Deployment** ← *You are here*
-21. [Chapter 9: Kubernetes Deployment](../kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](../../rust/README.md) - Rust programming language reference
+21. <a href="../kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
+22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
 
 </details>
 
@@ -44,7 +44,7 @@
 
 ---
 
-# Chapter 7, Section 11: Deployment Execution Walkthrough
+## Chapter 8, Section 11: Deployment Execution Walkthrough
 
 **Part II: Deployment & Operations** | **Chapter 8: Docker Compose Deployment**
 
@@ -59,6 +59,12 @@
 ## Overview
 
 This section provides a detailed, step-by-step walkthrough of how the Docker Compose deployment system operates. Through practical examples, you will learn how containers initialize, how nodes discover and connect to each other, and how the system ensures reliable startup sequencing. This walkthrough traces the complete execution flow from container startup through node connection establishment.
+
+> **Methods involved**
+> - `docker-compose.yml` baseline topology ([Listing 8.1](01A-Docker-Compose-Code-Listings.md#listing-81-cidocker-composeconfigsdocker-composeyml))
+> - `docker-entrypoint.sh` orchestration logic ([Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
+> - `wait-for-node.sh` readiness gating ([Listing 8.3](01A-Docker-Compose-Code-Listings.md#listing-83-cidocker-composeconfigswait-for-nodesh))
+> - Docker image build: `Dockerfile` ([Listing 8.11](01A-Docker-Compose-Code-Listings.md#listing-811-cidocker-composeconfigsdockerfile))
 
 **Prerequisites:**
 - Understanding of [Section 3: Execution Flow](03-Execution-Flow.md)
@@ -78,7 +84,7 @@ This section provides a detailed, step-by-step walkthrough of how the Docker Com
 2. [Scenario 2: Additional Miner Instance Startup](#scenario-2-additional-miner-instance-startup)
 3. [Scenario 3: Instance Number Validation](#scenario-3-instance-number-validation)
 4. [Scenario 4: DNS Resolution Process](#scenario-4-dns-resolution-process)
-5. [Scenario 5: Web UI Build and Deployment](#scenario-5-web-ui-build-and-deployment)
+5. [Scenario 5: Docker Image Build (Rust Binary)](#scenario-5-docker-image-build-rust-binary)
 6. [Summary: System Design Patterns](#summary-system-design-patterns)
 
 ---
@@ -848,151 +854,25 @@ PREV_ADDR_RESOLVED=$(resolve_hostname_to_ip "miner:2001")
 
 ---
 
-## Scenario 5: Web UI Build and Deployment
+## Scenario 5: Docker Image Build (Rust Binary)
 
-The system uses a multi-stage Docker build process to compile both the Rust blockchain binary and the React web UI, then combines them into a single runtime image.
+The Docker image build used by Docker Compose is deliberately minimal: it compiles the **Rust `blockchain` binary** in a builder stage and copies it into a small runtime image together with the deployment scripts (`docker-entrypoint.sh`, `wait-for-node.sh`).
 
-### Docker Build Process
+The authoritative Dockerfile is printed in full in [Listing 8.11](01A-Docker-Compose-Code-Listings.md#listing-811-cidocker-composeconfigsdockerfile).
 
-**Stage 1: Rust Binary Build**
+Key points to notice in that Dockerfile:
 
-**File:** `Dockerfile` (Lines 1-29)
+- **Builder stage**: `cargo build --release -p blockchain` produces `/app/target/release/blockchain`.
+- **Runtime stage**: installs only the runtime dependencies required by the entrypoint and health checks (e.g., `curl`, `netcat-openbsd`).
+- **Script layout**: copies the entrypoint and wait script into `/app/` and sets `ENTRYPOINT ["/app/docker-entrypoint.sh"]`, making container startup behavior deterministic.
 
-```dockerfile
-FROM rust:1.91.1-slim as rust-builder
-WORKDIR /app
-COPY Cargo.toml Cargo.lock ./
-COPY bitcoin/src ./bitcoin/src
-# ... copy other source files ...
-RUN cargo build --release -p blockchain
+```mermaid
+flowchart LR
+  B["Builder stage\nrust:..."] -->|cargo build --release| Bin["/app/target/release/blockchain"]
+  Bin --> R["Runtime stage\ndebian:..."]
+  Scripts["docker-entrypoint.sh\nwait-for-node.sh"] --> R
+  R --> Img["Final image\nENTRYPOINT docker-entrypoint.sh"]
 ```
-
-**What happens:**
-- The Rust compiler builds the blockchain binary in release mode
-- Dependencies are compiled and optimized
-- The resulting binary is ready for deployment
-
-**Result:** Rust binary built at `/app/target/release/blockchain`
-
-**Stage 2: React Web UI Build**
-
-**File:** `Dockerfile` (Lines 31-48)
-
-```dockerfile
-FROM node:20-slim as web-ui-builder
-WORKDIR /app
-
-# Copy package files
-COPY bitcoin-web-ui/package.json bitcoin-web-ui/package-lock.json ./bitcoin-web-ui/
-
-# Install dependencies
-WORKDIR /app/bitcoin-web-ui
-RUN npm ci
-# Result: node_modules installed
-
-# Copy source files
-COPY bitcoin-web-ui/ ./
-
-# Build React app
-RUN npm run build
-# Result: dist/ directory created with built files
-```
-
-**What happens during `npm run build`:**
-```bash
-# Runs: tsc && vite build
-# 1. TypeScript compilation
-# 2. Vite bundling and optimization
-# 3. Creates dist/ directory:
-#    dist/
-#    ├── index.html
-#    └── assets/
-#        ├── index-*.js
-#        └── index-*.css
-```
-
-**What happens:**
-- Node.js dependencies are installed from the lock file
-- TypeScript source files are compiled to JavaScript
-- Vite bundles and optimizes the application
-- Static assets are generated in the `dist/` directory
-
-**Stage 3: Runtime Image Assembly**
-
-**File:** `Dockerfile` (Lines 50-70)
-
-```dockerfile
-FROM debian:bookworm-slim
-WORKDIR /app
-
-# Copy binary from Rust builder
-COPY --from=rust-builder /app/target/release/blockchain /app/blockchain
-
-# Copy built React web UI from web-ui-builder
-COPY --from=web-ui-builder /app/bitcoin-web-ui/dist /app/bitcoin-web-ui/dist
-```
-
-**What happens:**
-- The final runtime image is based on a minimal Debian image
-- The compiled Rust binary is copied from the builder stage
-- The built React application is copied from the web UI builder stage
-- Only the necessary runtime artifacts are included in the final image
-
-**Result:**
-- `/app/blockchain` (Rust binary)
-- `/app/bitcoin-web-ui/dist/` (React app)
-
-### Runtime: Serving the Web UI
-
-The Rust web server serves the React application as static files.
-
-**File:** `bitcoin/src/web/routes/web.rs` (Lines 9-20)
-
-```rust
-// Try to serve React app from bitcoin-web-ui/dist
-let possible_paths = [
-    "../bitcoin-web-ui/dist",
-    "../../bitcoin-web-ui/dist",
-    "bitcoin-web-ui/dist",  // This matches! (relative to /app/)
-];
-
-let react_app_path = possible_paths
-    .iter()
-    .find(|path| std::path::Path::new(path).exists())
-    .copied();  // Finds "bitcoin-web-ui/dist"
-```
-
-**What happens:**
-- The server checks multiple possible paths for the React application
-- The first existing path is used for serving static files
-- This allows flexibility in different deployment scenarios
-
-**When request comes to `/`:**
-
-```rust
-if let Some(path) = react_app_path {
-    let index_path = format!("{}/index.html", path);
-    // index_path = "bitcoin-web-ui/dist/index.html"
-    
-    // Serve index.html
-    Router::new()
-        .route("/", get(serve_react_app))
-        .nest_service("/assets", ServeDir::new("bitcoin-web-ui/dist/assets"))
-}
-```
-
-**What happens:**
-- Requests to `/` serve the React application's `index.html`
-- Requests to `/assets/*` serve static assets (JavaScript, CSS, images)
-- The React application loads and runs in the browser
-- API calls from the React app connect to the Rust backend
-
-**Result:**
-- `GET /` → Serves `bitcoin-web-ui/dist/index.html`
-- `GET /assets/*` → Serves files from `bitcoin-web-ui/dist/assets/`
-- React app loads and runs in browser
-
----
 
 ## Summary: System Design Patterns
 
@@ -1048,14 +928,13 @@ Webserver Startup:
 - Ensures webservers connect to available miners
 - Reduces configuration errors
 
-### Pattern 4: Multi-Stage Docker Build
+### Pattern 4: Multi-Stage Docker Build (Builder → Runtime)
 
 The build process separates compilation from runtime:
 
 ```
-Stage 1 (rust-builder): Build Rust binary
-Stage 2 (web-ui-builder): Build React app
-Stage 3 (runtime): Combine binary + React app
+Stage 1 (builder): Build Rust binary
+Stage 2 (runtime): Copy binary + scripts into a minimal image
 ```
 
 **Why this pattern:**
@@ -1086,10 +965,10 @@ docker compose logs webserver | grep "Connect Nodes"
 # Expected output:
 #   Connect Nodes: 172.19.0.2:2001
 
-# 4. Verify web UI is accessible
-curl http://localhost:8080/
+# 4. Verify webserver is responsive
+curl -f http://localhost:8080/api/health/ready
 
-# Expected: HTML with React app (not error message)
+# Expected: HTTP 200 from readiness endpoint
 ```
 
 All these steps should succeed without errors, demonstrating that the deployment system is working correctly.

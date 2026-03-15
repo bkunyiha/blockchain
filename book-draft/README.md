@@ -5,31 +5,31 @@
 
 ### Part I: Core Blockchain Implementation
 
-1. [Chapter 1: Introduction & Overview](01-Introduction.md) - Book introduction, project structure, technical stack
-2. [Chapter 1.2: Introduction to Bitcoin & Blockchain](bitcoin-blockchain/README.md) - Bitcoin and blockchain fundamentals
-3. [Chapter 1.3: Bitcoin Whitepaper](bitcoin-blockchain/00-Bitcoin-Whitepaper-Summary.md) - Bitcoin Whitepaper
-4. [Chapter 1.4: Bitcoin Whitepaper In Rust](bitcoin-blockchain/whitepaper-rust/README.md) - Bitcoin Whitepaper In Rust
-5. [Chapter 2.0: Rust Blockchain Project](bitcoin-blockchain/Rust-Project-Index.md) - Blockchain Project
-6. [Chapter 2.1: Primitives](bitcoin-blockchain/primitives/README.md) - Core data structures
-7. [Chapter 2.2: Utilities](bitcoin-blockchain/util/README.md) - Utility functions and helpers
-8. [Chapter 2.3: Cryptography](bitcoin-blockchain/crypto/README.md) - Cryptographic primitives and libraries
-9. [Chapter 2.4: Blockchain (Technical Foundations)](bitcoin-blockchain/chain/README.md) - Proof Of Work
-10. [Chapter 2.5: Storage Layer](bitcoin-blockchain/store/README.md) - Persistent storage implementation
-11. [Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)](bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md) - Proof Of Work
-12. [Chapter 2.7: Network Layer](bitcoin-blockchain/net/README.md) - Peer-to-peer networking and protocol
-13. [Chapter 2.8: Node Orchestration](bitcoin-blockchain/node/README.md) - Node context and coordination
-14. [Chapter 2.9: Wallet System](bitcoin-blockchain/wallet/README.md) - Wallet implementation and key management
-15. [Chapter 3: Web API Architecture](bitcoin-blockchain/web/README.md) - REST API implementation
-16. [Chapter 4: Desktop Admin Interface](bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-17. [Chapter 5: Wallet User Interface](bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-18. [Chapter 6: Embedded Database & Persistence](bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
-19. [Chapter 7: Web Admin Interface](bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
+1. <a href="01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
+2. <a href="bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
+3. <a href="bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
+4. <a href="bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
+5. <a href="bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
+6. <a href="bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
+7. <a href="bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
+8. <a href="bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
+9. <a href="bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
+10. <a href="bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
+11. <a href="bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
+12. <a href="bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
+13. <a href="bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
+14. <a href="bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
+15. <a href="bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
+16. <a href="bitcoin-desktop-ui/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
+17. <a href="bitcoin-wallet-ui/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
+18. <a href="bitcoin-wallet-ui/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
+19. <a href="bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
 
-20. [Chapter 8: Docker Compose Deployment](ci/docker-compose/01-Introduction.md) - Docker Compose guide
-21. [Chapter 9: Kubernetes Deployment](ci/kubernetes/README.md) - Kubernetes production guide
-22. [Chapter 10: Rust Language Guide](rust/README.md) - Rust programming language reference
+20. <a href="ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
+21. <a href="ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
+22. <a href="rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
 
 </details>
 
@@ -71,14 +71,14 @@
 |---|---------|-------------|------|
 | 1 | **Introduction & Overview** | Book introduction, project structure, technical stack | **[📄 Read Chapter 1 →](01-Introduction.md)** |
 | 1.2 | **Introduction to Bitcoin & Blockchain** | Bitcoin and blockchain fundamentals, use cases, and technical foundations | **[📄 Read Chapter 1.2 →](bitcoin-blockchain/README.md)** |
-| 1.3 | **Bitcoin Whitepaper** | Whitepaper that defined Bitcoin | **[📄 Read Chapter 1.3 →](bitcoin-blockchain/00-Bitcoin-Whitepaper-Summary.md)** |
-| 1.4 | **Bitcoin Whitepaper In Rust** | Implemeting the Bitcoin Whitepaper in Rust | **[📄 Read Chapter 1.4 →](bitcoin-blockchain/whitepaper-rust/README.md)** |
+| 1.3 | **Bitcoin Whitepaper** | Whitepaper that defined Bitcoin | **[📄 Read Chapter 1.3 →](bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md)** |
+| 1.4 | **Bitcoin Whitepaper In Rust** | Whitepaper → Rust encoding walkthrough: concrete data structures, hashing/serialization rules, and how the sections map into this repo. | **Index:** **[📄 Rust Encoding Summary →](bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)**<br>**Core building blocks:** **[Business Objects](bitcoin-blockchain/whitepaper-rust/00-business-objects.md)**<br>**Sections 1–4:** **[§1 Intro](bitcoin-blockchain/whitepaper-rust/01-Introduction-Bitcoin-Whitepaper-Section-1.md)** · **[§2 Transactions](bitcoin-blockchain/whitepaper-rust/02-Transactions-chain-of-signatures-Bitcoin-Whitepaper-Section-2.md)** · **[§3 Timestamp server](bitcoin-blockchain/whitepaper-rust/03-Timestamp-server-block-header-chaining-Bitcoin-Whitepaper-Section-3.md)** · **[§4 Proof-of-work](bitcoin-blockchain/whitepaper-rust/04-Proof-of-work-Bitcoin-Whitepaper-Section-4.md)** · **[nBits / target](bitcoin-blockchain/whitepaper-rust/04A-nBits-Target-Expansion.md)**<br>**Sections 5–9:** **[§5 Network](bitcoin-blockchain/whitepaper-rust/05-Network-operation-Bitcoin-Whitepaper-Section-5.md)** · **[§6 Incentives](bitcoin-blockchain/whitepaper-rust/06-Incentive-mechanism-Bitcoin-Whitepaper-Section-6.md)** · **[§7 Pruning](bitcoin-blockchain/whitepaper-rust/07-Reclaiming-disk-space-Bitcoin-Whitepaper-Section-7.md)** · **[§8 Merkle/SPV](bitcoin-blockchain/whitepaper-rust/08-Merkle-trees-and-SPV-Bitcoin-Whitepaper-Sections-7-8.md)** · **[§9 Value](bitcoin-blockchain/whitepaper-rust/09-Combining-splitting-value-Bitcoin-Whitepaper-Section-9.md)**<br>**Sections 10–12:** **[§10 Privacy](bitcoin-blockchain/whitepaper-rust/10-Privacy-Bitcoin-Whitepaper-Section-10.md)** · **[§11 Confirmations](bitcoin-blockchain/whitepaper-rust/11-Confirmations-and-attacker-probability-Bitcoin-Whitepaper-Section-11.md)** · **[§12 Conclusion](bitcoin-blockchain/whitepaper-rust/12-Conclusion-Bitcoin-Whitepaper-Section-12.md)**<br>**Appendices:** **[A: End-to-end object connectivity](bitcoin-blockchain/whitepaper-rust/Appendix-A-Object-connectivity-end-to-end-flow.md)** · **[B: Mapping to this repository](bitcoin-blockchain/whitepaper-rust/Appendix-B-Mapping-to-this-repository.md)** |
 | 2.0 | **Rust Blockchain Project** | Blochchain Project | **[📄 Read Chapter 2.0 →](bitcoin-blockchain/Rust-Project-Index.md)** |
 | 2.1 | **Primitives** | Core data structures (Block, Transaction, Blockchain) | **[📄 Read Chapter 2.1 →](bitcoin-blockchain/primitives/README.md)** |
 | 2.2 | **Utilities** | Utility functions and helpers | **[📄 Read Chapter 2.2 →](bitcoin-blockchain/util/README.md)** |
 | 2.3 | **Cryptography** | Cryptographic primitives, hash functions, signatures, and key pairs | **[📄 Read Chapter 2.3 →](bitcoin-blockchain/crypto/README.md)** |
-| 2.4 | **Blockchain (Rust Project Code Walkthrogh)** | POW & Block Acceptance | **[📄 Read Chapter 2.4 →](bitcoin-blockchain/chain/README.md)** |
-| 2.4B | **Blockchain(Bitcoin Whitepaper - Block Acceptance)** | Chain state and UTXO management | **[📄 Read Chapter 2.4B →](bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md)** |
+| 2.4 | **Chain (Code Walkthrough)** | End-to-end chain pipeline: model → state → storage → UTXO → mining → consensus → orchestration. | **Index:** **[2.4 →](bitcoin-blockchain/chain/README.md)**<br>**2.4.x:** **[2.4.1 Model](bitcoin-blockchain/chain/01-Domain-Model.md)** · **[2.4.2 State](bitcoin-blockchain/chain/02-Blockchain-State-Management.md)** · **[2.4.3 Storage](bitcoin-blockchain/chain/03-Chain-State-and-Storage.md)** · **[2.4.4 UTXO](bitcoin-blockchain/chain/04-UTXO-Set.md)**<br>**Flow:** **[2.4.5 Tx](bitcoin-blockchain/chain/05-Transaction-Lifecycle.md)** · **[2.4.6 Mine](bitcoin-blockchain/chain/06-Block-Lifecycle-and-Mining.md)** · **[2.4.7 Rules](bitcoin-blockchain/chain/07-Consensus-and-Validation.md)** · **[2.4.8 Node](bitcoin-blockchain/chain/08-Node-Orchestration.md)** · **[2.4.9 E2E](bitcoin-blockchain/chain/09-Transaction-To-Block.md)** |
+| 2.4B | **Block Acceptance (WP §5/Step 5)** | “Valid + not already spent” (tx verify + UTXO + rules). | **Read:** **[2.6 →](bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md)**<br>**See also:** **[UTXO](bitcoin-blockchain/chain/04-UTXO-Set.md)** · **[Rules](bitcoin-blockchain/chain/07-Consensus-and-Validation.md)** · **[E2E](bitcoin-blockchain/chain/09-Transaction-To-Block.md)** |
 | 2.5 | **Storage Layer** | Persistent storage implementation | **[📄 Read Chapter 2.5 →](bitcoin-blockchain/store/README.md)** |
 | 2.6 | **Blockchain State Management** | Chain state and UTXO management | **[📄 Read Chapter 2.6 →](bitcoin-blockchain/chain/02-Blockchain-State-Management.md)** |
 | 2.7 | **Network Layer** | Peer-to-peer networking and protocol | **[📄 Read Chapter 2.7 →](bitcoin-blockchain/net/README.md)** |
@@ -168,9 +168,9 @@ If you're new to blockchain development or this project, we recommend beginning 
 
 2. **Continue with [Chapter 1.2: Introduction to Bitcoin & Blockchain](bitcoin-blockchain/README.md)** - Here, we'll explore what Bitcoin and blockchain are, their origins, advantages, and real-world use cases. This provides the foundational knowledge for understanding blockchain technology.
 
-3. **Bitcoin Whitepaper [Chapter 1.3 → Bitcoin Whitepaper](bitcoin-blockchain/00-Bitcoin-Whitepaper-Summary.md)**
+3. **Bitcoin Whitepaper [Chapter 1.3 → Bitcoin Whitepaper](bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md)**
 
-4. **Bitcoin Whitepaper In Rust  [Chapter 1.4 → Implemeting the Bitcoin Whitepaper in Rust](bitcoin-blockchain/whitepaper-rust/README.md)**
+4. **Bitcoin Whitepaper In Rust  [Chapter 1.4 → Implemeting the Bitcoin Whitepaper in Rust](bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)**
 
 5. **Learn [Chapter 2.1: Cryptography](bitcoin-blockchain/crypto/README.md)** - We'll dive into the cryptographic primitives that secure blockchain: hash functions, digital signatures, key pairs, and address encoding.
 
@@ -260,11 +260,11 @@ In Chapter 1, we introduce the book and project. You'll learn about the project 
 
 In Chapter 1.2, we explore the fundamental concepts of Bitcoin and blockchain technology. We'll learn what Bitcoin and blockchain are, understand their origins and evolution, explore the advantages of decentralized systems across various domains (finance, voting, governance, social media, supply chain, and more), dive into technical foundations like cryptographic hash functions, digital signatures, and consensus mechanisms, and examine real-world use cases and applications. This chapter provides the essential knowledge needed to understand blockchain technology before diving into implementation details.
 
-**[→ Read Full Chapter 1.3: Bitcoin Whitepaper](bitcoin-blockchain/00-Bitcoin-Whitepaper-Summary.md)**
+**[→ Read Full Chapter 1.3: Bitcoin Whitepaper](bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md)**
 
 In Chapter 1.3, we go through the bitcoin whitepaper.
 
-**[→ Read Full Chapter 1.4: Bitcoin Whitepaper Rust Implementation](bitcoin-blockchain/whitepaper-rust/README.md)**
+**[→ Read Full Chapter 1.4: Bitcoin Whitepaper Rust Implementation](bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)**
 
 In Chapter 1.4, we go through the bitcoin whitepaper and implementation in Rust.
 
