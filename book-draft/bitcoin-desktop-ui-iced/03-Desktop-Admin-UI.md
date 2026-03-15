@@ -21,8 +21,8 @@
 14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
 15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
 16. **Chapter 4: Desktop Admin Interface** ← *You are here*
-17. <a href="../bitcoin-wallet-ui/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
+17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
+18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
 19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
@@ -57,7 +57,7 @@ The goal is that you can read this chapter without having the project open:
 
 <div align="center">
 
-**📚 [← Chapter 3: Web API Architecture](../bitcoin-blockchain/web/README.md)** | **Chapter 4: Desktop Admin Interface** | **[Next: Chapter 5 (Wallet UI) →](../bitcoin-wallet-ui/04-Wallet-UI.md)** 📚
+**📚 [← Chapter 3: Web API Architecture](../bitcoin-blockchain/web/README.md)** | **Chapter 4: Desktop Admin Interface** | **[Next: Chapter 5 (Wallet UI) →](../bitcoin-wallet-ui-iced/04-Wallet-UI.md)** 📚
 
 </div>
 
@@ -112,13 +112,13 @@ Task::perform(              spawn_on_tokio(fut)  ----await-->  AdminClient::new(
 
 Together, these chapters walk through implementaion in:
 
-- `bitcoin-desktop-ui/src/main.rs`
-- `bitcoin-desktop-ui/src/runtime.rs`
-- `bitcoin-desktop-ui/src/types.rs`
-- `bitcoin-desktop-ui/src/app.rs`
-- `bitcoin-desktop-ui/src/api.rs`
-- `bitcoin-desktop-ui/src/update.rs`
-- `bitcoin-desktop-ui/src/view.rs`
+- `bitcoin-desktop-ui-iced/src/main.rs`
+- `bitcoin-desktop-ui-iced/src/runtime.rs`
+- `bitcoin-desktop-ui-iced/src/types.rs`
+- `bitcoin-desktop-ui-iced/src/app.rs`
+- `bitcoin-desktop-ui-iced/src/api.rs`
+- `bitcoin-desktop-ui-iced/src/update.rs`
+- `bitcoin-desktop-ui-iced/src/view.rs`
 
 ---
 

@@ -20,9 +20,9 @@
 13. <a href="node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
 14. <a href="wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
 15. **Chapter 3: Web API Architecture** ← *You are here*
-16. <a href="../bitcoin-desktop-ui/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../bitcoin-wallet-ui/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
+16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
+17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
+18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
 19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
@@ -115,11 +115,11 @@ Our blockchain uses Tokio extensively:
 - Concurrent read/write operations
 - Background transaction processing
 
-**Desktop Applications** (`bitcoin-desktop-ui/src/runtime.rs`):
+**Desktop Applications** (`bitcoin-desktop-ui-iced/src/runtime.rs`):
 - Global runtime for HTTP client operations
 - Bridging Iced UI framework with async operations
 
-**Desktop Wallet Application** (`bitcoin-wallet-ui/src/runtime.rs`):
+**Desktop Wallet Application** (`bitcoin-wallet-ui-iced/src/runtime.rs`):
 - Global runtime for HTTP client operations
 - Bridging Iced UI framework with async operations
 - Wallet-specific async operations and API calls
@@ -191,7 +191,7 @@ async fn main() -> Result<()> {
 
 ### Manual Runtime Creation
 
-In our desktop applications (`bitcoin-desktop-ui/src/runtime.rs` and `bitcoin-wallet-ui/src/runtime.rs`), we create a runtime manually:
+In our desktop applications (`bitcoin-desktop-ui-iced/src/runtime.rs` and `bitcoin-wallet-ui-iced/src/runtime.rs`), we create a runtime manually:
 
 ```rust
 pub fn init_runtime() {
@@ -668,7 +668,7 @@ Sometimes we need to bridge synchronous and asynchronous code.
 
 ### block_on
 
-In our desktop runtimes (`bitcoin-desktop-ui/src/runtime.rs` and `bitcoin-wallet-ui/src/runtime.rs`), we use `block_on` to keep the runtime alive:
+In our desktop runtimes (`bitcoin-desktop-ui-iced/src/runtime.rs` and `bitcoin-wallet-ui-iced/src/runtime.rs`), we use `block_on` to keep the runtime alive:
 
 ```rust
 std::thread::spawn(move || {

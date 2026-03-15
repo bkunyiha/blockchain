@@ -143,8 +143,8 @@ This workspace contains five main components:
 |-----------|-------------|---------------|
 | **`bitcoin/`** | Core blockchain implementation with P2P networking, consensus, and web API | [bitcoin/README.md](bitcoin/README.md) |
 | **`bitcoin-api/`** | Shared typed HTTP client library for consuming the blockchain API | See API Clients section |
-| **`bitcoin-desktop-ui/`** | Admin UI built with Iced (blockchain management, mining, etc.) | - |
-| **`bitcoin-wallet-ui/`** | Wallet UI built with Iced (wallet operations, transactions) | - |
+| **`bitcoin-desktop-ui-iced/`** | Admin UI built with Iced (blockchain management, mining, etc.) | - |
+| **`bitcoin-wallet-ui-iced/`** | Wallet UI built with Iced (wallet operations, transactions) | - |
 | **`bitcoin-web-ui/`** | Modern React-based web admin interface | [bitcoin-web-ui/README.md](bitcoin-web-ui/README.md) |
 
 ---
@@ -157,7 +157,7 @@ The blockchain node exposes a RESTful API that can be consumed by UI clients or 
 
 ```
 ┌─────────────────────┐     ┌─────────────────────┐     ┌────────────────────┐
-│ bitcoin-desktop-ui  │     │ bitcoin-wallet-ui   │     │   bitcoin-web-ui   │
+│ bitcoin-desktop-ui-iced │  │ bitcoin-wallet-ui-iced │  │   bitcoin-web-ui   │
 │   (Admin UI)        │     │   (Wallet UI)       │     │   (Web Admin UI)   │
 │   (Iced/Rust)       │     │   (Iced/Rust)       │     │   (React/TS)       │
 └──────────┬──────────┘     └──────────┬──────────┘     └──────────┬─────────┘
@@ -192,8 +192,8 @@ The `bitcoin-api` crate uses feature flags to control which client surfaces are 
 
 ### UI Dependencies
 
-- **`bitcoin-desktop-ui`**: Requires `bitcoin-api` with features `client, wallet, admin` (Iced/Rust)
-- **`bitcoin-wallet-ui`**: Requires `bitcoin-api` with features `client, wallet` (Iced/Rust)
+- **`bitcoin-desktop-ui-iced`**: Requires `bitcoin-api` with features `client, wallet, admin` (Iced/Rust)
+- **`bitcoin-wallet-ui-iced`**: Requires `bitcoin-api` with features `client, wallet` (Iced/Rust)
 - **`bitcoin-web-ui`**: Uses Axios directly, no Rust dependencies (React/TypeScript)
 
 ### Server Authentication
@@ -214,7 +214,7 @@ export BITCOIN_API_ADMIN_KEY=your-admin-key-here
 
 ### Client Usage Examples
 
-#### Admin Client (bitcoin-desktop-ui)
+#### Admin Client (bitcoin-desktop-ui-iced)
 
 ```rust
 use bitcoin_api::{AdminClient, ApiConfig};
@@ -229,7 +229,7 @@ let blockchain_info = admin.get_blockchain_info().await?;
 admin.start_mining().await?;
 ```
 
-#### Wallet Client (bitcoin-wallet-ui)
+#### Wallet Client (bitcoin-wallet-ui-iced)
 
 ```rust
 use bitcoin_api::{WalletClient, ApiConfig};
@@ -338,9 +338,9 @@ For comprehensive technical documentation covering all aspects of the blockchain
   - [Tracing Framework Guide](book-draft/bitcoin-blockchain/web/Tracing.md)
   - [Tokio Runtime Guide](book-draft/bitcoin-blockchain/Tokio.md)
   - [Rust Language Guide](book-draft/rust/README.md) - Comprehensive guide to Rust language features
-- [Chapter 4: Desktop Admin Interface](book-draft/bitcoin-desktop-ui/03-Desktop-Admin-UI.md) - Iced framework architecture
-- [Chapter 5: Wallet User Interface](book-draft/bitcoin-wallet-ui/04-Wallet-UI.md) - Wallet UI implementation
-- [Chapter 6: Embedded Database & Persistence](book-draft/bitcoin-wallet-ui/05-Embedded-Database.md) - SQLCipher integration
+- [Chapter 4: Desktop Admin Interface](book-draft/bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md) - Iced framework architecture
+- [Chapter 5: Wallet User Interface](book-draft/bitcoin-wallet-ui-iced/04-Wallet-UI.md) - Wallet UI implementation
+- [Chapter 6: Embedded Database & Persistence](book-draft/bitcoin-wallet-ui-iced/05-Embedded-Database.md) - SQLCipher integration
 - [Chapter 7: Web Admin Interface](book-draft/bitcoin-web-ui/06-Web-Admin-UI.md) - React/TypeScript web UI
 
 **Part II: Deployment & Operations** (Chapters 8-9)

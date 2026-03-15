@@ -20,9 +20,9 @@
 13. <a href="bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
 14. <a href="bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
 15. <a href="bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="bitcoin-desktop-ui/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="bitcoin-wallet-ui/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="bitcoin-wallet-ui/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
+16. <a href="bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
+17. <a href="bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
+18. <a href="bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
 19. <a href="bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
@@ -85,9 +85,9 @@
 | 2.8 | **Node Orchestration** | Node context and coordination | **[📄 Read Chapter 2.8 →](bitcoin-blockchain/node/README.md)** |
 | 2.9 | **Wallet System** | Wallet implementation and key management | **[📄 Read Chapter 2.9 →](bitcoin-blockchain/wallet/README.md)** |
 | 3 | **Web API Architecture** | REST API implementation, handlers, middleware, and security | **[📄 Read Chapter 3 →](bitcoin-blockchain/web/README.md)** |
-| 4 | **Desktop Admin Interface** | Iced desktop admin UI architecture and implementation | **[📄 Read Chapter 4 →](bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** |
-| 5 | **Wallet User Interface** | Wallet UI architecture and implementation details | **[📄 Read Chapter 5 →](bitcoin-wallet-ui/04-Wallet-UI.md)** |
-| 6 | **Embedded Database & Persistence** | SQLCipher implementation and database design | **[📄 Read Chapter 6 →](bitcoin-wallet-ui/05-Embedded-Database.md)** |
+| 4 | **Desktop Admin Interface** | Iced desktop admin UI architecture and implementation | **[📄 Read Chapter 4 →](bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md)** |
+| 5 | **Wallet User Interface** | Wallet UI architecture and implementation details | **[📄 Read Chapter 5 →](bitcoin-wallet-ui-iced/04-Wallet-UI.md)** |
+| 6 | **Embedded Database & Persistence** | SQLCipher implementation and database design | **[📄 Read Chapter 6 →](bitcoin-wallet-ui-iced/05-Embedded-Database.md)** |
 | 7 | **Web Admin Interface** | React/TypeScript web UI architecture and patterns | **[📄 Read Chapter 7 →](bitcoin-web-ui/06-Web-Admin-UI.md)** |
 
 ### 🚀 **Part II: Deployment & Operations**
@@ -179,7 +179,7 @@ If you're new to blockchain development or this project, we recommend beginning 
 7. **Understand [Chapter 3: Web API Architecture](bitcoin-blockchain/web/README.md)** - We'll understand how the REST API is built, how requests flow through the system, and how we've created a secure, scalable web layer.
 
 8. **Choose your path** based on what interests you most:
-   - **UI Development:** If you're interested in building user interfaces, continue with [Chapter 4](bitcoin-desktop-ui/03-Desktop-Admin-UI.md) for desktop applications or [Chapter 7](bitcoin-web-ui/06-Web-Admin-UI.md) for web applications.
+   - **UI Development:** If you're interested in building user interfaces, continue with [Chapter 4](bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md) for desktop applications or [Chapter 7](bitcoin-web-ui/06-Web-Admin-UI.md) for web applications.
    - **Deployment:** If you want to get the system running quickly, jump ahead to [Chapter 8: Docker Compose](ci/docker-compose/01-Introduction.md) where we'll walk through deployment step by step.
 
 ### For Experienced Developers
@@ -187,7 +187,7 @@ If you're new to blockchain development or this project, we recommend beginning 
 If you're already familiar with blockchain concepts and Rust, you can dive deeper into specific areas:
 
 - **Blockchain Implementation:** Start with [Chapter 1.2: Introduction to Bitcoin & Blockchain](bitcoin-blockchain/README.md) for fundamentals, then [Chapter 2.1: Cryptography](bitcoin-blockchain/crypto/README.md) and [Chapter 2.2: Transaction ID Format](bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) to understand our implementation choices and design decisions.
-- **UI Architecture:** Explore [Chapter 4: Desktop Admin Interface](bitcoin-desktop-ui/03-Desktop-Admin-UI.md) or [Chapter 7: Web Admin Interface](bitcoin-web-ui/06-Web-Admin-UI.md) to see how we've structured our user interfaces.
+- **UI Architecture:** Explore [Chapter 4: Desktop Admin Interface](bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md) or [Chapter 7: Web Admin Interface](bitcoin-web-ui/06-Web-Admin-UI.md) to see how we've structured our user interfaces.
 - **Deployment:** Jump directly to [Chapter 8: Docker Compose](ci/docker-compose/01-Introduction.md) or [Chapter 9: Kubernetes](ci/kubernetes/README.md) to understand our deployment strategies.
 
 ### For Operations Teams
@@ -367,7 +367,7 @@ In Chapter 3, we explore the web API layer that powers our blockchain node. We'l
 
 ## Chapter 4: Desktop Admin Interface
 
-**[→ Read Full Chapter 4: Desktop Admin Interface](bitcoin-desktop-ui/03-Desktop-Admin-UI.md)**
+**[→ Read Full Chapter 4: Desktop Admin Interface](bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md)**
 
 Chapter 4 takes us into the world of desktop application development. We'll build a comprehensive administrative interface using the Iced framework, exploring the Model-View-Update (MVU) pattern in detail. We'll walk through each module—main.rs, app.rs, types.rs, update.rs, view.rs, api.rs, and runtime.rs—understanding how they work together. We'll learn about API integration and async operations, UI component design and styling, state management and data flow, and advanced features like popup menus, selectable text, and formatting systems. Throughout, we'll consider performance implications of our design choices.
 
@@ -375,7 +375,7 @@ Chapter 4 takes us into the world of desktop application development. We'll buil
 
 ## Chapter 5: Wallet User Interface
 
-**[→ Read Full Chapter 5: Wallet User Interface](bitcoin-wallet-ui/04-Wallet-UI.md)**
+**[→ Read Full Chapter 5: Wallet User Interface](bitcoin-wallet-ui-iced/04-Wallet-UI.md)**
 
 In Chapter 5, we shift our focus to building a user-facing wallet application. We'll explore architecture and implementation details, learning about modular design patterns and code organization. We'll see how the Model-View-Update (MVU) pattern applies to a different use case, focusing on user experience and interface design. We'll understand how to integrate with the blockchain backend, manage the Tokio runtime effectively, and build async API client functions that provide a smooth user experience.
 
@@ -383,7 +383,7 @@ In Chapter 5, we shift our focus to building a user-facing wallet application. W
 
 ## Chapter 6: Embedded Database & Persistence
 
-**[→ Read Full Chapter 6: Embedded Database & Persistence](bitcoin-wallet-ui/05-Embedded-Database.md)**
+**[→ Read Full Chapter 6: Embedded Database & Persistence](bitcoin-wallet-ui-iced/05-Embedded-Database.md)**
 
 Chapter 6 addresses a critical aspect of wallet applications: secure data persistence. We'll integrate SQLCipher for encrypted storage, learning about encryption strategies that protect user data. We'll design database schemas and migrations, explore persistence patterns for wallet data, and understand security considerations and best practices. We'll tackle thread safety and connection management, learn how to persist settings, wallet addresses, and user profiles securely, and discuss error handling and future considerations.
 

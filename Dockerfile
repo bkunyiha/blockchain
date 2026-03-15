@@ -15,14 +15,14 @@ WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY bitcoin/Cargo.toml ./bitcoin/
 # Copy other workspace members' Cargo.toml files (needed for workspace resolution)
-COPY bitcoin-desktop-ui/Cargo.toml ./bitcoin-desktop-ui/
-COPY bitcoin-wallet-ui/Cargo.toml ./bitcoin-wallet-ui/
+COPY bitcoin-desktop-ui-iced/Cargo.toml ./bitcoin-desktop-ui-iced/
+COPY bitcoin-wallet-ui-iced/Cargo.toml ./bitcoin-wallet-ui-iced/
 COPY bitcoin-api/Cargo.toml ./bitcoin-api/
 
 # Copy source code for all workspace members (Cargo needs them to resolve workspace)
 COPY bitcoin/src ./bitcoin/src
-COPY bitcoin-desktop-ui/src ./bitcoin-desktop-ui/src
-COPY bitcoin-wallet-ui/src ./bitcoin-wallet-ui/src
+COPY bitcoin-desktop-ui-iced/src ./bitcoin-desktop-ui-iced/src
+COPY bitcoin-wallet-ui-iced/src ./bitcoin-wallet-ui-iced/src
 COPY bitcoin-api/src ./bitcoin-api/src
 
 # Build the blockchain binary

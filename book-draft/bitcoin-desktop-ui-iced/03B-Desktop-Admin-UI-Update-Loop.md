@@ -21,8 +21,8 @@
 14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
 15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
 16. **Chapter 4: Desktop Admin Interface** ← *You are here*
-17. <a href="../bitcoin-wallet-ui/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
+17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
+18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
 19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
@@ -39,7 +39,7 @@
 
 # Chapter 4.B — Desktop Admin Interface: the Update Loop (`update.rs`)
 
-This chapter prints the full `update` method from `bitcoin-desktop-ui/src/update.rs`. It is the **single dispatcher** that:
+This chapter prints the full `update` method from `bitcoin-desktop-ui-iced/src/update.rs`. It is the **single dispatcher** that:
 
 - mutates `AdminApp` state on UI events
 - spawns async HTTP requests (via `spawn_on_tokio(...)`)

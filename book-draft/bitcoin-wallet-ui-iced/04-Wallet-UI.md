@@ -20,7 +20,7 @@
 13. <a href="../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
 14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
 15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../bitcoin-desktop-ui/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
+16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
 17. **Chapter 5: Wallet User Interface** ← *You are here*
 18. <a href="05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
 19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
@@ -50,7 +50,7 @@
 
 <div align="center">
 
-**📚 [← Chapter 4: Desktop Admin UI](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** | **Chapter 5: Wallet UI** | **[Chapter 6: Embedded Database →](05-Embedded-Database.md)** 📚
+**📚 [← Chapter 4: Desktop Admin UI](../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md)** | **Chapter 5: Wallet UI** | **[Chapter 6: Embedded Database →](05-Embedded-Database.md)** 📚
 
 </div>
 
@@ -59,10 +59,10 @@
 ## Overview
 
 > **Methods involved**
-> - `main` (`bitcoin-wallet-ui/src/main.rs`, [Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
-> - `WalletApp::new` (`bitcoin-wallet-ui/src/app.rs`, [Listing 5.4](04A-Wallet-UI-Code-Listings.md#listing-54-srcapprs))
-> - `update` (`bitcoin-wallet-ui/src/update.rs`, [Listing 5.6](04A-Wallet-UI-Code-Listings.md#listing-56-srcupdaters))
-> - `view` (`bitcoin-wallet-ui/src/view.rs`, [Listing 5.7](04A-Wallet-UI-Code-Listings.md#listing-57-srcviewrs))
+> - `main` (`bitcoin-wallet-ui-iced/src/main.rs`, [Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
+> - `WalletApp::new` (`bitcoin-wallet-ui-iced/src/app.rs`, [Listing 5.4](04A-Wallet-UI-Code-Listings.md#listing-54-srcapprs))
+> - `update` (`bitcoin-wallet-ui-iced/src/update.rs`, [Listing 5.6](04A-Wallet-UI-Code-Listings.md#listing-56-srcupdaters))
+> - `view` (`bitcoin-wallet-ui-iced/src/view.rs`, [Listing 5.7](04A-Wallet-UI-Code-Listings.md#listing-57-srcviewrs))
 
 This walks through the `bitcoin-wallet-ui` application. The UI is built with the Iced framework which is a Rust library for building desktop applications, and the program is organized around the **Model–View–Update (MVU)** pattern:
 
@@ -643,7 +643,7 @@ In the next chapter, we will focus on the encrypted embedded database that suppo
 
 <div align="center">
 
-**📚 [← Previous: Desktop Admin Interface](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** | **Chapter 5: Wallet User Interface** | **[Chapter 5A: Wallet UI — Complete Code Listings  →](04A-Wallet-UI-Code-Listings.md)** 📚
+**📚 [← Previous: Desktop Admin Interface](../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md)** | **Chapter 5: Wallet User Interface** | **[Chapter 5A: Wallet UI — Complete Code Listings  →](04A-Wallet-UI-Code-Listings.md)** 📚
 
 </div>
 
@@ -657,7 +657,7 @@ In the next chapter, we will focus on the encrypted embedded database that suppo
 
 **Reading order**
 
-**[← Previous: Desktop Admin UI](../bitcoin-desktop-ui/03-Desktop-Admin-UI.md)** | **[Next: Wallet UI — Code Listings →](04A-Wallet-UI-Code-Listings.md)**
+**[← Previous: Desktop Admin UI](../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md)** | **[Next: Wallet UI — Code Listings →](04A-Wallet-UI-Code-Listings.md)**
 
 </div>
 

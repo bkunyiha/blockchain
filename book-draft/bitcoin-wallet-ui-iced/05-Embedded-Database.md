@@ -20,7 +20,7 @@
 13. <a href="../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
 14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
 15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../bitcoin-desktop-ui/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
+16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
 17. <a href="04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
 18. **Chapter 6: Embedded Database & Persistence** ← *You are here*
 19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
@@ -59,10 +59,10 @@
 ## Overview
 
 > **Methods involved**
-> - `database::init_database` (`bitcoin-wallet-ui/src/database.rs`, [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
+> - `database::init_database` (`bitcoin-wallet-ui-iced/src/database.rs`, [Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
 > - `load_settings`, `save_settings` ([Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
 > - `save_wallet_address`, `load_wallet_addresses` ([Listing 6.1](05A-Embedded-Database-Code-Listings.md#listing-61-srcdatabasers))
-> - `generate_database_password` (`bitcoin-wallet-ui/src/main.rs`, [Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
+> - `generate_database_password` (`bitcoin-wallet-ui-iced/src/main.rs`, [Listing 5.1](04A-Wallet-UI-Code-Listings.md#listing-51-srcmainrs))
 
 This chapter explains the persistence layer used by `bitcoin-wallet-ui`. The application stores user configuration and wallet addresses in an **encrypted SQLite database** built via SQLCipher (`rusqlite` with the `bundled-sqlcipher` feature).
 

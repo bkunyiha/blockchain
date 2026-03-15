@@ -21,8 +21,8 @@
 14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
 15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
 16. **Chapter 4: Desktop Admin Interface** ← *You are here*
-17. <a href="../bitcoin-wallet-ui/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
+17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
+18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
 19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
 
 ### Part II: Deployment & Operations
@@ -60,7 +60,7 @@ This walkthrough prints the “supporting scaffolding” for the desktop admin U
 ## Diagram: file-to-responsibility map (what lives where)
 
 ```
-bitcoin-desktop-ui/src/
+bitcoin-desktop-ui-iced/src/
   main.rs      -> boot (logging, runtime, iced application)
   runtime.rs   -> Tokio runtime kept alive in a background thread
   types.rs     -> navigation enums + Message (the “event vocabulary”)
@@ -90,7 +90,7 @@ This UI is a synchronous MVU loop (Iced) that **outsources I/O to Tokio**, and o
 
 ---
 
-## Code Listing 4A-1.1 — App entrypoint (`bitcoin-desktop-ui/src/main.rs`)
+## Code Listing 4A-1.1 — App entrypoint (`bitcoin-desktop-ui-iced/src/main.rs`)
 
 ```rust
 mod api;
@@ -135,7 +135,7 @@ fn main() -> iced::Result {
 
 ---
 
-## Code Listing 4A-1.2 — Tokio runtime bridge (`bitcoin-desktop-ui/src/runtime.rs`)
+## Code Listing 4A-1.2 — Tokio runtime bridge (`bitcoin-desktop-ui-iced/src/runtime.rs`)
 
 ```rust
 use std::sync::OnceLock;
@@ -189,7 +189,7 @@ Iced’s update loop is **synchronous**: it should be fast and never block on ne
 
 ---
 
-## Code Listing 4A-2.1 — Navigation + events (`bitcoin-desktop-ui/src/types.rs`)
+## Code Listing 4A-2.1 — Navigation + events (`bitcoin-desktop-ui-iced/src/types.rs`)
 
 ```rust
 use bitcoin_api::{
@@ -503,7 +503,7 @@ This design keeps the view layer simple: it never “does” network calls—it 
 
 ---
 
-## Code Listing 4A-3.1 — Application state (`bitcoin-desktop-ui/src/app.rs`)
+## Code Listing 4A-3.1 — Application state (`bitcoin-desktop-ui-iced/src/app.rs`)
 
 ```rust
 use crate::types::{
@@ -800,7 +800,7 @@ The `clear_related_data(...)` helper is a small UX rule: when you fetch one data
 
 ---
 
-## Code Listing 4A-4.1 — Async API client helpers (`bitcoin-desktop-ui/src/api.rs`)
+## Code Listing 4A-4.1 — Async API client helpers (`bitcoin-desktop-ui-iced/src/api.rs`)
 
 ```rust
 use bitcoin_api::{
