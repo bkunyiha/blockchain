@@ -33,6 +33,16 @@ cargo build --release
 cargo build --release -p bitcoin
 cargo build --release -p bitcoin-desktop-ui
 cargo build --release -p bitcoin-wallet-ui
+
+# Build the Tauri desktop admin app
+cd bitcoin-desktop-ui-tauri
+npm install
+cargo tauri build
+
+# Build the Tauri wallet app
+cd bitcoin-wallet-ui-tauri
+npm install
+cargo tauri build
 ```
 
 ### Running the Blockchain Node
@@ -69,6 +79,108 @@ The blockchain node includes a modern React-based web interface:
    - Base URL: `http://127.0.0.1:8080` (default)
 
 For detailed web UI documentation, see [bitcoin-web-ui/README.md](bitcoin-web-ui/README.md).
+
+### Running the Iced Desktop Admin UI
+
+The Iced admin UI is a native Rust desktop application for blockchain administration, mining controls, and system monitoring:
+
+1. **Build and run**:
+   ```bash
+   cargo run --release -p bitcoin-desktop-ui
+   ```
+
+2. **Configure API connection** (in the app):
+   - Navigate to the Settings section
+   - Enter Base URL: `http://127.0.0.1:8080` (default)
+   - Enter Admin API Key: `admin-secret` (default) or your `BITCOIN_API_ADMIN_KEY` value
+
+3. **Features**:
+   - Blockchain info, block explorer, and block-by-hash lookup
+   - Wallet management (create, view info, check balance, send transactions)
+   - Transaction browsing (mempool, all transactions, address transactions)
+   - Mining controls (mining info, block generation)
+   - Health monitoring (health, liveness, readiness checks)
+
+### Running the Iced Wallet UI
+
+The Iced wallet UI is a native Rust desktop application for personal wallet management with encrypted local storage:
+
+1. **Build and run**:
+   ```bash
+   cargo run --release -p bitcoin-wallet-ui
+   ```
+
+2. **Configure API connection** (in the app):
+   - Navigate to the Settings section
+   - Enter Base URL: `http://127.0.0.1:8080` (default)
+   - Enter Wallet API Key: `wallet-secret` (default) or your `BITCOIN_API_WALLET_KEY` value
+   - Settings are saved to the encrypted local database
+
+3. **Features**:
+   - Create and manage wallets with optional labels
+   - Wallet list with select, copy address, and active wallet tracking
+   - Check balances and view transaction history for active wallet
+   - Send Bitcoin from active wallet to any address
+   - SQLCipher encrypted local database for wallet and settings persistence
+   - If only one wallet exists, it is automatically set as active on startup
+
+### Running the Tauri Desktop Admin UI
+
+The Tauri admin UI is a standalone desktop application with a Rust core and React/TypeScript interface:
+
+1. **Install dependencies** (first time only):
+   ```bash
+   cd bitcoin-desktop-ui-tauri
+   npm install
+   ```
+
+2. **Run in development mode**:
+   ```bash
+   cargo tauri dev
+   ```
+
+3. **Build for production**:
+   ```bash
+   cargo tauri build
+   ```
+
+4. **Configure API Key**:
+   - Click the gear icon in the top bar to open Settings
+   - Enter API key: `admin-secret` (default) or your `BITCOIN_API_ADMIN_KEY` value
+   - Base URL: `http://127.0.0.1:8080` (default)
+
+### Running the Tauri Wallet UI
+
+The Tauri wallet UI is a standalone desktop application for end-user wallet management, with an encrypted local database for wallet persistence:
+
+1. **Install dependencies** (first time only):
+   ```bash
+   cd bitcoin-wallet-ui-tauri
+   npm install
+   ```
+
+2. **Run in development mode**:
+   ```bash
+   cargo tauri dev
+   ```
+
+3. **Build for production**:
+   ```bash
+   cargo tauri build
+   ```
+
+4. **Configure API Key**:
+   - Navigate to Settings in the sidebar
+   - Enter API key: `wallet-secret` (default) or your `BITCOIN_API_WALLET_KEY` value
+   - Base URL: `http://127.0.0.1:8080` (default)
+   - Click "Test Connection" to verify, then "Save Settings"
+
+5. **Key Features**:
+   - Create and manage multiple wallets with encrypted local storage (SQLCipher)
+   - Send Bitcoin with confirmation dialog
+   - View balances and transaction history
+   - Dark/light theme support
+   - Wallet data persists between sessions in an AES-256 encrypted database
 
 ---
 
@@ -137,14 +249,16 @@ kubectl apply -f .
 
 ## Project Structure
 
-This workspace contains five main components:
+This workspace contains eight main components:
 
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
 | **`bitcoin/`** | Core blockchain implementation with P2P networking, consensus, and web API | [bitcoin/README.md](bitcoin/README.md) |
 | **`bitcoin-api/`** | Shared typed HTTP client library for consuming the blockchain API | See API Clients section |
 | **`bitcoin-desktop-ui-iced/`** | Admin UI built with Iced (blockchain management, mining, etc.) | - |
+| **`bitcoin-desktop-ui-tauri/`** | Admin UI built with Tauri (Rust core + React/TypeScript UI) | - |
 | **`bitcoin-wallet-ui-iced/`** | Wallet UI built with Iced (wallet operations, transactions) | - |
+| **`bitcoin-wallet-ui-tauri/`** | Wallet UI built with Tauri (Rust core + React/TypeScript UI, SQLCipher encrypted DB) | - |
 | **`bitcoin-web-ui/`** | Modern React-based web admin interface | [bitcoin-web-ui/README.md](bitcoin-web-ui/README.md) |
 
 ---
@@ -156,28 +270,40 @@ The blockchain node exposes a RESTful API that can be consumed by UI clients or 
 ### Architecture
 
 ```
-┌─────────────────────┐     ┌─────────────────────┐     ┌────────────────────┐
-│ bitcoin-desktop-ui-iced │  │ bitcoin-wallet-ui-iced │  │   bitcoin-web-ui   │
-│   (Admin UI)        │     │   (Wallet UI)       │     │   (Web Admin UI)   │
-│   (Iced/Rust)       │     │   (Iced/Rust)       │     │   (React/TS)       │
-└──────────┬──────────┘     └──────────┬──────────┘     └──────────┬─────────┘
-           │                           │                           │
-           └────────────┬──────────────┴───-───────────────────────┘
-                        │
-           ┌────────────▼───────────────┐
-           │     bitcoin-api            │
-           │  (Shared Client Library)   │
-           │  (Rust HTTP Client)        │
-           └────────────┬───────────────┘
-                        │
-           ┌────────────▼───────────────┐
-           │   bitcoin (Blockchain Node)│
-           │   http://localhost:8080    │
-           │   REST API + Web UI        │
-           └────────────────────────────┘
+┌─────────────────────────┐     ┌──────────────────────────┐
+│ bitcoin-desktop-ui-iced │     │ bitcoin-desktop-ui-tauri │
+│       (Admin UI)        │     │       (Admin UI)         │                               Desktop UI's
+│       (Iced/Rust)       │     │  (Tauri: Rust + React)   │
+└──────────┬──────────────┘     └──────────┬───────────────┘
+           │                               │
+           │  ┌────────────────────────┐   │  ┌─────────────────────────┐
+           │  │ bitcoin-wallet-ui-iced │   │  │ bitcoin-wallet-ui-tauri │
+           │  │      (Wallet UI)       │   │  │       (Wallet UI)       │                  Wallet UI's
+           │  │      (Iced/Rust)       │   │  │  (Tauri: Rust + React)  │
+           │  └──────────┬─────────────┘   │  └──────────┬──────────────┘
+           │             │                 │             │
+           │             │                 │             │   ┌────────────────────┐     
+           │             │                 │             │   │   bitcoin-web-ui   │
+           │             │                 │             │   │   (Web Admin UI)   │        Web UI
+           │             │                 │             │   │   (React/TS)       │
+           │             │                 │             │   └──────────┬─────────┘
+           │             │                 │             │              │
+           └─────────────┴─────────────────┬─────────────┘──────────────┘
+                                           │
+                            ┌──────────────▼──────────────┐
+                            │      bitcoin-api            │
+                            │   (Shared Client Library)   │
+                            │   (Rust HTTP Client)        │
+                            └──────────────┬──────────────┘
+                                           │
+                            ┌──────────────▼──────────────┐
+                            │   bitcoin (Blockchain Node) │
+                            │   http://localhost:8080     │
+                            │   REST API + Web UI         │
+                            └─────────────────────────────┘
 ```
 
-**Note**: The `bitcoin-web-ui` uses Axios directly (not `bitcoin-api`) and communicates with the Rust server's REST API endpoints.
+**Note**: The `bitcoin-web-ui` uses Axios directly (not `bitcoin-api`) and communicates with the Rust server's REST API endpoints. The Tauri app uses `bitcoin-api` from its Rust core, with a React/TypeScript UI rendered in the OS-native WebView.
 
 ### Client Feature Flags
 
@@ -193,7 +319,9 @@ The `bitcoin-api` crate uses feature flags to control which client surfaces are 
 ### UI Dependencies
 
 - **`bitcoin-desktop-ui-iced`**: Requires `bitcoin-api` with features `client, wallet, admin` (Iced/Rust)
+- **`bitcoin-desktop-ui-tauri`**: Requires `bitcoin-api` with features `client, wallet, admin` (Tauri: Rust core + React/TypeScript UI)
 - **`bitcoin-wallet-ui-iced`**: Requires `bitcoin-api` with features `client, wallet` (Iced/Rust)
+- **`bitcoin-wallet-ui-tauri`**: Requires `bitcoin-api` with features `client, wallet, admin` (Tauri: Rust core + React/TypeScript UI + SQLCipher)
 - **`bitcoin-web-ui`**: Uses Axios directly, no Rust dependencies (React/TypeScript)
 
 ### Server Authentication
@@ -245,6 +373,53 @@ let balance = wallet.get_balance(&address).await?;
 wallet.send_transaction(&tx_request).await?;
 ```
 
+#### Tauri Wallet Client (bitcoin-wallet-ui-tauri)
+
+The Tauri wallet app uses the `bitcoin-api` crate from its Rust core, with wallet data persisted in an encrypted SQLCipher database:
+
+```rust
+// src-tauri/src/commands/wallet.rs
+#[tauri::command]
+async fn create_wallet(
+    label: Option<String>,
+    state: State<'_, RwLock<AppState>>,
+) -> Result<WalletAddress, String> {
+    let cfg = state.read().unwrap().api_config();
+    let response = BitcoinApiService::create_wallet(cfg, label.clone()).await?;
+    let wallet = WalletAddress::new(response.data.unwrap().address, label);
+    database::save_wallet_address(&wallet).map_err(|e| e.to_string())
+}
+```
+
+```typescript
+// React frontend calls Rust commands via IPC
+import { invoke } from "@tauri-apps/api/core";
+const wallet = await invoke("create_wallet", { label: "My Wallet" });
+const balance = await invoke("get_balance", { address: wallet.address });
+```
+
+#### Tauri Admin Client (bitcoin-desktop-ui-tauri)
+
+The Tauri app uses the same `bitcoin-api` crate from its Rust core, with commands exposed to the React UI via Tauri's IPC system:
+
+```rust
+// src-tauri/src/commands/blockchain.rs
+#[tauri::command]
+async fn get_blockchain_info(
+    config: tauri::State<'_, RwLock<ApiConfig>>,
+) -> Result<serde_json::Value, String> {
+    let cfg = config.read().unwrap();
+    let client = AdminClient::new(cfg.to_api_config());
+    // ... call bitcoin-api and return result
+}
+```
+
+```typescript
+// React frontend calls Rust commands via IPC
+import { invoke } from "@tauri-apps/api/core";
+const info = await invoke("get_blockchain_info");
+```
+
 #### Web UI (bitcoin-web-ui)
 
 The web UI is a React application that provides a browser-based interface:
@@ -275,12 +450,17 @@ See [bitcoin-web-ui/README.md](bitcoin-web-ui/README.md) for detailed setup inst
 ### Running Tests
 
 ```bash
-# Run all tests
+# Run all Rust tests
 cargo test
 
 # Run tests for specific component
 cargo test -p bitcoin
 cargo test -p bitcoin-api
+cargo test -p bitcoin-wallet-ui-tauri
+
+# Run Tauri wallet UI frontend tests
+cd bitcoin-wallet-ui-tauri
+npm test
 ```
 
 ### Workspace Commands
