@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Section Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Section 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Section 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Section 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Section 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Section 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Section 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Section 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Section 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. **Section 2.4: Blockchain (Technical Foundations)** ← *You are here*
-10. <a href="../store/README.md">Section 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Section 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Section 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Section 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Section 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Section 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Section 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Section 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Section 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Section 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. **Chapter 9: Blockchain (Technical Foundations)** ← *You are here*
+10. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Section 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Section 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Section 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -37,14 +56,13 @@
 
 ---
 
-# Section 2.4: Blockchain — From Transaction to Block Acceptance
+# Section 9: Blockchain — From Transaction to Block Acceptance
 
-**Part I: Core Blockchain Implementation** | **Section 2.4: Blockchain (Technical Foundations)**
+**Part I: Foundations & Core Implementation** | **Section 9: Blockchain (Technical Foundations)**
 
 <div align="center">
 
-**📚 [← Cryptography](../crypto/README.md)** | **Section 2.4 Blockchain (Technical Foundations)** | **[Storage Layer →](../store/README.md)** 📚
-
+**[← Cryptography](../crypto/README.md)** | **Section 9 Blockchain (Technical Foundations)** | **[Block Acceptance →](10-Whitepaper-Step-5-Block-Acceptance.md)** 
 </div>
 
 ---
@@ -60,7 +78,7 @@ In this section, we walk through the implementation across these primary modules
 
 ---
 
-## 2.4.0 Reading guide and vocabulary
+## 9.0 Reading guide and vocabulary
 
 ### A short vocabulary primer (UTXO, transaction, mempool)
 
@@ -73,14 +91,14 @@ In this section, we follow a single execution trace from “a wallet constructs 
 
 1. We build a transaction from UTXOs (selection + change).
 2. We sign it using the project’s trimmed-copy approach.
-3. We admit it to mempool and broadcast it.
+15. We admit it to mempool and broadcast it.
 4. We assemble a candidate block, run proof-of-work, and persist the result.
 5. We update the UTXO set so “what is spendable?” changes deterministically.
 6. We accept blocks from peers by enforcing the whitepaper’s safety gate: **valid and not already spent**.
 
-When we quote code, we label it as **Code Listing 2.4-x.y** so it can be referenced consistently throughout the section (and later in print).
+When we quote code, we label it as **Code Listing 9-x.y** so it can be referenced consistently throughout the section (and later in print).
 
-## 2.4.1 End-to-end execution trace: transaction → mempool → block → acceptance
+## 9.1 End-to-end execution trace: transaction → mempool → block → acceptance
 
 In the sections that follow, we will follow the code as it runs. Each step names the primary entry points and points to the subsection where we read the full code listing in context.
 
@@ -96,32 +114,46 @@ The organizing idea is to recognize where the system transitions from:
 
 - “build data structures” → “validate” → “persist” → “update derived state”.
 
-#### Code Listing 2.4-0.1: Create a spend + submit it to the node (exact project signatures)
+#### Code Listing 9-0.1: Create a spend + submit it to the node (exact project signatures)
 
 ```rust
-// 1) Wallet/client constructs a spend (UTXO selection → inputs/outputs → txid → sign).
+// 1) Wallet/client constructs a spend
+// (UTXO selection → inputs/outputs → txid → sign).
 // Source: bitcoin/src/primitives/transaction.rs
-let tx = Transaction::new_utxo_transaction(&from_wallet_addr, &to_wallet_addr, amount, &utxo_set)
-    .await?;
+let tx = Transaction::new_utxo_transaction(
+    &from_wallet_addr,
+    &to_wallet_addr,
+    amount,
+    &utxo_set
+)
+.await?;
 
-// 2) Node admits the transaction to the mempool and triggers propagation/mining.
+// 2) Node admits tx to mempool and
+// triggers propagation/mining.
 // Source: bitcoin/src/node/context.rs
-let txid_hex = node.process_transaction(&remote_addr, tx).await?;
+let txid_hex = node
+    .process_transaction(&remote_addr, tx)
+    .await?;
 ```
 
-#### Code Listing 2.4-0.2: Persistence happens on two paths (local mining vs peer acceptance)
+#### Code Listing 9-0.2: Persistence happens on two paths (local mining vs peer acceptance)
 
 ```rust
-// 3a) Local mining path: validate txs, build block, persist, and update the UTXO set.
+// 3a) Local mining path: validate txs,
+// build block, persist, update UTXO set.
 // Source: bitcoin/src/chain/chainstate.rs
-let block = blockchain_service.mine_block(&mempool_txs).await?;
+let block = blockchain_service
+    .mine_block(&mempool_txs)
+    .await?;
 
-// 3b) Peer acceptance path: persist candidate + fork-choice + (eventually) connect state.
-// Source: bitcoin/src/chain/chainstate.rs → bitcoin/src/store/file_system_db_chain.rs
+// 3b) Peer acceptance path: persist
+// candidate + fork-choice + connect state.
+// Source: bitcoin/src/chain/chainstate.rs →
+// bitcoin/src/store/file_system_db_chain.rs
 blockchain_service.add_block(&peer_block).await?;
 ```
 
-#### Code Listing 2.4-0.3: Mempool admission boundary (what `process_transaction` actually does)
+#### Code Listing 9-0.3: Mempool admission boundary (what `process_transaction` actually does)
 
 ```rust
 // Source: bitcoin/src/node/context.rs
@@ -131,9 +163,14 @@ pub async fn process_transaction(
     utxo: Transaction,
 ) -> Result<String> {
     if transaction_exists_in_pool(&utxo) {
-        return Err(BtcError::TransactionAlreadyExistsInMemoryPool(utxo.get_tx_id_hex()));
+        return Err(
+            BtcError::TransactionAlreadyExistsInMemoryPool(
+                utxo.get_tx_id_hex()
+            )
+        );
     }
-    add_to_memory_pool(utxo.clone(), &self.blockchain).await?;
+    add_to_memory_pool(utxo.clone(), &self.blockchain)
+        .await?;
 
     let context = self.clone();
     let addr_copy = *addr_from;
@@ -145,37 +182,56 @@ pub async fn process_transaction(
 }
 ```
 
-#### Code Listing 2.4-0.4: Mining boundary (verify first, then persist)
+#### Code Listing 9-0.4: Mining boundary (verify first, then persist)
 
 ```rust
 // Source: bitcoin/src/chain/chainstate.rs
-pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
-    for trasaction in transactions {
-        let is_valid = trasaction.verify(self).await?;
+pub async fn mine_block(
+    &self,
+    transactions: &[Transaction],
+) -> Result<Block> {
+    for transaction in transactions {
+        let is_valid =
+            transaction.verify(self).await?;
         if !is_valid {
             return Err(BtcError::InvalidTransaction);
         }
     }
     let blockchain_guard = self.0.write().await;
-    blockchain_guard.mine_block(transactions).await
+    blockchain_guard.mine_block(transactions)
+        .await
 }
 ```
 
-#### Code Listing 2.4-0.5: Persistence + UTXO update on the mining path
+#### Code Listing 9-0.5: Persistence + UTXO update on the mining path
 
 ```rust
 // Source: bitcoin/src/store/file_system_db_chain.rs
-pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
-    let best_height = self.get_best_height().await?;
-    let block = Block::new_block(self.get_tip_hash().await?, transactions, best_height + 1);
+pub async fn mine_block(
+    &self,
+    transactions: &[Transaction],
+) -> Result<Block> {
+    let best_height =
+        self.get_best_height().await?;
+    let block = Block::new_block(
+        self.get_tip_hash().await?,
+        transactions,
+        best_height + 1
+    );
     let block_hash = block.get_hash();
 
-    let blocks_tree = self.blockchain.db.open_tree(self.get_blocks_tree_path())
-        .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
-    Self::update_blocks_tree(&blocks_tree, &block).await?;
+    let blocks_tree = self.blockchain.db
+        .open_tree(self.get_blocks_tree_path())
+        .map_err(|e| {
+            BtcError::BlockchainDBconnection(
+                e.to_string()
+            )
+        })?;
+    Self::update_blocks_tree(&blocks_tree, &block)
+        .await?;
     self.set_tip_hash(block_hash).await?;
 
-    // Derived state update happens after persistence.
+    // Derived state update after persistence.
     self.update_utxo_set(&block).await?;
     Ok(block)
 }
@@ -186,43 +242,44 @@ pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
 - A transaction input references an **outpoint** \((txid, vout)\) and proves authorization with a **signature**.
 - The UTXO set answers the state question: “is this outpoint spendable right now?”
 - For the supporting definitions and data layout, we rely on:
-  - Section 2.1 (Primitives): `Transaction`, `TXInput`, `TXOutput`, `Block`
-  - Section 2.3 (Cryptography): signing and verification primitives
+  - Section 6 (Primitives): `Transaction`, `TXInput`, `TXOutput`, `Block`
+  - Section 8 (Cryptography): signing and verification primitives
 
 ### Step 1: Create a spending transaction (UTXO selection + inputs/outputs)
 
-See Section 2.4.5 (Transaction Lifecycle). The primary entry point is `Transaction::new_utxo_transaction(...)`, which calls `UTXOSet::find_spendable_outputs(...)` to select spendable outpoints and then constructs inputs/outputs (including change).
+See Section 9.5 (Transaction Lifecycle). The primary entry point is `Transaction::new_utxo_transaction(...)`, which calls `UTXOSet::find_spendable_outputs(...)` to select spendable outpoints and then constructs inputs/outputs (including change).
 
 ### Step 2: Sign the transaction (trimmed copy → hash → signature)
 
-See Section 2.4.5 (Transaction Lifecycle). The primary entry point is `Transaction::sign(...)`, which builds a trimmed copy per input, hashes it, and produces a signature via `schnorr_sign_digest(...)` (or `ecdsa_p256_sha256_sign_digest(...)` in the ECDSA path used elsewhere in the project). This is the whitepaper’s “ownership transfer” mechanism expressed as code.
+See Section 9.5 (Transaction Lifecycle). The primary entry point is `Transaction::sign(...)`, which builds a trimmed copy per input, hashes it, and produces a signature via `schnorr_sign_digest(...)` (or `ecdsa_p256_sha256_sign_digest(...)` in the ECDSA path used elsewhere in the project). This is the whitepaper’s “ownership transfer” mechanism expressed as code.
 
 ### Step 3: Verify the transaction (what a node checks before accepting it)
 
-The primary entry point is `Transaction::verify(...)`. We study the transaction-level logic in Section 2.4.5, then we study where that check is enforced (mining vs acceptance paths) in Section 2.4.7.
+The primary entry point is `Transaction::verify(...)`. We study the transaction-level logic in Section 9.5, then we study where that check is enforced (mining vs acceptance paths) in Section 9.7.
 
 ### Step 4: Admit the transaction to the mempool (and propagate it)
 
-This boundary is implemented by `NodeContext::process_transaction(...)` and `txmempool::add_to_memory_pool(...)` (Section 2.4.5). The propagation and routing paths live in Section 2.4.8 (`net/net_processing.rs`, INV/GETDATA flow).
+This boundary is implemented by `NodeContext::process_transaction(...)` and `txmempool::add_to_memory_pool(...)` (Section 9.5). The propagation and routing paths live in Section 9.8 (`net/net_processing.rs`, INV/GETDATA flow).
 
 ### Step 5: Assemble a candidate block from mempool transactions (+ coinbase)
 
-See Section 2.4.6 (Block Lifecycle and Mining). The miner collects mempool transactions, adds a coinbase via `Transaction::new_coinbase_tx(...)`, and invokes `BlockchainService::mine_block(...)`.
+See Section 9.6 (Block Lifecycle and Mining). The miner collects mempool transactions, adds a coinbase via `Transaction::new_coinbase_tx(...)`, and invokes `BlockchainService::mine_block(...)`.
 
 ### Step 6: Mine the block (PoW loop) and persist it as chain state
 
-Mining is implemented as `Block::new_block(...)` → `ProofOfWork::run(...)` (Section 2.4.6), followed by persistence and tip updates in `bitcoin/src/store/file_system_db_chain.rs` (Section 2.4.3).
+Mining is implemented as `Block::new_block(...)` → `ProofOfWork::run(...)` (Section 9.6), followed by persistence and tip updates in `bitcoin/src/store/file_system_db_chain.rs` (Section 9.3).
 
 ### Step 7: Update “what is spendable” (UTXO set mutation)
 
-See Section 2.4.4 (UTXO Set). The primary entry point is `UTXOSet::update(...)`. This is the point where history (blocks) becomes state (spendability), which is what prevents double spends.
+See Section 9.4 (UTXO Set). The primary entry point is `UTXOSet::update(...)`. This is the point where history (blocks) becomes state (spendability), which is what prevents double spends.
 
 ### Step 8: Accept the block from the network (validate → connect)
 
-The acceptance boundary is `BlockchainFileSystem::add_block(...)`. The capstone in Section 2.6 (Block Acceptance, Whitepaper §5 Step 5) maps the whitepaper’s Step 5 gate to concrete code boundaries: accept only if all transactions are valid **and not already spent**.
+The acceptance boundary is `BlockchainFileSystem::add_block(...)`. The capstone in Section 10 (Block Acceptance, Whitepaper §5 Step 5) maps the whitepaper’s Step 5 gate to concrete code boundaries: accept only if all transactions are valid **and not already spent**.
 
-### Figure: End-to-end control flow (Steps 0–9)
-```
+### Figure: End-to-end control flow (Steps 0–23)
+
+```text
 Wallet/API creates tx
   └─> Transaction::new_utxo_transaction
        ├─> UTXOSet::find_spendable_outputs
@@ -251,21 +308,21 @@ Peer receives block
 
 We read this section in the following order (each item is a deep-dive into a segment of the execution trace above):
 
-1. **Section 2.4 (overview)** — you are here
-2. **Section 2.4.1: Domain Model — Blocks, Transactions, and the UTXO Worldview** — the meaning of blocks, transactions, and outpoints in this codebase
-3. **Section 2.4.2: Blockchain State Management** — the chain façade (`BlockchainService`), lock boundaries, and derived-state delegation
-4. **Section 2.4.3: Chain State and Storage — How Blocks Become Persistent State** — persistence, tip updates, and the mining vs network insertion write paths
-5. **Section 2.4.4: UTXO Set — The Spendability Database** — spendability, update rules, and the state transition that prevents double spends
-6. **Section 2.4.5: Transaction Lifecycle — Create → Sign → Verify → Mempool** — build → sign (trimmed copy) → verify → mempool admission
-7. **Section 2.4.6: Block Lifecycle and Mining** — candidate assembly, proof-of-work, persistence, and propagation
-8. **Section 2.4.7: Consensus and Validation** — chain selection and where validity is enforced
-9. **Section 2.4.8: Node Orchestration and Runtime Wiring** — runtime routing of network messages into chainstate/mempool/mining
-10. **Section 2.4.9: Transaction to Block (End-to-End Runtime Walkthrough)** — follow `main` to block creation across the runtime
+1. **Section 9 (overview)** — you are here
+2. **Section 9.1: Domain Model — Blocks, Transactions, and the UTXO Worldview** — the meaning of blocks, transactions, and outpoints in this codebase
+3. **Section 9.2: Blockchain State Management** — the chain façade (`BlockchainService`), lock boundaries, and derived-state delegation
+4. **Section 9.3: Chain State and Storage — How Blocks Become Persistent State** — persistence, tip updates, and the mining vs network insertion write paths
+5. **Section 9.4: UTXO Set — The Spendability Database** — spendability, update rules, and the state transition that prevents double spends
+6. **Section 9.5: Transaction Lifecycle — Create → Sign → Verify → Mempool** — build → sign (trimmed copy) → verify → mempool admission
+7. **Section 9.6: Block Lifecycle and Mining** — candidate assembly, proof-of-work, persistence, and propagation
+8. **Section 9.7: Consensus and Validation** — chain selection and where validity is enforced
+9. **Section 9.8: Node Orchestration and Runtime Wiring** — runtime routing of network messages into chainstate/mempool/mining
+10. **Section 9.9: Transaction to Block (End-to-End Runtime Walkthrough)** — follow `main` to block creation across the runtime
 
-After you complete Chapter 2.4, continue in book order with:
+After you complete Chapter 9, continue in book order with:
 
-- **Chapter 2.5: Storage Layer** — persistence and storage primitives
-- **Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)** — the capstone “validate → connect” contract
+- **Chapter 10: Block Acceptance (Whitepaper §5, Step 5)** — the capstone “validate → connect” contract
+- **Chapter 11: Storage Layer** — persistence and storage primitives
 
 ---
 
@@ -279,6 +336,5 @@ After you complete Chapter 2.4, continue in book order with:
 
 <div align="center">
 
-**📚 [← Cryptography](../crypto/README.md)** | **Blockchain (Technical Foundations)** | **[Next: Domain Model →](01-Domain-Model.md)** 📚
-
+**[← Cryptography](../crypto/README.md)** | **Blockchain (Technical Foundations)** | **[Next: Domain Model →](01-Domain-Model.md)** 
 </div>

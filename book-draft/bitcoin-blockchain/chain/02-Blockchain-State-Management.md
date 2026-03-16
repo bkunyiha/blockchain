@@ -1,48 +1,67 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Section Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Section 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Section 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Section 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Section 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Section 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Section 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Section 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Section 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. **Section 2.4: Blockchain (Technical Foundations)** ← *You are here*
-10. <a href="../store/README.md">Section 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Section 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Section 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Section 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Section 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Section 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Section 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Section 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Section 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Section 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Section 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Section 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Section 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
 </div>
 
 ---
-# Section 2.4.2: Blockchain State Management
+# Section 9.2: Blockchain State Management
 
-**Part I: Core Blockchain Implementation** | **Section 2.4.2: Blockchain State Management**
+**Part I: Foundations & Core Implementation** | **Section 9.2: Blockchain State Management**
 
 <div align="center">
 
-**📚 [← Previous: Domain Model](01-Domain-Model.md)** | **Section 2.4.2 Blockchain State Management** | **[Next: Chain State and Storage →](03-Chain-State-and-Storage.md)** 📚
+**[← Previous: Domain Model](01-Domain-Model.md)** | **Section 9.2 Blockchain State Management** | **[Next: Chain State and Storage →](03-Chain-State-and-Storage.md)** 
 
 </div>
 
@@ -61,9 +80,9 @@ In a Bitcoin-style node, multiple subsystems are active at once:
 
 In this project, we concentrate “shared chain state” behind a single façade (`BlockchainService`) and control mutation using an async read/write lock. The façade then delegates persistence and fork-choice decisions to the storage layer (`BlockchainFileSystem`) and derived-state management to the UTXO set (`UTXOSet`).
 
-## Scope within Section 2.4 (section flow)
+## Scope within Section 9 (section flow)
 
-This subsection covers **Section 2.4 (Blockchain — From Transaction to Block Acceptance) Steps 4–8** at the API boundary level: where reads vs writes are controlled, and where the node delegates to persistence and derived state.
+This subsection covers **Section 9 (Blockchain — From Transaction to Block Acceptance) Steps 4–8** at the API boundary level: where reads vs writes are controlled, and where the node delegates to persistence and derived state.
 
 ## Key entry points in this subsection
 
@@ -81,7 +100,7 @@ It helps to be explicit about call sites. `BlockchainService` is a **high-level 
 
 ### Figure: Shared chain API used by both node and web layers
 
-```
+```text
 Web server / handlers (bitcoin/src/web/*)
         │  (State<Arc<NodeContext>>)
         ▼
@@ -109,7 +128,7 @@ UTXOSet (derived state)   BlockchainFileSystem (sled-backed storage)
 
 ### Figure: Where chain state lives (boundary + delegation)
 
-```
+```text
 Node subsystems (network / miner / wallet / API)
         │
         │ calls a small public API
@@ -127,7 +146,7 @@ UTXOSet (derived state)   BlockchainFileSystem (sled-backed storage)
 
 The types we import (`BlockchainService`, `UTXOSet`) are re-exported here:
 
-**Code Listing 2.4-2.1**: `chain/` module exports (public boundary)  
+**Code Listing 9-6**: `chain/` module exports (public boundary)  
 ```rust
 // Source: bitcoin/src/chain/mod.rs
 pub mod chainstate;
@@ -147,21 +166,36 @@ pub use utxo_set::UTXOSet;
 
 **Chain façade (BlockchainService) code**: `bitcoin/src/chain/chainstate.rs`
 
-**Code Listing 2.4-2.2**: The façade type (`BlockchainService`)  
+**Code Listing 9-7**: The façade type (`BlockchainService`)  
 ```rust
 // Source: bitcoin/src/chain/chainstate.rs
 #[derive(Debug)]
-pub struct BlockchainService(Arc<TokioRwLock<BlockchainFileSystem>>);
+pub struct BlockchainService(
+    Arc<TokioRwLock<BlockchainFileSystem>>
+);
 
 impl BlockchainService {
-    pub async fn initialize(genesis_address: &WalletAddress) -> Result<BlockchainService> {
-        let blockchain = BlockchainFileSystem::create_blockchain(genesis_address).await?;
-        Ok(BlockchainService(Arc::new(TokioRwLock::new(blockchain))))
+    pub async fn initialize(
+        genesis_address: &WalletAddress
+    ) -> Result<BlockchainService> {
+        let blockchain =
+            BlockchainFileSystem::create_blockchain(
+                genesis_address
+            ).await?;
+        Ok(BlockchainService(
+            Arc::new(TokioRwLock::new(blockchain))
+        ))
     }
 
-    pub async fn default() -> Result<BlockchainService> {
-        let blockchain = BlockchainFileSystem::open_blockchain().await?;
-        Ok(BlockchainService(Arc::new(TokioRwLock::new(blockchain))))
+    pub async fn default()
+        -> Result<BlockchainService>
+    {
+        let blockchain =
+            BlockchainFileSystem::open_blockchain()
+                .await?;
+        Ok(BlockchainService(
+            Arc::new(TokioRwLock::new(blockchain))
+        ))
     }
 }
 ```
@@ -176,7 +210,7 @@ impl BlockchainService {
 
 The easiest way to understand the locking model is to find the helper used for reads, and then compare it to write paths.
 
-**Code Listing 2.4-2.3**: Read helper (read lock + delegation)  
+**Code Listing 9-8**: Read helper (read lock + delegation)
 ```rust
 // Source: bitcoin/src/chain/chainstate.rs
 async fn read<F, Fut, T>(&self, f: F) -> Result<T>
@@ -185,9 +219,10 @@ where
     Fut: Future<Output = Result<T>> + Send,
     T: Send + 'static,
 {
-    // Acquire a shared (read) lock…
+    // Acquire shared (read) lock…
     let blockchain_guard = self.0.read().await;
-    // …clone the underlying chainstate handle and run the operation.
+    // …clone underlying chainstate handle,
+    // run the operation.
     f(blockchain_guard.clone()).await
 }
 ```
@@ -200,7 +235,7 @@ where
 
 **Write-lock boundary (`add_block`) code**: `bitcoin/src/chain/chainstate.rs`
 
-**Code Listing 2.4-2.4**: Write-lock boundary example (`BlockchainService::add_block`)  
+**Code Listing 9-9**: Write-lock boundary example (`BlockchainService::add_block`)  
 ```rust
 // Source: bitcoin/src/chain/chainstate.rs
 pub async fn add_block(&self, block: &Block) -> Result<()> {
@@ -219,7 +254,7 @@ pub async fn add_block(&self, block: &Block) -> Result<()> {
 
 Mining constructs a new block, persists it, advances the tip, and updates the UTXO set. That is why `mine_block` is also guarded by the write lock.
 
-**Code Listing 2.4-2.5**: Mining boundary (`BlockchainService::mine_block`)  
+**Code Listing 9-10**: Mining boundary (`BlockchainService::mine_block`)  
 ```rust
 // Source: bitcoin/src/chain/chainstate.rs
 pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
@@ -245,7 +280,7 @@ pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
 
 **Derived-state delegation (UTXO update/rollback) code**: `bitcoin/src/chain/chainstate.rs`
 
-**Code Listing 2.4-2.6**: Derived-state delegation (UTXO update + rollback)  
+**Code Listing 9-11**: Derived-state delegation (UTXO update + rollback)  
 ```rust
 // Source: bitcoin/src/chain/chainstate.rs
 pub async fn update_utxo_set(&self, block: &Block) -> Result<()> {
@@ -265,7 +300,7 @@ At this point, we have identified the most important “state boundaries” in c
 - state mutations take the write lock and delegate to the storage layer,
 - derived state is updated through the UTXO set.
 
-Next, in Section 2.4.3 (Chain State and Storage), we trace the storage layer’s write paths that make blocks durable on disk. Then, in Section 2.4.4 (UTXO Set), we study update and rollback rules in detail.
+Next, in Section 9.3 (Chain State and Storage), we trace the storage layer’s write paths that make blocks durable on disk. Then, in Section 9.4 (UTXO Set), we study update and rollback rules in detail.
 
 ## References and further reading
 
@@ -281,10 +316,10 @@ Next, in Section 2.4.3 (Chain State and Storage), we trace the storage layer’s
 
 <div align="center">
 
-**📚 [← Previous: Domain Model](01-Domain-Model.md)** | **Blockchain State Management** | **[Next: Chain State and Storage →](03-Chain-State-and-Storage.md)** 📚
+**[← Previous: Domain Model](01-Domain-Model.md)** | **Blockchain State Management** | **[Next: Chain State and Storage →](03-Chain-State-and-Storage.md)** 
 
 </div>
 
 ---
 
-**In this subsection, we explored the `bitcoin/src/chain` boundary: what it exports, where it takes locks, and how it delegates persistence and derived-state updates. Next, in Section 2.4.3, we trace the concrete write paths that make blocks durable state on disk.**
+**In this subsection, we explored the `bitcoin/src/chain` boundary: what it exports, where it takes locks, and how it delegates persistence and derived-state updates. Next, in Section 9.3, we trace the concrete write paths that make blocks durable state on disk.**

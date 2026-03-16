@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. **Chapter 3: Web API Architecture** ← *You are here*
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -44,13 +63,13 @@
 
 ---
 
-# Serde Framework Guide
+# Serde Framework Guide: Serialization, Schemas, and API Documentation
 
-**Part I: Core Blockchain Implementation** | **Technical Reference: Serde Serialization Framework**
+**Part I: Foundations & Core Implementation** | **Technical Reference: Serde Serialization and Schema Generation**
 
 <div align="center">
 
-**[📚 ← Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Serde Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md)** 📚
+**[← Chapter 15: Web API Architecture](README.md)** | **Serde Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
 
 </div>
 
@@ -66,7 +85,7 @@ In our blockchain API, Serde is used extensively for:
 - **Error Responses**: Formatting error information as JSON
 - **API Communication**: Converting data between Rust types and HTTP JSON
 
-> **📘 See the full implementation**: This guide explains Serde concepts. To see how Serde is used in our complete web API architecture, see the Data Models chapter and the Request Handlers chapter.
+> **See the full implementation**: This guide explains Serde concepts. To see how Serde is used in our complete web API architecture, see the Data Models chapter and the Request Handlers chapter.
 
 ---
 
@@ -82,6 +101,7 @@ In our blockchain API, Serde is used extensively for:
 8. [Field Attributes](#field-attributes) - Customizing serialization behavior
 9. [Error Handling](#error-handling) - Serde error types
 10. [Performance Considerations](#performance-considerations) - Optimization tips
+11. [OpenAPI Generation with Utoipa](#openapi-generation-with-utoipa) - API schema generation
 
 ---
 
@@ -112,40 +132,9 @@ Serde integrates seamlessly with Axum through the `Json` extractor and response 
 
 Serde's core functionality comes from two traits: `Serialize` and `Deserialize`.
 
-### Serialize Trait
+### Serialize and Deserialize Traits
 
-The `Serialize` trait converts Rust types into a serialized format:
-
-```rust
-pub trait Serialize {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer;
-}
-```
-
-**What it does:**
-- Takes a value and a serializer
-- Converts the value into the serializer's format
-- Returns the serialized data
-
-### Deserialize Trait
-
-The `Deserialize` trait converts serialized data into Rust types:
-
-```rust
-pub trait Deserialize<'de>: Sized {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>;
-}
-```
-
-**What it does:**
-- Takes a deserializer
-- Reads serialized data
-- Converts it into a Rust type
-- Returns the deserialized value
+`Serialize` converts Rust types to serialized format; `Deserialize` converts serialized data back to Rust types. Both are automatically implemented with derive macros.
 
 ---
 
@@ -214,77 +203,38 @@ Serde works with multiple formats, but in our API we primarily use JSON through 
 
 ### JSON Serialization Process
 
-When Axum needs to serialize a response:
-
-1. **Handler Returns Struct**: Handler returns a Rust struct
-2. **Axum Calls Serialize**: Axum calls the struct's `Serialize` implementation
-3. **JSON Created**: `serde_json` converts the struct to JSON
-4. **HTTP Response**: JSON is sent as the response body
-
-**Example from our handlers:**
+When serializing responses:
 
 ```rust
-// In handlers/blockchain.rs
 pub async fn get_blockchain_info(
     State(node): State<Arc<NodeContext>>,
 ) -> Result<Json<ApiResponse<BlockchainInfoResponse>>, StatusCode> {
-    // ... get blockchain data ...
-    
-    let info = BlockchainInfoResponse {
-        height,
-        difficulty: 1,
-        total_blocks: height,
-        // ... other fields
-    };
-
-    // ApiResponse::success() creates the wrapper
-    // Json() wrapper tells Axum to serialize to JSON
+    let info = BlockchainInfoResponse { /* ... */ };
     Ok(Json(ApiResponse::success(info)))
 }
 ```
 
-**What happens:**
-1. `ApiResponse::success(info)` creates an `ApiResponse<BlockchainInfoResponse>`
-2. `Json()` wrapper tells Axum to serialize it
-3. Axum calls `Serialize::serialize()` on the struct
-4. `serde_json` converts it to JSON string
-5. JSON is sent as HTTP response body
+Flow: Handler creates struct → `ApiResponse` wrapper → `Json` tells Axum to serialize → `serde_json` converts to JSON → HTTP response
 
 ### JSON Deserialization Process
 
-When Axum receives a JSON request:
-
-1. **HTTP Request**: Client sends JSON in request body
-2. **Axum Extracts**: Axum's `Json` extractor reads the body
-3. **Deserialize Called**: Axum calls the struct's `Deserialize` implementation
-4. **Rust Struct Created**: `serde_json` converts JSON to Rust struct
-5. **Handler Receives**: Handler receives the deserialized struct
-
-**Example from our handlers:**
+When receiving JSON requests:
 
 ```rust
-// In handlers/transaction.rs
 pub async fn send_transaction(
     State(node): State<Arc<NodeContext>>,
-    Json(request): Json<SendTransactionRequest>,  // ← Deserialization happens here
+    Json(request): Json<SendTransactionRequest>,
 ) -> Result<Json<ApiResponse<SendBitCoinResponse>>, StatusCode> {
-    // `request` is now a SendTransactionRequest struct
     let txid = node.btc_transaction(
         &request.from_address,
         &request.to_address,
         request.amount
     ).await?;
-    
-    // ... create response ...
+    Ok(Json(ApiResponse::success(response)))
 }
 ```
 
-**What happens:**
-1. Client sends JSON: `{"from_address": "...", "to_address": "...", "amount": 100}`
-2. Axum's `Json` extractor reads the request body
-3. Axum calls `Deserialize::deserialize()` on `SendTransactionRequest`
-4. `serde_json` parses JSON and creates the struct
-5. Handler receives the `SendTransactionRequest` struct
+Flow: HTTP request with JSON → Axum's `Json` extractor → Deserialize called → `serde_json` parses JSON → Handler receives struct
 
 ---
 
@@ -314,67 +264,25 @@ pub async fn handler(
 
 ### Request Model Example
 
-Our `SendTransactionRequest` in `models/requests.rs`:
-
 ```rust
 #[derive(Debug, Serialize, Deserialize, Validate, ToSchema)]
 pub struct SendTransactionRequest {
     pub from_address: WalletAddress,
     pub to_address: WalletAddress,
-    #[validate(range(min = 1, message = "Amount must be greater than 0"))]
+    #[validate(range(min = 1))]
     pub amount: i32,
 }
 ```
 
-**JSON Input:**
-```json
-{
-  "from_address": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
-  "to_address": "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2",
-  "amount": 100
-}
-```
-
-**Deserialized Struct:**
-```rust
-SendTransactionRequest {
-    from_address: WalletAddress { /* ... */ },
-    to_address: WalletAddress { /* ... */ },
-    amount: 100
-}
-```
+JSON input `{"from_address": "...", "to_address": "...", "amount": 100}` deserializes to the struct.
 
 ### Custom Type Deserialization
 
-Serde can deserialize into custom types. Our `WalletAddress` type is deserialized automatically:
-
-```rust
-// WalletAddress implements Deserialize
-pub struct SendTransactionRequest {
-    pub from_address: WalletAddress,  // ← Custom type, but Serde handles it
-    // ...
-}
-```
-
-Serde will call `WalletAddress`'s `Deserialize` implementation, which likely parses the string address format.
+Serde automatically deserializes custom types that implement `Deserialize`, like `WalletAddress`.
 
 ### Error Handling
 
-If JSON deserialization fails, Axum returns a `400 Bad Request` automatically:
-
-```rust
-// Invalid JSON or missing fields
-// Client receives: 400 Bad Request
-// Error details in response body
-```
-
-**Example Error Response:**
-```json
-{
-  "error": "invalid type: expected string, found number",
-  "field": "from_address"
-}
-```
+If JSON deserialization fails, Axum automatically returns `400 Bad Request` with error details.
 
 > **See it in action**: Check out the Request Handlers chapter to see how JSON deserialization is used in real handlers like `send_transaction()` and `create_wallet()`.
 
@@ -391,7 +299,8 @@ The `Json` type in Axum tells Axum to serialize the value:
 ```rust
 use axum::response::Json;
 
-pub async fn handler() -> Result<Json<ApiResponse<BlockchainInfoResponse>>, StatusCode> {
+pub async fn handler(
+) -> Result<Json<ApiResponse<BlockchainInfoResponse>>, StatusCode> {
     let info = BlockchainInfoResponse { /* ... */ };
     Ok(Json(ApiResponse::success(info)))
 }
@@ -406,8 +315,6 @@ pub async fn handler() -> Result<Json<ApiResponse<BlockchainInfoResponse>>, Stat
 
 ### Response Model Example
 
-Our `BlockchainInfoResponse` in `models/responses.rs`:
-
 ```rust
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct BlockchainInfoResponse {
@@ -421,35 +328,9 @@ pub struct BlockchainInfoResponse {
 }
 ```
 
-**Rust Struct:**
-```rust
-BlockchainInfoResponse {
-    height: 100,
-    difficulty: 1,
-    total_blocks: 100,
-    total_transactions: 250,
-    mempool_size: 5,
-    last_block_hash: "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
-    last_block_timestamp: DateTime<Utc> { /* ... */ }
-}
-```
-
-**Serialized JSON:**
-```json
-{
-  "height": 100,
-  "difficulty": 1,
-  "total_blocks": 100,
-  "total_transactions": 250,
-  "mempool_size": 5,
-  "last_block_hash": "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
-  "last_block_timestamp": "2024-01-01T12:00:00Z"
-}
-```
+Serializes to JSON with field names and values.
 
 ### Generic Response Wrapper
-
-Our `ApiResponse<T>` wrapper provides consistent response format:
 
 ```rust
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
@@ -461,31 +342,7 @@ pub struct ApiResponse<T> {
 }
 ```
 
-**Success Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "height": 100,
-    "difficulty": 1,
-    // ... other fields
-  },
-  "error": null,
-  "timestamp": "2024-01-01T12:00:00Z"
-}
-```
-
-**Error Response:**
-```json
-{
-  "success": false,
-  "data": null,
-  "error": "Transaction failed: insufficient funds",
-  "timestamp": "2024-01-01T12:00:00Z"
-}
-```
-
-The generic `T` allows any serializable type to be wrapped, maintaining type safety while providing a consistent API format.
+The generic `T` allows any serializable type, maintaining type safety with consistent format.
 
 > **See it in action**: Check out the Data Models chapter to see all our response models and how they're serialized.
 
@@ -542,24 +399,16 @@ pub struct Request {
 }
 ```
 
-### Custom Serialization Functions
+### Custom Serialization
 
-For complex cases, you can provide custom serialization functions:
+Implement `Serialize` manually for complex cases:
 
 ```rust
-use serde::{Deserialize, Serialize, Serializer, Deserializer};
-
-#[derive(Debug)]
-pub struct CustomType {
-    // ... fields
-}
-
 impl Serialize for CustomType {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        // Custom serialization logic
         serializer.serialize_str(&self.to_string())
     }
 }
@@ -573,27 +422,19 @@ Serde provides many attributes for customizing serialization behavior. Here are 
 
 ### Rename Attributes
 
-**Rename a single field:**
 ```rust
 #[serde(rename = "new_name")]
 pub field: String,
-```
 
-**Rename all fields to snake_case:**
-```rust
+// Rename all fields
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct Response {
-    pub block_height: usize,  // Serializes as "block_height"
-    pub total_blocks: usize,  // Serializes as "total_blocks"
+    pub block_height: usize,
 }
 ```
 
-**Other rename options:**
-- `"snake_case"`: `blockHeight` → `block_height`
-- `"camelCase"`: `block_height` → `blockHeight`
-- `"PascalCase"`: `block_height` → `BlockHeight`
-- `"kebab-case"`: `block_height` → `block-height`
+Rename options: `snake_case`, `camelCase`, `PascalCase`, `kebab-case`
 
 ### Optional Fields
 
@@ -651,18 +492,12 @@ Serde provides detailed error information when deserialization fails.
 
 ### Deserialization Errors
 
-When JSON doesn't match the expected structure, Serde returns detailed errors:
+Serde returns detailed errors when JSON doesn't match:
 
 ```rust
-use serde_json::Error;
-
 match serde_json::from_str::<SendTransactionRequest>(json_str) {
-    Ok(request) => { /* success */ }
-    Err(e) => {
-        // e contains detailed error information
-        println!("Deserialization error: {}", e);
-        // Example: "missing field `amount` at line 1 column 45"
-    }
+    Ok(request) => { },
+    Err(e) => println!("Error: {}", e),  // Detailed error info
 }
 ```
 
@@ -709,36 +544,11 @@ pub struct Request<'a> {
 }
 ```
 
-### Avoiding Allocations
+### Performance Tips
 
-Use `Cow` for fields that might be owned or borrowed:
-
-```rust
-use std::borrow::Cow;
-
-#[derive(Deserialize)]
-pub struct Request {
-    pub field: Cow<'static, str>,  // Can be borrowed or owned
-}
-```
-
-### Streaming Deserialization
-
-For large JSON payloads, use streaming:
-
-```rust
-use serde_json::Deserializer;
-
-let stream = Deserializer::from_reader(reader);
-// Process items one at a time instead of loading everything
-```
-
-### Benchmarks
-
-Serde is highly optimized:
-- **JSON Parsing**: Very fast, competitive with C++ libraries
-- **Memory Usage**: Minimal allocations
-- **Type Safety**: Zero runtime cost for type checking
+- Use `Cow` for fields that might be owned or borrowed
+- For large payloads, use streaming deserialization
+- Serde is highly optimized with zero-copy when possible
 
 ---
 
@@ -815,179 +625,201 @@ pub struct Request {
 
 ### Error Serialization
 
-Error serialization converts error information into JSON format for HTTP error responses. This involves a two-step process: first serializing the `ErrorResponse` struct to a JSON string, then wrapping it in the `ApiResponse` wrapper which gets serialized again.
+Error serialization converts errors to JSON. The process involves:
 
-#### ErrorResponse Structure
+1. Create `ErrorResponse` struct
+2. Serialize to JSON string: `serde_json::to_string(&error_response)`
+3. Wrap in `ApiResponse::error(json_string)`
+4. Axum's `Json` serializes the `ApiResponse` wrapper
 
-The `ErrorResponse` struct in `models/errors.rs` implements `Serialize`:
-
-```rust
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub struct ErrorResponse {
-    pub error: String,
-    pub message: String,
-    pub status_code: u16,
-    pub timestamp: DateTime<Utc>,
-}
-```
-
-Because `ErrorResponse` derives `Serialize`, Serde can automatically convert it to JSON.
-
-#### How Error Serialization is Wired
-
-Error serialization is integrated into the error handling middleware in `server.rs`. Here's how it works:
-
-**1. Error Occurs:**
-
-When an error occurs in a handler or middleware, it's caught by the error handling middleware:
-
-```rust
-// In server.rs - handle_errors() middleware
-async fn handle_errors(
-    request: axum::http::Request<axum::body::Body>,
-    next: axum::middleware::Next,
-) -> Result<axum::response::Response, StatusCode> {
-    let response = next.run(request).await;
-    
-    // Check if response indicates an error
-    if response.status().is_server_error() || response.status().is_client_error() {
-        // Error handling logic...
-    }
-}
-```
-
-**2. Create ErrorResponse:**
-
-For internal server errors, an `ErrorResponse` struct is created:
-
-```rust
-if response.status() == StatusCode::INTERNAL_SERVER_ERROR {
-    let error_response = ErrorResponse {
-        error: "Internal Server Error".to_string(),
-        message: "An unexpected error occurred".to_string(),
-        status_code: 500,
-        timestamp: chrono::Utc::now(),
-    };
-    // ...
-}
-```
-
-**3. First Serialization: ErrorResponse → JSON String**
-
-The `ErrorResponse` is serialized to a JSON string using `serde_json::to_string()`:
-
-```rust
-let error_json_string = serde_json::to_string(&error_response)
-    .unwrap_or_else(|_| "Unknown error".to_string());
-```
-
-**What happens:**
-- Serde calls `Serialize::serialize()` on `ErrorResponse`
-- `serde_json` converts the struct to a JSON string
-- Result: `"{\"error\":\"Internal Server Error\",\"message\":\"An unexpected error occurred\",\"status_code\":500,\"timestamp\":\"2024-01-01T12:00:00Z\"}"`
-
-**4. Wrap in ApiResponse:**
-
-The JSON string is wrapped in `ApiResponse::error()`:
-
-```rust
-let api_response = ApiResponse::<()>::error(error_json_string);
-```
-
-This creates an `ApiResponse<()>` with:
-- `success: false`
-- `data: None`
-- `error: Some(error_json_string)` ← The serialized ErrorResponse JSON string
-- `timestamp: Utc::now()`
-
-**5. Second Serialization: ApiResponse → JSON**
-
-The `ApiResponse` is wrapped in Axum's `Json` type and returned:
-
-```rust
-return Ok(Json(api_response).into_response());
-```
-
-**What happens:**
-- `Json()` wrapper tells Axum to serialize the `ApiResponse`
-- Axum calls `Serialize::serialize()` on `ApiResponse<()>`
-- `serde_json` converts it to JSON
-- The `error` field contains the already-serialized JSON string from step 3
-
-**Final JSON Response:**
-
-```json
-{
-  "success": false,
-  "data": null,
-  "error": "{\"error\":\"Internal Server Error\",\"message\":\"An unexpected error occurred\",\"status_code\":500,\"timestamp\":\"2024-01-01T12:00:00Z\"}",
-  "timestamp": "2024-01-01T12:00:00Z"
-}
-```
-
-Note: The `error` field contains a JSON string (escaped), not a JSON object. This is because `ErrorResponse` was serialized to a string first, then that string was placed in the `error` field of `ApiResponse`.
-
-#### Complete Error Serialization Flow
-
-```
-Error Occurs
-    ↓
-Error Handling Middleware (handle_errors)
-    ↓
-Create ErrorResponse struct
-    ↓
-serde_json::to_string(&error_response)  ← First serialization (ErrorResponse → JSON string)
-    ↓
-ApiResponse::error(json_string)  ← Wrap JSON string in ApiResponse
-    ↓
-Json(api_response)  ← Wrap in Axum Json type
-    ↓
-Axum serializes ApiResponse  ← Second serialization (ApiResponse → JSON)
-    ↓
-HTTP Response with JSON body
-```
-
-#### Why Two Serialization Steps?
-
-The two-step process allows:
-1. **Structured Error Information**: `ErrorResponse` provides structured error details (error type, message, status code, timestamp)
-2. **Consistent API Format**: All responses use `ApiResponse<T>` wrapper for consistency
-3. **Flexibility**: The `error` field can contain either a simple string or a serialized JSON object
-4. **Security**: Internal error details can be sanitized before serialization
-
-#### Converting WebError to ErrorResponse
-
-The `From<WebError>` implementation in `models/errors.rs` converts `WebError` enum variants to `ErrorResponse`:
-
-```rust
-impl From<WebError> for ErrorResponse {
-    fn from(err: WebError) -> Self {
-        Self {
-            error: format!("{}", err),  // Uses Display implementation
-            message: format!("{}", err),
-            status_code: err.status_code(),
-            timestamp: chrono::Utc::now(),
-        }
-    }
-}
-```
-
-This allows `WebError` to be converted to `ErrorResponse`, which can then be serialized:
-
-```rust
-let web_error = WebError::NotFound("Block not found".to_string());
-let error_response: ErrorResponse = web_error.into();  // Converts WebError → ErrorResponse
-let json_string = serde_json::to_string(&error_response)?;  // Serializes ErrorResponse
-```
+The two-step process allows structured error details while maintaining consistent API response format.
 
 > **See it in action**: Check out the Error Handling chapter to see how errors are handled and serialized in the middleware. For middleware implementation details, see the [Middleware Layer](05-Middleware.md#error-handling-middleware) chapter.
 
 ---
 
+## OpenAPI Generation with Utoipa
+
+While Serde handles serialization and deserialization, Utoipa generates OpenAPI specifications from the same Rust types. Both frameworks work together to ensure API documentation matches implementation exactly.
+
+### What is Utoipa?
+
+Utoipa is a framework that generates OpenAPI (Swagger) specifications from Rust code. It analyzes your Serde types and handler signatures to automatically create comprehensive API documentation. This ensures documentation always matches your actual API implementation.
+
+### ToSchema Derive Macro
+
+Utoipa provides the `#[derive(ToSchema)]` macro that works alongside Serde's derive macros:
+
+```rust
+use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct BlockchainInfoResponse {
+    pub height: usize,
+    pub difficulty: u32,
+    pub total_blocks: usize,
+    pub total_transactions: usize,
+    pub mempool_size: usize,
+    pub last_block_hash: String,
+    pub last_block_timestamp: DateTime<Utc>,
+}
+```
+
+**What ToSchema does:**
+- Analyzes the struct's fields and Serde attributes
+- Generates OpenAPI schema definitions
+- Maps Rust types to JSON schema types
+- Includes field types, names, and descriptions
+- Works with nested types and generics automatically
+
+### Generic Types with ToSchema
+
+Both Serde and Utoipa work seamlessly with generics. Our `ApiResponse<T>` pattern demonstrates this:
+
+```rust
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct ApiResponse<T> {
+    pub success: bool,
+    pub data: Option<T>,
+    pub error: Option<String>,
+    pub timestamp: DateTime<Utc>,
+}
+```
+
+When used with concrete types like `ApiResponse<BlockchainInfoResponse>`, Utoipa automatically generates the proper schema with `T` replaced by the concrete type.
+
+### Schema Documentation with Attributes
+
+Combine Serde and Utoipa attributes for comprehensive documentation:
+
+```rust
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[schema(description = "Transaction request details")]
+pub struct SendTransactionRequest {
+    #[schema(description = "Source wallet address")]
+    pub from_address: WalletAddress,
+
+    #[schema(description = "Destination wallet address")]
+    pub to_address: WalletAddress,
+
+    #[schema(description = "Amount in satoshis", minimum = 1)]
+    pub amount: i32,
+}
+```
+
+### Path Documentation with Handlers
+
+Document your Axum handlers with Utoipa attributes that reference your Serde types:
+
+```rust
+/// Get blockchain information
+///
+/// Returns comprehensive blockchain statistics including height, difficulty,
+/// total blocks, transactions, and mempool status.
+#[utoipa::path(
+    get,
+    path = "/api/v1/blockchain",
+    tag = "Blockchain",
+    responses(
+        (
+            status = 200,
+            description = "Blockchain information retrieved successfully",
+            body = ApiResponse<BlockchainInfoResponse>  // ← References Serde type
+        ),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn get_blockchain_info(
+    State(node): State<Arc<NodeContext>>,
+) -> Result<Json<ApiResponse<BlockchainInfoResponse>>, StatusCode> {
+    // ... handler implementation
+}
+```
+
+### Request Body Documentation
+
+Document request bodies by referencing your Serde request types:
+
+```rust
+#[utoipa::path(
+    post,
+    path = "/api/v1/transactions",
+    tag = "Transaction",
+    request_body = SendTransactionRequest,  // ← References Serde request type
+    responses((status = 202, body = ApiResponse<SendBitCoinResponse>))
+)]
+pub async fn send_transaction(
+    State(node): State<Arc<NodeContext>>,
+    Json(request): Json<SendTransactionRequest>,  // ← Same Serde type
+) -> Result<Json<ApiResponse<SendBitCoinResponse>>, StatusCode> {
+    // ... handler implementation
+}
+```
+
+### Swagger UI Integration
+
+Utoipa integrates with Swagger UI for interactive API documentation:
+
+```rust
+use utoipa_swagger_ui::SwaggerUi;
+
+pub fn create_swagger_ui() -> SwaggerUi {
+    SwaggerUi::new("/swagger-ui")
+        .url("/api-docs/openapi.json", ApiDoc::openapi())
+}
+```
+
+Once configured, Swagger UI provides:
+- **Interactive Testing**: Try API endpoints directly
+- **Schema Exploration**: Browse data structures
+- **Request/Response Examples**: See real-world usage
+- **Validation**: Verify request format before sending
+
+### Schema Examples
+
+Include examples in your schemas for better documentation:
+
+```rust
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[schema(example = json!(
+    {
+        "success": true,
+        "data": {
+            "height": 100,
+            "difficulty": 1
+        },
+        "error": null,
+        "timestamp": "2024-01-15T10:30:45Z"
+    }
+))]
+pub struct ApiResponse<T> {
+    // ... fields
+}
+```
+
+### Integration Workflow
+
+The complete workflow shows how Serde and Utoipa work together:
+
+1. **Define Types**: Create Rust structs with `#[derive(Serialize, Deserialize, ToSchema)]`
+2. **Serde Serializes/Deserializes**: Converts between Rust and JSON at runtime
+3. **Utoipa Generates Schemas**: Creates OpenAPI definitions at compile time
+4. **Documentation Accuracy**: Swagger UI shows exact schema matching your implementation
+
+This integrated approach ensures:
+- **Type Safety**: Compile-time guarantees
+- **DRY Principle**: Single source of truth for types
+- **Always Current**: Documentation generated from code
+- **Developer Experience**: Interactive API exploration
+
+---
+
 ## Summary
 
-Serde provides the foundation for JSON handling in our blockchain API:
+Serde and Utoipa together provide complete serialization and API documentation for our blockchain API:
 
+**Serde provides:**
 - **Serialize/Deserialize Traits**: Core functionality for converting types
 - **Derive Macros**: Automatic implementation of serialization traits
 - **JSON Integration**: Seamless integration with Axum's JSON handling
@@ -995,27 +827,41 @@ Serde provides the foundation for JSON handling in our blockchain API:
 - **Performance**: Efficient, zero-copy when possible
 - **Flexibility**: Custom serialization for special cases
 
-Serde's design allows us to focus on our data models while it handles the complex task of converting between Rust types and JSON efficiently and safely.
+**Utoipa provides:**
+- **Schema Generation**: Automatic OpenAPI schemas from Rust types
+- **Documentation**: Complete API documentation with Swagger UI
+- **Type Safety**: Ensures documentation matches implementation
+- **Integration**: Works seamlessly with Serde attributes
+- **No Duplication**: Single source of truth for data types
+
+Serde and Utoipa's design allows us to focus on our data models while they handle the complex tasks of converting between Rust types and JSON (Serde) and automatically generating accurate API documentation (Utoipa) efficiently and safely.
 
 ---
 
 ## Additional Resources
 
-- **[Serde Documentation](https://serde.rs/)**: Comprehensive Serde guide
-- **[serde_json Documentation](https://docs.rs/serde_json/)**: JSON format support
+### Serialization and Documentation Frameworks
+
+- **[Serde Documentation](https://serde.rs/)**: Comprehensive Serde guide and derive macro documentation
+- **[serde_json Documentation](https://docs.rs/serde_json/)**: JSON format support and utilities
+- **[Utoipa Documentation](https://docs.rs/utoipa/)**: OpenAPI specification generation
+- **[OpenAPI Specification](https://swagger.io/specification/)**: OpenAPI 3.0 specification reference
+- **[Swagger UI](https://swagger.io/tools/swagger-ui/)**: Interactive API documentation tool
+
+### Integration Points
+
 - **Data Models**: How we use Serde in our API models
 - **Request Handlers**: How Serde integrates with Axum handlers
 - **Axum Framework Guide**: How Axum uses Serde for JSON handling
 - **Tower Framework Guide**: Middleware framework used alongside Serde
-- **Utoipa Framework Guide**: OpenAPI framework that integrates with Serde schemas
-- **Tokio Runtime Guide**: Async runtime that powers async serialization
+- **Tokio Runtime Guide**: Async runtime that powers async operations
 - **Rust Language Guide**: Rust language features used throughout
 
 ---
 
 <div align="center">
 
-**[📚 ← Web API Index](README.md)** | **Serde Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Tower** | **Utoipa** | **Tracing** | **Tokio** 📚
+**[← Web API Index](README.md)** | **Serde & Utoipa Guide** (Serialization and Schemas) | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Tracing** | **Tokio** 
 
 </div>
 

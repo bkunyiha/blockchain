@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Section Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Section 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Section 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Section 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Section 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Section 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Section 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Section 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Section 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. **Section 2.4: Blockchain (Technical Foundations)** ← *You are here*
-10. <a href="../store/README.md">Section 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Section 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Section 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Section 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Section 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Section 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Section 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Section 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Section 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Section 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Section 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Section 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Section 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -37,7 +56,7 @@
 
 ---
 
-# Section 2.4.1: Domain Model — Blocks, Transactions, and the UTXO Worldview
+# Section 9.1: Domain Model — Blocks, Transactions, and the UTXO Worldview
 
 In this section, we will walk through the project’s Rust “model classes” (Rust types/structs) that represent Bitcoin’s core domain objects. Our goal is to confidently answer “what does this type *mean* in whitepaper terms?” and “where is it used in the implementation?”
 
@@ -58,7 +77,7 @@ As we walk through the code in this section, use these files as our primary code
 <a id="whitepaper-term-rust-type-map"></a>
 ## Whitepaper Term → Rust Type Map
 
-```
+```text
 Whitepaper Concept             Rust Type / Field
 --------------------------------------------------------------
 Block header                   BlockHeader
@@ -82,7 +101,7 @@ The diagram below shows the *runtime relationship* between the main “state buc
 - the **UTXO set** (derived “what is spendable right now” state),
 - and **transactions** (which consume old outputs and create new ones).
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │                      Blockchain                          │
 │  ┌─────────────────────────────────────────────────────┐ │
@@ -177,7 +196,7 @@ In our implementation, `BlockHeader` is the smallest header we need to make thos
 
 In practice, the header matters because it defines the **proof-of-work input**: mining repeatedly hashes a byte sequence derived from the header (plus a transaction commitment) until it finds a valid `nonce`.
 
-Those bytes are assembled from the header fields (plus a transaction commitment) in `ProofOfWork::prepare_data(...)`, which is why `BlockHeader` contains exactly the fields it does. We cover the proof-of-work loop and the exact hashed byte layout in Section 2.4.6 (Block Lifecycle and Mining).
+Those bytes are assembled from the header fields (plus a transaction commitment) in `ProofOfWork::prepare_data(...)`, which is why `BlockHeader` contains exactly the fields it does. We cover the proof-of-work loop and the exact hashed byte layout in Section 9.6 (Block Lifecycle and Mining).
 
 **Struct layout (simplified):**
 
@@ -206,10 +225,20 @@ pub struct Block {
 - In our project implementation we do not use a **Merkle root** field. We instead concatenate tx IDs and hash once using `Block::hash_transactions()`. This keeps the code readable but does not support Merkle proofs / SPV.
 
 **Creating a new block**:
-In our implementation, `Block::new_block(pre_block_hash, transactions, height)` is the entry point that *defines* the header boundary: it takes the parent link (`pre_block_hash`) and the transaction list (`transactions`) as inputs, sets derived header fields such as `timestamp`, and then finalizes `nonce` and `hash` by running proof-of-work.
+In our implementation,
+`Block::new_block(pre_block_hash, transactions, height)`
+is the entry point that *defines* the header boundary:
+it takes the parent link (`pre_block_hash`) and the
+transaction list (`transactions`) as inputs, sets
+derived header fields such as `timestamp`, and then
+finalizes `nonce` and `hash` by running PoW.
 
 ```rust
-pub fn new_block(pre_block_hash: String, transactions: &[Transaction], height: usize) -> Block {
+pub fn new_block(
+    pre_block_hash: String,
+    transactions: &[Transaction],
+    height: usize
+) -> Block {
     let header = BlockHeader {
         timestamp: crate::current_timestamp(),
         pre_block_hash,
@@ -303,9 +332,9 @@ pub struct Transaction {
 4. **Compute the txid**: hash a serialized copy with `id = []` (so the definition is not circular), then store the digest into `Transaction.id`.
 5. **Sign**: produce per-input signatures over a trimmed copy and store them into `TXInput.signature`.
 
-In the project, the concrete entry point for this flow is `Transaction::new_utxo_transaction(...)` (we read the full implementation in Section 2.4.5: Transaction Lifecycle).
+In the project, the concrete entry point for this flow is `Transaction::new_utxo_transaction(...)` (we read the full implementation in Section 9.5: Transaction Lifecycle).
 
-**Code Listing 2.4-1.2: Constructing a UTXO spending transaction (selection → change → txid → sign)**  
+**Code Listing 9-2: Constructing a UTXO spending transaction (selection → change → txid → sign)**
 Source: `bitcoin/src/primitives/transaction.rs`
 
 ```rust
@@ -315,16 +344,21 @@ pub async fn new_utxo_transaction(
     tx_amount: i32,
     utxo_set: &UTXOSet,
 ) -> Result<Transaction> {
-    // 0) Load the sender’s wallet material (pubkey, private key bytes)
+    // 0) Load sender’s wallet (pubkey, private key bytes)
     let wallets = WalletService::new()?;
     let from_wallet = wallets
         .get_wallet(from_wlt_addr)
-        .ok_or_else(|| BtcError::UTXONotFoundError(from_wlt_addr.as_string()))?;
+        .ok_or_else(|| {
+            BtcError::UTXONotFoundError(from_wlt_addr.as_string())
+        })?;
 
-    // 1) Select spendable outputs (outpoints) from the UTXO set for this sender
+    // 1) Select spendable outputs from UTXO set for sender
     let from_public_key_hash = hash_pub_key(from_wallet.get_public_key());
     let (available_funds, valid_outputs) = utxo_set
-        .find_spendable_outputs(from_public_key_hash.as_slice(), tx_amount)
+        .find_spendable_outputs(
+            from_public_key_hash.as_slice(),
+            tx_amount
+        )
         .await?;
     if available_funds < tx_amount {
         return Err(BtcError::NotEnoughFunds);
@@ -335,12 +369,16 @@ pub async fn new_utxo_transaction(
     for (txid_hex, out_indexes) in valid_outputs {
         let txid = HEXLOWER
             .decode(txid_hex.as_bytes())
-            .map_err(|e| BtcError::TransactionIdHexDecodingError(e.to_string()))?;
+            .map_err(|e| {
+                BtcError::TransactionIdHexDecodingError(
+                    e.to_string()
+                )
+            })?;
         for current_out_index in out_indexes {
             inputs.push(TXInput {
                 txid: txid.clone(),
                 vout: current_out_index,
-                signature: vec![], // filled after we sign
+                signature: vec![], // filled after sign
                 pub_key: from_wallet.get_public_key().to_vec(),
             });
         }
@@ -353,7 +391,13 @@ pub async fn new_utxo_transaction(
         outputs.push(TXOutput::new(change, from_wlt_addr)?);
     }
 
-    // 4) Compute the transaction ID (txid) from a copy with id = [] and store it
+    // ... (continues with txid computation and signing)
+}
+```
+
+After creating inputs and outputs, the transaction is finalized by computing its ID and then signing it. This next section shows how the txid is calculated using a serialized copy with an empty `id` field, preventing circular definitions.
+
+```rust
     let mut tx = Transaction {
         id: vec![],
         vin: inputs,
@@ -361,19 +405,24 @@ pub async fn new_utxo_transaction(
     };
     tx.id = tx.hash()?;
 
-    // 5) Sign: produce per-input signatures (trimmed copy → hash → signature) and store them
-    tx.sign(utxo_set.get_blockchain(), from_wallet.get_pkcs8()).await?;
+    // Sign: produce per-input signatures and store them
+    tx.sign(
+        utxo_set.get_blockchain(),
+        from_wallet.get_pkcs8()
+    )
+    .await?;
     Ok(tx)
 }
 ```
 
-**Code Listing 2.4-1.3: Computing the txid (hash a copy with `id = []`)**  
+**Code Listing 9-3: Computing the txid (hash a copy with `id = []`)**
 Source: `bitcoin/src/primitives/transaction.rs`
 
 ```rust
 fn hash(&mut self) -> Result<Vec<u8>> {
-    // IMPORTANT: do not include the transaction’s own id in the bytes we hash,
-    // otherwise the definition becomes circular (“the id depends on itself”).
+    // IMPORTANT: do not include the tx’s own id
+    // in the hash bytes; otherwise the definition
+    // becomes circular (“id depends on itself”).
     let tx_copy = Transaction {
         id: vec![],
         vin: self.vin.clone(),
@@ -431,93 +480,77 @@ pub async fn find_spendable_outputs(
     from_pub_key_hash: &[u8],
     amount: i32,
 ) -> Result<(i32, HashMap<String, Vec<usize>>)> {
-    debug!("Finding spendable outputs for amount: {}", amount);
-
-    // We return two things:
-    // 1) the total value we managed to accumulate (so the caller can decide if it needs “change”)
-    // 2) the concrete outpoints to spend, encoded as: txid_hex -> [vout indexes]
-    let mut unspent_outputs_indexes: HashMap<String, Vec<usize>> = HashMap::new();
+    // Initialize accumulators for greedy selection
+    let mut unspent_outputs_indexes: HashMap<String, Vec<usize>>
+        = HashMap::new();
     let mut accmulated = 0;
 
-    // Open the embedded DB handle behind the chain façade, then open the UTXO tree.
-    // Each key is a transaction id (txid) and each value encodes that transaction’s unspent outputs.
+    // Open DB handle and UTXO tree
     let db = self.blockchain.get_db().await?;
     let utxo_tree = db
         .open_tree(UTXO_TREE)
-        .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
-    let mut total_checked = 0;
+        .map_err(|e| {
+            BtcError::UTXODBconnection(e.to_string())
+        })?;
 
-    // Scan the UTXO set and greedily accumulate spendable outputs until we reach `amount`.
+    // Scan UTXO set, greedily accumulate outputs until reaching `amount`
     for item in utxo_tree.iter() {
-        let (k, v) = item.map_err(|e| BtcError::GettingUTXOError(e.to_string()))?;
+        let (k, v) = item.map_err(|e| {
+            BtcError::GettingUTXOError(e.to_string())
+        })?;
 
-        // `k` is the txid (binary); we convert it to hex because the output map uses String keys.
         let txid_hex = HEXLOWER.encode(k.to_vec().as_slice());
+        let (tx_out, _): (Vec<TXOutput>, usize) =
+            bincode::serde::decode_from_slice(
+                v.to_vec().as_slice(),
+                bincode::config::standard(),
+            )
+            .map_err(|e| {
+                BtcError::TransactionDeserializationError(
+                    e.to_string()
+                )
+            })?;
+        // ... (iterate outputs and check spendability)
+    }
 
-        // `v` stores a serialized Vec<TXOutput> for that txid (plus some metadata we ignore here).
-        // We deserialize it so we can inspect each candidate output.
-        let (tx_out, _): (Vec<TXOutput>, usize) = bincode::serde::decode_from_slice(
-            v.to_vec().as_slice(),
-            bincode::config::standard(),
-        )
-        .map_err(|e| BtcError::TransactionDeserializationError(e.to_string()))?;
+    Ok((accmulated, unspent_outputs_indexes))
+}
+```
 
-        for (current_out_index, out) in tx_out.iter().enumerate() {
-            total_checked += 1;
-            debug!(
-                "Checking output {} in tx {}: value={}, in_mempool={}, locked_with_key={}",
-                current_out_index,
-                txid_hex,
-                out.get_value(),
-                out.is_in_global_mem_pool(),
-                out.is_locked_with_key(from_pub_key_hash)
-            );
-            // Selection predicate (our simplified “spendability” rule):
-            // - not already being spent by a pending mempool transaction (project-specific safety)
-            // - positive value
-            // - locked to `from_pub_key_hash` (i.e., “owned” by the sender)
-            // - keep accumulating until we reach the target amount
+The iteration through outputs evaluates each candidate against four spendability rules: not in the mempool, positive value, locked to the sender’s pubkey hash, and not yet reaching the target amount. When an output passes these checks, its index is recorded under the txid for later input creation.
+
+```rust
+        for (current_out_index, out) in
+            tx_out.iter().enumerate()
+        {
             if out.not_in_global_mem_pool()
                 && out.get_value() > 0
                 && out.is_locked_with_key(from_pub_key_hash)
                 && accmulated < amount
             {
                 accmulated += out.get_value();
-                debug!(
-                    "Adding spendable output: tx={}, idx={}, value={}, accumulated={}",
-                    txid_hex,
-                    current_out_index,
-                    out.get_value(),
-                    accmulated
-                );
-                // Record the outpoint index (vout) under the txid key.
-                // Later, `Transaction::new_utxo_transaction(...)` turns these entries into TXInputs.
-                if unspent_outputs_indexes.contains_key(txid_hex.as_str()) {
+                if unspent_outputs_indexes
+                    .contains_key(txid_hex.as_str())
+                {
                     unspent_outputs_indexes
                         .get_mut(txid_hex.as_str())
-                        .ok_or(BtcError::UTXONotFoundError(format!(
-                            "(find_spendable_outputs) UTXO {} not found",
-                            txid_hex
-                        )))?
+                        .ok_or(BtcError::UTXONotFoundError(
+                            format!(
+                                “(find_spendable_outputs) \
+                                 UTXO {} not found”,
+                                txid_hex
+                            ),
+                        ))?
                         .push(current_out_index);
                 } else {
-                    unspent_outputs_indexes.insert(txid_hex.clone(), vec![current_out_index]);
+                    unspent_outputs_indexes.insert(
+                        txid_hex.clone(),
+                        vec![current_out_index],
+                    );
                 }
             }
         }
     }
-
-    debug!(
-        "find_spendable_outputs completed: checked {} outputs, accumulated={}, found {} spendable transactions",
-        total_checked,
-        accmulated,
-        unspent_outputs_indexes.len()
-    );
-
-    // The caller uses:
-    // - `accmulated` to decide if it must add a change output
-    // - `unspent_outputs_indexes` to build TXInputs that reference (txid, vout)
-    Ok((accmulated, unspent_outputs_indexes))
 }
 ```
 
@@ -532,7 +565,13 @@ pub async fn find_spendable_outputs(
 
 **Transaction ID (txid) code**: `bitcoin/src/primitives/transaction.rs`
 
-In this implementation, a transaction’s “ID” is computed by hashing a serialized copy where `id` is empty (see **Code Listing 2.4-1.3** above). The important rule is: **the txid commits to `vin` and `vout`, not to the already-stored `id` field**, so the definition is not circular.
+In this implementation, a transaction’s “ID” is
+computed by hashing a serialized copy where `id` is
+empty (see **Code Listing 9-3** above). The
+important rule is: **txid commits to `vin` and
+`vout`, not to the already-stored `id` field**, so
+the definition is not circular.
+
 ```rust
 fn hash(&mut self) -> Result<Vec<u8>> {
     let tx_copy = Transaction {
@@ -540,7 +579,9 @@ fn hash(&mut self) -> Result<Vec<u8>> {
         vin: self.vin.clone(),
         vout: self.vout.clone(),
     };
-    Ok(sha256_digest(tx_copy.serialize()?.as_slice()))
+    Ok(sha256_digest(
+        tx_copy.serialize()?.as_slice()
+    ))
 }
 ```
 - **What to notice**
@@ -607,14 +648,14 @@ pub fn new_coinbase_tx(to: &WalletAddress) -> Result<Transaction> {
 
 ## Navigation
 
-- **Previous**: Section 2.4 (Technical Foundations overview)
-- **Next**: Section 2.4.2 (Blockchain State Management)
+- **Previous**: Section 9 (Technical Foundations overview)
+- **Next**: Section 9.2 (Blockchain State Management)
 
 ---
 
 <div align="center">
 
-**📚 [← Previous: Technical Foundations](README.md)** | **Domain Model** | **[Next: Blockchain State Management →](02-Blockchain-State-Management.md)** 📚
+**[← Previous: Technical Foundations](README.md)** | **Domain Model** | **[Next: Blockchain State Management →](02-Blockchain-State-Management.md)** 
 
 </div>
 

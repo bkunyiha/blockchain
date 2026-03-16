@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. **Chapter 10: Rust Language Guide** ← *You are here*
+34. <a href="../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -38,32 +57,11 @@
 ---
 # Traits: Polymorphism and Code Reuse
 
-With structs and enums, we can model our domain concepts. But as our blockchain implementation grows, we find ourselves needing to express that different types share common behaviors. A transaction can be validated, a block can be hashed, and a wallet address can be encoded. Rust's trait system allows us to define these shared behaviors and implement them for different types, providing polymorphism and code reuse without the overhead of traditional object-oriented inheritance.
+Traits define shared behavior that types can implement. For comprehensive treatment, see [The Rust Book: Traits](https://doc.rust-lang.org/book/ch10-02-traits.html).
 
-Traits are Rust's mechanism for defining shared behavior. They're similar to interfaces in other languages but more powerful, enabling both static and dynamic dispatch, associated types, and default implementations. In this chapter, we'll explore how traits enable flexible, reusable code in our blockchain.
+## Defining and Implementing Traits
 
-### Defining Traits: Specifying Behavior
-
-When we define a trait, we're specifying a contract that types must fulfill. Consider what behaviors our blockchain types might share:
-
-```rust
-// Conceptual example - traits define interfaces
-trait Hashable {
-    fn hash(&self) -> Vec<u8>;
-}
-
-trait Validatable {
-    fn validate(&self) -> Result<()>;
-}
-```
-
-These trait definitions specify that any type implementing `Hashable` must provide a `hash()` method, and any type implementing `Validatable` must provide a `validate()` method. The trait doesn't specify how these methods work—that's left to each implementing type—but it guarantees that the methods exist.
-
-### Implementing Traits: Providing Behavior
-
-Once we've defined a trait, types can implement it by providing the required methods. Implementation happens in `impl` blocks, which can be associated with specific types or made generic over types that implement certain traits.
-
-**Example from `bitcoin/src/node/peers.rs`:**
+Traits specify a contract. From `bitcoin/src/node/peers.rs`:
 
 ```rust
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
@@ -75,48 +73,27 @@ impl Node {
     fn new(addr: SocketAddr) -> Node {
         Node { addr }
     }
-
     pub fn get_addr(&self) -> SocketAddr {
         self.addr
     }
 }
-```
 
-This implementation block shows how we define behavior for the `Node` struct. The `impl Node` block contains methods that operate on `Node` instances. Notice the different `self` types:
-
-- **`new(addr: SocketAddr)`**: An associated function (no `self` parameter) that creates a new `Node`. Called with `Node::new(addr)`.
-- **`get_addr(&self)`**: A method that takes an immutable borrow of `self`. Called with `node.get_addr()` and allows reading but not modifying.
-- **`&mut self`**: Would allow modifying the struct (not shown here but used elsewhere).
-- **`self`**: Would take ownership of the struct (rare, used for consuming operations).
-
-These different `self` types give us fine-grained control over how methods interact with their data, enabling both efficient access patterns and clear ownership semantics.
-
-### Implementing Standard Traits: Default
-
-Rust's standard library provides many useful traits that types can implement. One of the most common is `Default`, which provides a way to create default values for types. In our node management code, we implement `Default` for the `Nodes` collection:
-
-```rust
-impl Default for Nodes {
+impl Default for Node {
     fn default() -> Self {
-        Self::new()
+        // Custom default implementation
+        Self::new(/* ... */)
     }
 }
 ```
 
-By implementing `Default`, we enable several convenient patterns. Code can call `Nodes::default()` or use `Default::default()` to create a new `Nodes` instance. Some Rust features, like struct field initialization, can automatically use `Default` implementations. The trait can also be derived automatically with `#[derive(Default)]` when all fields implement `Default`, but in our case, we provide a custom implementation that calls our `new()` method.
+## Trait Bounds
 
-This pattern of implementing standard library traits appears throughout our codebase, enabling our types to work seamlessly with Rust's ecosystem and providing familiar interfaces for common operations.
-
-### Trait Bounds: Constraining Generic Types
-
-When we write generic code, we often need to specify what capabilities the generic types must have. Trait bounds allow us to constrain generic type parameters, ensuring they implement the traits we need. This enables generic code that's both flexible and type-safe.
-
-**Example from `bitcoin/src/chain/chainstate.rs`:**
+Trait bounds constrain generic types. From `bitcoin/src/chain/chainstate.rs`:
 
 ```rust
 async fn read<F, Fut, T>(&self, f: F) -> Result<T>
 where
-    F: FnOnce(BlockchainFileSystem) -> Fut + Send,  // ← Trait bounds
+    F: FnOnce(BlockchainFileSystem) -> Fut + Send,
     Fut: Future<Output = Result<T>> + Send,
     T: Send + 'static,
 {
@@ -125,18 +102,16 @@ where
 }
 ```
 
-**Trait Bounds:**
-- **`F: FnOnce(...)`**: Function that can be called once
-- **`+ Send`**: Can be safely sent between threads
-- **`+ 'static`**: Lives for the entire program duration
+Bounds like `F: FnOnce(...) + Send` ensure `F` can be called once and is safe to send between threads.
+
+## Trait Objects vs Generics
+
+- **Generics (`T where T: Trait`)**: Static dispatch, monomorphized, zero-cost. Use for compile-time flexibility.
+- **Trait objects (`dyn Trait`)**: Dynamic dispatch, single compiled code, small code size. Use for runtime polymorphism.
 
 ## Summary
 
-Traits enable polymorphism and code reuse in Rust without the overhead of traditional object-oriented inheritance. They allow us to define shared behavior that types can implement, enabling generic code that works with any type implementing a trait.
-
-Through trait bounds, we can constrain generic types to ensure they have the capabilities we need. This enables flexible, reusable code while maintaining type safety. Traits are central to Rust's design, appearing throughout the standard library and our blockchain implementation.
-
-In the next chapter, we'll explore how Rust handles errors explicitly through the `Result` and `Option` types, building on the trait concepts we've learned here.
+Traits enable shared behavior across types. Trait bounds constrain generics. Generics use static dispatch (fast, larger code); trait objects use dynamic dispatch (slower, smaller code). Traits are central to Rust polymorphism.
 
 ---
 
@@ -157,7 +132,7 @@ In the next chapter, we'll explore how Rust handles errors explicitly through th
 
 <div align="center">
 
-**📚 [← Rust Guide Index](README.md)** | **Traits** | **[← Previous: Data Structures](03-Data-Structures.md)** | **[Next: Error Handling →](05-Error-Handling.md)** 📚
+**[← Rust Guide Index](README.md)** | **Traits** | **[← Previous: Data Structures](03-Data-Structures.md)** | **[Next: Error Handling →](05-Error-Handling.md)** 
 
 </div>
 

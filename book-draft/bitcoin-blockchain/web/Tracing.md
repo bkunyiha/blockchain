@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. **Chapter 3: Web API Architecture** ← *You are here*
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -46,11 +65,11 @@
 
 # Tracing Framework Guide
 
-**Part I: Core Blockchain Implementation** | **Technical Reference: Tracing Structured Logging Framework**
+**Part I: Foundations & Core Implementation** | **Technical Reference: Tracing Structured Logging Framework**
 
 <div align="center">
 
-**[📚 ← Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Tracing Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md)** 📚
+**[← Chapter 15: Web API Architecture](README.md)** | **Tracing Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
 
 </div>
 
@@ -67,7 +86,7 @@ In our blockchain API, Tracing is used extensively for:
 - **Debugging**: Detailed diagnostic information for development
 - **Production Monitoring**: Structured logs for production observability
 
-> **📘 See the full implementation**: This guide explains Tracing concepts. To see how Tracing is used in our complete web API architecture, see the Middleware Layer chapter for logging middleware, the Server Setup chapter for logging configuration, and the Error Handling chapter for error logging.
+> **See the full implementation**: This guide explains Tracing concepts. To see how Tracing is used in our complete web API architecture, see the Middleware Layer chapter for logging middleware, the Server Setup chapter for logging configuration, and the Error Handling chapter for error logging.
 
 ---
 
@@ -119,387 +138,68 @@ Tracing integrates seamlessly with Tower HTTP's `TraceLayer` for automatic HTTP 
 
 ## Logging Levels
 
-Tracing provides five logging levels, ordered from most to least severe:
+Tracing provides five levels (most to least severe): ERROR, WARN, INFO, DEBUG, TRACE.
 
-### ERROR
+### Project Configuration
 
-Errors represent failures that prevent an operation from completing:
+In our blockchain API:
 
-```rust
-use tracing::error;
+- **ERROR**: Operation failures, unrecoverable errors - example: failed transactions
+- **WARN**: Recoverable issues, performance concerns
+- **INFO**: Normal operations, important state changes
+- **DEBUG**: Detailed diagnostics (disabled in production by default)
+- **TRACE**: Very detailed diagnostics (disabled in production by default)
 
-error!("Failed to create transaction: {}", e);
-error!("Database connection failed: {}", err);
-```
-
-**When to use:**
-- Operation failures
-- Unrecoverable errors
-- Critical system issues
-
-**Example from our codebase:**
+### Examples from Our Codebase
 
 ```rust
-// In server.rs - Error handling middleware
-tracing::error!(
-    "[handle_errors]: Error response ({}): {}",
-    parts.status,
-    body_str
-);
-```
+// server.rs - Error handling middleware
+tracing::error!("[handle_errors]: Error response ({}): {}", parts.status, body_str);
 
-### WARN
-
-Warnings indicate potentially problematic situations that don't prevent operation:
-
-```rust
-use tracing::warn;
-
-warn!("Rate limit approaching: {} requests remaining", remaining);
-warn!("Deprecated API endpoint used: {}", path);
-```
-
-**When to use:**
-- Deprecated features
-- Performance concerns
-- Recoverable issues
-
-### INFO
-
-Info logs record normal operation events:
-
-```rust
-use tracing::info;
-
-info!("Transaction {} submitted successfully", txid);
-info!("Starting web server on {} with graceful shutdown", addr);
-```
-
-**When to use:**
-- Normal operation events
-- Important state changes
-- Request/response logging
-
-**Examples from our codebase:**
-
-```rust
-// In server.rs - Server startup
+// server.rs - Server startup
 tracing::info!("Starting web server on {} with graceful shutdown", addr);
 
-// In handlers/transaction.rs - Transaction submission
+// handlers/transaction.rs - Transaction submission
 info!("Transaction {} submitted successfully", txid);
 
-// In server.rs - Shutdown signal
+// server.rs - Shutdown signal
 tracing::info!("Shutdown signal received");
 ```
-
-### DEBUG
-
-Debug logs provide detailed diagnostic information:
-
-```rust
-use tracing::debug;
-
-debug!("Processing block with hash: {}", hash);
-debug!("Wallet balance: {} satoshis", balance);
-```
-
-**When to use:**
-- Detailed diagnostic information
-- Development debugging
-- Step-by-step operation tracking
-
-**Example from our codebase:**
-
-```rust
-// In primitives/transaction.rs
-use tracing::debug;
-
-debug!("Transaction inputs: {:?}", inputs);
-debug!("Transaction outputs: {:?}", outputs);
-```
-
-### TRACE
-
-Trace logs provide the most detailed diagnostic information:
-
-```rust
-use tracing::trace;
-
-trace!("Entering function with parameters: {:?}", params);
-trace!("Internal state: {:?}", state);
-```
-
-**When to use:**
-- Very detailed diagnostics
-- Internal implementation details
-- Performance profiling
 
 ---
 
 ## Structured Logging
 
-Tracing supports structured logging with key-value pairs, making logs easier to parse and query.
-
-### Basic Structured Logging
-
-Instead of formatting strings, use key-value pairs:
-
-```rust
-use tracing::info;
-
-// Traditional logging (less structured)
-info!("Transaction {} submitted from {} to {}", txid, from, to);
-
-// Structured logging (better)
-info!(
-    txid = %txid,
-    from = %from,
-    to = %to,
-    "Transaction submitted"
-);
-```
-
-**Benefits:**
-- **Queryable**: Log aggregation tools can filter by fields
-- **Parseable**: Structured data is easier to parse
-- **Extensible**: Easy to add more fields
+Tracing supports structured logging with key-value pairs for queryable, parseable logs.
 
 ### Field Syntax
 
-Tracing supports different field syntax:
-
 ```rust
 use tracing::info;
 
-let txid = "abc123";
-let amount = 1000;
-let address = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
-
-// Display formatting (%)
-info!(txid = %txid, "Transaction ID");
-
-// Debug formatting (?)
-info!(address = ?address, "Wallet address");
-
-// Both
 info!(
-    txid = %txid,
-    amount,
-    address = ?address,
-    "Transaction details"
+    txid = %txid,           // Display formatting (strings, numbers)
+    from = %from,           // Use % for numbers/strings
+    amount,                 // Debug formatting (default)
+    address = ?address,     // Use ? for structs/enums
+    "Transaction submitted"
 );
 ```
 
 **Formatting Options:**
-- `field = value`: Uses `Debug` formatting
-- `field = %value`: Uses `Display` formatting (for strings, numbers)
-- `field = ?value`: Uses `Debug` formatting (for structs, enums)
-- `field`: Shorthand for `field = field` (uses `Debug`)
+- `field = %value`: Display trait (faster for strings/numbers)
+- `field = ?value`: Debug trait (for complex types)
+- `field`: Shorthand - defaults to Debug
 
-### How Structured Logging Conversion Works
+### Structured Logging in Our Project
 
-Understanding how Tracing converts structured key-value pairs helps you use it effectively. Here's the mechanism:
+Tracing macros expand at compile time, creating structured events with named fields. Field formatting uses:
 
-#### 1. Procedural Macro Expansion
+- **`%` operator**: Display trait (strings, numbers) - faster
+- **`?` operator**: Debug trait (structs, enums)
+- **No operator**: Defaults to Debug formatting
 
-Tracing macros (`info!`, `error!`, `debug!`, etc.) are **procedural macros** that expand at compile time. When you write:
-
-```rust
-info!(
-    txid = %txid,
-    from = %from,
-    to = %to,
-    "Transaction submitted"
-);
-```
-
-The macro expands this into code that:
-1. Creates a structured event with named fields
-2. Formats each field according to its operator (`%`, `?`, or none)
-3. Passes the event to the tracing subscriber
-
-#### 2. Field Value Conversion
-
-The conversion happens through Rust's trait system:
-
-**Display Formatting (`%`):**
-```rust
-txid = %txid
-```
-
-**What happens:**
-- The `%` operator tells Tracing to use the `Display` trait
-- At compile time, the macro generates: `txid: Value::from(format!("{}", txid))`
-- The value is converted to a string using `Display::fmt()`
-- This is efficient for strings, numbers, and types that implement `Display`
-
-**Debug Formatting (`?`):**
-```rust
-address = ?address
-```
-
-**What happens:**
-- The `?` operator tells Tracing to use the `Debug` trait
-- At compile time, the macro generates: `address: Value::from(format!("{:?}", address))`
-- The value is converted to a string using `Debug::fmt()`
-- This is useful for structs, enums, and complex types
-
-**Default Formatting (no operator):**
-```rust
-amount
-```
-
-**What happens:**
-- No operator defaults to `Debug` formatting
-- Equivalent to `amount = ?amount`
-- The macro generates: `amount: Value::from(format!("{:?}", amount))`
-
-#### 3. Value Type System
-
-Tracing uses a `Value` type that can represent different data types:
-
-```rust
-// Internal representation (simplified)
-enum Value {
-    Debug(String),      // From Debug formatting
-    Display(String),    // From Display formatting
-    I64(i64),           // For integers (when possible)
-    U64(u64),           // For unsigned integers
-    Bool(bool),         // For booleans
-    // ... other types
-}
-```
-
-When you write `txid = %txid`, Tracing:
-1. Evaluates `txid` (gets the actual value)
-2. Calls `Display::fmt(&txid, &mut formatter)` to format it
-3. Stores the formatted string in a `Value::Display(String)`
-4. Associates it with the field name `"txid"`
-
-#### 4. Event Creation
-
-The macro creates an `Event` struct containing:
-
-```rust
-// Simplified internal structure
-struct Event {
-    level: Level,           // INFO, ERROR, etc.
-    message: String,        // "Transaction submitted"
-    fields: Vec<Field>,     // [(txid, Value), (from, Value), (to, Value)]
-    metadata: Metadata,     // Module, file, line number
-}
-```
-
-#### 5. Subscriber Processing
-
-The `tracing-subscriber` processes the event:
-
-**Human-Readable Format (fmt layer):**
-```
-2024-01-15T10:30:00.123456Z  INFO blockchain::web::handlers::transaction: Transaction submitted txid=abc123 from=1A1zP... to=1BvBM...
-```
-
-**JSON Format (json layer):**
-```json
-{
-  "timestamp": "2024-01-15T10:30:00.123456Z",
-  "level": "INFO",
-  "target": "blockchain::web::handlers::transaction",
-  "message": "Transaction submitted",
-  "fields": {
-    "txid": "abc123",
-    "from": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
-    "to": "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"
-  }
-}
-```
-
-#### 6. Complete Example Breakdown
-
-When you write:
-
-```rust
-let txid = "abc123";
-let from = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
-let to = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2";
-
-info!(
-    txid = %txid,
-    from = %from,
-    to = %to,
-    "Transaction submitted"
-);
-```
-
-**Compile-time expansion (simplified):**
-```rust
-// The macro expands to something like:
-tracing::Event::dispatch(
-    &tracing::Metadata::new(
-        "Transaction submitted",
-        "blockchain::web::handlers",
-        tracing::Level::INFO,
-        // ... other metadata
-    ),
-    &tracing::valueset! {
-        txid = %txid,  // Calls Display::fmt
-        from = %from,  // Calls Display::fmt
-        to = %to,      // Calls Display::fmt
-    }
-);
-```
-
-**Runtime execution:**
-1. `txid` is evaluated (gets `"abc123"`)
-2. `Display::fmt(&txid, &mut formatter)` is called → `"abc123"`
-3. Field `"txid"` with value `"abc123"` is stored
-4. Same process for `from` and `to`
-5. Event is dispatched to all active subscribers
-6. Subscriber formats and outputs the log
-
-#### 7. Performance Considerations
-
-**Lazy Evaluation:**
-- Field values are only evaluated if the log level is enabled
-- If `INFO` level is disabled, `txid`, `from`, and `to` are never evaluated
-- This is zero-cost when logging is disabled
-
-**Formatting Overhead:**
-- `%` (Display) is typically faster than `?` (Debug) for simple types
-- Complex `Debug` formatting can be expensive
-- Use `%` for strings/numbers, `?` only when you need detailed structure
-
-**Example:**
-```rust
-// Efficient: Display formatting for simple types
-info!(txid = %txid, amount = amount, "Transaction");
-
-// More expensive: Debug formatting for complex types
-info!(transaction = ?complex_struct, "Processing");
-```
-
-#### 8. Why This Design?
-
-**Benefits:**
-- **Type Safety**: Compile-time checking of field names and types
-- **Performance**: Zero-cost when disabled, efficient when enabled
-- **Flexibility**: Multiple formatting options for different use cases
-- **Structured Data**: Fields remain separate, not just formatted strings
-- **Queryability**: Log aggregation tools can filter/search by field names
-
-**Comparison to Traditional Logging:**
-```rust
-// Traditional: Everything is a string
-log::info!("Transaction {} submitted from {} to {}", txid, from, to);
-// Output: "Transaction abc123 submitted from 1A1zP... to 1BvBM..."
-// Can't filter by txid, from, or to - must parse the string
-
-// Structured: Fields are separate
-info!(txid = %txid, from = %from, to = %to, "Transaction submitted");
-// Output: Structured fields that can be queried
-// Can filter: WHERE txid = "abc123" OR from = "1A1zP..."
-```
+Fields are only evaluated if the log level is enabled (zero-cost when disabled).
 
 > **See it in action**: Check out the [Examples from Our Project](Tracing.md#examples-from-our-project) section to see how structured logging is used throughout our handlers and middleware.
 
@@ -515,18 +215,12 @@ pub async fn send_transaction(
     Json(request): Json<SendTransactionRequest>,
 ) -> Result<Json<ApiResponse<SendBitCoinResponse>>, StatusCode> {
     let txid = node
-        .btc_transaction(&request.from_address, &request.to_address, request.amount)
-        .await
-        .map_err(|e| {
-            error!(
-                error = %e,
-                from = %request.from_address,
-                to = %request.to_address,
-                amount = request.amount,
-                "Failed to create transaction"
-            );
-            StatusCode::BAD_REQUEST
-        })?;
+        .btc_transaction(
+            &request.from_address,
+            &request.to_address,
+            request.amount
+        )
+        .await?;
 
     info!(
         txid = %txid,
@@ -535,145 +229,28 @@ pub async fn send_transaction(
         amount = request.amount,
         "Transaction submitted successfully"
     );
-
-    // ... rest of handler
+    Ok(Json(ApiResponse::success(response)))
 }
 ```
-
-This structured logging provides:
-- **Queryable fields**: Filter logs by `txid`, `from`, `to`, `amount`
-- **Context**: All relevant information in one log entry
-- **Consistency**: Same structure across all transaction logs
 
 ---
 
 ### Example Log Output
 
-Here's what the actual log output looks like for structured logging:
-
-**Code:**
-
-```rust
-let txid = "a1b2c3d4e5f6";
-let from_address = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
-let amount = 1000;
-
-info!(
-    txid = %txid,
-    from = %from_address,
-    amount = amount,
-    "Transaction submitted"
-);
-```
-
-**Human-Readable Output (fmt layer - default):**
-
+Structured logging output in text format:
 ```text
-2024-01-15T10:30:45.123456Z  INFO blockchain::web::handlers::transaction: Transaction submitted txid=a1b2c3d4e5f6 from=1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa amount=1000
+2024-01-15T10:30:45Z INFO txid=a1b2c3d4 from=1A1zP amount=1000
 ```
 
-**Detailed Human-Readable Output (with target and span info):**
-
-```text
-2024-01-15T10:30:45.123456Z  INFO blockchain::web::handlers::transaction
-    at bitcoin/src/web/handlers/transaction.rs:43
-    in send_transaction
-Transaction submitted
-    txid: "a1b2c3d4e5f6"
-    from: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
-    amount: 1000
-```
-
-**JSON Output (json layer):**
-
+JSON format:
 ```json
-{
-  "timestamp": "2024-01-15T10:30:45.123456Z",
-  "level": "INFO",
-  "fields": {
-    "message": "Transaction submitted",
-    "txid": "a1b2c3d4e5f6",
-    "from": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
-    "amount": 1000
-  },
-  "target": "blockchain::web::handlers::transaction",
-  "span": {
-    "name": "send_transaction"
-  },
-  "spans": [
-    {
-      "name": "send_transaction",
-      "txid": "a1b2c3d4e5f6"
-    }
-  ]
-}
+{"ts":"2024-01-15T10:30:45Z","level":"INFO","txid":"a1b2c3","amount":1000}
 ```
 
-**Compact JSON Output:**
-
-```json
-{
-  "ts": "2024-01-15T10:30:45.123456Z",
-  "level": "INFO",
-  "msg": "Transaction submitted",
-  "txid": "a1b2c3d4e5f6",
-  "from": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
-  "amount": 1000,
-  "target": "blockchain::web::handlers::transaction"
-}
-```
-
-**Key Observations:**
-
-1. **Field Names Preserved**: `txid`, `from`, and `amount` appear as separate fields, not just in the message
-2. **Formatting Applied**: 
-   - `txid = %txid` → Uses `Display` formatting → `"a1b2c3d4e5f6"`
-   - `from = %from_address` → Uses `Display` formatting → `"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"`
-   - `amount = amount` → Uses `Debug` formatting (default) → `1000` (as number in JSON, or `1000` in text)
-3. **Queryable**: Log aggregation tools can filter by:
-   - `txid = "a1b2c3d4e5f6"`
-   - `from = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"`
-   - `amount = 1000`
-4. **Structured**: Fields are separate from the message, making parsing and querying easy
-
-**Comparison with Traditional Logging:**
-
-**Traditional (string formatting):**
-
-```rust
-info!("Transaction {} submitted from {} with amount {}", txid, from_address, amount);
-```
-
-**Output:**
-
-```text
-2024-01-15T10:30:45.123456Z  INFO blockchain::web::handlers::transaction: Transaction a1b2c3d4e5f6 submitted from 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa with amount 1000
-```
-
-**Problems:**
-
-- Can't filter by `txid` alone (must parse the entire string)
-- Can't query `amount > 500` (must extract and parse)
-- Harder to parse programmatically
-- All data is in one string
-
-**Structured (Tracing):**
-
-```rust
-info!(
-    txid = %txid,
-    from = %from_address,
-    amount = amount,
-    "Transaction submitted"
-);
-```
-
-**Benefits:**
-
-- Can filter: `WHERE txid = "a1b2c3d4e5f6"`
-- Can query: `WHERE amount > 500`
-- Easy to parse (JSON or structured format)
-- Fields are separate and typed
+**Key benefits:**
+- Field names preserved for filtering
+- Queryable by `txid`, `from`, `amount`
+- Easy to parse programmatically
 
 ---
 
@@ -683,79 +260,41 @@ Spans represent periods of time during which a program was executing in a partic
 
 ### Creating Spans
 
-Spans can be created explicitly or using the `#[instrument]` attribute:
-
-**Explicit Span:**
-
-```rust
-use tracing::{info_span, Instrument};
-
-let span = info_span!("process_transaction", txid = %txid);
-let _guard = span.enter();
-
-// All logs within this scope include span context
-info!("Processing transaction");
-```
-
-**Instrument Attribute:**
+Use the `#[instrument]` attribute to automatically create spans for functions:
 
 ```rust
 use tracing::instrument;
 
 #[instrument]
 async fn process_transaction(txid: String) {
-    // This function automatically creates a span
-    // All logs include the function name and parameters
-    info!("Processing transaction");
+    // Automatic span with function name and parameters
 }
 ```
 
 ### Span Fields
 
-Spans can include fields that are automatically included in all logs within the span:
+Include fields in spans for context:
 
 ```rust
-use tracing::instrument;
-
-#[instrument(
-    fields(
-        txid = %txid,
-        from = %from_address,
-        to = %to_address,
-        amount = amount
-    )
-)]
-async fn send_transaction(txid: String, from_address: String, to_address: String, amount: i32) {
-    info!("Starting transaction processing");
-    // All logs here include txid, from, to, amount
+#[instrument(fields(txid = %txid, amount = amount))]
+async fn send_transaction(txid: String, amount: i32) {
+    // All logs here include txid and amount
 }
 ```
 
 ### Example from Our Project
 
-**In `node/server.rs`:**
-
 ```rust
-use tracing::{error, info, instrument};
-
 #[instrument]
-pub async fn start_server(node: Arc<NodeContext>) -> Result<(), Box<dyn std::error::Error>> {
-    info!("Starting blockchain node server");
-    
-    // All logs within this function include the span context
-    // Span name: "start_server"
-    
+pub async fn start_server(
+    node: Arc<NodeContext>,
+) -> Result<(), Box<dyn std::error::Error>> {
     let listener = tokio::net::TcpListener::bind(addr).await?;
-    info!("Server listening on {}", addr);
-    
-    // ... rest of function
+    Ok(())
 }
 ```
 
-**Benefits:**
-- **Automatic Context**: Function name and parameters automatically included
-- **Duration Tracking**: Spans automatically track function execution time
-- **Nested Context**: Spans can be nested to show call hierarchy
+Benefits: Automatic context, duration tracking, nested call hierarchy
 
 ---
 
@@ -802,51 +341,28 @@ pub fn create_logging_layer() -> impl tower::Layer<axum::Router> + Clone {
 
 ### Custom TraceLayer Configuration
 
-You can customize TraceLayer behavior:
+Customize TraceLayer with callbacks:
 
 ```rust
-use tower_http::trace::TraceLayer;
-use tracing::Span;
-
 TraceLayer::new_for_http()
-    .make_span_with(|request: &Request| {
+    .make_span_with(|req: &Request| {
         tracing::info_span!(
             "http_request",
-            method = %request.method(),
-            uri = %request.uri(),
-            version = ?request.version(),
+            method = %req.method(),
+            uri = %req.uri()
         )
     })
-    .on_request(|request: &Request, _span: &Span| {
-        tracing::info!(
-            method = %request.method(),
-            uri = %request.uri(),
-            "Started processing request"
-        );
-    })
-    .on_response(|response: &Response, latency: Duration, _span: &Span| {
-        tracing::info!(
-            status = %response.status(),
-            latency = ?latency,
-            "Finished processing request"
-        );
-    })
-    .on_failure(|error: &Error, latency: Duration, _span: &Span| {
-        tracing::error!(
-            error = %error,
-            latency = ?latency,
-            "Request failed"
-        );
-    })
+    .on_response(
+        |res: &Response, latency: Duration, _: &Span| {
+            tracing::info!(
+                status = %res.status(),
+                latency = ?latency
+            );
+        }
+    )
 ```
 
-**Customization Options:**
-
-- **`make_span_with()`**: Customize span creation with specific fields
-- **`on_request()`**: Callback when request starts
-- **`on_response()`**: Callback when response is ready
-- **`on_failure()`**: Callback for errors
-- **`on_eos()`**: Callback when connection ends
+**Options:** `make_span_with`, `on_request`, `on_response`, `on_failure`, `on_eos`
 
 > **See it in action**: Check out the [Logging Middleware section](Tower.md#logging-middleware) in the Tower Framework Guide for more details on TraceLayer configuration and usage.
 
@@ -856,18 +372,11 @@ TraceLayer::new_for_http()
 
 Tracing uses `tracing-subscriber` to configure log output format and filtering.
 
-### Basic Configuration
+### Project Configuration
 
 **In `main.rs`:**
 
 ```rust
-use tracing_subscriber::{
-    layer::SubscriberExt,
-    util::SubscriberInitExt,
-    EnvFilter,
-    fmt,
-};
-
 fn initialize_logging() {
     let filter = EnvFilter::builder()
         .with_default_directive(LevelFilter::INFO.into())
@@ -879,69 +388,23 @@ fn initialize_logging() {
 }
 ```
 
-**What This Does:**
+**Configuration:**
+- **Default Level**: INFO (filters out DEBUG and TRACE in production)
+- **Environment Variable**: `RUST_LOG` environment variable can override
+- **Format**: Human-readable format with compile-time and runtime filtering
 
-1. **EnvFilter**: Reads log level from `RUST_LOG` environment variable
-2. **Default Level**: Sets INFO as default if `RUST_LOG` not set
-3. **Format Layer**: Configures output format (human-readable)
-4. **Registry**: Combines multiple layers
-
-### Environment Variable Configuration
-
-Set log level via `RUST_LOG` environment variable:
+**Setting Log Levels via Environment Variable:**
 
 ```bash
-# Set global log level
+# Global level
 RUST_LOG=info ./blockchain
 
-# Set specific module log level
+# Specific modules
 RUST_LOG=blockchain::web=debug,blockchain::node=info ./blockchain
 
-# Set multiple modules
-RUST_LOG=blockchain::web::handlers=debug,blockchain::web::server=info ./blockchain
-
-# Enable trace level for specific module
-RUST_LOG=blockchain::web::handlers=trace ./blockchain
+# Trace level for debugging
+RUST_LOG=blockchain::web=trace ./blockchain
 ```
-
-**Log Level Syntax:**
-
-- `module=level`: Set level for specific module
-- `module::submodule=level`: Set level for nested module
-- `level`: Set global level
-- `module1=level1,module2=level2`: Multiple modules
-
-### Example from Our Project
-
-**In `main.rs`:**
-
-```rust
-/// Initialize logging with functional configuration
-fn initialize_logging() {
-    let filter = EnvFilter::builder()
-        .with_default_directive(LevelFilter::INFO.into())
-        .from_env_lossy();
-
-    tracing_subscriber::registry()
-        .with(fmt::layer().with_filter(filter))
-        .init();
-}
-
-fn main() {
-    initialize_logging();
-    
-    // Now all tracing macros work
-    info!("Application starting");
-    error!("Something went wrong");
-}
-```
-
-**Configuration Details:**
-
-- **Default Level**: INFO (filters out DEBUG and TRACE in production)
-- **Environment Override**: `RUST_LOG` environment variable can override
-- **Format**: Human-readable format suitable for development
-- **Filtering**: Compile-time and runtime filtering for performance
 
 ---
 
@@ -955,11 +418,14 @@ Let's examine real examples of Tracing usage throughout our blockchain API.
 
 ```rust
 /// Start the web server with graceful shutdown
-pub async fn start_with_shutdown(&self) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn start_with_shutdown(
+    &self,
+) -> Result<(), Box<dyn std::error::Error>> {
     let app = self.create_app();
     let addr = SocketAddr::from(([0, 0, 0, 0], self.config.port));
 
-    tracing::info!("Starting web server on {} with graceful shutdown", addr);
+    // Log server startup with graceful shutdown
+    tracing::info!("Starting web server on {}", addr);
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
 
@@ -985,209 +451,59 @@ pub async fn start_with_shutdown(&self) -> Result<(), Box<dyn std::error::Error>
 
 ### Error Logging in Middleware
 
-**In `server.rs` - Error Handling Middleware:**
-
 ```rust
 async fn handle_errors(
     request: axum::http::Request<axum::body::Body>,
     next: axum::middleware::Next,
 ) -> Result<axum::response::Response, StatusCode> {
     let response = next.run(request).await;
-
-    if response.status().is_server_error() || response.status().is_client_error() {
-        let (parts, body) = response.into_parts();
-        let body_bytes = axum::body::to_bytes(body, usize::MAX)
-            .await
-            .unwrap_or_default();
-        let body_str = String::from_utf8_lossy(&body_bytes);
-        
+    let is_error = response.status().is_server_error()
+        || response.status().is_client_error();
+    if is_error {
         tracing::error!(
-            "[handle_errors]: Error response ({}): {}",
-            parts.status,
-            body_str
+            status = %response.status(),
+            "Error response"
         );
-        
-        // ... error handling ...
     }
-
     Ok(response)
 }
 ```
 
-**What Gets Logged:**
-- HTTP status code
-- Error response body
-- Full error context
-
 ### Handler Logging
 
-**In `handlers/transaction.rs`:**
-
 ```rust
-use tracing::{error, info};
-
 pub async fn send_transaction(
     State(node): State<Arc<NodeContext>>,
     Json(request): Json<SendTransactionRequest>,
 ) -> Result<Json<ApiResponse<SendBitCoinResponse>>, StatusCode> {
-    let txid = node
-        .btc_transaction(&request.from_address, &request.to_address, request.amount)
-        .await
-        .map_err(|e| {
-            error!("Failed to create transaction: {}", e);
-            StatusCode::BAD_REQUEST
-        })?;
-
-    info!("Transaction {} submitted successfully", txid);
-
-    // ... create response ...
+    let txid = node.btc_transaction(/* ... */).await?;
+    tracing::info!(txid = %txid, "Transaction submitted");
+    Ok(Json(ApiResponse::success(response)))
 }
 ```
-
-**What Gets Logged:**
-- Transaction submission success
-- Transaction creation failures
-- Transaction ID for correlation
 
 ### Instrumented Functions
 
-**In `node/server.rs`:**
-
-```rust
-use tracing::{error, info, instrument};
-
-#[instrument]
-pub async fn start_server(node: Arc<NodeContext>) -> Result<(), Box<dyn std::error::Error>> {
-    info!("Starting blockchain node server");
-    
-    // Function automatically creates a span
-    // All logs include function name and parameters
-    
-    // ... server startup logic ...
-}
-```
-
-**Benefits:**
-- Automatic span creation
-- Function parameters included in logs
-- Duration tracking
-- Nested context in call hierarchy
+Use `#[instrument]` for automatic span creation, duration tracking, and nested context.
 
 ---
 
-## Best Practices
+## Best Practices for Our Project
 
-### 1. Use Appropriate Log Levels
-
-- **ERROR**: Only for actual errors that prevent operation
-- **WARN**: For recoverable issues or deprecations
-- **INFO**: For normal operation events
-- **DEBUG**: For detailed diagnostics (disabled in production)
-- **TRACE**: For very detailed tracing (disabled in production)
-
-### 2. Use Structured Logging
-
-**Prefer:**
-```rust
-info!(
-    txid = %txid,
-    from = %from_address,
-    amount = amount,
-    "Transaction submitted"
-);
-```
-
-**Over:**
-```rust
-info!("Transaction {} submitted from {} with amount {}", txid, from_address, amount);
-```
-
-### 3. Include Context
-
-Always include relevant context in error logs:
-
-```rust
-error!(
-    error = %e,
-    txid = %txid,
-    from = %from_address,
-    to = %to_address,
-    "Failed to process transaction"
-);
-```
-
-### 4. Use Spans for Operations
-
-Use `#[instrument]` for functions that represent operations:
-
-```rust
-#[instrument]
-async fn process_transaction(txid: String) {
-    // Automatic span with function name and parameters
-}
-```
-
-### 5. Avoid Logging Sensitive Data
-
-Never log:
-- Passwords
-- API keys
-- Private keys
-- Personal information
-
-### 6. Use Environment-Based Configuration
-
-Configure log levels via `RUST_LOG` environment variable:
-
-```bash
-# Development
-RUST_LOG=debug ./blockchain
-
-# Production
-RUST_LOG=info ./blockchain
-```
+1. **Use Structured Logging**: Include relevant context (txid, addresses, amounts)
+2. **Avoid Sensitive Data**: Never log passwords, API keys, or private keys
+3. **Include Error Context**: Log errors with full context for debugging
+4. **Use Spans**: `#[instrument]` attribute for operation tracking
+5. **Environment-Based Configuration**: Use `RUST_LOG` for log level control
 
 ---
 
 ## Performance Considerations
 
-### Compile-Time Filtering
-
-Tracing uses compile-time filtering to remove logging code when disabled:
-
-```rust
-// This code is removed at compile time if DEBUG level is disabled
-debug!("Detailed diagnostic: {:?}", data);
-```
-
-**Benefits:**
-- Zero runtime cost when disabled
-- No performance impact in production
-- Conditional compilation
-
-### Runtime Filtering
-
-Even when compiled, logs can be filtered at runtime:
-
-```rust
-// Set via RUST_LOG environment variable
-RUST_LOG=info  // DEBUG and TRACE logs are filtered at runtime
-```
-
-### Structured Logging Overhead
-
-Structured logging has minimal overhead:
-- Key-value pairs are efficient
-- Fields are only evaluated if log level is enabled
-- Spans are lightweight
-
-### Production Recommendations
-
-For production:
-- Set default level to INFO
-- Use structured logging for queryability
-- Enable DEBUG/TRACE only for specific modules when needed
-- Use log aggregation tools (e.g., ELK, Loki, Datadog)
+- **Zero-Cost When Disabled**: Compile-time filtering removes logging code when not needed
+- **Fields Only Evaluated if Enabled**: Structured logging fields evaluated only when log level allows
+- **Production Configuration**: Set `RUST_LOG=info` for production; DEBUG/TRACE disabled by default
+- **Minimal Overhead**: Spans and structured logging are lightweight
 
 ---
 
@@ -1222,7 +538,7 @@ Tracing's design allows us to instrument our code for debugging and monitoring w
 
 <div align="center">
 
-**[📚 ← Web API Index](README.md)** | **Tracing Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Tower** | **Serde** | **Utoipa** | **Tokio** 📚
+**[← Web API Index](README.md)** | **Tracing Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Tower** | **Serde** | **Utoipa** | **Tokio** 
 
 </div>
 

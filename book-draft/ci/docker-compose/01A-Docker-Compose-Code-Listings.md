@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. **22A: Code Listings** ← *You are here*
+36. <a href="../kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -44,9 +63,9 @@
 
 ---
 
-## Chapter 8A: Docker Compose — Complete Code Listings
+## Chapter 22A: Docker Compose — Complete Code Listings
 
-This companion chapter contains **complete, verbatim listings** of the Docker Compose deployment artifacts used by Chapter 8.
+This companion chapter contains **complete, verbatim listings** of the Docker Compose deployment artifacts used by Chapter 22.
 
 The goal is practical: when the narrative chapter says “the entrypoint resolves hostnames to IP addresses” or “the scaling helper generates an override file,” you can inspect the **exact implementation** here without opening the repository.
 
@@ -303,7 +322,7 @@ resolve_hostname_to_ip() {
     fi
     
     # If it's already an IP address or "local", return as-is
-    if [[ "${addr}" == "local" ]] || [[ "${addr}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+$ ]]; then
+    if [[ "${addr}" == "local" ]] || [[ "${addr}" =~ ^[0-23]+\.[0-23]+\.[0-23]+\.[0-23]+:[0-23]+$ ]]; then
         echo "${addr}"
         return 0
     fi
@@ -313,7 +332,7 @@ resolve_hostname_to_ip() {
     local port="${addr##*:}"
     
     # Validate port is numeric
-    if ! [[ "${port}" =~ ^[0-9]+$ ]]; then
+    if ! [[ "${port}" =~ ^[0-23]+$ ]]; then
         echo "ERROR: Invalid port '${port}' in address '${addr}'" >&2
         return 1
     fi
@@ -343,7 +362,7 @@ resolve_hostname_to_ip() {
             if [ ${getent_exit} -eq 0 ]; then
                 ip=$(echo "${getent_output}" | awk '{print $1}' | head -n1)
                 debug_log "getent result: '${ip}'"
-                if [ -n "${ip}" ] && [[ "${ip}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                if [ -n "${ip}" ] && [[ "${ip}" =~ ^[0-23]+\.[0-23]+\.[0-23]+\.[0-23]+$ ]]; then
                     debug_log "Successfully resolved ${hostname} to ${ip}"
                     echo "${ip}:${port}"
                     return 0
@@ -359,7 +378,7 @@ resolve_hostname_to_ip() {
         if [ -z "${ip}" ] && command -v nslookup >/dev/null 2>&1; then
             debug_log "Trying nslookup ${hostname}..."
             ip=$(nslookup "${hostname}" 2>/dev/null | grep -A1 "Name:" | grep "Address:" | awk '{print $2}' | head -n1)
-            if [ -n "${ip}" ] && [[ "${ip}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            if [ -n "${ip}" ] && [[ "${ip}" =~ ^[0-23]+\.[0-23]+\.[0-23]+\.[0-23]+$ ]]; then
                 debug_log "Successfully resolved ${hostname} to ${ip} via nslookup"
                 echo "${ip}:${port}"
                 return 0
@@ -370,7 +389,7 @@ resolve_hostname_to_ip() {
         if [ -z "${ip}" ] && command -v host >/dev/null 2>&1; then
             debug_log "Trying host ${hostname}..."
             ip=$(host "${hostname}" 2>/dev/null | grep "has address" | awk '{print $4}' | head -n1)
-            if [ -n "${ip}" ] && [[ "${ip}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            if [ -n "${ip}" ] && [[ "${ip}" =~ ^[0-23]+\.[0-23]+\.[0-23]+\.[0-23]+$ ]]; then
                 debug_log "Successfully resolved ${hostname} to ${ip} via host"
                 echo "${ip}:${port}"
                 return 0
@@ -382,8 +401,8 @@ resolve_hostname_to_ip() {
             debug_log "Trying ping ${hostname}..."
             # Use ping to resolve hostname (ping resolves DNS but we just need the IP)
             # Extract IP from ping output: "PING miner_1 (172.18.0.2)"
-            ip=$(ping -c 1 -W 1 "${hostname}" 2>/dev/null | grep -oE '\([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\)' | tr -d '()' | head -n1)
-            if [ -n "${ip}" ] && [[ "${ip}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            ip=$(ping -c 1 -W 1 "${hostname}" 2>/dev/null | grep -oE '\([0-23]+\.[0-23]+\.[0-23]+\.[0-23]+\)' | tr -d '()' | head -n1)
+            if [ -n "${ip}" ] && [[ "${ip}" =~ ^[0-23]+\.[0-23]+\.[0-23]+\.[0-23]+$ ]]; then
                 debug_log "Successfully resolved ${hostname} to ${ip} via ping"
                 echo "${ip}:${port}"
                 return 0
@@ -490,10 +509,10 @@ if [ -z "${INSTANCE_NUMBER:-}" ]; then
     # Try to extract instance number from container name
     # Pattern: <service>_<number> or <project>_<service>_<number>
     # Also supports Kubernetes StatefulSet pattern: miner-0, miner-1, etc.
-    if [[ "${CONTAINER_NAME}" =~ _([0-9]+)$ ]]; then
+    if [[ "${CONTAINER_NAME}" =~ _([0-23]+)$ ]]; then
         # Docker Compose pattern: blockchain_miner_1, blockchain_miner_2
         INSTANCE_NUMBER="${BASH_REMATCH[1]}"
-    elif [[ "${CONTAINER_NAME}" =~ -([0-9]+)$ ]]; then
+    elif [[ "${CONTAINER_NAME}" =~ -([0-23]+)$ ]]; then
         # Kubernetes StatefulSet pattern: miner-0, miner-1, webserver-0, etc.
         # Extract ordinal and convert to instance number (0-based -> 1-based)
         ORDINAL="${BASH_REMATCH[1]}"
@@ -605,7 +624,7 @@ if [ "${NODE_IS_WEB_SERVER}" = "yes" ] && [ "${NODE_IS_MINER}" = "no" ]; then
             NODE_CONNECT_NODES="local"
         else
             # If it's already an IP address, keep it as-is
-            if [[ "${NODE_CONNECT_NODES}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+$ ]]; then
+            if [[ "${NODE_CONNECT_NODES}" =~ ^[0-23]+\.[0-23]+\.[0-23]+\.[0-23]+:[0-23]+$ ]]; then
                 echo "Webserver instance ${INSTANCE_NUMBER}: Using configured IP address: ${NODE_CONNECT_NODES}"
             else
                 # Contains a hostname - sequential startup will wait for service and resolve it
@@ -621,7 +640,7 @@ fi
 # Pods can connect using headless service DNS: miner-0.miner-headless.blockchain.svc.cluster.local
 if [ "${NODE_IS_MINER}" = "yes" ] && [ -n "${POD_NAME}" ]; then
     # Extract ordinal from pod name (e.g., miner-0 -> 0, miner-1 -> 1)
-    if [[ "${POD_NAME}" =~ -([0-9]+)$ ]]; then
+    if [[ "${POD_NAME}" =~ -([0-23]+)$ ]]; then
         ORDINAL="${BASH_REMATCH[1]}"
         
         if [ "${ORDINAL}" = "0" ]; then
@@ -661,7 +680,7 @@ if [ "${SEQUENTIAL_STARTUP:-yes}" = "yes" ]; then
     if [ "${SHOULD_WAIT}" = "true" ]; then
         # Skip sequential startup logic if we're in Kubernetes StatefulSet mode
         # (StatefulSet handles ordered startup automatically)
-        if [ -z "${POD_NAME}" ] || [[ ! "${POD_NAME}" =~ -([0-9]+)$ ]]; then
+        if [ -z "${POD_NAME}" ] || [[ ! "${POD_NAME}" =~ -([0-23]+)$ ]]; then
             if [ "${NODE_IS_WEB_SERVER}" = "yes" ] && [ "${NODE_IS_MINER}" = "no" ]; then
                 echo "Sequential startup enabled: Webserver waiting for miner to be ready..."
             else
@@ -724,7 +743,7 @@ if [ "${SEQUENTIAL_STARTUP:-yes}" = "yes" ]; then
                 # For Docker Compose, "miner_1" doesn't resolve, but "miner" does
                 # So we convert miner_1 to miner for resolution purposes
                 RESOLVE_ADDR="${PREV_ADDR}"
-                if [[ "${PREV_ADDR}" =~ ^miner_([0-9]+): ]]; then
+                if [[ "${PREV_ADDR}" =~ ^miner_([0-23]+): ]]; then
                     # Extract instance number and use "miner" service name for resolution
                     INSTANCE_NUM="${BASH_REMATCH[1]}"
                     PORT_PART="${PREV_ADDR##*:}"
@@ -791,7 +810,7 @@ if [ "${SEQUENTIAL_STARTUP:-yes}" = "yes" ]; then
                 # Resolve Docker service name to IP address
                 # For Docker Compose, "miner_1" doesn't resolve, but "miner" does
                 RESOLVE_ADDR="${PREV_ADDR}"
-                if [[ "${PREV_ADDR}" =~ ^miner_([0-9]+): ]]; then
+                if [[ "${PREV_ADDR}" =~ ^miner_([0-23]+): ]]; then
                     INSTANCE_NUM="${BASH_REMATCH[1]}"
                     PORT_PART="${PREV_ADDR##*:}"
                     RESOLVE_ADDR="miner:${PORT_PART}"
@@ -1001,7 +1020,7 @@ fi
 
 if [ "${NODE_CONNECT_NODES}" != "local" ]; then
     # Check if it's already a valid IP:port format
-    if [[ ! "${NODE_CONNECT_NODES}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+$ ]]; then
+    if [[ ! "${NODE_CONNECT_NODES}" =~ ^[0-23]+\.[0-23]+\.[0-23]+\.[0-23]+:[0-23]+$ ]]; then
         # Contains a hostname (not "local" and not an IP address), resolve it
         echo "Final resolution: Resolving NODE_CONNECT_NODES '${NODE_CONNECT_NODES}' to IP address..."
         echo "  WARNING: Hostname detected - must resolve to IP before passing to Rust binary" >&2
@@ -1013,7 +1032,7 @@ if [ "${NODE_CONNECT_NODES}" != "local" ]; then
         fi
         
         # Verify the result is actually an IP address
-        if [[ ! "${NODE_CONNECT_NODES}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+$ ]]; then
+        if [[ ! "${NODE_CONNECT_NODES}" =~ ^[0-23]+\.[0-23]+\.[0-23]+\.[0-23]+:[0-23]+$ ]]; then
             echo "ERROR: Resolution returned invalid format: '${NODE_CONNECT_NODES}'" >&2
             echo "ERROR: Expected IP:port format (e.g., 172.18.0.2:2001)" >&2
             exit 1
@@ -1030,7 +1049,7 @@ fi
 # Final validation: Double-check that NODE_CONNECT_NODES is valid before building command
 # This is a critical safety check to prevent Rust parse errors
 if [ "${NODE_CONNECT_NODES}" != "local" ]; then
-    if [[ ! "${NODE_CONNECT_NODES}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+$ ]]; then
+    if [[ ! "${NODE_CONNECT_NODES}" =~ ^[0-23]+\.[0-23]+\.[0-23]+\.[0-23]+:[0-23]+$ ]]; then
         echo "ERROR: CRITICAL - NODE_CONNECT_NODES contains invalid value: '${NODE_CONNECT_NODES}'" >&2
         echo "ERROR: Expected 'local' or IP:port format (e.g., 172.18.0.2:2001)" >&2
         echo "ERROR: Hostnames like 'miner_1:2001' cannot be passed to Rust binary" >&2
@@ -1104,7 +1123,7 @@ if [ -z "${WAIT_SERVICE_NAME}" ] || [ -z "${INSTANCE_NUMBER}" ] || [ -z "${PORT}
 fi
 
 # Validate INSTANCE_NUMBER is numeric
-if ! [[ "${INSTANCE_NUMBER}" =~ ^[0-9]+$ ]]; then
+if ! [[ "${INSTANCE_NUMBER}" =~ ^[0-23]+$ ]]; then
     echo "ERROR: INSTANCE_NUMBER must be numeric, got: '${INSTANCE_NUMBER}'" >&2
     exit 1
 fi
@@ -1863,19 +1882,20 @@ global_bucket = { tokens_count = 20, add_tokens_every = 6 }
 
 ## Listing 8.11: `ci/docker-compose/configs/Dockerfile`
 
-This Dockerfile builds and packages the Rust node binary together with the runtime scripts used by Compose (entrypoint + wait script).
+This Dockerfile builds and packages the Rust node binary, React web UI, and runtime scripts used by Compose (entrypoint + wait script).
 
 > **Methods involved**
-> - Artifact: Dockerfile build stages and copy layout
+> - Artifact: Multi-stage Dockerfile (Rust + Node.js builds)
 
 ```dockerfile
-# Build stage
-FROM rust:1.70-slim as builder
+# Build stage for Rust binary
+FROM rust:1.91.1-slim AS rust-builder
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
     pkg-config \
     libssl-dev \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -1884,12 +1904,38 @@ WORKDIR /app
 # Copy workspace files
 COPY Cargo.toml Cargo.lock ./
 COPY bitcoin/Cargo.toml ./bitcoin/
+# Copy other workspace members' Cargo.toml files (needed for workspace resolution)
+COPY bitcoin-desktop-ui-iced/Cargo.toml ./bitcoin-desktop-ui-iced/
+COPY bitcoin-wallet-ui-iced/Cargo.toml ./bitcoin-wallet-ui-iced/
+COPY bitcoin-api/Cargo.toml ./bitcoin-api/
 
-# Copy source code
+# Copy source code for all workspace members (Cargo needs them to resolve workspace)
 COPY bitcoin/src ./bitcoin/src
+COPY bitcoin-desktop-ui-iced/src ./bitcoin-desktop-ui-iced/src
+COPY bitcoin-wallet-ui-iced/src ./bitcoin-wallet-ui-iced/src
+COPY bitcoin-api/src ./bitcoin-api/src
 
 # Build the blockchain binary
 RUN cargo build --release -p blockchain
+
+# Build stage for React web UI
+FROM node:20-slim AS web-ui-builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY bitcoin-web-ui/package.json bitcoin-web-ui/package-lock.json ./bitcoin-web-ui/
+
+# Install dependencies
+WORKDIR /app/bitcoin-web-ui
+RUN npm ci
+
+# Copy source files
+COPY bitcoin-web-ui/ ./
+
+# Build React app
+RUN npm run build
 
 # Runtime stage
 FROM debian:bookworm-slim
@@ -1900,13 +1946,18 @@ RUN apt-get update && apt-get install -y \
     libssl3 \
     curl \
     netcat-openbsd \
+    libc-bin \
     && rm -rf /var/lib/apt/lists/*
 
 # Create app directory
 WORKDIR /app
 
-# Copy binary from builder
-COPY --from=builder /app/target/release/blockchain /app/blockchain
+# Copy binary from Rust builder
+COPY --from=rust-builder /app/target/release/blockchain /app/blockchain
+
+# Copy built React web UI from web-ui-builder
+# The Rust server looks for bitcoin-web-ui/dist relative to the binary location
+COPY --from=web-ui-builder /app/bitcoin-web-ui/dist /app/bitcoin-web-ui/dist
 
 # Copy entrypoint script
 COPY ci/docker-compose/configs/docker-entrypoint.sh /app/docker-entrypoint.sh
@@ -1928,8 +1979,6 @@ EXPOSE 8080 2001
 ENV TREE_DIR=data1
 ENV BLOCKS_TREE=blocks1
 ENV NODE_ADDR=0.0.0.0:2001
-ENV BITCOIN_API_ADMIN_KEY=admin-secret
-ENV BITCOIN_API_WALLET_KEY=wallet-secret
 
 # Node configuration (can be overridden)
 # NODE_IS_MINER defaults to "no" (webserver mode) as a safe default:
@@ -1939,7 +1988,7 @@ ENV BITCOIN_API_WALLET_KEY=wallet-secret
 ENV NODE_IS_MINER=no
 ENV NODE_IS_WEB_SERVER=yes
 ENV NODE_CONNECT_NODES=local
-ENV NODE_MINING_ADDRESS=
+# NODE_MINING_ADDRESS is required and must be set at runtime
 
 # Use entrypoint script for flexible node configuration
 ENTRYPOINT ["/app/docker-entrypoint.sh"]

@@ -1,42 +1,61 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. **Chapter 1.4: Bitcoin Whitepaper In Rust** ← *You are here*
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
 </div>
 
 ---
-## 8. Merkle trees and SPV (Bitcoin Whitepaper Sections 7–8)
+## 8. Merkle trees and SPV (Bitcoin Whitepaper Sections 7–22)
 
 The paper uses Merkle trees so only the root is included in the block hash, and SPV verifies inclusion via a Merkle branch plus block headers. ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
 
@@ -49,30 +68,26 @@ In this section, we compute the Merkle root the same way Bitcoin does: hash pair
 ```rust
 pub fn merkle_root(mut leaves: Vec<[u8; 32]>) -> [u8; 32] {
     if leaves.is_empty() {
-        // Convention for this teaching code: empty tree => all-zero root.
-        // (Real Bitcoin blocks always have at least 1 transaction: the coinbase.)
+        // Teaching code: empty tree => all-zero root
+        // Real Bitcoin blocks always have >= 1 (coinbase)
         return [0u8; 32];
     }
     while leaves.len() > 1 {
         if leaves.len() % 2 == 1 {
-            // Bitcoin rule: if a level has an odd count, duplicate the last node
-            // so we still hash pairs.
+            // Duplicate last node if odd count
             leaves.push(*leaves.last().unwrap());
         }
-        // Next level has half as many nodes as the current level. See illustration bellow.
+        // Next level has N/2 nodes (hash pairs upward)
         let mut next = Vec::with_capacity(leaves.len() / 2);
         for pair in leaves.chunks(2) {
-            // Merkle parent = sha256d(left_child || right_child)
             let mut b = Vec::with_capacity(64);
             b.extend_from_slice(&pair[0]);
             b.extend_from_slice(&pair[1]);
-            // sha256d = SHA256(SHA256(bytes)) (Bitcoin-style “double SHA-256”)
+            // Merkle parent = sha256d(left || right)
             next.push(sha256d(&b));
         }
-        // Replace the current level with the computed parent level and repeat.
         leaves = next;
     }
-    // When one hash remains, it is the Merkle root.
     leaves[0]
 }
 ```
@@ -93,7 +108,7 @@ Why “the next level has half as many nodes” (illustration):
 Each parent hash is computed from exactly 2 child hashes:
 parent = H(left || right)
 
-So if we start with N hashes at a level, pairing them two-by-two produces N/2 parents.
+Pairing N hashes two-by-two produces N/2 parents.
 
 Example with an even count (N = 4):
 level 0:  A    B    C    D
@@ -197,28 +212,27 @@ So pruning and SPV are related, but they are not the same system:
 #### 8.2.5 Merkle-branch verification (Rust sketch)
 
 ```rust
-pub fn verify_merkle_branch(leaf: [u8; 32], branch: &[[u8; 32]], mut index: usize) -> [u8; 32] {
-    // Start from the leaf (a txid) and hash upward toward the root.
+pub fn verify_merkle_branch(
+    leaf: [u8; 32],
+    branch: &[[u8; 32]],
+    mut index: usize,
+) -> [u8; 32] {
     let mut h = leaf;
     for sibling in branch {
-        // Each step hashes exactly two 32-byte children => 64 bytes total.
         let mut b = Vec::with_capacity(64);
         if index % 2 == 0 {
-            // If our node is the LEFT child at this level, hash (h || sibling).
+            // LEFT child: hash (h || sibling)
             b.extend_from_slice(&h);
             b.extend_from_slice(sibling);
         } else {
-            // If our node is the RIGHT child, hash (sibling || h).
+            // RIGHT child: hash (sibling || h)
             b.extend_from_slice(sibling);
             b.extend_from_slice(&h);
         }
-        // Parent = sha256d(left || right)
         h = sha256d(&b);
-        // Move one level up in the tree:
-        // integer division by 2 maps a leaf index to its parent index.
+        // Move to parent level (index / 2)
         index /= 2;
     }
-    // After consuming the full branch, h is the reconstructed Merkle root.
     h
 }
 ```
@@ -277,6 +291,6 @@ Takeaway: SPV is “verify inclusion without validating every transaction”.
 
 <div align="center">
 
-**[← Reclaiming disk space (Bitcoin Whitepaper Section 7)](07-Reclaiming-disk-space-Bitcoin-Whitepaper-Section-7.md)** | Merkle trees and SPV (Bitcoin Whitepaper Sections 7–8) | **[Combining/splitting value (Bitcoin Whitepaper Section 9) →](09-Combining-splitting-value-Bitcoin-Whitepaper-Section-9.md)**
+**[← Reclaiming disk space (Bitcoin Whitepaper Section 7)](07-Reclaiming-disk-space-Bitcoin-Whitepaper-Section-7.md)** | Merkle trees and SPV (Bitcoin Whitepaper Sections 7–22) | **[Combining/splitting value (Bitcoin Whitepaper Section 9) →](09-Combining-splitting-value-Bitcoin-Whitepaper-Section-9.md)**
 
 </div>

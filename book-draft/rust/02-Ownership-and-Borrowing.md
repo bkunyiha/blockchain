@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. **Chapter 10: Rust Language Guide** ← *You are here*
+34. <a href="../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -38,171 +57,69 @@
 ---
 # Ownership and Borrowing
 
-Ownership is Rust's most distinctive feature and the foundation of its memory safety guarantees. Understanding ownership is essential for writing effective Rust code. In this chapter, we'll explore how ownership works, why it matters, and how we use it in our blockchain implementation.
+Ownership is Rust's distinctive feature—a compile-time system that tracks data ownership and ensures memory is freed exactly once, automatically. Three rules govern it:
 
-When we first began implementing our blockchain, we faced a fundamental challenge: how do we manage memory safely without a garbage collector, while maintaining the performance required for a production blockchain system? Rust's answer is ownership—a compile-time system that tracks who owns each piece of data and ensures memory is freed exactly once, automatically.
+1. **Each value has one owner**: Only one variable owns each value at any time.
+2. **Only one mutable borrow at a time**: Prevents data races.
+3. **Values drop when owner goes out of scope**: Automatic cleanup without garbage collection.
 
-Ownership might seem restrictive at first, but it's this very restriction that enables Rust's safety guarantees. The compiler enforces three simple rules that prevent entire classes of bugs that plague other systems languages:
+For comprehensive treatment, see [The Rust Book: Ownership](https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html).
 
-1. **Each value has exactly one owner**: When you assign a value to a variable, that variable becomes the owner. Ownership can be transferred, but only one owner exists at any time.
-2. **Only one owner at a time**: This prevents the ambiguity of shared ownership that leads to use-after-free errors and double-free bugs.
-3. **Values are automatically dropped when their owner goes out of scope**: Rust's compiler inserts cleanup code automatically, ensuring memory is freed without manual intervention.
+## Ownership in Practice
 
-These rules might seem abstract, but they have concrete implications for how we structure our code. Let's see how ownership works in practice within our blockchain implementation.
-
-### Ownership in Practice: Transaction Inputs
-
-Consider how we represent transaction inputs in our blockchain. In `bitcoin/src/primitives/transaction.rs`, the `TXInput` struct owns its transaction ID data:
+In our blockchain (`bitcoin/src/primitives/transaction.rs`):
 
 ```rust
 impl TXInput {
     pub fn new(txid: &[u8], vout: usize) -> TXInput {
         TXInput {
-            txid: txid.to_vec(),  // ← Creates a new Vec<u8> owned by TXInput
+            txid: txid.to_vec(),  // Takes ownership of new Vec
             vout,
-            signature: vec![],
-            pub_key: vec![],
         }
     }
-
-    pub fn get_txid(&self) -> &[u8] {  // ← Returns a borrowed reference
+    pub fn get_txid(&self) -> &[u8] {  // Returns borrowed ref
         self.txid.as_slice()
     }
 }
 ```
 
-When we create a new `TXInput`, the `new` function receives a borrowed slice (`&[u8]`) representing the transaction ID. Rather than storing a reference (which would require the original data to outlive our struct), we call `to_vec()` to create a new vector that our struct owns. This ownership transfer ensures that the `TXInput` struct controls the lifetime of its transaction ID data.
+The `new` function receives a borrowed slice but creates a new `Vec<u8>` that the `TXInput` owns.
 
-When we need to read the transaction ID, `get_txid()` returns a borrowed reference (`&[u8]`). This allows callers to read the data without taking ownership, and the borrow checker ensures the reference remains valid as long as the `TXInput` struct exists. This pattern—owning data internally and providing borrowed access—is common throughout our codebase.
+## Borrowing
 
-### Borrowing: Temporary Access Without Ownership
-
-While ownership ensures memory safety, requiring ownership transfer for every data access would be impractical. Rust's borrowing system allows temporary access to data without taking ownership, enabling efficient data sharing while maintaining safety guarantees.
-
-Borrowing comes in two forms: immutable borrows for reading data, and mutable borrows for modifying data. The borrow checker enforces rules that prevent data races and use-after-free errors at compile time.
-
-**Immutable Borrows (`&T`):**
-
-When we need to read data without modifying it, we use immutable borrows. In our transaction code, we see this pattern frequently:
+**Immutable borrows (`&T`):** Multiple readers, no modifications.
 
 ```rust
-// In bitcoin/src/primitives/transaction.rs
 pub fn uses_key(&self, pub_key_hash: &[u8]) -> bool {
-    let locking_hash = hash_pub_key(self.pub_key.as_slice());  // ← Borrows self immutably
-    locking_hash.eq(pub_key_hash)  // ← Borrows pub_key_hash immutably
+    hash_pub_key(self.pub_key.as_slice()).eq(pub_key_hash)
 }
 ```
 
-The `&self` parameter means we're borrowing the struct immutably—we can read its fields but cannot modify them. Similarly, `pub_key_hash: &[u8]` is an immutable borrow of the caller's data. Multiple functions can hold immutable borrows simultaneously, enabling concurrent reads without conflicts.
-
-**Mutable Borrows (`&mut T`):**
-
-When we need to modify data, we use mutable borrows. The borrow checker ensures only one mutable borrow exists at a time, preventing data races:
+**Mutable borrows (`&mut T`):** One exclusive writer.
 
 ```rust
-// In bitcoin/src/primitives/transaction.rs
-fn lock(&mut self, address: &WalletAddress) -> Result<()> {
-    let pub_key_hash = get_pub_key_hash(address)?;
-    self.pub_key_hash = pub_key_hash;  // ← Mutates self via mutable borrow
-    Ok(())
+fn set_key(&mut self, key: Vec<u8>) {
+    self.pub_key = key;  // Exclusive mutable access
 }
 ```
 
-The `&mut self` parameter gives us exclusive mutable access to the struct. The borrow checker ensures no other references (mutable or immutable) exist while we hold this mutable borrow, preventing data races at compile time.
+The borrow checker enforces these rules at compile time, preventing data races without runtime overhead.
 
-**Borrowing Rules in Practice:**
+## Ownership Transfer (Moves)
 
-These rules might seem restrictive, but they prevent entire classes of bugs:
-- **Multiple immutable borrows**: Safe because reading doesn't conflict with other reads
-- **Single mutable borrow**: Prevents data races by ensuring exclusive write access
-- **No mixing**: Prevents reading data that's being modified elsewhere
-
-In our blockchain, these rules ensure that transaction validation can safely read blockchain state while miners write new blocks, all without runtime synchronization overhead.
-
-### Ownership Transfer: Moving Data Between Contexts
-
-Ownership transfer occurs when we pass values between functions or assign them to variables. In our node context implementation, we see a clear example of ownership transfer:
+When ownership transfers between variables, it's zero-cost—just pointer transfer:
 
 ```rust
-// In bitcoin/src/node/context.rs
 pub fn new(blockchain: BlockchainService) -> NodeContext {
-    NodeContext {
-        blockchain,  // ← Ownership of BlockchainService transferred to NodeContext
-    }
+    NodeContext { blockchain }  // Move, not copy
 }
 ```
 
-When we create a new `NodeContext`, the `blockchain` parameter is moved into the struct. The caller no longer owns the `BlockchainService`—ownership has been transferred to the `NodeContext`. This transfer is explicit and checked at compile time, ensuring we can't accidentally use the `blockchain` after transferring ownership.
-
-This ownership model provides several benefits that are crucial for our blockchain implementation:
-
-- **Clear Responsibility**: The owner is unambiguously responsible for cleanup. When `NodeContext` is dropped, it automatically cleans up the `BlockchainService`.
-- **No Double-Free Errors**: The compiler prevents us from freeing memory twice, a common source of crashes in C/C++ code.
-- **Memory Safety Guarantees**: These checks happen at compile time, not runtime, meaning there's no performance penalty for these safety guarantees.
-
-In practice, this means our blockchain code can safely manage complex data structures like the blockchain state, transaction mempool, and network connections without worrying about memory leaks or use-after-free errors.
-
-### Performance Implications of Ownership
-
-Understanding ownership helps us write efficient code. When we transfer ownership, Rust moves the data—it doesn't copy it. This means ownership transfers are zero-cost operations:
-
-```rust
-// In bitcoin/src/node/context.rs
-pub fn new(blockchain: BlockchainService) -> NodeContext {
-    NodeContext {
-        blockchain,  // ← Move, not copy - zero cost
-    }
-}
-```
-
-**Key Performance Points:**
-- **Moves are cheap**: Ownership transfer doesn't copy data, just transfers the pointer
-- **Copy types**: Types implementing `Copy` (like `i32`, `bool`) are copied automatically
-- **Clone explicitly**: For types that don't implement `Copy`, use `.clone()` when you need a copy
-- **Borrow when possible**: Borrowing avoids ownership transfer entirely, making it the most efficient option
-
-In our blockchain, we carefully choose between ownership, borrowing, and cloning based on performance needs. Transaction validation borrows blockchain state (efficient), while creating new transactions takes ownership (necessary for isolation).
-
-### Common Ownership Patterns in Our Codebase
-
-**Pattern 1: Builder Pattern with Ownership**
-```rust
-// Ownership allows chaining while maintaining safety
-let tx = Transaction::new()
-    .add_input(input1)  // Takes ownership
-    .add_output(output1)  // Takes ownership
-    .build()?;  // Returns owned Transaction
-```
-
-**Pattern 2: Borrowing for Validation**
-```rust
-// Validation borrows data, doesn't take ownership
-pub fn validate(&self, blockchain: &Blockchain) -> Result<()> {
-    // Can validate without taking ownership
-}
-```
-
-**Pattern 3: Ownership Transfer for Isolation**
-```rust
-// Taking ownership ensures data isolation
-pub fn process_transaction(tx: Transaction) -> Result<()> {
-    // Owned transaction can't be modified elsewhere
-}
-```
-
-These patterns appear throughout our blockchain implementation, demonstrating how ownership enables both safety and efficiency.
+In our blockchain, we borrow for reads (efficient), move for isolation (transactional safety).
 
 ## Summary
 
-Ownership and borrowing form the foundation of Rust's memory safety guarantees. By tracking ownership at compile time, Rust prevents entire classes of bugs—memory leaks, use-after-free errors, and data races—without runtime overhead. The borrowing system allows efficient data sharing while maintaining these safety guarantees.
-
-As we've seen in our blockchain implementation, ownership enables us to:
-- **Manage memory safely**: Automatic cleanup without garbage collection overhead
-- **Share data efficiently**: Borrowing allows multiple readers without copying
-- **Prevent data races**: The borrow checker ensures exclusive mutable access
-- **Write performant code**: Zero-cost abstractions mean no runtime penalty
-
-In the next chapter, we'll explore how we use structs and enums to model our blockchain's data structures, building on the ownership concepts we've learned here.
+Ownership and borrowing enable memory safety without garbage collection overhead. Borrowed references allow efficient sharing; moves ensure exclusive ownership when needed. Together, they form the foundation of Rust's type-system-enforced safety.
 
 ---
 
@@ -223,7 +140,7 @@ In the next chapter, we'll explore how we use structs and enums to model our blo
 
 <div align="center">
 
-**📚 [← Rust Guide Index](README.md)** | **Ownership and Borrowing** | **[← Previous: Introduction](01-Introduction.md)** | **[Next: Data Structures →](03-Data-Structures.md)** 📚
+**[← Rust Guide Index](README.md)** | **Ownership and Borrowing** | **[← Previous: Introduction](01-Introduction.md)** | **[Next: Data Structures →](03-Data-Structures.md)** 
 
 </div>
 

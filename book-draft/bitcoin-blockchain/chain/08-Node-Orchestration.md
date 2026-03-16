@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Section Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Section 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Section 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Section 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Section 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Section 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Section 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Section 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Section 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. **Section 2.4: Blockchain (Technical Foundations)** ← *You are here*
-10. <a href="../store/README.md">Section 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Section 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Section 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Section 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Section 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Section 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Section 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Section 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Section 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Section 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Section 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Section 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Section 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -37,13 +56,13 @@
 
 ---
 
-# Section 2.4.8: Node Orchestration — Coordinating the Blockchain Runtime
+# Section 9.8: Node Orchestration — Coordinating the Blockchain Runtime
 
-In the previous sections, we've explored how transactions are constructed and signed (Section 2.4.5), how blocks are mined and persisted (Section 2.4.6), and how the UTXO set tracks spendable outputs (Section 2.4.4). But how does all of this come together at runtime? How does a node coordinate between incoming network messages, the mempool, mining operations, and blockchain state updates?
+In the previous sections, we've explored how transactions are constructed and signed (Section 9.5), how blocks are mined and persisted (Section 9.6), and how the UTXO set tracks spendable outputs (Section 9.4). But how does all of this come together at runtime? How does a node coordinate between incoming network messages, the mempool, mining operations, and blockchain state updates?
 
 **What is a node?** A blockchain node is a running instance of the blockchain software that maintains its own local copy of the blockchain, validates transactions and blocks, participates in the peer-to-peer network, and (optionally) mines new blocks. 
 
-This is a crucial distributed systems concept: **each node stores its own complete copy of the blockchain** (as we saw in Section 2.4.3, where `BlockchainFileSystem` persists blocks to a local sled database). Nodes synchronize with each other by exchanging blocks and transactions over the network, but each node's storage is independent—there's no central database that all nodes share. This decentralization is what makes blockchains resilient: even if some nodes go offline, others continue operating with their own copies.
+This is a crucial distributed systems concept: **each node stores its own complete copy of the blockchain** (as we saw in Section 9.3, where `BlockchainFileSystem` persists blocks to a local sled database). Nodes synchronize with each other by exchanging blocks and transactions over the network, but each node's storage is independent—there's no central database that all nodes share. This decentralization is what makes blockchains resilient: even if some nodes go offline, others continue operating with their own copies.
 
 In our implementation, a node is the complete runtime system that coordinates blockchain state (stored locally in `BlockchainFileSystem`), transaction mempool, network communication, and mining operations.
 
@@ -60,15 +79,14 @@ This section answers those questions by walking through the **node orchestration
 - `bitcoin/src/node/txmempool.rs` — mempool management
 - `bitcoin/src/node/miner.rs` — mining coordination
 
-## Scope within Section 2.4 (section flow)
+## Scope within Section 9 (section flow)
 
-This subsection covers the **orchestration layer** that coordinates **Section 2.4 (Blockchain — From Transaction to Block Acceptance) Steps 4–8**: how web/network events route into mempool admission, mining triggers, propagation, and block acceptance. While previous sections focused on *what* happens (transaction lifecycle, block mining), this section focuses on *how* it all connects at runtime.
+This subsection covers the **orchestration layer** that coordinates **Section 9 (Blockchain — From Transaction to Block Acceptance) Steps 4–8**: how web/network events route into mempool admission, mining triggers, propagation, and block acceptance. While previous sections focused on *what* happens (transaction lifecycle, block mining), this section focuses on *how* it all connects at runtime.
 
 ### Diagram — runtime event flow (how orchestration coordinates events)
 
 This diagram shows how external events flow through the orchestration layer and get routed to the appropriate subsystems. This is the "runtime wiring" we'll explore in detail:
 
-```
 External Events (arrive at runtime)
   │
   ├─> Web API Request (HTTP)
@@ -116,7 +134,6 @@ Background Tasks (spawned by orchestration)
         └─> prepare_mining_utxo → process_mine_block
               ├─> BlockchainService::mine_block (verify + mine)
               └─> broadcast_new_block → send_inv to peers
-```
 
 **What this diagram shows**: The orchestration layer (`NodeContext` and `process_stream`) acts as a **message router and coordinator** that:
 
@@ -178,7 +195,6 @@ Before diving into the code, let's understand the big picture. A blockchain node
 
 This diagram shows the overall architecture: external interfaces communicate with `NodeContext`, which coordinates between subsystems, and all persistent state ultimately lives in the storage layer.
 
-```
 ┌───────────────────────────────────────────────────────────────────┐
 │                      External Interfaces                          │
 │  ┌──────────────┐  ┌──────────────┐  ┌────────────┐  ┌──────────┐ │
@@ -223,7 +239,6 @@ This diagram shows the overall architecture: external interfaces communicate wit
             │ - Chainstate  │
             │ - Metadata    │
             └───────────────┘
-```
 
 **What this diagram shows**: The separation of concerns in our implementation. External interfaces (web API, wallet UI, network peers) all communicate through `NodeContext`, which acts as a central coordinator. `NodeContext` delegates to specialized subsystems (chain state, mempool, network), and all persistent data ultimately lives in the storage layer.
 
@@ -231,7 +246,6 @@ This diagram shows the overall architecture: external interfaces communicate wit
 
 This diagram shows the call relationships: how external code calls `NodeContext`, how `NodeContext` delegates to subsystems, and where global state is accessed.
 
-```
 External Layer (web/clients/network)
   │
   ├─> NodeContext (central API)
@@ -263,7 +277,6 @@ Global Singletons (shared across all subsystems):
 
 All persistent state ultimately lives in:
   └─> BlockchainFileSystem (sled database)
-```
 
 **What this diagram shows**: The call hierarchy and shared state. `NodeContext` is the primary entry point, but subsystems also access global singletons directly (e.g., `GLOBAL_MEMORY_POOL`). The server loop spawns per-connection tasks that handle network messages.
 
@@ -271,7 +284,6 @@ All persistent state ultimately lives in:
 
 This diagram traces a concrete example: how a balance query flows from the web API through the system.
 
-```
 Client HTTP Request
   │
   ├─> GET /api/balance?address=1A1zP1eP...
@@ -292,7 +304,6 @@ Client HTTP Request
                                 └─> Return balance (satoshis)
                                       │
                                       └─> HTTP Response: {"balance": 50000}
-```
 
 **What this diagram shows**: A simple read operation that doesn't modify state. The query flows through `NodeContext` to the blockchain service, which queries the UTXO set, and the result flows back up the same path.
 
@@ -300,7 +311,6 @@ Client HTTP Request
 
 This diagram traces a concrete write operation: create a signed transaction spending UTXOs from **A** (`from_address`) to **B** (`to_address`), accept it into the mempool, then propagate it to peers (and potentially trigger mining).
 
-```
 Wallet UI (desktop/web)
   │
   ├─> bitcoin_api::client::WalletClient::send_transaction(&SendTransactionRequest)
@@ -347,7 +357,6 @@ Wallet UI (desktop/web)
               ├─> Peers receive INV in net::net_processing::process_stream(...)
               ├─> Peers request the full tx: net::net_processing::send_get_data(&origin, OpType::Tx, txid).await  <-- "send me tx"
               └─> Origin serves the tx: net::net_processing::send_tx(&peer, &Transaction).await                   <-- full transaction bytes
-```
 
 **What this diagram shows**: A state-changing write path. The API handler delegates to `NodeContext::btc_transaction`, which builds a signed UTXO transaction, accepts it into the global mempool, and then uses a background task to (a) broadcast an INV to peers and (b) optionally trigger mining if the mempool threshold is met.
 
@@ -374,12 +383,12 @@ Now that we understand the architecture, let's walk through the code that implem
 
 Here's the path we'll follow through the code. Each step leads naturally to the next:
 
-- **Step 1**: Global singletons (`GLOBAL_MEMORY_POOL`, `GLOBAL_NODES`, etc.) → Listing **2.4-7.1**
-- **Step 2**: `NodeContext` initialization and structure → Listing **2.4-7.2**
-- **Step 3**: Transaction processing path (`process_transaction`) → Listing **2.4-7.3**
-- **Step 4**: Block processing path (`add_block`) → Listing **2.4-7.4**
-- **Step 5**: Network message routing (`process_stream`) → Listing **2.4-7.5**
-- **Step 6**: Server runtime loop (wiring it all together) (`run_with_shutdown`) → Listing **2.4-7.6**
+- **Step 1**: Global singletons (`GLOBAL_MEMORY_POOL`, `GLOBAL_NODES`, etc.) → Listing **9-7.1**
+- **Step 2**: `NodeContext` initialization and structure → Listing **9-7.2**
+- **Step 3**: Transaction processing path (`process_transaction`) → Listing **9-7.3**
+- **Step 4**: Block processing path (`add_block`) → Listing **9-7.4**
+- **Step 5**: Network message routing (`process_stream`) → Listing **9-7.5**
+- **Step 6**: Server runtime loop (wiring it all together) (`run_with_shutdown`) → Listing **9-7.6**
 
 ---
 
@@ -396,69 +405,44 @@ The node uses several process-wide singletons that are shared across all subsyst
 - **`static`**: Process-wide storage that lives for the entire program lifetime. All threads can access it.
 - **`const`**: Compile-time constants that are inlined wherever used.
 
-**Code Listing 2.4-7.1**: Process-wide globals (node identity, peer set, mempool, blocks-in-transit)
+**Code Listing 9-7.1**: Process-wide globals (node identity, peer set, mempool, blocks-in-transit)
+
+> **Source:** `server.rs` — Source
 
 ```rust
-// Source: bitcoin/src/node/server.rs
-
-// Node protocol version (used in version handshake with peers)
 pub const NODE_VERSION: usize = 1;
-
-// Central/bootstrap node address (defaults to localhost:2001 if not set)
-// This is the node that other nodes connect to initially to discover the network
-// 
-// Rust note: `Lazy::new` takes a closure (|| { ... }) that runs once on first access.
-// The closure reads the environment variable, handles defaults, and parses the socket address.
-// `SocketAddr` is a Rust standard library type representing an IP address and port.
-pub static CENTERAL_NODE: Lazy<SocketAddr> = Lazy::new(|| {
-    // Read from environment variable, or use default
-    // `env::var` returns Result<String, VarError> - we use `unwrap_or_else` to provide a default
-    let central_node_str =
-        env::var("CENTERAL_NODE").unwrap_or_else(|_| "127.0.0.1:2001".to_string());
-
-    // Handle empty string case (when CENTERAL_NODE is set but empty)
-    // This is a defensive check: if the env var exists but is empty, use default
-    if central_node_str.is_empty() {
-        "127.0.0.1:2001"
-            .parse()  // Parse string into SocketAddr - returns Result
-            .expect("Failed to parse default CENTERAL_NODE address")  // Panic if parse fails
-    } else {
-        central_node_str
-            .parse()  // Parse the environment variable value
-            .expect("CENTERAL_NODE environment variable is not a valid socket address")
-    }
-});
-
-// Threshold for triggering mining: mine a block when mempool has this many transactions
 pub const TRANSACTION_THRESHOLD: usize = 3;
 
-// Global peer list: all known nodes in the network
-// Initialized with the central node, then expanded as peers connect
-//
-// Rust note: `*CENTERAL_NODE` dereferences the `Lazy` to get the `SocketAddr` value.
-// `Nodes::new()` creates an empty peer list, then we add the central node.
-// The closure returns the initialized `Nodes` instance, which becomes the static value.
-pub static GLOBAL_NODES: Lazy<Nodes> = Lazy::new(|| {
-    let nodes = Nodes::new();  // Create new empty peer list
-    // Always start with the central node in the peer list
-    // This ensures every node knows at least one peer (the bootstrap node)
-    nodes.add_node(*CENTERAL_NODE).expect("Node add error");
-    nodes  // Return the initialized Nodes instance
+// Central/bootstrap node address (env var or default to localhost:2001)
+pub static CENTERAL_NODE: Lazy<SocketAddr> = Lazy::new(|| {
+    let addr_str = env::var("CENTERAL_NODE")
+        .unwrap_or_else(|_| "127.0.0.1:2001".to_string());
+    // ... (parse with fallback to default)
+    addr_str.parse().expect("Invalid CENTERAL_NODE address")
 });
-
-// Global mempool: in-memory pool of pending transactions waiting to be mined
-// This is the single source of truth for unconfirmed transactions
-pub static GLOBAL_MEMORY_POOL: Lazy<MemoryPool> = Lazy::new(MemoryPool::new);
-
-// Global blocks-in-transit: tracks blocks we've requested but haven't received yet
-// Used during initial sync: when we receive an INV for blocks we don't have,
-// we add them here and request them one by one
-pub static GLOBAL_BLOCKS_IN_TRANSIT: Lazy<BlockInTransit> = Lazy::new(BlockInTransit::new);
 ```
 
-**Listing 2.4-7.1 explanation**:
+Next, we set up the global node list and mempool. The central node is registered as the initial peer, and the mempool tracks pending transactions waiting to be mined.
 
-- **`NODE_VERSION`**: Protocol version used in the version handshake when nodes first connect. This allows nodes to detect incompatible protocol versions.
+```rust
+pub static GLOBAL_NODES: Lazy<Nodes> = Lazy::new(|| {
+    let nodes = Nodes::new();
+    nodes.add_node(*CENTERAL_NODE).expect("Node add error");
+    nodes
+});
+
+pub static GLOBAL_MEMORY_POOL: Lazy<MemoryPool> =
+    Lazy::new(MemoryPool::new);
+pub static GLOBAL_BLOCKS_IN_TRANSIT: Lazy<BlockInTransit> =
+    Lazy::new(BlockInTransit::new);
+```
+
+**Listing 9-7.1 explanation**:
+
+- **`NODE_VERSION`**: Protocol version used in the
+  version handshake when nodes first connect.
+  This allows nodes to detect incompatible
+  protocol versions.
 
 - **`CENTERAL_NODE`**: The bootstrap node address. New nodes connect to this node first to discover other peers. Defaults to `127.0.0.1:2001` if not set via environment variable.
 
@@ -482,7 +466,6 @@ pub static GLOBAL_BLOCKS_IN_TRANSIT: Lazy<BlockInTransit> = Lazy::new(BlockInTra
 
 **Diagram — globals and their consumers**
 
-```
 GLOBAL_MEMORY_POOL
   ├─> txmempool::add_to_memory_pool (add pending transactions)
   ├─> txmempool::remove_from_memory_pool (remove confirmed transactions)
@@ -505,7 +488,6 @@ CENTERAL_NODE
   ├─> Server::run_with_shutdown (bootstrap connection)
   ├─> net_processing::send_version (version handshake)
   └─> GLOBAL_NODES initialization (add to peer list)
-```
 
 ---
 
@@ -515,67 +497,33 @@ CENTERAL_NODE
 
 `NodeContext` is the primary entry point for all node operations. It provides a clean, unified API that abstracts the complexity of coordinating multiple subsystems. Following Bitcoin Core's architecture, it serves a similar role to Bitcoin's validation context and node state manager.
 
-**Code Listing 2.4-7.2**: NodeContext structure and initialization
+**Code Listing 9-7.2**: NodeContext structure and initialization
+
+> **Source:** `context.rs` — Source
 
 ```rust
-// Source: bitcoin/src/node/context.rs
-
-/// Node context - central coordination point for all node operations
-///
-/// `NodeContext` is the primary interface for coordinating blockchain node operations.
-/// It provides a clean abstraction over blockchain state, transaction mempool,
-/// network operations, and validation logic.
-///
-/// Following Bitcoin Core's architecture, this struct serves a similar role to
-/// Bitcoin's validation context and node state manager.
-///
-/// # Thread Safety
-///
-/// This struct is `Clone` + `Send` + `Sync`, allowing safe sharing across
-/// async tasks and thread boundaries. All internal state uses appropriate
-/// synchronization primitives.
+/// Central coordination point for all node operations (facade pattern)
 #[derive(Clone, Debug)]
 pub struct NodeContext {
-    /// Blockchain service - manages chain state and block storage
     blockchain: BlockchainService,
 }
 
 impl NodeContext {
-    /// Create a new node context
-    ///
-    /// # Arguments
-    ///
-    /// * `blockchain` - The blockchain service to coordinate with
-    ///
-    /// # Returns
-    ///
-    /// A new `NodeContext` instance ready for operation
     pub fn new(blockchain: BlockchainService) -> Self {
         Self { blockchain }
     }
 
-    /// Get reference to underlying blockchain service
-    ///
-    /// # Returns
-    ///
-    /// Immutable reference to the `BlockchainService`
-    ///
-    /// # Note
-    ///
-    /// This is provided for cases where direct blockchain access is needed,
-    /// but prefer using the high-level methods on `NodeContext` when possible.
     pub fn get_blockchain(&self) -> &BlockchainService {
         &self.blockchain
     }
 
-    /// Get reference to blockchain service (alias for compatibility)
     pub fn blockchain(&self) -> &BlockchainService {
         &self.blockchain
     }
 }
 ```
 
-**Listing 2.4-7.2 explanation**:
+**Listing 9-7.2 explanation**:
 
 - **`NodeContext` struct**: A thin wrapper around `BlockchainService`. The coordination happens through methods on `NodeContext` that delegate to subsystems (mempool, miner, network) rather than storing all subsystems as fields.
 
@@ -608,206 +556,66 @@ impl NodeContext {
 
 When a transaction arrives (either from the network or via the web API), it flows through `NodeContext::process_transaction`, which handles mempool admission, network broadcast, and mining triggers.
 
-**Code Listing 2.4-7.3**: Transaction processing (`process_transaction` and `submit_transaction_for_mining`)
+**Code Listing 9-7.3**: Transaction processing (`process_transaction` and `submit_transaction_for_mining`)
+
+> **Source:** `context.rs` — Source
 
 ```rust
-// Source: bitcoin/src/node/context.rs
-
-/// Process transaction - core mempool acceptance logic
-///
-/// This is the main entry point for transaction processing, similar to
-/// Bitcoin Core's `AcceptToMemoryPool` and `ProcessNewTransaction`.
-///
-/// # Arguments
-///
-/// * `addr_from` - Source peer address (for network coordination)
-/// * `utxo` - The transaction to process
-///
-/// # Returns
-///
-/// * `Ok(txid)` - Transaction accepted, returns transaction ID (hex)
-/// * `Err(TransactionAlreadyExistsInMemoryPool)` - Duplicate transaction
-/// * `Err(_)` - Other validation or processing error
-///
-/// # Process Flow
-///
-/// 1. **Check for duplicates** - Reject if already in mempool
-/// 2. **Add to mempool** - Store transaction for mining consideration
-/// 3. **Broadcast** - If central node, relay to other peers (background)
-/// 4. **Trigger mining** - If threshold met, start mining (background)
-/// 5. **Return txid** - Immediately return to caller
-///
-/// # Background Operations
-///
-/// Steps 3-4 run asynchronously to prevent blocking the caller.
-/// This follows Bitcoin's pattern of immediate acceptance with async propagation.
 pub async fn process_transaction(
     &self,
     addr_from: &std::net::SocketAddr,
     utxo: Transaction,
 ) -> Result<String> {
-    // ========================================================================
-    // Step 1: Duplicate Check
-    // ========================================================================
-    // Before processing, check if we've already seen this transaction.
-    // This prevents:
-    // - Processing the same transaction multiple times (wasteful)
-    // - Network loops (transaction bouncing between peers)
-    // - Mempool pollution (duplicate entries)
-    //
-    // `transaction_exists_in_pool` queries GLOBAL_MEMORY_POOL by transaction ID.
-    // It returns true if the transaction is already stored.
     if transaction_exists_in_pool(&utxo) {
-        // Log the duplicate for debugging (helps track network issues)
-        info!("Transaction: {:?} already exists", utxo.get_id());
-        // Return early with a specific error type
-        // The caller can handle this gracefully (it's not a fatal error)
-        return Err(BtcError::TransactionAlreadyExistsInMemoryPool(
-            utxo.get_tx_id_hex(),  // Return the transaction ID as hex string
-        ));
+        return Err(
+            BtcError::TransactionAlreadyExistsInMemoryPool(
+                utxo.get_tx_id_hex()
+            )
+        );
     }
-
-    // ========================================================================
-    // Step 2: Mempool Admission
-    // ========================================================================
-    // Add the transaction to the mempool. This involves:
-    // 1. Storing the transaction in GLOBAL_MEMORY_POOL (in-memory HashMap)
-    // 2. Marking the transaction's referenced outputs as "in mempool" in the UTXO set
-    //    (prevents local double-spending: if another tx tries to spend the same output,
-    //     it will see the "in mempool" flag and be rejected)
-    //
-    // `utxo.clone()`: We need to clone because add_to_memory_pool takes ownership
-    // `&self.blockchain`: Pass reference to blockchain for UTXO set updates
-    // `.await?`: Wait for async operation, propagate errors with `?`
     add_to_memory_pool(utxo.clone(), &self.blockchain).await?;
-
-    // Step 3-4: Submit transaction for mining and broadcast in background
-    // This prevents blocking the API response—we accept the transaction immediately
-    // and handle propagation/mining asynchronously
-    //
-    // Rust async pattern: We need to move values into the spawned task.
-    // - `self.clone()`: Clone NodeContext (cheap, clones reference to BlockchainService)
-    // - `addr_copy`: Copy the SocketAddr (it's Copy, so this is cheap)
-    // - `tx`: Clone the Transaction (necessary because we need it in the task)
-    // - `tokio::spawn`: Spawn a new async task that runs concurrently
-    // - `async move`: The closure takes ownership of captured variables
-    // - `let _ = ...`: Ignore the Result (errors are logged inside the function)
-    let context = self.clone();  // Clone NodeContext for the background task
-    let addr_copy = *addr_from;  // Copy SocketAddr (Copy trait makes this cheap)
-    let tx = utxo.clone();       // Clone Transaction for the background task
+    let context = self.clone();
+    let addr_copy = *addr_from;
+    let tx = utxo.clone();
     tokio::spawn(async move {
-        // This closure runs in a separate task, concurrently with the main flow
-        // Errors are logged but don't affect the immediate response
         let _ = context.submit_transaction_for_mining(&addr_copy, tx).await;
     });
-
-    // Step 5: Return transaction ID immediately
-    // The caller doesn't wait for broadcast or mining to complete
     Ok(utxo.get_tx_id_hex())
 }
+```
 
-/// Submit transaction for mining and network broadcast (internal)
-///
-/// This is called asynchronously after a transaction is added to mempool.
-/// It handles:
-/// 1. Broadcasting transaction to network peers
-/// 2. Triggering mining if threshold is met
-/// 3. Cleaning up invalid transactions
-///
-/// # Arguments
-///
-/// * `addr_from` - Source peer address (to avoid echoing back)
-/// * `utxo` - The transaction to broadcast and potentially mine
+After accepting the transaction into the mempool, we spawn a background task to handle broadcast and mining. The next function manages this asynchronous work, broadcasting the transaction to peers and triggering mining if we have enough transactions.
+
+```rust
 async fn submit_transaction_for_mining(
     &self,
     addr_from: &std::net::SocketAddr,
     utxo: Transaction,
 ) -> Result<()> {
-    // ========================================================================
-    // Part 1: Network Broadcast (Central Node Only)
-    // ========================================================================
-    // Get our node's address from global config
-    // This tells us if we're the central/bootstrap node
-    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
-
-    // Only the central node broadcasts transactions to all peers
-    // Other nodes just receive and process transactions locally
-    // This creates a hub-and-spoke topology: central node relays everything
-    if my_node_addr.eq(&CENTERAL_NODE) {
-        // Get list of all peers except the sender
-        // We exclude the sender to prevent echo loops (don't send back to who sent it)
-        // `.await?`: This is async because it may need to query the network state
+    // Broadcast tx to peers if this is central node
+    if GLOBAL_CONFIG.get_node_addr().eq(&CENTERAL_NODE) {
         let nodes = self.get_nodes_excluding_sender(addr_from).await?;
-        
-        // Broadcast transaction inventory to all peers
-        // We send INV(OpType::Tx, txid) - just the transaction ID, not full data
-        // Peers will request full transaction via GETDATA if they don't have it
-        // This two-step process (INV → GETDATA → TX) reduces bandwidth
-        self.broadcast_transaction_to_nodes(&nodes, utxo.get_id_bytes())
-            .await;
+        self.broadcast_transaction_to_nodes(&nodes, utxo.get_id_bytes()).await;
     }
-
-    // ========================================================================
-    // Part 2: Mining Trigger
-    // ========================================================================
-    // Check if we should start mining a new block
-    // `should_trigger_mining()` checks:
-    // 1. Is this node configured as a miner? (checks GLOBAL_CONFIG)
-    // 2. Does the mempool have enough transactions? (>= TRANSACTION_THRESHOLD)
-    if should_trigger_mining() {
-        // Get the mining address from config
-        // This is where block rewards (coinbase transaction) will go
-        // `if let Some(...)` handles the case where mining address might not be set
-        if let Some(mining_address) = GLOBAL_CONFIG.get_mining_addr() {
-            // Prepare candidate transactions for mining
-            // This function:
-            // 1. Gets all transactions from GLOBAL_MEMORY_POOL
-            // 2. Creates a coinbase transaction (block reward to mining_address)
-            // 3. Returns the list: [coinbase, ...pending_transactions]
-            match prepare_mining_utxo(&mining_address) {
-                Ok(txs) => {
-                    // Only mine if we have transactions (coinbase + at least one pending tx)
-                    if !txs.is_empty() {
-                        // Mine a block with the prepared transactions
-                        // This calls BlockchainService::mine_block which:
-                        // 1. Verifies all transactions (signatures, etc.)
-                        // 2. Constructs block header
-                        // 3. Performs proof-of-work
-                        // 4. Persists block to storage
-                        // 5. Updates UTXO set
-                        //
-                        // `.map(|_| ())`: Convert Result<Block> to Result<()>
-                        // We don't need the block here, just success/failure
-                        process_mine_block(txs, &self.blockchain).await.map(|_| ())
-                    } else {
-                        // Edge case: mining triggered but mempool is empty
-                        // This shouldn't happen normally, but handle it gracefully
-                        warn!("Mining triggered but no valid transactions to mine");
-                        Ok(())
-                    }
-                }
-                Err(e) => {
-                    // Error preparing transactions (e.g., invalid UTXO references)
-                    // Log the error and clean up any invalid transactions from mempool
-                    error!("Failed to prepare mining transactions: {}", e);
-                    cleanup_invalid_transactions().await
-                }
-            }
-        } else {
-            // Mining triggered but no mining address configured
-            // This node can't mine without an address to receive rewards
-            warn!("Mining triggered but no mining address configured");
-            Ok(())
-        }
-    } else {
-        // Mining threshold not met, or this node is not a miner
-        // Just return success (no action needed)
-        Ok(())
-    }
-}
 ```
 
-**Listing 2.4-7.3 explanation**:
+After broadcasting the transaction to peers, we check if we should trigger mining. If the mempool now has enough transactions, we prepare them and start mining a new block.
+
+    if should_trigger_mining() {
+        if let Some(mining_address) = GLOBAL_CONFIG.get_mining_addr() {
+            if let Ok(txs) = prepare_mining_utxo(&mining_address) {
+                if !txs.is_empty() {
+                    process_mine_block(txs, &self.blockchain).await?;
+                }
+            } else {
+                cleanup_invalid_transactions().await;
+            }
+        }
+    }
+    Ok(())
+}
+
+**Listing 9-7.3 explanation**:
 
 - **`process_transaction`**: The main entry point for transaction processing. It performs duplicate checking, adds the transaction to the mempool, and spawns background work for broadcast and mining. Returns immediately with the transaction ID, following Bitcoin's pattern of immediate acceptance.
 
@@ -837,7 +645,6 @@ pub enum OpType {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Package {
-    // Inventory announcement: "I have these ids"
     Inv {
         addr_from: SocketAddr,
         op_type: OpType,
@@ -874,7 +681,6 @@ pub async fn process_stream(
 
     for pkg in pkg_reader {
         let pkg = pkg?;
-        info!("Receive request from {}: {:?}", peer_addr, pkg);
 
         match pkg {
             ...
@@ -890,9 +696,13 @@ pub async fn process_stream(
                 // Route to NodeContext for processing
                 match node_context.process_transaction(&addr_from, tx).await {
                     Ok(_) => (),
-                    Err(BtcError::TransactionAlreadyExistsInMemoryPool(txid)) => {
-                        // Transaction already in mempool—this is normal, just log it
-                        debug!("Transaction {} already in mempool", txid);
+                    Err(
+                        BtcError::TransactionAlreadyExistsInMemoryPool(
+                            txid
+                        )
+                    ) => {
+                        // Transaction already in mempool—normal
+                        // log it
                     }
                     Err(e) => Err(e)?,
                 }
@@ -906,7 +716,6 @@ pub async fn process_stream(
 
 **Diagram — transaction processing flow**
 
-```
 Transaction arrives (network or API)
   │
   ├─> Network: Package::Tx → process_stream
@@ -935,7 +744,6 @@ Transaction arrives (network or API)
                     │                 └─> process_mine_block (mine block)
                     │
                     └─> Step 4: Return txid immediately
-```
 
 **Whitepaper mapping**:
 - **§5 step 1**: "new transactions are broadcast" — this is the code path that receives and admits them. The background broadcast follows Bitcoin's pattern of immediate acceptance with async propagation.
@@ -955,36 +763,30 @@ Transaction arrives (network or API)
 
 When a block arrives from the network, it flows through `NodeContext::add_block`, which validates and adds it to the chain, then cleans up the mempool.
 
-**Code Listing 2.4-7.4**: Block processing (`add_block` and network routing)
+**Code Listing 9-7.4**: Block processing (`add_block` and network routing)
+
+> **Source:** `context.rs` — Source
 
 ```rust
-// Source: bitcoin/src/node/context.rs
-
 /// Add a block to the blockchain
 ///
 /// Adds a validated block to the blockchain and updates the chain state.
-/// This operation updates the chain tip and persists the block to storage.
 ///
 /// # Arguments
 ///
-/// * `block` - The block to add to the chain
 ///
 /// # Returns
 ///
 /// * `Ok(())` - Block successfully added
 /// * `Err(_)` - Block validation failed or storage error
 pub async fn add_block(&self, block: &Block) -> Result<()> {
-    // ========================================================================
     // Block Addition: Delegate to BlockchainService
-    // ========================================================================
     // NodeContext is a thin wrapper - it delegates actual blockchain operations
-    // to BlockchainService. This keeps the API clean and separates concerns.
     //
     // BlockchainService::add_block performs:
     // 1. **Block validation**: Check height, previous hash, proof-of-work, etc.
-    // 2. **Chain reorganization**: If block extends a side chain, handle reorg
     // 3. **Persistence**: Write block to sled database (persistent storage)
-    // 4. **UTXO set updates**: If block becomes new tip, update spendable outputs
+    // outputs
     //
     // `&block`: Pass reference (don't take ownership, caller might need it)
     // `.await`: Wait for async operation to complete
@@ -1004,7 +806,7 @@ Package::Block { addr_from, block } => {
         .expect("Block deserialization error");
 
     // Add block to blockchain
-    // This validates the block, updates the chain tip if it extends the best chain,
+    // chain,
     // and updates the UTXO set
     node_context
         .add_block(&block)
@@ -1012,22 +814,17 @@ Package::Block { addr_from, block } => {
         .expect("Blockchain write error");
 
     let added_block_hash = block.get_hash_bytes();
-    info!("Added block {:?}", added_block_hash.as_slice());
 
     // Remove transactions in block from memory pool
-    // These transactions are now confirmed, so they shouldn't be in the mempool
     for tx in block.get_transactions().await? {
         node_context.remove_from_memory_pool(tx.clone()).await;
     }
 
     // Remove block from blocks-in-transit queue
-    // We requested this block via GETDATA, so remove it from the queue
     let removed_block_hash = GLOBAL_BLOCKS_IN_TRANSIT
         .remove(added_block_hash.as_ref())
         .expect("Block removal error");
 
-    // If there are more blocks in transit, request the next one
-    // This implements sequential block download during initial sync
     if GLOBAL_BLOCKS_IN_TRANSIT
         .is_not_empty()
         .expect("Blocks in transit error")
@@ -1041,7 +838,7 @@ Package::Block { addr_from, block } => {
 }
 ```
 
-**Listing 2.4-7.4 explanation**:
+**Listing 9-7.4 explanation**:
 
 - **`add_block`**: Delegates to `BlockchainService::add_block`, which handles block validation, chain reorganization, persistence, and UTXO set updates. This is a thin wrapper that provides a clean API.
 
@@ -1053,7 +850,6 @@ Package::Block { addr_from, block } => {
 
 **Diagram — block processing flow**
 
-```
 Block arrives (network)
   │
   └─> Network: Package::Block → process_stream
@@ -1087,7 +883,6 @@ Block arrives (network)
         │
         └─> Request next block (if queue not empty)
               └─> send_get_data(OpType::Block, next_block_hash)
-```
 
 **Whitepaper mapping**:
 - **§5 steps 4–6**: Broadcast blocks; accept if valid; continue building on the accepted chain. The block processing path implements this—we validate blocks, update the chain tip, and continue requesting more blocks if needed.
@@ -1107,71 +902,30 @@ Block arrives (network)
 
 The network layer receives serialized messages from peers over **TCP sockets** and routes them to the appropriate handlers. This is the "message dispatcher" that connects P2P network events to node operations. It also handles **outbound P2P propagation**: when we broadcast transactions/blocks to other nodes (INV/GETDATA/TX/BLOCK), that happens via `net_processing::send_inv`, `net_processing::send_get_data`, `net_processing::send_tx`, and `net_processing::send_block` — **not** through the web (HTTP) layer.
 
-**Code Listing 2.4-7.5**: Network message routing (`process_stream`)
+**Code Listing 9-7.5**: Network message routing (`process_stream`)
+
+> **Source:** `net_processing.rs` — Source
 
 ```rust
-// Source: bitcoin/src/net/net_processing.rs
-
-/// Process incoming network messages from a TCP stream
-///
-/// This is the main network message dispatcher. It deserializes messages from
-/// a peer and routes them to the appropriate handlers based on message type.
-///
-/// # Arguments
-///
-/// * `node_context` - The node context for blockchain operations
-/// * `stream` - The TCP stream connected to a peer
-///
-/// # Returns
-///
-/// * `Ok(())` - Stream processed successfully
-/// * `Err(_)` - Stream read error or deserialization error
-///
-/// # Message Types Handled
-///
-/// - `Package::Block` - Full block data (response to GETDATA)
-/// - `Package::Tx` - Full transaction data (response to GETDATA)
-/// - `Package::Inv` - Inventory announcement (list of block/tx IDs)
-/// - `Package::GetData` - Request for full block/tx data
-/// - `Package::GetBlocks` - Request for all block hashes (initial sync)
-/// - `Package::Version` - Protocol version handshake
-/// - `Package::KnownNodes` - Peer list exchange
-#[instrument(skip(node_context, stream))]
 pub async fn process_stream(
     node_context: NodeContext,
     stream: TcpStream,
 ) -> Result<(), Box<dyn Error>> {
-    // Get the peer's address for logging and routing
-    // `peer_addr()` returns Result<SocketAddr> - the `?` operator propagates errors
     let peer_addr = stream.peer_addr()?;
-    
-    // Create a buffered reader for efficient deserialization
-    // `BufReader` reads data in chunks, reducing system calls
-    // We borrow `&stream` because we need the stream to stay alive
     let reader = BufReader::new(&stream);
-    
-    // Create a JSON deserializer that reads Package messages
-    // `Deserializer::from_reader` creates a JSON deserializer from the reader
-    // `into_iter::<Package>()` creates an iterator that yields `Package` enum variants
-    // `Package` is an enum that represents all possible network message types
     let pkg_reader = Deserializer::from_reader(reader).into_iter::<Package>();
-
-    // Iterate over all messages in the stream
-    // Each message is deserialized and processed based on its type
-    // The iterator yields `Result<Package>` - we use `?` to propagate deserialization errors
     for pkg in pkg_reader {
-        let pkg = pkg?;  // Unwrap Result - propagate error if deserialization fails
-        info!("Receive request from {}: {:?}", peer_addr, pkg);
-
-        // Route message to appropriate handler based on type
-        // Rust pattern matching: `match` exhaustively handles all enum variants
-        // Each `Package` variant has different fields, which we destructure here
+        let pkg = pkg?;
         match pkg {
-            // ========================================================================
+```
+
+Now we enter the main message processing loop. The following sections handle different message types, starting with full block responses from peers.
+
+```rust
             // Message Type: Block (Full block data)
-            // ========================================================================
-            // This is a response to our GETDATA request - peer is sending us a full block
-            // Pattern matching: `Package::Block { addr_from, block }` extracts fields
+            // full block
+            // Pattern matching: `Package::Block { addr_from, block }` extracts
+            // fields
             Package::Block { addr_from, block } => {
                 // Step 1: Deserialize block bytes into Block struct
                 // Network sends serialized bytes, we need the Block struct
@@ -1179,14 +933,14 @@ pub async fn process_stream(
                     .expect("Block deserialization error");
                 
                 // Step 2: Add block to blockchain
-                // This validates, persists, and updates chain state
                 node_context
                     .add_block(&block)
                     .await
                     .expect("Blockchain write error");
                 
                 // Step 3: Clean up mempool
-                // Transactions in this block are now confirmed - remove from pending set
+                // Transactions in this block are now confirmed - remove from
+                // pending set
                 for tx in block.get_transactions().await? {
                     node_context.remove_from_memory_pool(tx.clone()).await;
                 }
@@ -1199,8 +953,10 @@ pub async fn process_stream(
                     .expect("Block removal error");
                 
                 // Step 5: Continue sequential download
-                // If more blocks in queue, request the next one
-                if GLOBAL_BLOCKS_IN_TRANSIT.is_not_empty().expect("Blocks in transit error") {
+                if GLOBAL_BLOCKS_IN_TRANSIT
+                    .is_not_empty()
+                    .expect("Blocks in transit error")
+                {
                     let block_hash = GLOBAL_BLOCKS_IN_TRANSIT
                         .first()
                         .expect("Blocks in transit error")
@@ -1208,116 +964,123 @@ pub async fn process_stream(
                     send_get_data(&addr_from, OpType::Block, &block_hash).await;
                 }
             }
+```
 
-            // ========================================================================
+When a full block is received, we validate it, update the blockchain, and then request the next block if there are more in our download queue. The following section handles incoming transactions that we requested from peers.
+
+```rust
             // Message Type: Transaction (Full transaction data)
-            // ========================================================================
-            // This is a response to our GETDATA request - peer is sending us a full transaction
-            // We requested it because we received an INV and didn't have it
+            // full transaction
             Package::Tx {
                 addr_from,
                 transaction,
             } => {
                 // Step 1: Deserialize transaction bytes into Transaction struct
-                // `transaction` is Vec<u8> (serialized bytes), we need Transaction struct
+                // `transaction` is Vec<u8> (serialized bytes), we need
+                // Transaction struct
                 let tx = Transaction::deserialize(transaction.as_slice())
                     .expect("Transaction deserialization error");
 
                 // Step 2: Process the transaction
-                // This adds it to mempool, broadcasts (if central node), and triggers mining
-                // We match on the Result to handle different error cases gracefully
+                // triggers mining
+                // gracefully
                 match node_context.process_transaction(&addr_from, tx).await {
                     Ok(_) => {
                         // Success: transaction added to mempool
                         // No action needed, processing continues
                     }
-                    Err(BtcError::TransactionAlreadyExistsInMemoryPool(txid)) => {
-                        // Duplicate transaction - this is normal and not an error
+                    Err(
+                        BtcError::TransactionAlreadyExistsInMemoryPool(
+                            txid
+                        )
+                    ) => {
+                        // Duplicate transaction - normal
+                        // error
                         // Can happen if:
-                        // - We received it from another peer first
-                        // - We already mined it
                         // Just log it for debugging, don't treat as error
-                        debug!("Transaction {} already in mempool", txid);
                     }
                     Err(e) => {
-                        // Other errors (validation failures, etc.) - propagate up
-                        // This will cause the connection handler to log and potentially close
+                        // Other errors (validation failures, etc.) - propagate
+                        // up
+                        // potentially close
                         Err(e)?
                     }
                 }
             }
+```
 
-            // ========================================================================
-            // Message Type: Inventory (INV) - Announcement of available objects
-            // ========================================================================
-            // Peer is telling us "I have these blocks/transactions" (by ID only)
-            // This is the first step in inventory-style propagation (INV → GETDATA → BLOCK/TX)
-            // We check if we need them, and if so, request the full data
+After processing a full transaction, we add it to our mempool or log if it's a duplicate. Next, we handle inventory announcements where peers inform us of blocks and transactions they have available.
+
+```rust
+            // Peer is telling us "I have these blocks/transactions" (by ID
+            // only)
+            // GETDATA → BLOCK/TX)
             Package::Inv {
                 addr_from,
                 op_type,  // OpType::Block or OpType::Tx
-                items,    // Vec<Vec<u8>> - list of block/tx hashes (32 bytes each)
+                // Vec<Vec<u8>> - list of block/tx hashes (32 bytes each)
+                items,
             } => match op_type {
-                // ====================================================================
-                // Inventory Type: Blocks
-                // ====================================================================
                 // Peer announced blocks they have - we need to download them
                 OpType::Block => {
                     // Step 1: Add all announced blocks to download queue
                     // `items` is a list of block hashes (32-byte Vec<u8> each)
-                    // We add them all to GLOBAL_BLOCKS_IN_TRANSIT for sequential download
+                    // sequential download
                     GLOBAL_BLOCKS_IN_TRANSIT
-                        .add_blocks(items.as_slice())  // Add all block hashes to queue
+                        // Add all block hashes to queue
+                        .add_blocks(items.as_slice())
                         .expect("Blocks in transit add error");
                     
-                    // Step 2: Request the first block immediately
-                    // We'll request the rest sequentially after receiving each one
-                    // This prevents overwhelming the peer with requests
-                    let block_hash = items.first().expect("Blocks in transit add error");
-                    send_get_data(&addr_from, OpType::Block, block_hash).await;
+                    // Step 2: Request the first block
+                    let block_hash = items
+                        .first()
+                        .expect("Blocks in transit add error");
+                    send_get_data(
+                        &addr_from,
+                        OpType::Block,
+                        block_hash
+                    ).await;
                 }
                 
-                // ====================================================================
-                // Inventory Type: Transactions
-                // ====================================================================
                 // Peer announced transactions they have - check if we need them
                 OpType::Tx => {
-                    // Get the first transaction ID from the inventory
-                    // (In practice, INV can contain multiple items, but we handle one at a time)
-                    let txid = items.first().expect("Blocks in transit add error");
-                    
-                    // Convert transaction ID from bytes to hex string
+                    // Get the first transaction ID
+                    let txid = items
+                        .first()
+                        .expect("Blocks in transit add error");
+
+                    // Convert transaction ID from bytes to hex
                     // GLOBAL_MEMORY_POOL uses hex strings as keys
                     let txid_hex = HEXLOWER.encode(txid);
                     
                     // Step: Only request if we don't already have it
-                    // Check GLOBAL_MEMORY_POOL - if we have it, no need to request
-                    // This avoids duplicate downloads and network waste
+                    // Check GLOBAL_MEMORY_POOL - if we have it, no need to
+                    // request
                     if !GLOBAL_MEMORY_POOL
-                        .contains(txid_hex.as_str())  // Check if txid exists in mempool
+                        // Check if txid exists in mempool
+                        .contains(txid_hex.as_str())
                         .expect("Memory pool contains error")
                     {
-                        // We don't have this transaction - request it
                         send_get_data(&addr_from, OpType::Tx, txid).await;
                     }
-                    // If we already have it, do nothing (transaction already processed)
+                    // processed)
                 }
             },
+```
 
-            // ========================================================================
+After handling inventory announcements, we request the full data for items we need. Next, we handle peer requests for full block and transaction data that we have in our storage or mempool.
+
+```rust
             // Message Type: GetData - Request for full object data
-            // ========================================================================
             // Peer is requesting a specific block or transaction by ID
-            // This is the second step in inventory-style propagation (INV → GETDATA → BLOCK/TX)
-            // We look up the requested object and send it
+            // GETDATA → BLOCK/TX)
             Package::GetData {
                 addr_from,  // Who is requesting
                 op_type,    // OpType::Block or OpType::Tx
-                id,         // Vec<u8> - the hash/ID of the requested object (32 bytes)
+                // Vec<u8> - the hash/ID of the requested object (32 bytes)
+                id,
             } => match op_type {
-                // ====================================================================
                 // GetData Type: Block
-                // ====================================================================
                 // Peer wants a specific block - look it up in our blockchain
                 OpType::Block => {
                     // Look up block by hash in our blockchain storage
@@ -1329,16 +1092,14 @@ pub async fn process_stream(
                         .await
                         .expect("Blockchain read error")
                     {
-                        // We have the block - send it to the peer
-                        // `send_block` serializes the block and sends Package::Block
+                        // `send_block` serializes the block and sends
+                        // Package::Block
                         send_block(&addr_from, &block).await;
                     }
-                    // If block not found, do nothing (peer requested something we don't have)
+                    // we don't have)
                 }
                 
-                // ====================================================================
                 // GetData Type: Transaction
-                // ====================================================================
                 // Peer wants a specific transaction - look it up in our mempool
                 OpType::Tx => {
                     // Convert transaction ID from bytes to hex string
@@ -1351,27 +1112,29 @@ pub async fn process_stream(
                         .get(txid_hex.as_str())  // Lookup by hex string key
                         .expect("Memory pool get error")
                     {
-                        // We have the transaction - send it to the peer
-                        // `send_tx` serializes the transaction and sends Package::Tx
+                        // `send_tx` serializes the transaction and sends
+                        // Package::Tx
                         send_tx(&addr_from, &tx).await;
                     } else {
                         // Transaction not in mempool - likely already mined
-                        // This is normal: transaction was in mempool when we sent INV,
+                        // sent INV,
                         // but got mined before peer requested it
-                        info!("Received request to forward a Transaction that is not found in memory pool. Most likely it has been mined!!!: {:?}", txid_hex);
                     }
                 }
             },
+```
 
-            // ========================================================================
-            // Message Type: GetBlocks - Request for all block hashes (initial sync)
-            // ========================================================================
-            // Peer is doing initial sync - they want to know what blocks we have
-            // We respond with an INV message containing all our block hashes
-            // They'll then request blocks they don't have via GETDATA
+After responding to data requests, we handle peers requesting a list of all our block hashes for initial synchronization.
+
+```rust
+            // Message Type: GetBlocks - Request for all block hashes (initial
+            // sync)
+            // Peer is doing initial sync - they want to know what blocks we
+            // have
             Package::GetBlocks { addr_from } => {
                 // Step 1: Get all block hashes from our blockchain
-                // Returns Vec<Vec<u8>> - list of block hashes (each is 32 bytes)
+                // Returns Vec<Vec<u8>> - list of block hashes (each is 32
+                // bytes)
                 // Ordered from genesis to tip (chronological order)
                 let blocks = node_context
                     .get_block_hashes()
@@ -1379,33 +1142,29 @@ pub async fn process_stream(
                     .expect("Blockchain read error");
                 
                 // Step 2: Send inventory message with all block hashes
-                // This tells the peer "I have these blocks" (by hash only)
-                // They'll compare with their chain and request missing ones
                 send_inv(&addr_from, OpType::Block, &blocks).await;
             }
+```
 
-            // ========================================================================
+Finally, we handle the remaining protocol messages: version negotiation and peer list exchange, which are typically handled during the initial handshake but may be received again.
+
+```rust
             // Message Type: Version - Protocol version handshake
-            // ========================================================================
             // Sent when nodes first connect to negotiate protocol version
             // Handled during connection setup (before process_stream)
-            // We receive it here but don't need to do anything (already processed)
+            // processed)
             Package::Version { .. } => {
                 // Version handshake is handled during connection setup
-                // This message is received but doesn't trigger specific actions here
-                // The `..` means we ignore all fields (we don't need them)
+                // here
             }
 
-            // ========================================================================
             // Message Type: KnownNodes - Peer list exchange
-            // ========================================================================
             // Sent to help nodes discover more peers in the network
             // Handled during connection setup
-            // We receive it here but don't need to do anything (already processed)
+            // processed)
             Package::KnownNodes { .. } => {
                 // Known nodes exchange is handled during connection setup
-                // This message is received but doesn't trigger specific actions here
-                // The `..` means we ignore all fields (we don't need them)
+                // here
             }
         }
     }
@@ -1414,7 +1173,7 @@ pub async fn process_stream(
 }
 ```
 
-**Listing 2.4-7.5 explanation**:
+**Listing 9-7.5 explanation**:
 
 - **`process_stream`**: The main network message dispatcher. It reads messages from a TCP stream, deserializes them, and routes them to appropriate handlers based on message type.
 
@@ -1432,7 +1191,6 @@ pub async fn process_stream(
 
 **Diagram — network message routing**
 
-```
 TCP Stream (peer connection)
   │
   └─> process_stream (deserialize messages)
@@ -1456,7 +1214,6 @@ TCP Stream (peer connection)
         │
         └─> Package::Version / KnownNodes
               └─> (handled during connection setup)
-```
 
 **Whitepaper mapping**:
 - **§5**: Network operation requires propagation of transactions and blocks. The message routing implements this—nodes exchange inventory, request data, and transmit full blocks/transactions.
@@ -1477,26 +1234,23 @@ TCP Stream (peer connection)
 
 The server binds a TCP listener and spawns a task per incoming connection. Each connection is handled by `process_stream`, which processes messages until the connection closes.
 
-**Code Listing 2.4-7.6**: Server runtime loop (`run_with_shutdown`)
+**Code Listing 9-7.6**: Server runtime loop (`run_with_shutdown`)
+
+> **Source:** `server.rs` — Source
 
 ```rust
-// Source: bitcoin/src/node/server.rs
-
 /// Run the server with graceful shutdown support
 ///
-/// This is the main server loop that accepts incoming TCP connections and
 /// spawns a task per connection to handle network messages.
 ///
 /// # Arguments
 ///
-/// * `addrs` - The socket address to bind to (e.g., "127.0.0.1:2001")
 /// * `connect_nodes` - Set of nodes to connect to on startup
 /// * `shutdown` - Broadcast receiver for shutdown signal
 ///
 /// # Process Flow
 ///
 /// 1. **Bind TCP listener** - Start listening on the specified address
-/// 2. **Bootstrap** - If not central node, send version to central node
 /// 3. **Accept loop** - Continuously accept connections and spawn handlers
 /// 4. **Shutdown** - Gracefully shutdown on signal
 #[instrument(skip(self, addrs, connect_nodes, shutdown))]
@@ -1507,21 +1261,24 @@ pub async fn run_with_shutdown(
     mut shutdown: tokio::sync::broadcast::Receiver<()>,
 ) {
     // Step 1: Bind TCP listener
-    // This starts listening for incoming connections on the specified address
-    // `TcpListener::bind` is async - it returns a Future that resolves when binding completes
+    // `TcpListener::bind` is async - it returns a Future that resolves when
+    // binding completes
     // `.await` suspends execution until the bind operation completes
     // `.expect` panics if binding fails (e.g., port already in use)
     let listener = TcpListener::bind(addrs)
         .await
         .expect("TcpListener bind error");
     
-    info!(
         "Server listening on {:?}",
         listener.local_addr().expect("TcpListener local_addr error")
     );
+```
 
+With the TCP listener bound, we now perform bootstrap connectivity. Non-central nodes announce themselves to the bootstrap node, while central nodes register their configured remote peers.
+
+```rust
     // Step 2: Bootstrap connectivity
-    // If this is not the central node, send a version message to the central node
+    // node
     // to announce ourselves and start the connection handshake
     if !addrs.eq(&CENTERAL_NODE) {
         // Get our current blockchain height for the version message
@@ -1534,8 +1291,6 @@ pub async fn run_with_shutdown(
         // Send version message to central node
         send_version(&CENTERAL_NODE, best_height).await;
     } else {
-        // If we are the central node, register the connect nodes
-        info!("Register with node {:?}", connect_nodes);
         
         // Filter to only remote nodes (exclude "local")
         // Rust iterator chain: iter → filter → map → collect
@@ -1555,7 +1310,6 @@ pub async fn run_with_shutdown(
             .expect("Global nodes add error");
 
         // Send known nodes list to each remote node
-        // This helps them discover more peers
         for remote_node in remote_nodes {
             send_known_nodes(
                 &remote_node,
@@ -1569,99 +1323,112 @@ pub async fn run_with_shutdown(
             .await;
         }
     }
+```
 
+With the TCP listener bound and bootstrap handshakes complete, we enter the main accept loop that listens for incoming connections and spawns handlers. The loop continues until a shutdown signal is received.
+
+```rust
     // Step 3: Accept loop with graceful shutdown
-    // This loop runs until we receive a shutdown signal
     // `tokio::select!` is a macro that waits for multiple async operations and
     // executes the branch corresponding to the first one that completes
-    // This allows us to handle both shutdown signals and incoming connections concurrently
+    // concurrently
     loop {
         tokio::select! {
             // Shutdown signal: exit the loop gracefully
-            // `shutdown.recv()` returns a Future that completes when shutdown is signaled
-            // The `_` means we ignore the value (just wait for the signal)
+            // `shutdown.recv()` returns a Future that completes when shutdown
+            // is signaled
             _ = shutdown.recv() => {
-                info!("Network server shutdown signal received");
                 break;  // Exit the loop
             }
             
-            // Incoming connection: spawn a handler task
-            // `listener.accept()` returns a Future that completes when a connection arrives
+            // `listener.accept()` returns a Future that completes when a
+            // connection arrives
             // `accept_res` receives the Result<(TcpStream, SocketAddr), Error>
             accept_res = listener.accept() => {
                 match accept_res {
                     Ok((stream, _peer)) => {
-                        // Pattern matching: `Ok((stream, _peer))` destructures the Result
-                        // `stream` is the TcpStream, `_peer` is the peer address (we ignore it)
+                        // Pattern matching: `Ok((stream, _peer))` destructures
+                        // the Result
+                        // `stream` is the TcpStream, `_peer` is the peer
+                        // address (we ignore it)
                         
                         // Clone node context for the handler task
                         // NodeContext is Clone + Send + Sync, so this is safe
-                        // We clone because we need to move it into the spawned task
+                        // task
                         let blockchain = self.node_context.clone();
                         
-                        // ====================================================================
                         // Spawn Connection Handler Task
-                        // ====================================================================
-                        // Each connection gets its own async task that runs concurrently
-                        // This allows the server to handle multiple peers simultaneously
-                        // `tokio::spawn` returns a JoinHandle, but we don't await it
-                        // The task runs independently - if it errors, it just logs and exits
+                        // concurrently
+                        // simultaneously
+                        // `tokio::spawn` returns a JoinHandle, but we don't
+                        // await it
+                        // logs and exits
                         tokio::spawn(async move {
-                            // `async move` closure takes ownership of captured variables
-                            // - `blockchain`: Cloned NodeContext (moved into task)
+                            // `async move` closure takes ownership of captured
+                            // variables
+                            // - `blockchain`: Cloned NodeContext (moved into
+                            // task)
                             // - `stream`: TcpStream (moved into task)
-                            // This closure runs in a separate task, isolated from the accept loop
+                            // from the accept loop
                             
-                            // ================================================================
-                            // Convert Tokio Stream to Std Stream
-                            // ================================================================
-                            // The net_processing module uses std::net::TcpStream (not tokio)
-                            // This is a compatibility layer - the processing code predates tokio
-                            // `into_std()` consumes the tokio stream and converts it
+                            // std::net::TcpStream (not tokio)
+                            // code predates tokio
+                            // `into_std()` consumes the tokio stream and
+                            // converts it
                             match stream.into_std() {
                                 Ok(std_stream) => {
-                                    // Set blocking mode (required for BufReader in process_stream)
-                                    // `set_nonblocking(false)` makes the stream blocking
-                                    // BufReader expects blocking I/O - it reads in chunks
-                                    // We ignore the Result - if it fails, process_stream will handle it
+                                    // Set blocking mode (required for BufReader
+                                    // in process_stream)
+                                    // `set_nonblocking(false)` makes the stream
+                                    // blocking
+                                    // BufReader expects blocking I/O - it reads
+                                    // in chunks
+                                    // process_stream will handle it
                                     let _ = std_stream.set_nonblocking(false);
-                                    
-                                    // ============================================================
-                                    // Process All Messages from This Peer
-                                    // ============================================================
-                                    // This is the main message processing loop
+```
+
+With the stream converted to a standard TCP stream in blocking mode, we now pass it to the message processing loop which will handle all messages from this peer until the connection closes.
+
+```rust
                                     // `process_stream` will:
-                                    // 1. Read messages from the stream (deserialize JSON)
-                                    // 2. Route each message to the appropriate handler
-                                    // 3. Continue until the connection closes or errors
+                                    // 1. Read messages from the stream
+                                    // (deserialize JSON)
+                                    // 2. Route each message to the appropriate
+                                    // handler
+                                    // 3. Continue until the connection closes
+                                    // or errors
                                     //
-                                    // This runs until:
                                     // - Peer closes connection (normal)
-                                    // - Deserialization error (malformed message)
+                                    // - Deserialization error (malformed
+                                    // message)
                                     // - Network error (connection lost)
                                     //
-                                    // Errors are logged but don't crash the server
-                                    if let Err(e) = net_processing::process_stream(blockchain, std_stream).await {
+                                    // Errors are logged but don't crash
+                                    // server
+                                    if let Err(e) =
+                                        net_processing::process_stream(
+                                            blockchain,
+                                            std_stream
+                                        ).await
+                                    {
                                         // Log the error for debugging
-                                        // The task will exit, but the server continues accepting connections
-                                        error!("Serve error: {}", e);
                                     }
-                                    // If successful, the task exits normally (connection closed)
+                                    // (connection closed)
                                 }
                                 Err(e) => {
-                                    // Stream conversion failed (rare, but handle it)
-                                    error!("Failed to convert stream: {}", e);
+                                    // Stream conversion failed (rare, but
+                                    // handle it)
                                 }
                             }
                             // Task exits here (connection handler done)
                         });
-                        // Note: We don't await the spawned task
-                        // It runs concurrently, and we immediately continue the accept loop
+                        // accept loop
                     }
                     Err(e) => {
-                        // Accept failed (e.g., too many file descriptors, network error)
-                        // Log it but continue the loop - server keeps trying to accept
-                        error!("accept error: {}", e);
+                        // Accept failed (e.g., too many file descriptors,
+                        // network error)
+                        // Log it but continue the loop - server keeps trying to
+                        // accept
                     }
                 }
             }
@@ -1672,7 +1439,7 @@ pub async fn run_with_shutdown(
 }
 ```
 
-**Listing 2.4-7.6 explanation**:
+**Listing 9-7.6 explanation**:
 
 - **TCP listener binding**: The server binds a TCP listener on the specified address. This starts listening for incoming connections.
 
@@ -1688,7 +1455,6 @@ pub async fn run_with_shutdown(
 
 **Diagram — server runtime architecture**
 
-```
 Server Startup
   │
   ├─> Bind TCP listener (listen on address)
@@ -1718,7 +1484,6 @@ Server Startup
         │                             └─> Route to handler (Block/Tx/Inv/etc.)
         │
         └─> (loop continues, handling multiple connections concurrently)
-```
 
 **Concurrency model**: The server uses **task-based concurrency**. Each connection is handled by a separate task, allowing the server to process multiple peers simultaneously. This is more efficient than thread-based concurrency for I/O-bound operations like network communication.
 
@@ -1762,13 +1527,13 @@ Now that we've walked through the code, let's summarize how the node orchestrati
 
 ## Navigation
 
-- **Previous**: Section 2.4.7 (Consensus and Validation)
-- **Next**: Section 2.4.9 (Transaction to Block — End-to-End Runtime Walkthrough)
+- **Previous**: Section 9.7 (Consensus and Validation)
+- **Next**: Section 9.9 (Transaction to Block — End-to-End Runtime Walkthrough)
 
 ---
 
 <div align="center">
 
-**📚 [← Previous: Consensus and Validation](07-Consensus-and-Validation.md)** | **Node Orchestration** | **[Next: Transaction to Block (End-to-End) →](09-Transaction-To-Block.md)** 📚
+**[← Previous: Consensus and Validation](07-Consensus-and-Validation.md)** | **Node Orchestration** | **[Next: Transaction to Block (End-to-End) →](09-Transaction-To-Block.md)** 
 
 </div>

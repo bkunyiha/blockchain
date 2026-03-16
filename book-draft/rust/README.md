@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. **Chapter 10: Rust Language Guide** ← *You are here*
+34. <a href="../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. **Chapter 24: Rust Language Guide** ← *You are here*
 
 </details>
 
@@ -46,19 +65,22 @@
 
 # Rust Language Guide
 
-**Part III: Language Reference** | **[Chapter 10: Rust Language Guide](README.md)**
+**Part III: Language Reference** | **[Chapter 24: Rust Language Guide](README.md)**
 
 <div align="center">
 
-**📚 [← Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md)** | **Chapter 10: Rust Language Guide** | **[End of Book →](#)** 📚
-
+**[← Chapter 23: Kubernetes Deployment](../ci/kubernetes/README.md)** | **Chapter 24: Rust Language Guide** | **[End of Book →](#)**
 </div>
 
 ---
 
 ## Introduction
 
-In this section, we teach Rust as a working tool for a real systems project: we explain the language features we rely on, then we show how those features appear in our blockchain implementation. The goal is not to memorize Rust syntax; the goal is to build the mental model that lets us implement correct, performant systems code.
+> **When to read this chapter**: This chapter is designed as a reference you can read before starting Part I or consult as needed while working through the implementation chapters. If you are already comfortable with Rust ownership, traits, generics, error handling, and async/await, you can safely skip ahead and return here when you encounter unfamiliar syntax.
+
+**What you will learn in this chapter:** The Rust language features that appear most frequently in the blockchain implementation — ownership and borrowing, traits and generics, error handling with `Result`/`Option`, async programming with Tokio, and serialization with Serde — explained through concrete examples drawn from the codebase.
+
+In this section, we teach Rust as a working tool for a real systems project: we explain the language features we rely on, then we show how those features appear in our blockchain implementation. Our goal is not to memorize Rust syntax; our goal is to build the mental model that lets us implement correct, performant systems code.
 
 Rust is a systems language that gives us memory safety and thread safety without a garbage collector. It does this with ownership, borrowing, and a type system that makes illegal states harder to represent. Throughout this guide, we use those tools to build a Bitcoin-shaped implementation that stays readable under real engineering constraints.
 
@@ -83,7 +105,7 @@ This guide is structured to build understanding progressively:
 
 Each chapter builds on previous concepts, so reading sequentially will provide the most comprehensive understanding. However, each chapter is also self-contained, allowing you to jump to specific topics as needed.
 
-> **📘 Implementation Context**: This guide explains Rust language features with examples from our blockchain implementation. To see these features applied in specific contexts, see the [Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) chapter for ownership and data structures, the [Web API Architecture](../bitcoin-blockchain/web/README.md) for async patterns and error handling, and the [Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md) for asynchronous programming details.
+> **Implementation Context**: This guide explains Rust language features with examples from our blockchain implementation. To see these features applied in specific contexts, see the [Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) chapter for ownership and data structures, the [Web API Architecture](../bitcoin-blockchain/web/README.md) for async patterns and error handling, and the [Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md) for asynchronous programming details.
 
 ---
 
@@ -175,47 +197,17 @@ Jump directly to specific topics:
 
 ## What Makes This Guide Different
 
-This isn't just a reference manual—it's a technical book that teaches Rust through the lens of a real blockchain implementation. Each concept is illustrated with actual code from our codebase, showing not just what Rust features exist, but how they're applied in practice.
+This guide teaches Rust through a real blockchain implementation. Each concept shows actual code from our codebase, demonstrating not just features but how they're applied in production systems.
 
-### Key Features
+### Key Topics
 
-**Real-World Examples:**
-Every concept is demonstrated with code from our blockchain implementation. You'll see how ownership manages transaction data, how traits enable polymorphic error handling, and how async/await powers our web server.
+**Memory Management:** Ownership, borrowing, smart pointers (`Arc`, `Rc`), lifetimes
 
-**Performance Insights:**
-We don't just explain what features do—we explain their performance characteristics. You'll learn when ownership transfers are zero-cost, how generics compile to efficient code, and why async/await enables high concurrency.
+**Type System:** Structs, enums, traits, generics with monomorphization, type conversions
 
-**Practical Patterns:**
-Throughout the guide, we highlight common patterns that appear in production Rust code. These patterns represent the Rust community's collective wisdom and help you write idiomatic, efficient code.
+**Concurrency:** Thread safety (`Send`/`Sync`), async/await, locks (`Mutex`/`RwLock`)
 
-**Progressive Learning:**
-Chapters build on each other, introducing concepts in a logical order. Each chapter includes a summary that reinforces key concepts and connects to the next chapter.
-
-### Technical Concepts Covered
-
-**Memory Management:**
-- Ownership rules and their performance implications
-- Borrowing strategies for efficient data access
-- Smart pointers (`Arc`, `Rc`) for shared ownership
-- Lifetime annotations and elision rules
-
-**Type System:**
-- Structs and enums for modeling domain concepts
-- Traits for polymorphism and code reuse
-- Generics with monomorphization (zero-cost abstractions)
-- Type conversions and error handling
-
-**Concurrency:**
-- `Send` and `Sync` traits for thread safety
-- Async/await for non-blocking I/O
-- Lock types (`Mutex`, `RwLock`) and their performance characteristics
-- Message passing patterns
-
-**Functional Programming:**
-- Iterators and iterator chains
-- Closures and their capture semantics
-- Pattern matching for exhaustive case handling
-- Functional composition patterns
+**Functional Patterns:** Iterators, closures, pattern matching, functional composition
 
 ## Additional Resources
 
@@ -285,13 +277,11 @@ Whether you're new to Rust or looking to deepen your understanding, this guide p
 
 ---
 
-*This chapter provides a comprehensive reference guide to the Rust programming language features used throughout our blockchain implementation. Each section includes examples from our codebase and practical guidance for using Rust effectively. This guide explains Rust concepts with examples from our codebase, helping you understand not just what Rust features exist, but how they work together to build reliable, performant systems software. This concludes our comprehensive journey through building a full-stack Bitcoin blockchain implementation, from fundamental concepts through implementation to production deployment and language reference.*
-
 ---
 
 <div align="center">
 
-**📚 [← Chapter 9: Kubernetes Deployment](../ci/kubernetes/README.md)** | **Chapter 10: Rust Language Guide** | **[Rust Installation & Setup →](00-Rust-Installation-Setup.md)** 📚
+**[← Chapter 23: Kubernetes Deployment](../ci/kubernetes/README.md)** | **Chapter 24: Rust Language Guide** | **[Rust Installation & Setup →](00-Rust-Installation-Setup.md)**
 
 </div>
 

@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. **Chapter 7: Web Admin Interface** ← *You are here*
+1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. **Chapter 21: Web Admin Interface** ← *You are here*
+33. <a href="06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -44,41 +63,32 @@
 
 ---
 
-## Chapter 7: Web Admin Interface
+## Chapter 21: Web Admin Interface
 
-**Part I: Core Blockchain Implementation**
+**Part I: Foundations & Core Implementation**
 
 <div align="center">
 
-**📚 [← Chapter 6: Embedded Database](../bitcoin-wallet-ui-iced/05-Embedded-Database.md)** | **Chapter 7: Web Admin Interface** | **[Chapter 8: Docker Compose →](../ci/docker-compose/01-Introduction.md)** 📚
-
+**[← Chapter 20: Embedded Database](../embedded-database/06-Embedded-Database.md)** | **Chapter 21: Web Admin Interface** | **[Chapter 22: Docker Compose →](../ci/docker-compose/01-Introduction.md)** 
 </div>
 
 ---
 
-## Overview
+> **Prerequisites**: This chapter is written in React/TypeScript rather than Rust. You should be comfortable reading JSX and TypeScript type annotations. Familiarity with the REST API from Chapter 15 is helpful — this UI is a client to that API — but we recap the relevant endpoints as they appear.
 
-> **Methods involved**
-> - `App` (`bitcoin-web-ui/src/App.tsx`, [Listing 7.2](06A-Web-Admin-UI-Code-Listings.md#listing-72-srcapptsx))
-> - `ApiConfigProvider`, `useApiConfig` (`bitcoin-web-ui/src/contexts/ApiConfigContext.tsx`, [Listing 7.3](06A-Web-Admin-UI-Code-Listings.md#listing-73-srccontextsapiconfigcontexttsx))
-> - `ApiClient`, `getApiClient`, `updateApiClient` (`bitcoin-web-ui/src/services/api.ts`, [Listing 7.4](06A-Web-Admin-UI-Code-Listings.md#listing-74-srcservicesapits))
-> - `useBlockchainInfo` and other hooks (`bitcoin-web-ui/src/hooks/useApi.ts`, [Listing 7.5](06A-Web-Admin-UI-Code-Listings.md#listing-75-srchooksuseapits))
+**What you will learn in this chapter:** How the React SPA is structured (routing, context providers, API client), how it consumes the Rust node’s admin endpoints, and how React Query manages server state so the UI stays in sync with the blockchain without manual refresh logic.
+
+## Overview
 
 This chapter explains the Web Admin UI in `bitcoin-web-ui/`: a React + TypeScript single-page application (SPA) that calls the Rust node’s **admin API** (`/api/admin/*`) and renders a professional administrative interface.
 
 This is a **code-centric book chapter**. Every referenced function is either printed in full here or linked to a **complete verbatim listing** in:
 
-- **[Chapter 7A: Web Admin Interface — Complete Code Listings](06A-Web-Admin-UI-Code-Listings.md)**
+- **[Chapter 21A: Web Admin Interface — Complete Code Listings](06A-Web-Admin-UI-Code-Listings.md)**
 
 ---
 
 ## The architectural spine (what to read first)
-
-> **Methods involved**
-> - `main.tsx` ([Listing 7.1](06A-Web-Admin-UI-Code-Listings.md#listing-71-srcmaintsx))
-> - `App` ([Listing 7.2](06A-Web-Admin-UI-Code-Listings.md#listing-72-srcapptsx))
-> - `getApiClient` / `updateApiClient` ([Listing 7.4](06A-Web-Admin-UI-Code-Listings.md#listing-74-srcservicesapits))
-> - hooks in `useApi.ts` ([Listing 7.5](06A-Web-Admin-UI-Code-Listings.md#listing-75-srchooksuseapits))
 
 To understand the entire application quickly, read the code in this order:
 
@@ -92,11 +102,6 @@ To understand the entire application quickly, read the code in this order:
 ---
 
 ## Diagram: the layer boundaries (UI → hooks → HTTP)
-
-> **Methods involved**
-> - `ApiClient` (`bitcoin-web-ui/src/services/api.ts`, [Listing 7.4](06A-Web-Admin-UI-Code-Listings.md#listing-74-srcservicesapits))
-> - hooks in `useApi.ts` (`bitcoin-web-ui/src/hooks/useApi.ts`, [Listing 7.5](06A-Web-Admin-UI-Code-Listings.md#listing-75-srchooksuseapits))
-> - representative components: `Dashboard`, `CreateWallet` ([Listings 7.10, 7.21](06A-Web-Admin-UI-Code-Listings.md))
 
 ```mermaid
 flowchart TB
@@ -123,7 +128,7 @@ flowchart TB
   Client --> API
 ```
 
-The payoff of this structure is local reasoning:
+The payoff of this structure is local reasoning: each layer has a single responsibility, and we can understand each without reading the others.
 
 - A component answers: “what do we render?”
 - A hook answers: “how do we fetch/cache/invalidate?”
@@ -132,11 +137,6 @@ The payoff of this structure is local reasoning:
 ---
 
 ## Diagram: end-to-end data flow (click → API → render)
-
-> **Methods involved**
-> - `useBlockchainInfo` ([Listing 7.5](06A-Web-Admin-UI-Code-Listings.md#listing-75-srchooksuseapits))
-> - `ApiClient.getBlockchainInfo` ([Listing 7.4](06A-Web-Admin-UI-Code-Listings.md#listing-74-srcservicesapits))
-> - `Dashboard` ([Listing 7.10](06A-Web-Admin-UI-Code-Listings.md#listing-710-srccomponentsdashboarddashboardtsx))
 
 ```mermaid
 sequenceDiagram
@@ -167,19 +167,13 @@ The key design decision is separation of concerns:
 
 ## Entry point (`src/main.tsx`)
 
-> **Methods involved**
-> - entrypoint `render` call ([Listing 7.1](06A-Web-Admin-UI-Code-Listings.md#listing-71-srcmaintsx))
-
-`main.tsx` is intentionally minimal: it mounts the app and imports global CSS. This is an architectural advantage: there is exactly one composition root (`App`) and exactly one place where providers and routing are defined.
+`main.tsx` is intentionally minimal: it mounts the app and imports global CSS. We get a key architectural advantage: a single composition root (`App`) and a single place where all providers and routing are defined.
 
 Full listing: [Listing 7.1](06A-Web-Admin-UI-Code-Listings.md#listing-71-srcmaintsx).
 
 ---
 
 ## Composition root: providers + routes (`src/App.tsx`)
-
-> **Methods involved**
-> - `App` ([Listing 7.2](06A-Web-Admin-UI-Code-Listings.md#listing-72-srcapptsx))
 
 `App.tsx` is the most important file for “what exists” in the UI:
 
@@ -193,9 +187,6 @@ Full listing: [Listing 7.2](06A-Web-Admin-UI-Code-Listings.md#listing-72-srcappt
 ---
 
 ## Global configuration: base URL and API key (`ApiConfigContext`)
-
-> **Methods involved**
-> - `ApiConfigProvider`, `useApiConfig` ([Listing 7.3](06A-Web-Admin-UI-Code-Listings.md#listing-73-srccontextsapiconfigcontexttsx))
 
 The web UI cannot assume a fixed backend address or key in all deployments. The solution is:
 
@@ -214,9 +205,6 @@ Full listing: [Listing 7.3](06A-Web-Admin-UI-Code-Listings.md#listing-73-srccont
 
 ## The HTTP boundary: `ApiClient` (`src/services/api.ts`)
 
-> **Methods involved**
-> - `ApiClient` + `getApiClient` + `updateApiClient` ([Listing 7.4](06A-Web-Admin-UI-Code-Listings.md#listing-74-srcservicesapits))
-
 This module is the only place that “knows” about:
 
 - endpoint paths (`/api/admin/...`),
@@ -231,17 +219,14 @@ Full listing: [Listing 7.4](06A-Web-Admin-UI-Code-Listings.md#listing-74-srcserv
 
 ## The data-access surface: React Query hooks (`src/hooks/useApi.ts`)
 
-> **Methods involved**
-> - All hooks in [Listing 7.5](06A-Web-Admin-UI-Code-Listings.md#listing-75-srchooksuseapits)
+Each hook defines the UI’s public “data layer.” We express:
 
-Hooks are the UI’s public “data layer.” Each hook defines:
-
-- a **query key** (cache identity),
-- a **query function** (which ApiClient method to call),
-- and optional behavior:
-  - `enabled` gates the request until input exists,
-  - `refetchInterval` provides auto-refresh,
-  - `onSuccess` invalidates caches and triggers toast messages for mutations.
+- a **query key** for cache identity,
+- a **query function** to call an ApiClient method,
+- optional behavior like:
+  - `enabled` to gate requests until input exists,
+  - `refetchInterval` for auto-refresh,
+  - `onSuccess` to invalidate caches and trigger feedback toast messages for mutations.
 
 The most important hooks to understand first are:
 
@@ -255,13 +240,7 @@ Full listing: [Listing 7.5](06A-Web-Admin-UI-Code-Listings.md#listing-75-srchook
 
 ## The UI shell: layout + navigation (Layout / Navbar / Sidebar)
 
-> **Methods involved**
-> - `Layout` ([Listing 7.6](06A-Web-Admin-UI-Code-Listings.md#listing-76-srccomponentslayoutlayouttsx))
-> - `Navbar` ([Listing 7.7](06A-Web-Admin-UI-Code-Listings.md#listing-77-srccomponentslayoutnavbartsx))
-> - `Sidebar` ([Listing 7.8](06A-Web-Admin-UI-Code-Listings.md#listing-78-srccomponentslayoutsidebartsx))
-> - `useApiConfig` ([Listing 7.3](06A-Web-Admin-UI-Code-Listings.md#listing-73-srccontextsapiconfigcontexttsx))
-
-The UI shell exists so the rest of the code can be “page focused.” Two aspects are worth understanding:
+The UI shell lets the rest of the code stay “page focused.” Two aspects matter most:
 
 - **API configuration UX** is concentrated in the navbar. That means any page can assume the API client is configured; it does not need its own base-url inputs.
 - **Sidebar state tracks the current route**, so deep links keep the correct menu open (`openMenuPath` is derived from `location.pathname`).
@@ -271,11 +250,6 @@ Full listings: [Listings 7.6–7.8](06A-Web-Admin-UI-Code-Listings.md).
 ---
 
 ## A representative query screen: `Dashboard`
-
-> **Methods involved**
-> - `Dashboard` ([Listing 7.10](06A-Web-Admin-UI-Code-Listings.md#listing-710-srccomponentsdashboarddashboardtsx))
-> - `useBlockchainInfo` ([Listing 7.5](06A-Web-Admin-UI-Code-Listings.md#listing-75-srchooksuseapits))
-> - `formatDate` ([Listing 7.15](06A-Web-Admin-UI-Code-Listings.md#listing-715-srcutilsdatets))
 
 The dashboard is the simplest example of the project’s standard query flow:
 
@@ -292,10 +266,6 @@ Full listing: [Listing 7.10](06A-Web-Admin-UI-Code-Listings.md#listing-710-srcco
 
 ## A representative mutation screen: `CreateWallet`
 
-> **Methods involved**
-> - `CreateWallet` ([Listing 7.21](06A-Web-Admin-UI-Code-Listings.md#listing-721-srccomponentswalletcreatewallettsx))
-> - `useCreateWallet` ([Listing 7.5](06A-Web-Admin-UI-Code-Listings.md#listing-75-srchooksuseapits))
-
 The “create wallet” screen demonstrates the project’s mutation conventions:
 
 - UI handles local form state (`label`).
@@ -308,11 +278,6 @@ Full listing: [Listing 7.21](06A-Web-Admin-UI-Code-Listings.md#listing-721-srcco
 ---
 
 ## Diagram: mutation flow (create wallet)
-
-> **Methods involved**
-> - `CreateWallet` ([Listing 7.21](06A-Web-Admin-UI-Code-Listings.md#listing-721-srccomponentswalletcreatewallettsx))
-> - `useCreateWallet` ([Listing 7.5](06A-Web-Admin-UI-Code-Listings.md#listing-75-srchooksuseapits))
-> - `ApiClient.createWallet` ([Listing 7.4](06A-Web-Admin-UI-Code-Listings.md#listing-74-srcservicesapits))
 
 ```mermaid
 sequenceDiagram
@@ -340,11 +305,6 @@ sequenceDiagram
 
 ## A screen that mixes UI state + bulk loading: `AllBlocks` / `AllTransactions`
 
-> **Methods involved**
-> - `AllBlocks` ([Listing 7.19](06A-Web-Admin-UI-Code-Listings.md#listing-719-srccomponentsblockchainallblockstsx))
-> - `AllTransactions` ([Listing 7.29](06A-Web-Admin-UI-Code-Listings.md#listing-729-srccomponentstransactionsalltransactionstsx))
-> - `getApiClient` ([Listing 7.4](06A-Web-Admin-UI-Code-Listings.md#listing-74-srcservicesapits))
-
 These screens show the project’s “bulk load escape hatch” pattern:
 
 - React Query hooks are configured with `enabled: false` to avoid auto-fetching.
@@ -359,9 +319,6 @@ Full listings: [Listings 7.19 and 7.29](06A-Web-Admin-UI-Code-Listings.md).
 
 ## Summary
 
-> **Methods involved**
-> - All key functions are listed in [Chapter 7A](06A-Web-Admin-UI-Code-Listings.md)
-
 The Web Admin UI follows a clean layering approach:
 
 - **Routes and providers** are composed in `App.tsx`.
@@ -370,7 +327,7 @@ The Web Admin UI follows a clean layering approach:
 - **Caching + async lifecycle** are expressed in React Query hooks.
 - **Components** remain thin and predictable: render based on `data/isLoading/error`.
 
-Continue to the complete listings in Chapter 7A to read any module in full.
+Continue to the complete listings in Chapter 21A to read any module in full.
 
 ---
 
@@ -378,7 +335,7 @@ Continue to the complete listings in Chapter 7A to read any module in full.
 
 **Reading order**
 
-**[← Previous: Embedded Database — Code Listings](../bitcoin-wallet-ui-iced/05A-Embedded-Database-Code-Listings.md)** | **[Next: Web Admin Interface — Code Listings →](06A-Web-Admin-UI-Code-Listings.md)**
+**[← Previous: Embedded Database — Code Listings](../embedded-database/06A-Embedded-Database-Code-Listings.md)** | **[Next: Web Admin Interface — Code Listings →](06A-Web-Admin-UI-Code-Listings.md)**
 
 </div>
 

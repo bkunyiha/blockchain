@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. **Chapter 8: Docker Compose Deployment** ← *You are here*
-21. <a href="../kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -44,13 +63,13 @@
 
 ---
 
-## Chapter 8, Section 12: DNS Resolution Mechanism
+## Chapter 22, Section 12: DNS Resolution Mechanism
 
-**Part II: Deployment & Operations** | **Chapter 8: Docker Compose Deployment**
+**Part II: Deployment & Operations** | **Chapter 22: Docker Compose Deployment**
 
 <div align="center">
 
-**📚 [← Section 11: Deployment Execution Walkthrough](11-Deployment-Execution-Walkthrough.md)** | **Section 12: DNS Resolution Mechanism** | **[Chapter 9: Kubernetes →](../kubernetes/README.md)** 📚
+**[← Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-Operations.md)** | **Section 12: DNS Resolution Mechanism** | **[Chapter 23: Kubernetes →](../kubernetes/README.md)** 
 
 </div>
 
@@ -65,14 +84,13 @@ This section provides a detailed, line-by-line explanation of the DNS resolution
 > - Conversion of `miner_N` → `miner` for Docker DNS (`ci/docker-compose/configs/docker-entrypoint.sh`, [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
 
 **Prerequisites:**
-- Understanding of [Section 11: Deployment Execution Walkthrough](11-Deployment-Execution-Walkthrough.md), especially Scenario 1, Step 9
+- Understanding of [Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-Operations.md), especially Scenario 1, Step 9
 - Basic knowledge of Docker Compose networking and DNS
 - Familiarity with Bash scripting and regular expressions
 
 **Related Sections:**
-- [Section 11: Deployment Execution Walkthrough](11-Deployment-Execution-Walkthrough.md) - Step-by-step execution flow
-- [Section 4: Network Configuration](04-Network-Configuration.md) - Network setup context
-- [Section 7: Sequential Startup](07-Sequential-Startup.md) - Startup sequence
+- [Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-Operations.md) - Step-by-step execution flow
+- [Section 3: Deployment Topology](03-Deployment-Topology.md) - Network setup and topology context
 
 ---
 
@@ -177,20 +195,26 @@ Before the DNS resolution conversion occurs, the system has already:
 ### Complete Code Block
 
 ```bash
-# Docker service names with underscores (e.g., miner_1) need to be resolved to IP
+# Docker service names with underscores (e.g., miner_1)
+# need to be resolved to IP
 # For Docker Compose, "miner_1" doesn't resolve, but "miner" does
 # So we convert miner_1 to miner for resolution purposes
 RESOLVE_ADDR="${PREV_ADDR}"
-if [[ "${PREV_ADDR}" =~ ^miner_([0-9]+): ]]; then
+if [[ "${PREV_ADDR}" =~ ^miner_([0-23]+): ]]; then
     # Extract instance number and use "miner" service name for resolution
     INSTANCE_NUM="${BASH_REMATCH[1]}"
     PORT_PART="${PREV_ADDR##*:}"
     RESOLVE_ADDR="miner:${PORT_PART}"
-    debug_log "Converting ${PREV_ADDR} to ${RESOLVE_ADDR} for Docker Compose DNS resolution"
+    debug_log "Converting ${PREV_ADDR} to " \
+             "${RESOLVE_ADDR} for Docker Compose " \
+             "DNS resolution"
 fi
 
-if ! PREV_ADDR_RESOLVED=$(resolve_hostname_to_ip "${RESOLVE_ADDR}"); then
-    echo "ERROR: Failed to resolve previous node address '${RESOLVE_ADDR}' (from '${PREV_ADDR}')" >&2
+if ! PREV_ADDR_RESOLVED=$(resolve_hostname_to_ip \
+   "${RESOLVE_ADDR}"); then
+    echo "ERROR: Failed to resolve previous node " \
+         "address '${RESOLVE_ADDR}' (from " \
+         "'${PREV_ADDR}')" >&2
     exit 1
 fi
 ```
@@ -223,12 +247,12 @@ RESOLVE_ADDR="miner_1:2001"  # Same value initially
 #### Line 464: Pattern Matching with Regular Expressions
 
 ```bash
-if [[ "${PREV_ADDR}" =~ ^miner_([0-9]+): ]]; then
+if [[ "${PREV_ADDR}" =~ ^miner_([0-23]+): ]]; then
 ```
 
 **What it does:**
 - Uses Bash's `=~` operator for regular expression pattern matching
-- Checks if `PREV_ADDR` matches the pattern `^miner_([0-9]+):`
+- Checks if `PREV_ADDR` matches the pattern `^miner_([0-23]+):`
 
 **Pattern Breakdown:**
 
@@ -236,12 +260,12 @@ if [[ "${PREV_ADDR}" =~ ^miner_([0-9]+): ]]; then
 |------|---------|---------------|
 | `^` | Start of string anchor | Ensures match starts at beginning |
 | `miner_` | Literal text "miner_" | Matches "miner_" |
-| `([0-9]+)` | **Capture group**: One or more digits | Matches "1", "2", "123" |
+| `([0-23]+)` | **Capture group**: One or more digits | Matches "1", "2", "123" |
 | `:` | Literal colon | Matches ":" |
 | (no `$`) | No end anchor | Allows port number after colon |
 
 **What Gets Captured:**
-- The `([0-9]+)` part is a **capture group**
+- The `([0-23]+)` part is a **capture group**
 - The matched digits are stored in `${BASH_REMATCH[1]}`
 - `${BASH_REMATCH[0]}` contains the full match
 
@@ -357,22 +381,13 @@ RESOLVE_ADDR="miner:2001"  # Converted to service name
 #### Line 469: Debug Logging
 
 ```bash
-debug_log "Converting ${PREV_ADDR} to ${RESOLVE_ADDR} for Docker Compose DNS resolution"
+debug_log "Converting ${PREV_ADDR} to " \
+         "${RESOLVE_ADDR} for Docker Compose " \
+         "DNS resolution"
 ```
 
-**What it does:**
-- Logs the conversion for debugging purposes
-- Only outputs if `DEBUG_MODE=yes` environment variable is set
-
-**Example Output:**
-```
-DEBUG: Converting miner_1:2001 to miner:2001 for Docker Compose DNS resolution
-```
-
-**Why this is valuable:**
-- Helps troubleshoot DNS resolution issues by showing exactly what conversion occurred
-- Makes it clear why resolution succeeds (using service name instead of instance name)
-- Provides visibility into the system's operation without cluttering normal logs
+This logs the conversion for debugging when
+`DEBUG_MODE=yes`.
 
 ---
 
@@ -411,7 +426,9 @@ The authoritative implementation is printed in full in [Listing 8.2](01A-Docker-
 #### Lines 473-475: Error Handling
 
 ```bash
-    echo "ERROR: Failed to resolve previous node address '${RESOLVE_ADDR}' (from '${PREV_ADDR}')" >&2
+    echo "ERROR: Failed to resolve previous node " \
+         "address '${RESOLVE_ADDR}' (from " \
+         "'${PREV_ADDR}')" >&2
     exit 1
 fi
 ```
@@ -422,8 +439,9 @@ fi
 - Exits with error code 1 to signal failure
 
 **Example Error Output:**
-```
-ERROR: Failed to resolve previous node address 'miner:2001' (from 'miner_1:2001')
+```text
+ERROR: Failed to resolve previous node address
+  'miner:2001' (from 'miner_1:2001')
 ```
 
 **Why show both addresses:**
@@ -468,7 +486,7 @@ The resolution address is initialized with the original address.
 ### Step 4: Pattern Matching
 
 ```bash
-if [[ "${PREV_ADDR}" =~ ^miner_([0-9]+): ]]; then
+if [[ "${PREV_ADDR}" =~ ^miner_([0-23]+): ]]; then
     # Pattern matches! ✅
     # BASH_REMATCH[1]="1"
 ```
@@ -499,8 +517,11 @@ The address is converted to use the service name instead of the instance name.
 ### Step 7: Debug Logging
 
 ```bash
-debug_log "Converting miner_1:2001 to miner:2001 for Docker Compose DNS resolution"
-# Output: DEBUG: Converting miner_1:2001 to miner:2001 for Docker Compose DNS resolution
+debug_log "Converting miner_1:2001 to " \
+         "miner:2001 for Docker Compose DNS " \
+         "resolution"
+# Output: DEBUG: Converting miner_1:2001 to
+# miner:2001 for Docker Compose DNS resolution
 ```
 
 The conversion is logged for debugging purposes.
@@ -533,45 +554,13 @@ The resolved IP address is ready to be passed to the Rust binary for connection 
 
 ## Design Rationale
 
-### 1. Leverages Docker Compose DNS
+The conversion mechanism uses five key principles:
 
-Docker Compose automatically creates DNS entries for service names. By converting `miner_1` → `miner`, we use the service name that Docker DNS knows about. This approach:
-
-- **Works with Docker's built-in service discovery**: No need for custom DNS configuration
-- **Reliable**: Docker Compose DNS is well-tested and maintained
-- **Standard**: Uses Docker's standard networking mechanisms
-
-### 2. Preserves Port Information
-
-The conversion only changes the hostname part (`miner_1` → `miner`), keeping the port (`2001`) intact. This ensures:
-
-- **Correct port targeting**: The connection goes to the correct port
-- **Port flexibility**: Different instances can use different ports
-- **No port conflicts**: Port information is preserved accurately
-
-### 3. Handles Multiple Instances
-
-Docker Compose's service-level DNS resolves `miner` to one of the running miner containers (typically the first one). Since we're connecting to `miner_1` specifically, and Docker Compose DNS resolves `miner` to `miner_1` when it's the first instance, this works correctly. This approach:
-
-- **Works for the first instance**: Docker Compose DNS resolves to the first available instance
-- **Predictable**: The first instance is consistently accessible via the service name
-- **Scalable**: Additional instances don't interfere with this mechanism
-
-### 4. Safe Fallback
-
-If the address doesn't match the pattern (e.g., it's already an IP address), the code uses it as-is. This makes the code:
-
-- **Robust**: Handles various input formats gracefully
-- **Flexible**: Works with IP addresses, hostnames, and service names
-- **Fail-safe**: Doesn't break when input is already in the correct format
-
-### 5. Clear Error Messages
-
-If resolution fails, the error message shows both the original and converted addresses, making debugging easier. This approach:
-
-- **Diagnostic**: Provides context for troubleshooting
-- **Transparent**: Shows what was attempted
-- **Actionable**: Helps identify the root cause of failures
+1. **Leverages Docker Compose DNS**: Service names Docker knows about (no custom config)
+2. **Preserves Port Information**: Converts hostname but keeps port (`miner_1:2001` → `miner:2001`)
+3. **Handles Multiple Instances**: First instance accessible via service name
+4. **Safe Fallback**: Uses addresses as-is if they don't match the pattern (handles IPs)
+5. **Clear Error Messages**: Shows both original and converted addresses for debugging
 
 ---
 
@@ -581,120 +570,49 @@ If resolution fails, the error message shows both the original and converted add
 
 ```bash
 PREV_ADDR="172.19.0.2:2001"
-# Pattern match fails (doesn't start with "miner_")
-# RESOLVE_ADDR stays "172.19.0.2:2001"
-# resolve_hostname_to_ip() detects it's already an IP, returns as-is
-# ✅ Works correctly
+# Pattern doesn't match → RESOLVE_ADDR stays unchanged
+# Resolution function detects it's an IP, returns as-is ✅
 ```
-
-**What happens:**
-- The pattern doesn't match, so no conversion occurs
-- The address is used as-is
-- The resolution function detects it's already an IP and returns it unchanged
-
-**Why this works:**
-- IP addresses don't need DNS resolution
-- The system handles them gracefully
-- No unnecessary processing is performed
 
 ### Case 2: Different Service Name
 
 ```bash
 PREV_ADDR="webserver_1:8080"
-# Pattern match fails (doesn't start with "miner_")
-# RESOLVE_ADDR stays "webserver_1:8080"
-# resolve_hostname_to_ip() tries to resolve "webserver_1"
-# If Docker Compose has a "webserver" service, this might work
-# If not, it will fail with a clear error
+# Pattern doesn't match → uses address as-is
+# System doesn't interfere with other service types
 ```
 
-**What happens:**
-- The pattern doesn't match (not a miner address)
-- The address is used as-is
-- Resolution may succeed or fail depending on Docker Compose configuration
-
-**Why this design:**
-- Only miner addresses need conversion (they use instance names)
-- Other services may use different naming conventions
-- The system doesn't interfere with other service types
-
-### Case 3: Multiple Colons
-
-```bash
-PREV_ADDR="miner_1:2001:extra"
-# Pattern match succeeds
-# PORT_PART="${PREV_ADDR##*:}" extracts "extra" (everything after last colon)
-# RESOLVE_ADDR="miner:extra"
-# This is probably wrong, but it's an edge case
-# In practice, addresses are always "hostname:port" format
-```
-
-**What happens:**
-- The pattern matches, so conversion occurs
-- The port extraction takes everything after the last colon
-- This may result in an incorrect port
-
-**Why this is acceptable:**
-- In practice, addresses are always in `hostname:port` format
-- This edge case is unlikely to occur in real deployments
-- The system handles it gracefully without crashing
-
-### Case 4: No Port Number
+### Case 3: No Port Number
 
 ```bash
 PREV_ADDR="miner_1"
-# Pattern match fails (no colon)
-# RESOLVE_ADDR stays "miner_1"
-# resolve_hostname_to_ip() will fail because it expects "hostname:port"
-# ✅ Fails gracefully with error message
+# Pattern doesn't match (no colon)
+# Resolution fails gracefully with error ✅
 ```
-
-**What happens:**
-- The pattern doesn't match (no colon present)
-- The address is used as-is
-- Resolution fails because the format is invalid
-
-**Why this is correct:**
-- Addresses must include a port number
-- The system validates the format
-- Clear error messages help identify the issue
 
 ---
 
 ## Testing and Verification
 
-You can test the DNS resolution conversion mechanism manually:
+Test the DNS resolution conversion mechanism:
 
 ```bash
-# Inside a Docker container
 PREV_ADDR="miner_1:2001"
 
-# Test pattern matching
-if [[ "${PREV_ADDR}" =~ ^miner_([0-9]+): ]]; then
-    echo "Match! Instance: ${BASH_REMATCH[1]}"
+if [[ "${PREV_ADDR}" =~ ^miner_([0-23]+): ]]; then
     PORT_PART="${PREV_ADDR##*:}"
     RESOLVE_ADDR="miner:${PORT_PART}"
     echo "Converted: ${PREV_ADDR} → ${RESOLVE_ADDR}"
 fi
 
-# Test DNS resolution
-getent hosts "miner"
-# Should output: 172.19.0.2    miner
-
-getent hosts "miner_1"
-# Should output: (nothing or error)
+getent hosts "miner"      # Should resolve to IP
+getent hosts "miner_1"    # Should fail
 ```
 
-**Expected Results:**
-- Pattern matching succeeds for `miner_1:2001`
-- Conversion produces `miner:2001`
-- DNS resolution succeeds for `miner` but fails for `miner_1`
-
-**Verification Steps:**
+Verification:
 1. Start the Docker Compose deployment
-2. Check logs for conversion messages (if DEBUG_MODE is enabled)
+2. Check logs for conversion messages (DEBUG_MODE)
 3. Verify nodes connect successfully
-4. Test DNS resolution manually using `getent hosts`
 
 ---
 
@@ -718,10 +636,10 @@ This mechanism is essential for the deployment system to function correctly, ena
 
 <div align="center">
 
-**📚 [← Section 11: Deployment Execution Walkthrough](11-Deployment-Execution-Walkthrough.md)** | **Section 12: DNS Resolution Mechanism** | **[Chapter 9: Kubernetes →](../kubernetes/README.md)** 📚
+**[← Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-Operations.md)** | **Section 12: DNS Resolution Mechanism** | **[Chapter 23: Kubernetes →](../kubernetes/README.md)** 
 
 </div>
 
 ---
 
-*This chapter has provided a comprehensive guide to deploying and managing the blockchain network using Docker Compose. We've explored the complete architecture, execution flow, network configuration, sequential startup mechanisms, port mapping, scaling operations, deployment scenarios, webserver access, production deployment procedures, execution walkthroughs, and DNS resolution mechanisms. Docker Compose enables rapid development and local deployment with automatic port configuration, flexible scaling, and reliable networking. Understanding these concepts is essential for transitioning from development to production deployment. In the next chapter, we'll explore [Kubernetes Deployment](../kubernetes/README.md) to understand how to deploy the blockchain network on Kubernetes for production-grade orchestration, autoscaling, and high availability.*
+

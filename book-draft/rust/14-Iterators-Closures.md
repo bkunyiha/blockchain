@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. **Chapter 10: Rust Language Guide** ← *You are here*
+34. <a href="../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -38,97 +57,69 @@
 ---
 # Iterators and Closures: Functional Programming in Rust
 
-Rust's iterator system and closures enable a functional programming style that's both expressive and efficient. Iterators provide lazy, composable iteration over collections, while closures allow us to pass behavior as data. Together, they enable concise, readable code for data processing.
+Iterators and closures enable functional programming in Rust. For comprehensive treatment, see [The Rust Book: Iterators](https://doc.rust-lang.org/book/ch13-02-iterators.html) and [Closures](https://doc.rust-lang.org/book/ch13-01-closures.html).
 
-The iterator pattern in Rust is zero-cost—the abstractions compile away to efficient loops. This means we can write high-level, functional-style code without performance penalties. Closures, similarly, are compiled to efficient code, often inlined by the optimizer. In this chapter, we'll explore how iterators and closures enable elegant, efficient data processing in our blockchain.
+## Iterators: Lazy, Composable Data Processing
 
-### Iterators: Lazy, Composable Data Processing
-
-Iterators in Rust are lazy—they don't compute values until they're consumed. This laziness enables efficient chaining of operations. We can create an iterator chain that filters, maps, and transforms data, but no computation happens until we call a consuming method like `collect()` or `for_each()`.
-
-**Example from `bitcoin/src/net/net_processing.rs`:**
+From `bitcoin/src/net/net_processing.rs`:
 
 ```rust
 nodes_to_add.iter().for_each(|node| {
     let node_addr = *node;
-    let all_nodes = all_known_nodes_addresses.clone();
     tokio::spawn(async move {
         send_known_nodes(&node_addr, all_nodes).await;
     });
 });
 ```
 
-This example shows iterators in action. We call `iter()` on the collection to create an iterator, then `for_each()` to execute a closure for each item. The iterator is lazy—it doesn't process items until `for_each()` consumes it. Inside the closure, we spawn async tasks for each node, enabling concurrent message sending.
+Iterators are lazy—operations don't execute until consumed. Methods:
+- **`iter()`**: Immutable references
+- **`iter_mut()`**: Mutable references
+- **`into_iter()`**: Takes ownership
+- **`map()`, `filter()`**: Transform and filter lazily
+- **`collect()`**: Consume and collect into collection
+- **`for_each()`**: Execute closure for each item
 
-Rust's iterator trait provides many useful methods:
-- **`iter()`**: Creates an iterator over immutable references to items
-- **`iter_mut()`**: Creates an iterator over mutable references
-- **`into_iter()`**: Creates an iterator that takes ownership of items
-- **`for_each()`**: Executes a closure for each item, consuming the iterator
-- **`map()`**: Transforms each item, producing a new iterator
-- **`filter()`**: Keeps only items matching a predicate
-- **`collect()`**: Consumes the iterator, collecting items into a collection
+Chains compile to efficient code—often as fast as hand-written loops.
 
-These methods can be chained, creating pipelines of data transformation. The compiler optimizes these chains, often producing code as efficient as hand-written loops. In our blockchain, iterators enable concise processing of transactions, blocks, and network messages.
+## Closures: Anonymous Functions with Capture
 
-### Closures: Anonymous Functions with Environment Capture
-
-Closures are anonymous functions that can capture variables from their surrounding environment. Unlike regular functions, closures can access variables from the scope where they're defined, making them powerful for callbacks and higher-order functions.
-
-**Example from `bitcoin/src/chain/chainstate.rs`:**
+From `bitcoin/src/chain/chainstate.rs`:
 
 ```rust
 async fn read<F, Fut, T>(&self, f: F) -> Result<T>
 where
-    F: FnOnce(BlockchainFileSystem) -> Fut + Send,  // ← Closure trait
+    F: FnOnce(BlockchainFileSystem) -> Fut + Send,
     Fut: Future<Output = Result<T>> + Send,
     T: Send + 'static,
 {
     let blockchain_guard = self.0.read().await;
-    f(blockchain_guard.clone()).await  // ← Calls closure
+    f(blockchain_guard.clone()).await
 }
 ```
 
-This example shows a closure being passed to the `read` method. The closure captures variables from its environment (if any) and can be called with a `BlockchainFileSystem` parameter. The trait bound `F: FnOnce(...)` specifies that `F` must be a closure that can be called once.
+Three closure traits based on capture:
+- **`FnOnce`**: Called once; takes ownership of captured variables
+- **`FnMut`**: Multiple calls; requires mutable borrow
+- **`Fn`**: Multiple calls; requires immutable borrow
 
-Rust provides three closure traits that represent different capabilities:
-- **`FnOnce`**: Can be called once. Takes ownership of captured variables. Used when the closure consumes its environment.
-- **`FnMut`**: Can be called multiple times. Requires a mutable borrow of captured variables. Used when the closure modifies its environment.
-- **`Fn`**: Can be called multiple times. Requires only an immutable borrow. Used when the closure only reads from its environment.
+Compiler automatically determines which trait applies.
 
-The compiler automatically determines which trait a closure implements based on how it uses captured variables. If a closure moves a captured variable, it implements `FnOnce`. If it mutably borrows, it implements `FnMut`. If it only immutably borrows, it implements `Fn`.
-
-In our blockchain, closures enable flexible, reusable code patterns. We pass closures to generic functions that operate on blockchain data, allowing callers to specify what operation to perform without needing to expose internal data structures.
-
-### Iterator Chains: Composing Operations
-
-One of Rust's most powerful features is the ability to chain iterator operations, creating pipelines of data transformation. Each method returns a new iterator, allowing operations to be composed naturally.
+## Iterator Chains
 
 ```rust
-// Conceptual example
 let result: Vec<i32> = vec![1, 2, 3, 4, 5]
     .iter()
-    .filter(|&x| x % 2 == 0)  // Keep only even numbers
-    .map(|x| x * 2)  // Double each remaining number
-    .collect();  // Collect results into a Vec
-// Result: [4, 8]
+    .filter(|&x| x % 2 == 0)    // Keep even
+    .map(|x| x * 2)              // Double
+    .collect();                  // Result: [4, 8]
 ```
 
-This example demonstrates iterator chaining. We start with a vector, create an iterator, filter to keep even numbers, map to double them, and finally collect into a new vector. The operations are lazy—no computation happens until `collect()` is called.
+Operations are lazy; no computation until `collect()`. Compiler optimizes to efficient code.
 
-The compiler optimizes these chains aggressively. Often, the generated code is as efficient as a hand-written loop, but the iterator version is more readable and less error-prone. In our blockchain, we use iterator chains for processing transactions, filtering blocks, and transforming data structures throughout the codebase.
+## Summary
 
-### Iterator Performance and Optimization
-
-Rust's iterators are designed for zero-cost abstraction. The compiler can optimize iterator chains to be as efficient as hand-written loops:
-
-**Optimization Example:**
-```rust
-// Iterator chain
-let sum: i32 = transactions
-    .iter()
-    .filter(|tx| tx.is_valid())
-    .map(|tx| tx.value())
+Iterators provide lazy, composable data processing with zero-cost abstractions. Closures capture environment and pass behavior as values. Together they enable expressive, efficient functional programming patterns.
     .sum();
 
 // Compiler optimizes to roughly:
@@ -258,7 +249,7 @@ In the next chapter, we'll explore type conversions, which enable converting bet
 
 <div align="center">
 
-**📚 [← Rust Guide Index](README.md)** | **Iterators and Closures** | **[← Previous](13-Modules.md)** | **[Next →](15-Type-Conversions.md)** 📚
+**[← Rust Guide Index](README.md)** | **Iterators and Closures** | **[← Previous](13-Modules.md)** | **[Next →](15-Type-Conversions.md)** 
 
 </div>
 

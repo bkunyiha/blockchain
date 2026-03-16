@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. **Chapter 3: Web API Architecture** ← *You are here*
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. **Chapter 15: Web API Architecture** ← *You are here*
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -38,23 +57,22 @@
 ---
 # Web API Architecture
 
-**Part I: Core Blockchain Implementation** | **Chapter 3: Web API Architecture**
+**Part I: Foundations & Core Implementation** | **Chapter 15: Web API Architecture**
 
 <div align="center">
 
-**📚 [← Chapter 2.9: Wallet](../wallet/README.md)** | **Chapter 3: Web API Architecture** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md)** 📚
-
+**[← Chapter 14: Wallet](../wallet/README.md)** | **Chapter 15: Web API Architecture** | **[Chapter 16: Desktop Admin UI (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 </div>
 
 ---
 
 ## Introduction
 
-This section provides a comprehensive guide to the web API layer that powers our blockchain node. The web API serves as the interface enabling clients—desktop applications, web UIs, and other services—to interact with the blockchain through HTTP endpoints.
+This section provides a comprehensive guide to the web API layer that powers our blockchain node. The web API serves as the interface that enables clients—desktop applications, web UIs, and other services—to interact with the blockchain through HTTP endpoints.
 
 Built using Rust's Axum framework, the web layer implements a complete system for handling authentication, request validation, error handling, and API documentation. This section explores how we've structured the REST API, how requests flow through the system, and the architectural decisions that make it secure, scalable, and maintainable.
 
-> **📘 Getting Started**: This page serves as the **index and navigation hub**. For detailed architecture overview, design principles, and technical deep-dives, begin with **Introduction & Architecture Overview**.
+This page serves as the index for the Web API section. For the full architecture overview and design principles, begin with **Introduction & Architecture Overview** (Section 01).
 
 ---
 
@@ -88,71 +106,13 @@ Built using Rust's Axum framework, the web layer implements a complete system fo
 - **Utoipa Framework Guide** - OpenAPI documentation generation
 - **Tracing Framework Guide** - Structured logging and diagnostics
 - **Tokio Runtime Guide** - Async runtime framework
-- **Chapter 10: Rust Language Guide** - Comprehensive Rust language reference
+- **Chapter 24: Rust Language Guide** - Comprehensive Rust language reference
 
 ---
 
-## Quick Start
+## Architecture Principles
 
-**New to the web API?** Follow this path:
-
-1. **Introduction & Architecture Overview** - Understand the architecture and design principles
-2. **Server Setup and Configuration** - Learn how the server initializes
-3. **Request Handlers** - See how endpoints process requests
-4. **Middleware Layer** - Understand authentication and CORS
-
-**Looking for specific topics?** Jump directly to:
-- **Routing System** - Endpoint organization
-- **Data Models** - Request/response structures
-- **Error Handling** - Error management patterns
-- **Rate Limiting** - Rate limiting implementation
-- **Security Architecture** - Security implementation
-
----
-
-## Learning Paths
-
-### Path 1: Understanding the Architecture
-
-1. Introduction & Architecture Overview
-2. Server Setup and Configuration
-3. Routing System
-4. Request Handlers
-
-**Outcome**: Understand how the web API is structured and how requests flow through the system.
-
-### Path 2: Building Your Own Handlers
-
-1. Request Handlers
-2. Data Models
-3. Error Handling
-4. Axum Framework Guide
-
-**Outcome**: Create new API endpoints following established patterns.
-
-### Path 3: Security and Production Readiness
-
-1. Middleware Layer
-2. Rate Limiting
-3. Security Architecture
-4. Error Handling
-5. Best Practices and Patterns
-
-**Outcome**: Understand security considerations and production-ready patterns.
-
----
-
-## Key Concepts
-
-### Architecture Principles
-
-- **Separation of Concerns**: Routes, handlers, middleware, and models are cleanly separated
-- **Type Safety**: Rust's type system ensures compile-time validation
-- **Async-First**: Built on async/await for efficient concurrency
-- **Security by Default**: Authentication, CORS, and error handling built in
-- **Self-Documenting**: OpenAPI documentation automatically generated
-
-For detailed technical information, see Introduction & Architecture Overview and the Axum Framework Guide.
+The web layer enforces separation of concerns: routes, handlers, middleware, and models live in distinct modules. Rust's type system provides compile-time validation of request/response shapes. The entire stack is async, built on Tokio and Axum, with authentication, CORS, and error handling wired in at the middleware level. OpenAPI documentation is generated automatically via Utoipa.
 
 ### Technology Stack
 
@@ -179,10 +139,19 @@ All code examples in this section are taken from the actual implementation:
 
 <div align="center">
 
-**[📚 ← Previous: Wallet System](../wallet/README.md)** | **[Chapter 3: Web API Architecture](README.md)** | **[Next: Introduction & Architecture Overview →](01-Introduction.md)** 📚
-
+**[← Previous: Wallet System](../wallet/README.md)** | **[Chapter 15: Web API Architecture](README.md)** | **[Next: Introduction & Architecture Overview →](01-Introduction.md)** 
 </div>
 
 ---
 
-*This index provides comprehensive navigation for the Web API Architecture section. The web API layer serves as the interface enabling clients—desktop applications, web UIs, and other services—to interact with the blockchain through HTTP endpoints. Built using Rust's Axum framework, this section explores how we've structured the REST API, how requests flow through handlers and middleware, and the architectural decisions that make it secure, scalable, and maintainable. Begin with Introduction & Architecture Overview to understand the complete architecture, design principles, and component organization before diving into specific implementation details.*
+---
+
+> **Checkpoint:** With the Web API in place, you can start the node and hit the admin endpoint from your browser or command line: `curl http://localhost:8080/api/admin/blockchain-info | python3 -m json.tool`. You should get a JSON response showing the chain height, tip hash, peer count, and mempool size. This confirms that the entire Part I stack — from primitives through the REST API — is working end-to-end.
+
+---
+
+### Further Reading
+
+- **[Axum documentation](https://docs.rs/axum)** — The official API reference for the web framework used in this project, including routing, extractors, middleware, and state management.
+- **[Tower ecosystem](https://docs.rs/tower)** — The middleware framework that Axum is built on. Understanding Tower services, layers, and the `Service` trait helps when writing custom middleware.
+- **[Serde JSON](https://docs.rs/serde_json)** — The JSON serialization library used for request/response bodies. Its `Value` type is useful for dynamic JSON handling.

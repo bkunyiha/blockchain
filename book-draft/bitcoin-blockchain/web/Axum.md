@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. **Chapter 3: Web API Architecture** ← *You are here*
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -38,11 +57,11 @@
 ---
 # Axum Framework Guide
 
-**Part I: Core Blockchain Implementation** | **Technical Reference: Axum Framework**
+**Part I: Foundations & Core Implementation** | **Technical Reference: Axum Framework**
 
 <div align="center">
 
-**[📚 ← Web Index](README.md)** | **Axum Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md)** 📚
+**[← Web Index](README.md)** | **Axum Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
 
 </div>
 
@@ -54,7 +73,7 @@ This guide provides detailed explanations of Axum framework features used in our
 
 Throughout this guide, we'll explore the specific Axum features used in our implementation, with code examples from our blockchain API to illustrate each concept.
 
-> **📘 See the full implementation**: This guide explains the Axum concepts. To see how these features are used together in our complete web API architecture, see the Web API Architecture chapter, which covers server setup, routing, handlers, middleware, and more.
+> **See the full implementation**: This guide explains the Axum concepts. To see how these features are used together in our complete web API architecture, see the Web API Architecture chapter, which covers server setup, routing, handlers, middleware, and more.
 
 ---
 
@@ -62,6 +81,7 @@ Throughout this guide, we'll explore the specific Axum features used in our impl
 
 1. [State Injection](#state-injection) - Share data across handlers
 2. [Middleware Layers](#middleware-layers) - Cross-cutting concerns
+   - [Tower Layers and Services](#tower-layers-and-services) - Tower foundation for middleware
 3. [Request Extractors](#request-extractors) - Extract data from requests
 4. [Routing](#routing) - Organize endpoints
 5. [Async/Await](#asyncawait) - Handle concurrency
@@ -71,7 +91,7 @@ Throughout this guide, we'll explore the specific Axum features used in our impl
 9. [Response Types](#response-types) - Return various response formats
    - [Understanding IntoResponse](#understanding-intoresponse) - The trait that enables flexible handler return types
 
-> **💡 Tip**: Throughout this guide, you'll find links to specific sections in the Web API Architecture chapter where these Axum features are actually implemented. Use these links to see real-world examples and understand how theory translates to practice.
+> **Tip**: Throughout this guide, you'll find links to specific sections in the Web API Architecture chapter where these Axum features are actually implemented. Use these links to see real-world examples and understand how theory translates to practice.
 
 ---
 
@@ -81,67 +101,35 @@ State injection allows you to share data across all handlers in your application
 
 ### How State Injection Works
 
-State injection makes data available to all handlers without global variables. The state is type-safe and checked at compile time.
-
-**Example from our implementation:**
+State injection makes data available to all handlers without global variables, with compile-time type safety.
 
 ```rust
-// In server.rs - Creating the router with state
-pub fn create_app(&self) -> Router {
-    let app = Router::new()
-        .merge(create_all_api_routes())
-        .merge(create_wallet_only_routes())
-        .merge(create_web_routes())
-        .with_state(self.node.clone());  // ← State injection
-    
-    // ... middleware layers
-    app
-}
-```
+// Create router with state
+let app = Router::new()
+    .merge(routes)
+    .with_state(self.node.clone());
 
-**Extracting State in Handlers:**
-
-```rust
-// In handlers/blockchain.rs
+// Extract in handlers
 pub async fn get_blockchain_info(
-    State(node): State<Arc<NodeContext>>,  // ← State extraction
+    State(node): State<Arc<NodeContext>>,
 ) -> Result<Json<ApiResponse<BlockchainInfoResponse>>, StatusCode> {
-    // Now we can use `node` to access blockchain data
-    let height = node.get_blockchain_height().await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
-    // ... rest of handler
+    let height = node.get_blockchain_height().await?;
+    Ok(Json(ApiResponse::success(response)))
 }
 ```
 
 > **See it in action**: Check out the [Blockchain Handlers section](01-Introduction.md#blockchain-handlers) in the Web API Architecture chapter to see how state extraction is used in real handlers like `get_blockchain_info()` and `get_block_by_hash()`.
 
-### Key Concepts
+**Key Concepts:**
+1. Type must match between `.with_state()` and `State()` extractor
+2. Use `Arc<T>` for shared ownership without cloning
+3. State is typically immutable; use interior mutability if needed
 
-1. **Type Safety**: The state type must match exactly between `.with_state()` and `State()` extractor
-2. **Shared Ownership**: We use `Arc<T>` to share state across handlers without cloning
-3. **Immutable Access**: State is typically immutable; if you need mutable access, use interior mutability patterns
-
-### Why Use State?
-
-- **No Global Variables**: Avoids the pitfalls of global state
-- **Type Safety**: Compiler ensures state is correctly typed
-- **Testability**: Easy to inject mock state for testing
-- **Clean Architecture**: State flows explicitly through your application
+**Benefits:** No globals, compile-time type safety, easy testing, explicit architecture
 
 > **Implementation example**: See how we inject `NodeContext` as state in the [Server Setup and Configuration section](01-Introduction.md#server-setup-and-configuration), and how handlers extract it in the [Request Handlers section](01-Introduction.md#request-handlers).
 
-### State Type Requirements
-
-The state type must implement `Clone` (or be wrapped in `Arc<T>` which implements `Clone`):
-
-```rust
-// Our NodeContext is wrapped in Arc for shared ownership
-.with_state(Arc::new(node_context))
-
-// Or clone the Arc
-.with_state(self.node.clone())  // Arc<NodeContext> implements Clone
-```
+State type must implement `Clone` (use `Arc<T>` for shared ownership).
 
 ---
 
@@ -151,104 +139,114 @@ Middleware in Axum provides cross-cutting concerns like authentication, logging,
 
 ### Middleware Execution Order
 
-Middleware layers wrap each other, creating a request processing pipeline. The order matters:
+Middleware layers wrap each other in order. Layer order matters:
 
 ```rust
-// In server.rs - Middleware layers applied in order
-pub fn create_app(&self) -> Router {
-    let mut app = Router::new()
-        .merge(create_all_api_routes())
-        .with_state(self.node.clone());
+let mut app = Router::new().with_state(self.node.clone());
 
-    // 1. CORS middleware (outermost - handles preflight requests first)
-    if self.config.enable_cors {
-        app = app.layer(cors::create_cors_layer());
-    }
+// 1. CORS (outermost - handles preflight first)
+app = app.layer(cors_layer());
 
-    // 2. Compression middleware (compresses responses)
-    app = app.layer(CompressionLayer::new());
+// 2. Compression
+app = app.layer(CompressionLayer::new());
 
-    // 3. Error handling middleware (innermost - catches errors from handlers)
-    app = app.layer(axum::middleware::from_fn(handle_errors));
-
-    app
-}
+// 3. Error handling (innermost - catches handler errors)
+app = app.layer(axum::middleware::from_fn(handle_errors));
 ```
 
-**Request Flow:**
-
-```
-Request → CORS Layer → Compression Layer → Error Handler → Route Handler → Response
-```
+Request flow: CORS → Compression → Error Handler → Route Handler → Response
 
 > **See the implementation**: The exact middleware order used in our blockchain API is shown in the [Creating the Application Router section](01-Introduction.md#creating-the-application-router) of the Web API Architecture chapter.
 
 ### Creating Custom Middleware
 
-Middleware functions follow a specific signature:
+Middleware follows a specific signature:
 
 ```rust
-use axum::{
-    http::Request,
-    middleware::Next,
-    response::Response,
-};
-
 async fn my_middleware(
-    request: Request<axum::body::Body>,
+    request: Request<Body>,
     next: Next,
 ) -> Result<Response, StatusCode> {
-    // Pre-processing: Modify request, log, authenticate, etc.
-    tracing::info!("Request: {:?}", request.uri());
-    
-    // Call next middleware/handler
+    // Pre-processing
     let response = next.run(request).await;
-    
-    // Post-processing: Modify response, log, etc.
-    tracing::info!("Response: {:?}", response.status());
-    
+    // Post-processing
     Ok(response)
 }
 
-// Apply middleware
-.router.layer(axum::middleware::from_fn(my_middleware))
-```
-
-### Middleware from Functions
-
-Axum provides `axum::middleware::from_fn()` to convert async functions into middleware:
-
-```rust
-// Our error handling middleware
-async fn handle_errors(
-    request: axum::http::Request<axum::body::Body>,
-    next: axum::middleware::Next,
-) -> Result<axum::response::Response, StatusCode> {
-    let response = next.run(request).await;
-    
-    // Process response...
-    Ok(response)
-}
-
-// Apply it
-.layer(axum::middleware::from_fn(handle_errors))
+// Apply with from_fn
+.layer(axum::middleware::from_fn(my_middleware))
 ```
 
 > **Real implementation**: See the complete `handle_errors()` middleware implementation in the [Error Handling Middleware section](01-Introduction.md#error-handling-middleware), and authentication middleware in the [Authentication Middleware section](01-Introduction.md#authentication-middleware).
 
-### Tower Layers
+### Tower Layers and Services
 
-Axum uses Tower's layer system. Many middleware come from `tower-http`:
+Axum is built on top of Tower, which provides the foundation for middleware composition. Understanding Tower's concepts helps you build more effective middleware.
+
+#### What is Tower?
+
+Tower is a library of modular components for building robust clients and servers. It provides:
+- **Services**: Async functions that take requests and return responses
+- **Layers**: Middleware that wraps services to add functionality
+- **Composability**: Middleware can be stacked and combined in any order
+
+#### Axum's Relationship to Tower
+
+- **Axum Routers are Tower Services**: Every router is a service that Axum routes requests through
+- **Axum Middleware uses Tower Layers**: Middleware is implemented as Tower layers
+- **Seamless Integration**: Tower's design enables Axum's flexible middleware system
+
+#### Pre-built Middleware from tower-http
+
+Tower HTTP provides HTTP-specific middleware components we use in our API:
 
 ```rust
-use tower_http::compression::CompressionLayer;
 use tower_http::cors::CorsLayer;
+use tower_http::compression::CompressionLayer;
+use tower_http::trace::TraceLayer;
+use tower_http::services::ServeDir;
 
-// Compression layer
-.layer(CompressionLayer::new())
-
-// CORS layer
 .layer(CorsLayer::new().allow_origin(Any))
+.layer(CompressionLayer::new())
+.layer(TraceLayer::new_for_http())
+.nest_service("/assets", ServeDir::new("/path/to/assets"))
+```
+
+**Key Tower HTTP Components:**
+- **CorsLayer**: Cross-origin resource sharing (handled by Tower)
+- **CompressionLayer**: Automatic response compression (gzip, brotli, deflate)
+- **TraceLayer**: HTTP request/response logging integrated with Tracing
+- **ServeDir**: Static file serving with appropriate content types
+
+#### Layer Composition Order
+
+Layers wrap each other, so order matters. Request flows through layers in reverse order:
+
+```rust
+// Application order
+app = app.layer(cors_layer());              // 1st (outermost)
+app = app.layer(CompressionLayer::new());   // 2nd
+app = app.layer(error_handling_layer());    // 3rd (innermost)
+
+// Request flow (left → right)
+Request → CORS → Compression → Error Handler → Router → Handler
+Response ← CORS ← Compression ← Error Handler ← Handler
+```
+
+#### ServiceBuilder for Fluent Composition
+
+Tower provides `ServiceBuilder` for composing multiple layers:
+
+```rust
+use tower::ServiceBuilder;
+
+let layer = ServiceBuilder::new()
+    .layer(CorsLayer::new())
+    .layer(CompressionLayer::new())
+    .layer(TraceLayer::new_for_http())
+    .into_inner();
+
+app = app.layer(layer);
 ```
 
 ---
@@ -273,16 +271,14 @@ pub async fn handler(
 
 #### Path Extractor
 
-Extracts path parameters:
-
 ```rust
 // Route: "/blockchain/blocks/{hash}"
 pub async fn get_block_by_hash(
     State(node): State<Arc<NodeContext>>,
-    Path(hash): Path<String>,  // ← Extracts {hash} from URL
+    Path(hash): Path<String>,
 ) -> Result<Json<ApiResponse<BlockResponse>>, StatusCode> {
     let block = node.get_block_by_hash(&hash).await?;
-    // ...
+    Ok(Json(ApiResponse::success(block)))
 }
 ```
 
@@ -290,57 +286,45 @@ pub async fn get_block_by_hash(
 
 **Type-Safe Path Extraction:**
 
-Axum can deserialize path parameters into custom types:
+Axum deserializes path parameters into custom types:
 
 ```rust
-// Route: "/wallet/{address}"
 pub async fn get_balance(
     State(node): State<Arc<NodeContext>>,
-    Path(address): Path<WalletAddress>,  // ← Custom type!
+    Path(address): Path<WalletAddress>,  // Custom type
 ) -> Result<Json<ApiResponse<BalanceResponse>>, StatusCode> {
-    // `address` is already a WalletAddress, not a String
     let balance = node.get_balance(&address).await?;
-    // ...
+    Ok(Json(ApiResponse::success(balance)))
 }
 ```
 
 #### Query Extractor
 
-Extracts query parameters:
-
 ```rust
-use axum::extract::Query;
-
 #[derive(serde::Deserialize)]
 struct BlockQuery {
     page: Option<u32>,
     limit: Option<u32>,
-    hash: Option<String>,
 }
 
 pub async fn get_blocks(
     State(node): State<Arc<NodeContext>>,
-    Query(params): Query<BlockQuery>,  // ← Extracts ?page=1&limit=10
+    Query(params): Query<BlockQuery>,
 ) -> Result<Json<ApiResponse<Vec<BlockResponse>>>, StatusCode> {
     let page = params.page.unwrap_or(0);
-    let limit = params.limit.unwrap_or(20);
-    // ...
+    Ok(Json(ApiResponse::success(blocks)))
 }
 ```
 
 #### Json Extractor
 
-Extracts JSON request body:
-
 ```rust
-use axum::extract::Json;
-
 pub async fn create_wallet(
     State(_node): State<Arc<NodeContext>>,
-    Json(request): Json<CreateWalletRequest>,  // ← Extracts JSON body
+    Json(request): Json<CreateWalletRequest>,
 ) -> Result<Json<ApiResponse<WalletResponse>>, StatusCode> {
-    // `request` is already deserialized into CreateWalletRequest
-    // ...
+    // request is deserialized
+    Ok(Json(ApiResponse::success(response)))
 }
 ```
 
@@ -348,28 +332,22 @@ pub async fn create_wallet(
 
 ### Multiple Extractors
 
-You can use multiple extractors in a single handler:
+Combine multiple extractors in one handler:
 
 ```rust
 pub async fn send_transaction(
-    State(node): State<Arc<NodeContext>>,           // State
-    Json(request): Json<SendTransactionRequest>,    // JSON body
-    // Could also add: Path(id): Path<String>,      // Path param
-    // Could also add: Query(params): Query<...>,    // Query params
+    State(node): State<Arc<NodeContext>>,
+    Json(request): Json<SendTransactionRequest>,
+    // Path(id): Path<String>, Query(params): Query<...>
 ) -> Result<Json<ApiResponse<SendBitCoinResponse>>, StatusCode> {
-    // All extractors are available
+    // All extractors available
+    Ok(Json(ApiResponse::success(response)))
 }
 ```
 
 > **Real example**: The `send_transaction()` handler uses both `State` and `Json` extractors. See the complete implementation in the [Transaction Handlers section](01-Introduction.md#transaction-handlers).
 
-### Extractor Order
-
-Extractors are processed in order, but the order doesn't matter for most cases. However, `State` is typically listed first by convention.
-
-### Extractor Failures
-
-If an extractor fails (e.g., invalid JSON), Axum automatically returns an appropriate error response (400 Bad Request, etc.). You can customize this behavior.
+Extractors are processed in order; `State` listed first by convention. Failures (invalid JSON, etc.) automatically return appropriate error responses.
 
 ---
 
@@ -406,32 +384,28 @@ Use `{name}` in paths to capture parameters:
 
 ### Nesting Routes
 
-`.nest()` prefixes a group of routes:
+Use `.nest()` to prefix route groups:
 
 ```rust
-// In routes/api.rs
-pub fn create_admin_api_routes() -> Router<Arc<NodeContext>> {
-    Router::new()
-        .nest("/api/admin", create_api_routes())      // All routes under /api/admin
-        .nest("/api/admin", create_monitor_api_routes())  // Health routes also under /api/admin
-        .layer(axum::middleware::from_fn(require_admin))
-}
+Router::new()
+    .nest("/api/admin", create_api_routes())
+    .nest("/api/admin", create_monitor_api_routes())
+    .layer(axum::middleware::from_fn(require_admin))
 ```
 
-**Result:** Routes like `/api/admin/blockchain`, `/api/admin/health`, etc.
+Results in routes like `/api/admin/blockchain`, `/api/admin/health`
 
 > **See the routing structure**: Our complete routing organization, including nested admin routes and wallet routes, is explained in the [Routing System section](01-Introduction.md#routing-system) of the Web API Architecture chapter.
 
 ### Merging Routes
 
-`.merge()` combines routers without a prefix:
+Use `.merge()` to combine routers without prefix:
 
 ```rust
-// In server.rs
 Router::new()
-    .merge(create_all_api_routes())      // /api/v1/*, /api/admin/*, /health/*
-    .merge(create_wallet_only_routes())  // /api/wallet/*
-    .merge(create_web_routes())          // /* (web UI)
+    .merge(create_all_api_routes())
+    .merge(create_wallet_only_routes())
+    .merge(create_web_routes())
 ```
 
 > **Complete routing example**: See how we merge multiple route groups in the [Creating the Application Router section](01-Introduction.md#creating-the-application-router), and explore the full route structure in the [API Route Structure section](01-Introduction.md#api-route-structure).
@@ -444,7 +418,8 @@ Apply middleware to specific routes:
 Router::new()
     .route("/public", get(public_handler))
     .route("/admin", get(admin_handler))
-    .layer(axum::middleware::from_fn(require_admin))  // Only applies to routes above
+    // Only applies to routes above
+    .layer(axum::middleware::from_fn(require_admin))
 ```
 
 ### Fallback Routes
@@ -469,32 +444,25 @@ Axum is built on Tokio and is async-first. All handlers are async functions.
 pub async fn handler_name(
     State(node): State<Arc<NodeContext>>,
 ) -> Result<Json<ApiResponse<T>>, StatusCode> {
-    // Async operations use .await
-    let result = node.get_blockchain_height().await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
-    // More async operations
+    let result = node.get_blockchain_height().await?;
     let block = node.blockchain().get_last_block().await?;
-    
     Ok(Json(ApiResponse::success(response)))
 }
 ```
 
 > **Handler examples**: All our handlers follow this async pattern. See the [Handler Pattern section](01-Introduction.md#handler-pattern) and explore specific implementations in [Blockchain Handlers](01-Introduction.md#blockchain-handlers), [Wallet Handlers](01-Introduction.md#wallet-handlers), and [Transaction Handlers](01-Introduction.md#transaction-handlers).
 
-### Why Async?
+**Why Async:**
+- Handle many requests simultaneously without blocking
+- Non-blocking I/O for efficiency
+- Thousands of concurrent connections per thread
 
-- **Concurrency**: Handle many requests simultaneously without blocking
-- **Efficiency**: Non-blocking I/O allows the server to process other requests while waiting
-- **Scalability**: One thread can handle thousands of concurrent connections
+**Best Practices:**
+1. Use `.await` for I/O operations
+2. Use `?` for error handling
+3. Avoid blocking; use `tokio::task::spawn_blocking` if needed
 
-### Async Best Practices
-
-1. **Use `.await` for I/O operations**: Database queries, network requests, file operations
-2. **Error handling**: Use `?` operator or `.map_err()` to convert errors
-3. **Avoid blocking**: Don't use blocking operations in async handlers (use `tokio::task::spawn_blocking` if needed)
-
-### Example: Concurrent Operations
+### Concurrent Operations
 
 ```rust
 use futures::future::join_all;
@@ -503,13 +471,9 @@ pub async fn get_multiple_blocks(
     State(node): State<Arc<NodeContext>>,
     Path(hashes): Path<Vec<String>>,
 ) -> Result<Json<ApiResponse<Vec<BlockResponse>>>, StatusCode> {
-    // Fetch blocks concurrently
-    let futures = hashes.iter().map(|hash| {
-        node.get_block_by_hash(hash)
-    });
-    
+    let futures = hashes.iter().map(|h| node.get_block_by_hash(h));
     let blocks = join_all(futures).await;
-    // ...
+    Ok(Json(ApiResponse::success(blocks)))
 }
 ```
 
@@ -564,9 +528,11 @@ async fn handle_errors(
     next: axum::middleware::Next,
 ) -> Result<axum::response::Response, StatusCode> {
     let response = next.run(request).await;
-    
+
     // Check if response indicates an error
-    if response.status().is_server_error() || response.status().is_client_error() {
+    let is_error = response.status().is_server_error()
+        || response.status().is_client_error();
+    if is_error {
         // Log error
         tracing::error!("Error: {}", response.status());
         
@@ -639,7 +605,8 @@ pub fn create_cors_layer() -> CorsLayer {
         .allow_methods(Any)                   // Allow all HTTP methods
         .allow_headers(Any)                   // Allow all headers
         .expose_headers(Any)                  // Expose all response headers
-        .max_age(std::time::Duration::from_secs(86400))  // Cache preflight for 24h
+        // Cache preflight for 24h
+        .max_age(std::time::Duration::from_secs(86400))
 }
 ```
 
@@ -668,17 +635,9 @@ pub fn create_cors_layer_with_origins(origins: Vec<String>) -> CorsLayer {
 
 > **CORS implementation**: See how we configure CORS for development and production in the [CORS Middleware section](01-Introduction.md#cors-middleware) of the Web API Architecture chapter.
 
-### CORS Options
+**CORS Options:** `allow_origin`, `allow_methods`, `allow_headers`, `expose_headers`, `max_age`
 
-- **`allow_origin`**: Which origins can make requests
-- **`allow_methods`**: Which HTTP methods are allowed (GET, POST, etc.)
-- **`allow_headers`**: Which headers can be sent
-- **`expose_headers`**: Which headers JavaScript can read
-- **`max_age`**: How long to cache preflight requests
-
-### Preflight Requests
-
-Browsers send OPTIONS requests (preflight) for certain cross-origin requests. CORS middleware handles these automatically.
+Browsers send OPTIONS preflight requests; CORS middleware handles automatically.
 
 ---
 
@@ -697,18 +656,7 @@ app = app.layer(CompressionLayer::new());
 
 > **Where it's used**: Compression is configured in our server setup. See the [Creating the Application Router section](01-Introduction.md#creating-the-application-router) to see how compression middleware is applied alongside other middleware layers.
 
-### How It Works
-
-- Automatically compresses responses when client supports it (via `Accept-Encoding` header)
-- Supports gzip, deflate, and brotli
-- Only compresses responses above a certain size threshold
-- Transparent to handlers - no code changes needed
-
-### Compression Benefits
-
-- **Reduced Bandwidth**: Smaller responses use less bandwidth
-- **Faster Transfers**: Less data to transfer means faster page loads
-- **Better Performance**: Especially important for mobile users
+Automatically compresses when client supports it (gzip, deflate, brotli). Transparent to handlers.
 
 ---
 
@@ -734,168 +682,45 @@ Any type that implements this trait can be returned from an Axum handler. Axum a
 
 #### Why is IntoResponse Used?
 
-`IntoResponse` provides several key benefits:
-
-1. **Type Flexibility**: Handlers can return different types (`Json`, `StatusCode`, tuples, custom types) without explicit conversion
-2. **Composability**: You can combine status codes, headers, and body types using tuples
-3. **Type Safety**: The compiler ensures only valid response types are returned
-4. **Clean API**: Handlers remain readable without boilerplate response construction
+Provides type flexibility, composability (tuples), type safety, and clean API without boilerplate.
 
 #### Built-in IntoResponse Implementations
 
-Axum provides `IntoResponse` implementations for many common types:
-
-**Status Codes:**
-```rust
-pub async fn handler() -> StatusCode {
-    StatusCode::OK  // Automatically converted to HTTP response
-}
-```
-
-**JSON Responses:**
-```rust
-use axum::response::Json;
-
-pub async fn handler() -> Json<ApiResponse<Data>> {
-    Json(ApiResponse::success(data))  // Automatically sets Content-Type: application/json
-}
-```
-
-**Tuples (Status Code + Body):**
-```rust
-pub async fn handler() -> (StatusCode, Json<ApiResponse<Data>>) {
-    (StatusCode::CREATED, Json(ApiResponse::success(data)))
-}
-```
-
-**Tuples (Headers + Body):**
-```rust
-use axum::http::HeaderMap;
-
-pub async fn handler() -> (HeaderMap, Json<ApiResponse<Data>>) {
-    let mut headers = HeaderMap::new();
-    headers.insert("X-Custom-Header", HeaderValue::from_static("value"));
-    (headers, Json(ApiResponse::success(data)))
-}
-```
-
-**Tuples (Status Code + Headers + Body):**
-```rust
-pub async fn handler() -> (StatusCode, HeaderMap, Json<ApiResponse<Data>>) {
-    let mut headers = HeaderMap::new();
-    headers.insert("X-Custom-Header", HeaderValue::from_static("value"));
-    (StatusCode::CREATED, headers, Json(ApiResponse::success(data)))
-}
-```
-
-**String/&str:**
-```rust
-pub async fn handler() -> &'static str {
-    "Hello, World!"  // Automatically converted to text/plain response
-}
-```
-
-**Result Types:**
-```rust
-pub async fn handler() -> Result<Json<ApiResponse<Data>>, StatusCode> {
-    if error {
-        Err(StatusCode::NOT_FOUND)  // Error type must also implement IntoResponse
-    } else {
-        Ok(Json(ApiResponse::success(data)))
-    }
-}
-```
+Common types implementing `IntoResponse`:
+- `StatusCode`: Simple status responses
+- `Json<T>`: JSON responses with Content-Type
+- `(StatusCode, Json<T>)`: Status + body
+- `(HeaderMap, Json<T>)`: Headers + body
+- `Result<T, E>`: Error handling
+- `&str`, `String`: Text responses
 
 #### How IntoResponse Works
 
-When a handler returns a value, Axum calls `.into_response()` on it:
-
-```rust
-// Handler returns Json<ApiResponse<Data>>
-pub async fn handler() -> Json<ApiResponse<Data>> {
-    Json(ApiResponse::success(data))
-}
-
-// Axum internally does:
-let response = handler().await;
-let http_response = response.into_response();  // Converts to Response
-```
-
-The `Json` wrapper implements `IntoResponse`, which:
-1. Serializes the inner type to JSON
-2. Sets the `Content-Type` header to `application/json`
-3. Sets the status code to `200 OK`
-4. Creates the HTTP response body
+Axum calls `.into_response()` on handler return values. `Json` wrapper:
+1. Serializes to JSON
+2. Sets `Content-Type: application/json`
+3. Sets status code
+4. Creates response body
 
 #### Custom IntoResponse Implementation
 
-You can implement `IntoResponse` for your own types:
+Implement `IntoResponse` for custom types:
 
 ```rust
-use axum::response::{IntoResponse, Response};
-use axum::http::StatusCode;
-
-struct CustomResponse {
-    message: String,
-    status: StatusCode,
-}
-
 impl IntoResponse for CustomResponse {
     fn into_response(self) -> Response {
-        let body = format!(r#"{{"message": "{}"}}"#, self.message);
-        (
-            self.status,
-            [("Content-Type", "application/json")],
-            body,
-        )
-            .into_response()
-    }
-}
-
-// Now you can return CustomResponse from handlers
-pub async fn handler() -> CustomResponse {
-    CustomResponse {
-        message: "Success".to_string(),
-        status: StatusCode::OK,
+        (self.status, body).into_response()
     }
 }
 ```
 
 #### Common Patterns Using IntoResponse
 
-**Error Handling:**
-```rust
-pub async fn handler() -> Result<Json<ApiResponse<Data>>, StatusCode> {
-    // StatusCode implements IntoResponse, so it can be used as error type
-    if not_found {
-        return Err(StatusCode::NOT_FOUND);
-    }
-    Ok(Json(ApiResponse::success(data)))
-}
-```
+**Error Handling:** `Err(StatusCode::NOT_FOUND)` returns error response
 
-**Conditional Responses:**
-```rust
-pub async fn handler() -> impl IntoResponse {
-    if condition {
-        (StatusCode::CREATED, Json(data))
-    } else {
-        (StatusCode::OK, Json(data))
-    }
-}
-```
+**Conditional Responses:** Return different status codes based on condition
 
-**Response with Headers:**
-```rust
-use axum::http::{HeaderMap, HeaderValue};
-
-pub async fn handler() -> (StatusCode, HeaderMap, Json<ApiResponse<Data>>) {
-    let mut headers = HeaderMap::new();
-    headers.insert("X-Total-Count", HeaderValue::from_static("100"));
-    
-    (StatusCode::OK, headers, Json(ApiResponse::success(data)))
-}
-```
+**Response with Headers:** Use tuples to combine status, headers, and body
 
 > **See it in action**: Our handlers use `IntoResponse` extensively. See the [Request Handlers section](01-Introduction.md#request-handlers) for examples of handlers returning `Json<ApiResponse<T>>` and `Result<Json<ApiResponse<T>>, StatusCode>`, both of which rely on `IntoResponse` for conversion.
 
@@ -913,125 +738,9 @@ pub async fn handler() -> Result<Json<ApiResponse<T>>, StatusCode> {
 
 #### Example: Converting WalletResponse to HTTP Response
 
-Let's trace how a `WalletResponse` struct is converted to an HTTP `Response` using the `IntoResponse` trait. This demonstrates the complete conversion chain:
+Conversion chain: `WalletResponse` → `ApiResponse<WalletResponse>` → `Json(ApiResponse)` → `Result` → `IntoResponse` → HTTP response
 
-**Step 1: Create the WalletResponse struct**
-
-```rust
-// In handlers/wallet.rs
-let response = WalletResponse {
-    address: address.as_string(),
-    public_key: HEXLOWER.encode(wallet.get_public_key()),
-    created_at: chrono::Utc::now(),
-};
-```
-
-`WalletResponse` is a regular Rust struct that implements `Serialize` (via Serde's `#[derive(Serialize)]`):
-
-```rust
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub struct WalletResponse {
-    pub address: String,
-    pub public_key: String,
-    pub created_at: DateTime<Utc>,
-}
-```
-
-**Step 2: Wrap in ApiResponse**
-
-```rust
-ApiResponse::success(response)
-```
-
-This creates an `ApiResponse<WalletResponse>`:
-
-```rust
-ApiResponse {
-    success: true,
-    data: Some(WalletResponse { ... }),
-    error: None,
-    timestamp: Utc::now(),
-}
-```
-
-`ApiResponse<T>` also implements `Serialize` (via derive macro), so it can be serialized to JSON.
-
-**Step 3: Wrap in Json**
-
-```rust
-Json(ApiResponse::success(response))
-```
-
-This creates a `Json<ApiResponse<WalletResponse>>`. The `Json` wrapper type is provided by Axum and implements `IntoResponse`.
-
-**Step 4: Wrap in Result**
-
-```rust
-Ok(Json(ApiResponse::success(response)))
-```
-
-This creates a `Result<Json<ApiResponse<WalletResponse>>, StatusCode>`. The `Result` type also implements `IntoResponse` when both `Ok` and `Err` variants implement `IntoResponse` (which they do: `Json` implements it, and `StatusCode` implements it).
-
-**Step 5: Axum calls into_response()**
-
-When the handler returns, Axum automatically calls `.into_response()` on the return value:
-
-```rust
-// Axum internally does something like:
-let handler_result = handler().await;
-let http_response = handler_result.into_response();
-```
-
-**Step 6: Json's IntoResponse implementation**
-
-The `Json<T>` type's `IntoResponse` implementation:
-
-1. **Serializes the inner type**: Calls `serde_json::to_vec()` on `ApiResponse<WalletResponse>` to convert it to JSON bytes
-2. **Sets Content-Type header**: Sets `Content-Type: application/json`
-3. **Sets status code**: Sets status to `200 OK` (or uses the status from `Result` if present)
-4. **Creates Response body**: Wraps the JSON bytes in an HTTP response body
-
-**The Complete Conversion Chain:**
-
-```
-WalletResponse (struct)
-    ↓ (wrapped in ApiResponse::success)
-ApiResponse<WalletResponse> (implements Serialize)
-    ↓ (wrapped in Json)
-Json<ApiResponse<WalletResponse>> (implements IntoResponse)
-    ↓ (wrapped in Ok)
-Result<Json<ApiResponse<WalletResponse>>, StatusCode> (implements IntoResponse)
-    ↓ (Axum calls .into_response())
-Response (HTTP response with JSON body)
-```
-
-**Why This Works:**
-
-1. **Serde Serialization**: Both `WalletResponse` and `ApiResponse<T>` implement `Serialize`, allowing them to be converted to JSON bytes
-2. **Json Wrapper**: Axum's `Json<T>` implements `IntoResponse` and handles the HTTP response construction
-3. **Type Safety**: The compiler ensures `WalletResponse` can be serialized (checked at compile time)
-4. **Automatic Conversion**: Axum automatically calls `.into_response()` on handler return values
-
-**Final HTTP Response:**
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 156
-
-{
-  "success": true,
-  "data": {
-    "address": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
-    "public_key": "02a1b2c3...",
-    "created_at": "2024-01-15T10:30:00Z"
-  },
-  "error": null,
-  "timestamp": "2024-01-15T10:30:00Z"
-}
-```
-
-This conversion happens automatically—you never need to manually construct HTTP responses. The type system ensures everything is correct at compile time.
+The conversion happens automatically without manual response construction. The type system ensures correctness at compile time.
 
 > **See the actual implementation**: The `create_wallet()` handler in [Wallet Handlers](04-Handlers.md#wallet-handlers) demonstrates this exact pattern. For more details on serialization, see the Serde Framework Guide.
 
@@ -1048,66 +757,15 @@ pub async fn handler() -> Result<(), StatusCode> {
 
 ### Custom Responses
 
-As explained in [Understanding IntoResponse](#understanding-intoresponse), you can implement `IntoResponse` for your own types to create custom response formats:
-
-```rust
-use axum::response::{IntoResponse, Response};
-use axum::http::StatusCode;
-use axum::response::Json;
-
-struct MyResponse {
-    message: String,
-}
-
-impl IntoResponse for MyResponse {
-    fn into_response(self) -> Response {
-        // Build custom response using tuple syntax
-        // This leverages the built-in IntoResponse for tuples
-        (StatusCode::OK, Json(self)).into_response()
-    }
-}
-
-// Now handlers can return MyResponse directly
-pub async fn handler() -> MyResponse {
-    MyResponse {
-        message: "Custom response".to_string(),
-    }
-}
-```
-
-This pattern is useful when you need consistent response formatting across multiple handlers or want to encapsulate response construction logic.
+Implement `IntoResponse` for custom response types to encapsulate response construction logic.
 
 ### Response Headers
 
-Add headers to responses:
-
-```rust
-use axum::response::Response;
-use axum::http::{HeaderMap, HeaderValue};
-
-pub async fn handler() -> Response {
-    let mut headers = HeaderMap::new();
-    headers.insert("X-Custom-Header", HeaderValue::from_static("value"));
-    
-    (headers, Json(data)).into_response()
-}
-```
+Use tuples to combine headers with body: `(headers, Json(data)).into_response()`
 
 ### Streaming Responses
 
-For large responses, use streaming:
-
-```rust
-use axum::body::Body;
-use axum::response::Response;
-
-pub async fn handler() -> Response {
-    let stream = /* create stream */;
-    Response::builder()
-        .body(Body::from_stream(stream))
-        .unwrap()
-}
-```
+Use `Body::from_stream()` for large responses.
 
 ---
 
@@ -1144,18 +802,19 @@ These features work together to create a robust, maintainable web API. For more 
 - **Server Setup**: Server initialization and configuration
 - **Routing**: Route definitions and organization
 - **Handlers**: Request handler implementations
-- **Middleware**: Middleware layer implementation
+- **Middleware**: Middleware layer implementation (includes Tower HTTP components)
 
 ### External Resources
 
 - **[Axum Documentation](https://docs.rs/axum/)**: Official Axum crate documentation
-- **[Tower Documentation](https://docs.rs/tower/)**: Tower middleware and service traits
+- **[Tower Documentation](https://docs.rs/tower/)**: Tower service and layer traits
+- **[Tower HTTP Documentation](https://docs.rs/tower-http/)**: HTTP-specific middleware (CORS, compression, tracing)
 - **[Tokio Documentation](https://docs.rs/tokio/)**: Async runtime used by Axum
 
 ---
 
 <div align="center">
 
-**[📚 ← Web API Index](README.md)** | **Axum Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Tower** | **Serde** | **Utoipa** | **Tracing** | **Tokio** 📚
+**[← Web API Index](README.md)** | **Axum Framework Guide** (includes Tower) | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Serde** | **Utoipa** | **Tracing** | **Tokio** 
 
 </div>

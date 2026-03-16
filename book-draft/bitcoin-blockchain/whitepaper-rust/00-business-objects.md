@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. **Chapter 1.4: Bitcoin Whitepaper In Rust** ← *You are here*
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -37,6 +56,10 @@
 
 ---
 # Business objects (Rust implementation map)
+
+**Note**: For the complete Rust implementation of these types, including code walkthroughs and detailed struct field-by-field analysis, see **[Chapter 9: Domain Model](../chain/01-Domain-Model.md)**. This chapter presents the whitepaper business perspective; the domain model chapter covers the actual Rust code.
+
+---
 
 ## 0.2. Core objects (the “business types”)
 
@@ -117,7 +140,8 @@ pub struct Transaction {
 #[derive(Clone, Debug)]
 pub struct TxOut {
     pub value: u64,
-    pub script_pubkey: Vec<u8>, // “public key of the next owner” is represented by a locking script
+    // “public key of the next owner” is represented by a locking script
+    pub script_pubkey: Vec<u8>,
 }
 ```
 - **TxOut**: spendable value plus a lock (“who may spend this?”).
@@ -201,12 +225,12 @@ pub type UtxoSet = HashMap<OutPoint, TxOut>;
 
 Business view (UTXO flow):
 
-```
+```text
 # Legend (how to read this diagram):
-# - OutPoint(X, i) = "output i created by transaction X" (txid + output index)
-# - TxOut(value, lock=...) = amount + spending condition (lock is `script_pubkey`)
-# - New outputs become new UTXOs keyed by OutPoint(this_txid, output_index)
-# - Inputs - Outputs = fee (simplified; real Bitcoin has additional rules)
+# - OutPoint(X, i) = "output i from transaction X"
+# - TxOut(value, lock) = amount + spending condition
+# - New outputs become new UTXOs keyed by (txid, index)
+# - fee = Inputs - Outputs (simplified; real Bitcoin has more rules)
 
 Before (UTXO set):
   OutPoint(A, 0) ──► TxOut(value=5, lock=Alice)
@@ -222,9 +246,9 @@ Transaction (spend + create):
   fee     : 12 - (9 + 2) = 1
 
 After (UTXO set update):
-  - remove: OutPoint(A, 0), OutPoint(B, 2)         // spent (no longer spendable)
+  - remove: OutPoint(A, 0), OutPoint(B, 2)  // spent
   + add   : OutPoint(TxID, 0) ──► TxOut(9, lock=Bob)
-          OutPoint(TxID, 1) ──► TxOut(2, lock=Alice)  // change
+          OutPoint(TxID, 1) ──► TxOut(2, lock=Alice)
 ```
 
 What we implement from this diagram:
@@ -253,8 +277,9 @@ At the ledger level, Bitcoin is simple: **outputs create spendable value**, and 
 - **UTXO set (the spendable database)**: conceptually `HashMap<OutPoint, TxOut>`.
   - “not already spent” means: we refuse to spend any `OutPoint` that is not present in our UTXO view at the chosen chain tip.
 
-```
-TxIn  ──spends──►  OutPoint(txid, vout)  ──selects──►  TxOut(value, script_pubkey)
+```text
+TxIn ──spends──► OutPoint(txid, vout)
+                 ──selects──► TxOut(value, script)
 
 UTXO set (current spendable outputs):
   OutPoint(txid, vout)  ->  TxOut(...)
@@ -268,213 +293,32 @@ This model starts from the “thing we do proof-of-work on” and works downward
 - **`merkle_root`** is the header’s commitment to the block’s transaction list.
 - **`Block`** is “header + transactions”; accepting a block means we accept a state transition.
 
-```
+```text
 BlockHeader(prev_hash, merkle_root, nBits, nonce)
    │
    ├─ prev_hash ──► previous BlockHeader (the chain)
    │
    └─ merkle_root ──► commits to txids of Block.txs
                          │
-                         └─ Transaction: inputs spend OutPoints → select TxOuts → update UTXO set
+      └─ Tx: inputs spend OutPoints, select TxOuts,
+           update UTXO set
 ```
 
 If we keep both models in mind, it becomes clear how “money movement” (UTXO transitions) is anchored to “history” (headers + PoW + longest chain).
 
-### 0.2.2 Whitepaper citations (business objects) + why we encode them this way in Rust
+### 0.2.2 Whitepaper citations (business objects) — mapping to Rust types
 
-The whitepaper doesn’t list “Rust structs”, but it does define the *business objects* and their relationships. Below, each core type includes:
+The whitepaper doesn’t list “Rust structs”, but it does define the *business objects* and their relationships. The mapping from whitepaper concepts to Rust types is summarized below. For complete Rust code implementations, field-by-field analysis, and detailed code walkthroughs, see **[Chapter 9: Domain Model](../chain/01-Domain-Model.md)**.
 
-- **Whitepaper citation**: what the paper says (with a short quote and section)
-- **Rust representation rationale**: why the encoding choices are practical for an interoperable implementation
+**Quick reference:**
 
-#### `Transaction`
-- **Whitepaper citation (Bitcoin Whitepaper Section 2)**:
-  - “**We define an electronic coin as a chain of digital signatures.**” ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
-  - “Each owner transfers the coin to the next by **digitally signing a hash of the previous transaction and the public key of the next owner** …” ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
-- **Description**:
-  - A `Transaction` is the **atomic state transition** of Bitcoin’s ledger.
-  - It **consumes** previously created value by spending one or more `TxOut`s (via `TxIn.previous_output: OutPoint`), and it **creates** new value by producing new `TxOut`s.
-  - Its job is to make “ownership transfer” verifiable:
-    - each `TxIn` must be authorized relative to the referenced output’s locking condition
-    - the transaction must not create money (value conservation; fees are the difference between inputs and outputs)
-  - Relationship-wise, `Transaction` is the unit we relay, validate, and then commit to a block:
-    - transactions are identified by a hash over canonical bytes (`txid`)
-    - blocks commit to the set of txids via the Merkle root
-- **Rust representation rationale**:
-```rust
-#[derive(Clone, Debug)]
-pub struct Transaction {
-    pub version: i32,
-    pub inputs: Vec<TxIn>,
-    pub outputs: Vec<TxOut>,
-    pub lock_time: u32,
-}
-```
-  - `inputs: Vec<TxIn>` and `outputs: Vec<TxOut>` directly encode “spend previous / create new”.
-  - `version`, `lock_time` are integers because consensus encoding must be deterministic and byte-for-byte reproducible across nodes.
-
-#### `TxIn` (transaction input)
-- **Whitepaper citation (Bitcoin Whitepaper Section 2)**:
-  - The “chain of signatures” description implies every transfer must reference the *previous* transaction and prove authorization (“signing a hash of the previous transaction …”). ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
-- **Description**:  
-  - A `TxIn` is a **claim on an existing UTXO**: it names exactly which prior output we want to spend and provides data that proves we are allowed to spend it.
-  - Its two core roles are:
-    - **Reference**: `previous_output: OutPoint` identifies the UTXO being spent (`txid`, `vout`)
-    - **Unlock**: `script_sig` (or witness in modern Bitcoin) provides signatures/keys that satisfy the referenced output’s locking script
-  - Relationship-wise:
-    - `TxIn` points to an `OutPoint`
-    - the `OutPoint` selects a `TxOut`
-    - the selected `TxOut.script_pubkey` defines what must be proven for this `TxIn` to be valid
-- **Rust representation rationale**:
-```rust
-#[derive(Clone, Debug)]
-pub struct TxIn {
-    pub previous_output: OutPoint,
-    pub script_sig: Vec<u8>, // legacy input script (P2PKH-style)
-    pub sequence: u32,
-}
-```
-  - `previous_output: OutPoint` makes the spend target explicit as `(txid, vout)` (the canonical way inputs identify what they spend in real Bitcoin).
-  - `script_sig: Vec<u8>` uses raw bytes because script/witness are consensus-serialized byte programs; keeping them as bytes avoids accidental re-encoding differences.
-  - `sequence: u32` matches consensus-style fixed-width integer fields and supports canonical little-endian serialization.
-
-#### `TxOut` (transaction output)
-- **Whitepaper citation (Bitcoin Whitepaper Section 2)**:
-  - The recipient is described as “the **public key of the next owner**” in the transfer rule. ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
-- **Description**:  
-  - A `TxOut` is **spendable value plus a rule for spending it**.
-  - It becomes part of the UTXO set when created, and it remains spendable until a future `TxIn` references it via an `OutPoint`.
-  - Relationship-wise:
-    - `TxOut` is produced by a `Transaction`
-    - it can later be selected by `OutPoint(txid, vout)`
-    - its `script_pubkey` defines the spending condition that the future `TxIn` must satisfy
-- **Rust representation rationale**:
-```rust
-#[derive(Clone, Debug)]
-pub struct TxOut {
-    pub value: u64,
-    pub script_pubkey: Vec<u8>, // “public key of the next owner” is represented by a locking script
-}
-```
-  - `value: u64` is the standard “amount in smallest units” encoding (Bitcoin uses satoshis) to avoid floating-point ambiguity.
-  - `script_pubkey: Vec<u8>` generalizes “public key of the next owner” into a *locking condition* (real Bitcoin uses Script; P2PKH/P2WPKH/etc. are all byte encodings).
-
-#### `OutPoint`
-The Bitcoin whitepaper does not define an OutPoint type or the (txid, vout) concept by name.
-What it does specify is the underlying requirement:
-- In Section 2 it describes **spending** as “signing a hash of the previous transaction…”, which implies an **input must reference a previous transaction**.
-- In Section 5 it requires blocks be accepted only if transactions are “not already spent”, which implies nodes must identify which **prior output is being spent**.
-**OutPoint** (txid, vout) is the concrete representation used by the deployed Bitcoin protocol to satisfy those requirements: 
-- txid identifies the previous transaction,
-- vout selects a specific output within it.
-
-<pre style="white-space: pre; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
-TxOut (creates spendable value)
-  ▲
-  │ referenced by <span style="color: red;">OutPoint(txid, index)</span>
-  │
-TxIn (authorizes spending)  ──► Transaction ──► included in Block ──► committed by merkle_root in header
-</pre>
-
-- **Whitepaper citation (Bitcoin Whitepaper Section 2 + Bitcoin Whitepaper Section 5)**:
-  - Section 2 implies spends reference a prior transaction (“hash of the previous transaction”).
-  - Section 5 states nodes only accept a block if transactions are “**not already spent**”, which requires identifying *which* output is being spent. ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
-- **Description**:  
-  - An `OutPoint` is the **portable identifier** for a specific transaction output:
-    - `txid` identifies the transaction
-    - `vout` selects the output index within that transaction
-  - It is the unit we track for “not already spent”:
-    - UTXO set membership answers “is this spendable right now?”
-    - spending removes the `OutPoint` from the UTXO set
-  - Relationship-wise, it is the bridge between inputs and outputs:
-    - `TxIn.previous_output` is an `OutPoint`
-    - that `OutPoint` selects a `TxOut`
-- **Rust representation rationale**:
-    ```rust
-    #[derive(Clone, Debug)]
-    pub struct OutPoint {
-        pub txid: [u8; 32],
-        pub vout: u32,
-    }
-    ```
-  - `txid: [u8; 32]` is fixed-size because Bitcoin hashes are 32 bytes; `[u8; 32]` prevents length bugs and keeps hashing/serialization simple and fast.
-  - `vout: u32` is a stable output index. Treating it as an integer (not a pointer/reference) is critical: outpoints are *portable identifiers* used in hashing, signatures, and on-wire messages.
-
-#### `UTXO Set` (Unspent Transaction Output set)
-
-- **Whitepaper citation (Bitcoin Whitepaper Section 2 + Bitcoin Whitepaper Section 5)**:
-  - Section 2 frames the core problem as double-spending and requires participants to be able to confirm that a spend hasn’t happened already (“The only way to confirm the absence of a transaction is to be aware of all transactions.”). ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
-  - Section 5 defines the acceptance rule: “Nodes accept the block only if all transactions in it are valid and not already spent.” ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
-- **Description**:
-  - The UTXO set is the node’s **spendable-state index**: it answers “what can be spent right now at this chain tip?”
-  - Conceptually it is a map:
-    - `OutPoint(txid, vout) -> TxOut(value, script_pubkey)`
-  - Relationship-wise, it is the bridge between *references* and *validation*:
-    - `TxIn.previous_output` (an `OutPoint`) must exist in the UTXO set, otherwise the input is already spent or unknown.
-    - the referenced `TxOut` provides the spend context used to validate authorization (locking script) and value rules.
-  - When we connect a block, the UTXO set changes deterministically:
-    - **spend**: remove every input `OutPoint`
-    - **create**: insert every new output as a new `OutPoint` (new txid + output index)
-- **Rust representation rationale**:
-  - At minimum, we can model it as `HashMap<OutPoint, TxOut>`, because that matches the conceptual “lookup spend target by outpoint” operation.
-  - In a real node we typically also need:
-    - a persistent storage backing (disk) and/or a cached in-memory view
-    - a “view” overlay for block connection and mempool conflict checks (so we can validate without mutating the canonical state until we accept)
-
-#### `BlockHeader`
-- **Whitepaper citation (Bitcoin Whitepaper Section 3 + Bitcoin Whitepaper Section 4)**:
-  - “The timestamp server works by taking a **hash of a block of items to be timestamped** and widely publishing the hash…” (Bitcoin Whitepaper Section 3). ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
-  - “The proof-of-work involves scanning for a value that when hashed, such as with **SHA‑256**, the hash begins with a number of zero bits…” (Bitcoin Whitepaper Section 4). ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
-- **Description**:  
-  - A `BlockHeader` is the **consensus-critical commitment** that gets proof-of-work applied to it.
-  - It links and secures history:
-    - `prev_hash` points to the previous block header hash (forming the chain)
-    - `merkle_root` commits to the block’s transaction set
-  - It carries the proof-of-work fields:
-    - `difficulty_bits` defines the required target threshold
-    - `nonce` is the search space we scan to find a header hash under the target
-  - Relationship-wise:
-    - the header commits to the block body (`txs`) via `merkle_root`
-    - nodes validate and chain headers first, then validate and apply the transactions
-- **Rust representation rationale**:
-```rust
-#[derive(Clone, Debug)]
-pub struct BlockHeader {
-    pub version: i32,
-    pub prev_hash: [u8; 32],
-    pub merkle_root: [u8; 32],
-    pub timestamp: u32,        // nTime
-    pub difficulty_bits: u32,  // nBits (compact target encoding)
-    pub nonce: u32,
-}
-```
-  - `prev_hash: [u8; 32]` is the *link* that makes blocks a chain.
-  - `merkle_root: [u8; 32]` is the commitment to the transaction set (enables SPV proofs and efficient inclusion proofs).
-  - `timestamp: u32`, `difficulty_bits: u32`, `nonce: u32` are fixed-width integers because the header is hashed; stable serialization is mandatory for consensus.
-
-#### `Block`
-- **Whitepaper citation (Bitcoin Whitepaper Section 3 + Bitcoin Whitepaper Section 7)**:
-  - Section 3’s “block of items to be timestamped” is precisely a batch of transactions that the header commits to. ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
-  - Section 7 uses a Merkle tree to support efficient verification without downloading every transaction (SPV), which requires the block to commit to txs via a Merkle root. ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
-- **Description**:  
-  - A `Block` is the **container of a ledger step**: a header (what we hash for PoW) plus the transaction list (what we are committing to).
-  - When we accept a block, we accept a state transition:
-    - validate the header (links to known history + meets PoW target)
-    - validate each transaction (valid spends + “not already spent”)
-    - apply UTXO updates atomically (spend inputs, create outputs)
-  - Relationship-wise:
-    - `Block.header.merkle_root` commits to `Block.txs`
-    - the header hash becomes the `prev_hash` of the next block
-- **Rust representation rationale**:
-```rust
-#[derive(Clone, Debug)]
-pub struct Block {
-    pub header: BlockHeader,
-    pub txs: Vec<Transaction>,
-}
-```
-  - `header: BlockHeader` and `txs: Vec<Transaction>` mirrors the conceptual split between “what gets hashed for PoW” and “the data being committed”.
-  - Keeping `txs` as full objects (not just hashes) is practical for full validation, while SPV clients can work from headers + Merkle branches.
+- **`Transaction`** — atomic ledger transition (spend prior outputs + create new ones; Section 2)
+- **`TxIn`** — claim on an existing UTXO (names the spend target + provides authorization; Section 2)
+- **`TxOut`** — spendable value plus locking condition (Section 2)
+- **`OutPoint`** — portable identifier for a specific output (txid + index; Section 2/5)
+- **`UTXO Set`** — mapping of spendable outputs (Section 5, “not already spent”)
+- **`BlockHeader`** — consensus-critical commitment (PoW input; Section 3/4)
+- **`Block`** — container of ledger step (header + transaction list; Section 3/7)
 
 ---
 

@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. **Chapter 1.4: Bitcoin Whitepaper In Rust** ← *You are here*
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -59,7 +78,7 @@ Network highlevel intuition:
   - **chainstate (UTXO set at our best tip)**: “the spendable outputs according to the best chain we currently believe”
 - Forks happen naturally (two miners can extend the same tip). A **reorg** is just updating our best tip and recomputing the UTXO set by undoing/redoing block state transitions.
 
-### 5.1 Transaction pipeline (mempool admission)
+### 18 Transaction pipeline (mempool admission)
 
 What we must decide for each incoming transaction:
 
@@ -86,7 +105,7 @@ Note on “policy” vs “consensus” (helpful for new readers):
 - **Consensus rules** are mandatory: if we get them wrong, we accept invalid blocks or reject valid ones (we fork ourselves off the network).
 - **Policy rules** are local preferences (mempool rules): they decide what we relay/mine, but they do not change what blocks are *valid*.
 
-### 5.2 Block pipeline (the whitepaper’s “Step 5” in code)
+### 19 Block pipeline (the whitepaper’s “Step 5” in code)
 
 Before we talk about “accepting a block”, we need a key storage mental model that might not be obvious:
 
@@ -128,14 +147,20 @@ Another way to think about Step 5:
 - We run validation first against a read-only UTXO view (so “not already spent” is a pure check).
 - Only after everything is valid do we apply the writes (spend/remove + create/insert) as one state transition.
 
-If we want a deeper walkthrough of Step 5 (including common missing checks and a Rust-shaped validation design), see **Section 2.6: Block Acceptance (Whitepaper §5, Step 5)**.
+If we want a deeper walkthrough of Step 5 (including common missing checks and a Rust-shaped validation design), see **Section 10: Block Acceptance (Whitepaper §5, Step 5)**.
 
 Rust implementation suggestion: encode those steps as explicit functions with clear boundaries:
 
 ```rust
-pub fn on_receive_transaction(/* tx */) { /* validate; add to mempool; relay */ }
-pub fn make_block_template(/* mempool */) { /* choose txs; compute merkle root; build header */ }
-pub fn on_receive_block(/* block */) { /* validate; update best chain; relay */ }
+pub fn on_receive_transaction(/* tx */) {
+    // validate; add to mempool; relay
+}
+pub fn make_block_template(/* mempool */) {
+    // choose txs; compute merkle root; build header
+}
+pub fn on_receive_block(/* block */) {
+    // validate; update best chain; relay
+}
 ```
 
 ### 5.3 P2P message flow and wire encoding (implementation sketch)
@@ -253,30 +278,27 @@ In this section, we demonstrate that dispatcher as a small Rust `match` over our
 Conceptually:
 
 - `Node` represents “everything our node knows and manages” (its **state**):
-  - **mempool**: our current set of validated-but-unconfirmed transactions
-  - **chainstate / UTXO database**: our current spendable-output view at the best tip (what enforces “not already spent”)
-  - **block store + header index**: our persisted chain history (headers, and usually blocks)
-  - **peer/request tracking** (often overlooked): what we have already requested, what we have already announced, and what each peer claims to have (to avoid redundant downloads/relays)
-- `handle_message(&mut Node, Message)` is the top-level dispatcher that turns “a parsed message” into the next concrete work:
-  - **state changes** (local): insert into mempool, connect a block (UTXO updates), persist headers/blocks, update per-peer request state
-  - **network follow-ups** (outbound): send `getdata` after `inv`, send `inv` after accepting a tx/block, serve `tx`/`block` when peers request them
+  - **mempool**: validated-but-unconfirmed transactions
+  - **chainstate / UTXO database**: spendable outputs at best tip
+  - **block store + header index**: persisted chain history
+  - **peer/request tracking**: requested/announced items and peer inventory
+- `handle_message(&mut Node, Message)` is the dispatcher:
+  - **state changes** (local): update mempool, blocks, headers, peer state
+  - **network follow-ups** (outbound): send `getdata`/`inv`, serve objects
 
 ```rust
 pub struct Node {
-    // Conceptual node state (what this dispatcher(ie handle_message) is coordinating):
+    // Node state coordinated by handle_message:
     //
-    // - mempool:
-    //   - what it stores: validated, unconfirmed transactions (often indexed by txid)
-    //   - what it is used for: relay transactions; select transactions when we build a block template
+    // - mempool: validated, unconfirmed transactions (indexed by txid)
+    //   Used: relay transactions; select for block template
     //
-    // - chainstate / UTXO view:
-    //   - what it stores: the current spendable outputs at our best tip
-    //     (keyed by OutPoint(txid, vout) -> TxOut(value, script_pubkey))
-    //   - what it is used for: answer “not already spent?” and provide the prevout context for script verification
+    // - chainstate / UTXO view: spendable outputs at best tip
+    //   Key: OutPoint(txid, vout) -> TxOut(value, script_pubkey)
+    //   Used: “not already spent?” and script verification context
     //
-    // - block store (history) + header index:
-    //   - what it stores: block headers and (optionally) full block bodies, indexed by block hash
-    //   - what it is used for: persist accepted blocks, serve blocks to peers, and support reorg/chain traversal
+    // - block store + header index: headers and (optionally) blocks
+    //   Used: persist, serve, support reorg/chain traversal
 }
 
 pub fn handle_message(node: &mut Node, msg: Message) {
@@ -292,15 +314,15 @@ pub fn handle_message(node: &mut Node, msg: Message) {
             // node.respond_with_objects(req.items);
         }
         Message::Tx(tx_msg) => {
-            // Validate tx against our current UTXO view; if valid, put in mempool and re-advertise.
+            // Validate tx, add to mempool if valid
             // node.accept_tx(tx_msg.tx);
         }
         Message::Headers(hdrs) => {
-            // Validate/attach headers (prev-hash linkage + PoW); may trigger block downloads.
+            // Validate headers (PoW + linkage)
             // node.accept_headers(hdrs.headers);
         }
         Message::Block(blk_msg) => {
-            // Validate block; if accepted, persist to block store and update chainstate atomically.
+            // Validate block, update chainstate
             // node.accept_block(blk_msg.block);
         }
     }
@@ -330,13 +352,13 @@ fn put_compact_size(out: &mut Vec<u8>, n: usize) {
 
 impl Encode for InventoryItem {
     fn encode(&self, out: &mut Vec<u8>) {
-        // In Bitcoin P2P, "type" is a u32 (e.g. MSG_TX=1, MSG_BLOCK=2). We keep it symbolic here.
+        // Bitcoin P2P: "type" is u32 (MSG_TX=1, MSG_BLOCK=2)
         let ty: u32 = match self.kind {
             InventoryItemKind::Tx => 1,
             InventoryItemKind::Block => 2,
         };
         put_u32_le(out, ty);
-        put_bytes(out, &self.hash); // 32 bytes
+        put_bytes(out, &self.hash);
     }
 }
 

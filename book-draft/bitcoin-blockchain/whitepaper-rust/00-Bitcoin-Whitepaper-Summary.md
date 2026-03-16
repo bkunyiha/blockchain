@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. **Chapter 1.3: Bitcoin Whitepaper** ← *You are here*
-4. <a href="00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. **Chapter 3: Bitcoin Whitepaper** ← *You are here*
+4. <a href="00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -38,11 +57,11 @@
 ---
 # Bitcoin Whitepaper Summary: Understanding Blockchain Technology
 
-**Part II: Chapter 2.3: Bitcoin Whitepaper Summary**
+**Part I: Chapter 3: Bitcoin Whitepaper Summary**
 
 <div align="center">
 
-**[📚 ← Introduction to Bitcoin & Blockchain](../README.md)** | **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** | **[Blockchain Rust Project →](../Rust-Project-Index.md)** 📚
+**[← Introduction to Bitcoin & Blockchain](../README.md)** | **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** | **[Blockchain Rust Project →](../Rust-Project-Index.md)** 
 
 </div>
 
@@ -82,7 +101,7 @@ The Bitcoin whitepaper represents a fundamental breakthrough in distributed syst
 
 This solution combines several existing cryptographic and distributed systems concepts — **digital signatures**, **hash functions**, **Merkle trees**, and **proof-of-work—into** a novel architecture that achieves **Byzantine fault tolerance** in an open, permissionless network.
 
-### 1.2 Scope and Organization
+### 2 Scope and Organization
 
 This section systematically examines each section of the Bitcoin whitepaper, providing technical analysis, formal definitions, and implementation considerations. The material is organized to build understanding progressively, beginning with the problem statement and proceeding through the cryptographic foundations, consensus mechanisms, and security analysis.
 
@@ -99,21 +118,21 @@ This section systematically examines each section of the Bitcoin whitepaper, pro
 
 ## The Problem: Trust in Electronic Payments
 
-### 2.1 The Trust-Based Model and Its Limitations
+### 6 The Trust-Based Model and Its Limitations
 
 The Bitcoin whitepaper begins by analyzing the fundamental limitations of existing electronic payment systems. As stated in Section 1: "Commerce on the Internet has come to rely almost exclusively on financial institutions serving as trusted third parties to process electronic payments. While the system works well enough for most transactions, it still suffers from the inherent weaknesses of the trust based model" ([Bitcoin Whitepaper, Section 1](https://bitcoin.org/bitcoin.pdf)).
 
-#### 2.1.1 Architectural Dependencies
+#### 6.1 Architectural Dependencies
 
 Traditional electronic payment systems exhibit a centralized architecture where all transactions flow through trusted third parties—typically financial institutions or payment processors. This architecture introduces several fundamental constraints:
 
-**Definition 2.1** (Trusted Third Party): A trusted third party is an intermediary entity that both transacting parties trust to validate, authorize, and record transactions. The trust model requires that this entity:
+**Definition 6** (Trusted Third Party): A trusted third party is an intermediary entity that both transacting parties trust to validate, authorize, and record transactions. The trust model requires that this entity:
 - Maintains accurate transaction records
 - Prevents double-spending
 - Resolves disputes fairly
 - Maintains system availability
 
-#### 2.1.2 Inherent Weaknesses
+#### 6.2 Inherent Weaknesses
 
 The whitepaper identifies five critical weaknesses in the trust-based model:
 
@@ -127,25 +146,25 @@ The whitepaper identifies five critical weaknesses in the trust-based model:
 
 5. **Architectural Constraint**: "No mechanism exists to make payments over a communications channel without a trusted party" ([Bitcoin Whitepaper, Section 1](https://bitcoin.org/bitcoin.pdf)). Direct peer-to-peer electronic payments are architecturally impossible in the current model.
 
-#### 2.1.3 Economic Implications
+#### 6.3 Economic Implications
 
 These limitations have measurable economic consequences. As the whitepaper notes: "These costs and payment uncertainties can be avoided in person by using physical currency, but no mechanism exists to make payments over a communications channel without a trusted party" ([Bitcoin Whitepaper, Section 1](https://bitcoin.org/bitcoin.pdf)). The inability to replicate physical currency's direct transfer properties in digital form represents a fundamental gap in electronic payment systems.
 
-### 2.2 Requirements for a Cryptographic Solution
+### 7 Requirements for a Cryptographic Solution
 
 The whitepaper establishes the requirements for an alternative system: "What is needed is an electronic payment system based on **cryptographic proof** instead of trust, allowing any two willing parties to transact directly with each other without the need for a trusted third party" ([Bitcoin Whitepaper, Section 1](https://bitcoin.org/bitcoin.pdf)).
 
-#### 2.2.1 Core Requirements
+#### 7.1 Core Requirements
 
-**Requirement 2.1** (Cryptographic Proof): The system must use cryptographic mechanisms rather than trust relationships to ensure transaction validity and prevent double-spending.
+**Requirement 6** (Cryptographic Proof): The system must use cryptographic mechanisms rather than trust relationships to ensure transaction validity and prevent double-spending.
 
-**Requirement 2.2** (Direct Transactions): The system must enable direct transactions between parties without requiring intermediaries.
+**Requirement 7** (Direct Transactions): The system must enable direct transactions between parties without requiring intermediaries.
 
-**Requirement 2.3** (Irreversibility): "Transactions that are computationally impractical to reverse would protect sellers from fraud" ([Bitcoin Whitepaper, Section 1](https://bitcoin.org/bitcoin.pdf)). The computational cost of reversing a transaction must exceed the economic value of doing so.
+**Requirement 8** (Irreversibility): "Transactions that are computationally impractical to reverse would protect sellers from fraud" ([Bitcoin Whitepaper, Section 1](https://bitcoin.org/bitcoin.pdf)). The computational cost of reversing a transaction must exceed the economic value of doing so.
 
-**Requirement 2.4** (Buyer Protection): "Routine escrow mechanisms could easily be implemented to protect buyers" ([Bitcoin Whitepaper, Section 1](https://bitcoin.org/bitcoin.pdf)). The system architecture must support additional trust mechanisms when needed.
+**Requirement 9** (Buyer Protection): "Routine escrow mechanisms could easily be implemented to protect buyers" ([Bitcoin Whitepaper, Section 1](https://bitcoin.org/bitcoin.pdf)). The system architecture must support additional trust mechanisms when needed.
 
-#### 2.2.2 Design Goals
+#### 7.2 Design Goals
 
 The proposed system aims to achieve:
 - **Elimination of Mediation Costs**: Direct transactions remove intermediary fees
@@ -184,21 +203,21 @@ The security model relies on economic and cryptographic mechanisms:
 
 ## Transactions: Digital Signatures and Ownership
 
-### 4.1 The Transaction Model
+### 16 The Transaction Model
 
 The Bitcoin whitepaper introduces a transaction model based on cryptographic signatures. Section 2 defines an electronic coin as "a chain of digital signatures. Each owner transfers the coin to the next by digitally signing a hash of the previous transaction and the public key of the next owner and adding these to the end of the coin. A payee can verify the signatures to verify the chain of ownership" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)).
 
-#### 4.1.1 Formal Definition
+#### 16.1 Formal Definition
 
-**Definition 4.1** (Electronic Coin): An electronic coin is a cryptographically linked sequence of transactions, where each transaction represents a transfer of ownership. The coin's value and ownership history are encoded in this transaction chain.
+**Definition 16** (Electronic Coin): An electronic coin is a cryptographically linked sequence of transactions, where each transaction represents a transfer of ownership. The coin's value and ownership history are encoded in this transaction chain.
 
-**Definition 4.2** (Transaction): A transaction is a data structure containing:
+**Definition 17** (Transaction): A transaction is a data structure containing:
 - Reference to a previous transaction (input)
 - Digital signature authorizing the transfer
 - Public key of the recipient (output)
 - Additional metadata
 
-#### 4.1.2 Transaction Structure and Verification
+#### 16.2 Transaction Structure and Verification
 
 The transaction model operates as follows:
 
@@ -215,20 +234,20 @@ The transaction model operates as follows:
 
 5. **Chain Formation**: Transactions form a chain where each link cryptographically proves the transfer of ownership from one party to another.
 
-#### 4.1.3 Cryptographic Properties
+#### 16.3 Cryptographic Properties
 
-**Theorem 4.1** (Ownership Control): Only the holder of the private key corresponding to a transaction output can authorize a transfer from that output. This follows from the unforgeability property of digital signatures.
+**Theorem 16** (Ownership Control): Only the holder of the private key corresponding to a transaction output can authorize a transfer from that output. This follows from the unforgeability property of digital signatures.
 
-**Property 4.1** (Chain Integrity): Any modification to a transaction in the chain invalidates all subsequent transactions, as their signatures depend on the previous transaction's hash.
+**Property 16** (Chain Integrity): Any modification to a transaction in the chain invalidates all subsequent transactions, as their signatures depend on the previous transaction's hash.
 
-**Property 4.2** (Public Verifiability): The chain of ownership is publicly verifiable without requiring trusted third parties. Any party with access to the transaction history can verify the entire chain.
+**Property 17** (Public Verifiability): The chain of ownership is publicly verifiable without requiring trusted third parties. Any party with access to the transaction history can verify the entire chain.
 
 **Property 4.3** (Tamper Evidence): Attempts to modify historical transactions are detectable through signature verification failures, providing tamper-evident properties.
 
-#### 4.1.4 Transaction Chain Example
+#### 16.4 Transaction Chain Example
 
 Consider a transaction chain:
-```
+```text
 T₀: Genesis → Alice (signed by genesis mechanism)
 T₁: Alice → Bob (signed by Alice's private key sk_A)
 T₂: Bob → Charlie (signed by Bob's private key sk_B)
@@ -249,17 +268,17 @@ Verification of Tᵢ requires:
 
 ## The Double-Spending Problem
 
-### 5.1 Problem Statement
+### 18 Problem Statement
 
 The fundamental challenge in digital currency systems is preventing double-spending. As the whitepaper states: "The problem of course is the payee can't verify that one of the owners did not double-spend the coin" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)).
 
-#### 5.1.1 Formal Definition
+#### 18.1 Formal Definition
 
-**Definition 5.1** (Double-Spending): Double-spending occurs when a party attempts to spend the same digital coin or transaction output multiple times, creating conflicting transactions that reference the same input.
+**Definition 18** (Double-Spending): Double-spending occurs when a party attempts to spend the same digital coin or transaction output multiple times, creating conflicting transactions that reference the same input.
 
-**Definition 5.2** (Double-Spending Attack): A double-spending attack is an attempt by an adversary to create two or more valid transactions that spend the same coin, with the goal of having multiple recipients accept the coin as payment.
+**Definition 19** (Double-Spending Attack): A double-spending attack is an attempt by an adversary to create two or more valid transactions that spend the same coin, with the goal of having multiple recipients accept the coin as payment.
 
-#### 5.1.2 The Fundamental Challenge
+#### 18.2 The Fundamental Challenge
 
 Unlike physical currency, digital information can be perfectly copied. A digital coin, represented as data, can be duplicated and presented to multiple recipients simultaneously. Without a mechanism to detect and prevent this, a malicious party could:
 
@@ -270,38 +289,38 @@ Unlike physical currency, digital information can be perfectly copied. A digital
 
 The problem is that neither recipient can independently verify that the coin hasn't been spent elsewhere. As the whitepaper explains: "The problem of course is the payee can't verify that one of the owners did not double-spend the coin" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)).
 
-#### 5.1.3 Traditional Solutions and Their Limitations
+#### 18.3 Traditional Solutions and Their Limitations
 
-**Solution 5.1** (Central Authority): The traditional approach introduces "a trusted central authority, or mint, that checks every transaction for double spending" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)). This authority maintains a registry of all transactions and validates each new transaction against this registry.
+**Solution 18** (Central Authority): The traditional approach introduces "a trusted central authority, or mint, that checks every transaction for double spending" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)). This authority maintains a registry of all transactions and validates each new transaction against this registry.
 
-**Limitation 5.1**: "The problem with this solution is that the fate of the entire money system depends on the company running the mint, with every transaction having to go through them, just like a bank" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)). This creates:
+**Limitation 18**: "The problem with this solution is that the fate of the entire money system depends on the company running the mint, with every transaction having to go through them, just like a bank" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)). This creates:
 - Single point of failure
 - Centralized control
 - Dependency on trust in the authority
 - Potential for censorship
 - Scalability bottlenecks
 
-### 5.2 The Blockchain Solution
+### 19 The Blockchain Solution
 
-#### 5.2.1 Fundamental Insight
+#### 19.1 Fundamental Insight
 
 The whitepaper establishes a crucial insight: "The only way to confirm the absence of a transaction is to be **aware of all transactions**" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)). This observation forms the theoretical foundation for the blockchain solution.
 
-**Theorem 5.1** (Transaction Awareness Requirement): To prevent double-spending in a distributed system without a trusted authority, all participants must maintain awareness of all transactions. This follows from the need to verify that a transaction input has not been previously spent.
+**Theorem 18** (Transaction Awareness Requirement): To prevent double-spending in a distributed system without a trusted authority, all participants must maintain awareness of all transactions. This follows from the need to verify that a transaction input has not been previously spent.
 
-#### 5.2.2 Solution Architecture
+#### 19.2 Solution Architecture
 
 The blockchain solution addresses double-spending through four mechanisms:
 
-**Mechanism 5.1** (Public Announcement): "To accomplish this without a trusted party, transactions must be publicly announced" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)). All transactions are broadcast to the network, ensuring all participants can observe transaction attempts.
+**Mechanism 18** (Public Announcement): "To accomplish this without a trusted party, transactions must be publicly announced" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)). All transactions are broadcast to the network, ensuring all participants can observe transaction attempts.
 
-**Mechanism 5.2** (Consensus on Order): The network must agree on a canonical ordering of transactions. This ordering determines which transaction spending a particular coin is considered valid.
+**Mechanism 19** (Consensus on Order): The network must agree on a canonical ordering of transactions. This ordering determines which transaction spending a particular coin is considered valid.
 
 **Mechanism 5.3** (Earliest Transaction Rule): "For our purposes, the earliest transaction is the one that counts, so we don't care about later attempts to double-spend" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)). The consensus mechanism establishes temporal ordering, and the first valid transaction to spend a coin is accepted.
 
 **Mechanism 5.4** (Majority Consensus): "The payee needs proof that at the time of each transaction, the majority of nodes agreed it was the first received" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)). The consensus protocol ensures that a majority of honest nodes agree on transaction ordering.
 
-#### 5.2.3 Comparison with Central Authority Model
+#### 19.3 Comparison with Central Authority Model
 
 In the centralized model: "In the mint based model, the mint was aware of all transactions and decided which arrived first" ([Bitcoin Whitepaper, Section 2](https://bitcoin.org/bitcoin.pdf)). The blockchain replaces this single authority with a **distributed consensus** mechanism where multiple nodes collectively determine transaction ordering.
 
@@ -558,7 +577,7 @@ Its bottom-up process, starting with raw data (transactions in a blockchain cont
 **Benefits**:
 - **Efficient Storage**: "Old blocks can then be compacted by stubbing off branches of the tree. The interior hashes do not need to be stored" ([Bitcoin Whitepaper, Section 7](https://bitcoin.org/bitcoin.pdf))
 - **Compact Block Headers**: "A block header with no transactions would be about 80 bytes" ([Bitcoin Whitepaper, Section 7](https://bitcoin.org/bitcoin.pdf))
-- **Scalability**: The whitepaper calculates: "If we suppose blocks are generated every 10 minutes, 80 bytes * 6 * 24 * 365 = 4.2 MB per year" ([Bitcoin Whitepaper, Section 7](https://bitcoin.org/bitcoin.pdf))
+- **Scalability**: The whitepaper calculates: "If we suppose blocks are generated every 10 minutes, 80 bytes * 6 * 24 * 365 = 17 MB per year" ([Bitcoin Whitepaper, Section 7](https://bitcoin.org/bitcoin.pdf))
 
 **Merkle Tree Properties**:
 - Only the Merkle root is stored in the block header
@@ -587,7 +606,7 @@ Its bottom-up process, starting with raw data (transactions in a blockchain cont
 5. **Confirmation**: Check that blocks were added after your transaction (confirmations)
 
 **Storage Efficiency**: Instead of storing gigabytes of transaction data, SPV clients store only:
-- Block headers: ~80 bytes × ~52,560 blocks/year = ~4.2 MB/year
+- Block headers: ~80 bytes × ~52,560 blocks/year = ~17 MB/year
 - Merkle proofs: Small proofs for transactions of interest
 - Total: Megabytes instead of gigabytes
 
@@ -769,7 +788,7 @@ The whitepaper calculates how long a recipient should wait before being certain 
 
 **Real-World Application**:
 - **Small Payments**: 1-2 confirmations may be sufficient (low risk)
-- **Medium Payments**: 3-6 confirmations recommended (moderate risk)
+- **Medium Payments**: 3-20 confirmations recommended (moderate risk)
 - **Large Payments**: 6+ confirmations recommended (high risk)
 - **Very Large Payments**: 10+ confirmations for maximum security
 
@@ -935,6 +954,6 @@ All section numbers correspond to the original whitepaper structure:
 
 <div align="center">
 
-**[📚 ← Introduction to Bitcoin & Blockchain](../README.md)** | **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** | **[Rust Project →](../Rust-Project-Index.md)** 📚
+**[← Introduction to Bitcoin & Blockchain](../README.md)** | **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** | **[Rust Project →](../Rust-Project-Index.md)** 
 
 </div>

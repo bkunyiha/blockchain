@@ -163,11 +163,18 @@ impl Server {
                 accept_res = listener.accept() => {
                     match accept_res {
                         Ok((stream, _peer)) => {
+                            // Cheap clone: `NodeContext` is an `Arc`-backed handle to shared state
+                            // (not a deep copy of the blockchain). We clone it so we can move a
+                            // thread-safe reference into the per-connection task without borrowing `self`.
                             let blockchain = self.node_context.clone();
                             tokio::spawn(async move {
                                 // Convert tokio stream to std stream for existing processing code
                                 match stream.into_std() {
                                     Ok(std_stream) => {
+                                        // `net_processing::process_stream` is implemented on top of blocking `std::io`
+                                        // (e.g., `BufReader` + `serde_json::Deserializer::from_reader`). If this socket
+                                        // stayed non-blocking, reads can return `WouldBlock` / partial data and break
+                                        // the synchronous parsing logic—so we force a blocking std socket here.
                                         let _ = std_stream.set_nonblocking(false);
                                         if let Err(e) = net_processing::process_stream(blockchain, std_stream).await {
                                             error!("Serve error: {}", e);

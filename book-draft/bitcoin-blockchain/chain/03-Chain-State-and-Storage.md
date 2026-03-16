@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Section Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Section 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Section 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Section 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Section 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Section 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Section 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Section 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Section 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. **Section 2.4: Blockchain (Technical Foundations)** ← *You are here*
-10. <a href="../store/README.md">Section 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Section 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Section 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Section 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Section 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Section 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Section 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Section 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Section 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Section 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Section 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Section 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Section 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -37,27 +56,31 @@
 
 ---
 
-# Section 2.4.3: Chain State and Storage — How Blocks Become Persistent State
+# Section 9.3: Chain State and Storage — How Blocks Become Persistent State
 
-**Important distributed systems concept**: In a blockchain network, each node maintains its own local copy of the blockchain. When we discuss "chain state and storage" in this section, we're describing how one node stores blocks locally—not a shared database that all nodes access. Each node's `BlockchainFileSystem` persists blocks to its own local sled database, and nodes synchronize with each other by exchanging blocks over the network (as we'll see in Section 2.4.8: Node Orchestration). This decentralization is fundamental to blockchain's resilience: each node operates independently with its own copy of the chain.
+**Important distributed systems concept**: In a blockchain network, each node maintains its own local copy of the blockchain. When we discuss "chain state and storage" in this section, we're describing how one node stores blocks locally—not a shared database that all nodes access. Each node's `BlockchainFileSystem` persists blocks to its own local sled database, and nodes synchronize with each other by exchanging blocks over the network (as we'll see in Section 9.8: Node Orchestration). This decentralization is fundamental to blockchain's resilience: each node operates independently with its own copy of the chain.
 
 ## Code walkthrough
 
 ### Step 0 — Entry points: a chain read for “status” and a chain write for “append a block”
 
-#### Figure 2.4-3-S0: Call flow (the two entry points shown below)
+#### Figure 9-3-S0: Call flow (the two entry points shown below)
 
-```
+```text
 GET /api/v1/blockchain  (status read)
   router → get_blockchain_info(handler)
     → NodeContext::get_blockchain_height()
-      → BlockchainService::get_best_height() → read(...) [shared lock]
+      → BlockchainService::get_best_height()
+        → read(...) [shared lock]
         → BlockchainFileSystem::get_best_height()
-          → Blockchain<Db>::db (sled) + Blockchain<Db>::tip_hash
+          → Blockchain<Db>::db (sled) +
+            Blockchain<Db>::tip_hash
     → NodeContext::blockchain().get_last_block()
-      → BlockchainService::get_last_block() → read(...) [shared lock]
+      → BlockchainService::get_last_block()
+        → read(...) [shared lock]
         → BlockchainFileSystem::get_last_block()
-          → get_tip_hash() (Blockchain<Db>::tip_hash) → sled.get(tip_hash) → Block
+          → get_tip_hash (tip from cache)
+            → sled.get(tip_hash) → Block
 
 POST /api/v1/mining/generatetoaddress  (append-a-block write)
   router → generate_to_address(handler)
@@ -69,8 +92,14 @@ POST /api/v1/mining/generatetoaddress  (append-a-block write)
 
 - **What this figure shows**
   - **What is calling into storage**:
-    - The Axum router dispatches `GET /api/v1/blockchain` into `web/handlers/blockchain.rs::get_blockchain_info(...)` (a read-heavy “status” endpoint).
-    - The Axum router dispatches `POST /api/v1/mining/generatetoaddress` into `web/handlers/mining.rs::generate_to_address(...)`, which calls `node.mine_block(...)` (a write-heavy “append a block” operation).
+    - Axum router dispatches `GET /api/v1/blockchain`
+      to `web/handlers/blockchain.rs::
+      get_blockchain_info(...)` (read-heavy status).
+    - Axum router dispatches `POST
+      /api/v1/mining/generatetoaddress` to
+      `web/handlers/mining.rs::generate_to_address
+      (...)`, which calls `node.mine_block(...)`.
+      (write-heavy “append block” operation)
   - **Where the lock boundary is**:
     - Reads go through `BlockchainService::read(...)` (**shared lock**): many concurrent readers can query height/tip.
     - Writes go through `BlockchainService`’s `write` lock (**exclusive lock**): only one task can append/update chain state at a time.
@@ -83,31 +112,27 @@ POST /api/v1/mining/generatetoaddress  (append-a-block write)
     - Flow B shows `NodeContext::mine_block → BlockchainService::mine_block (exclusive lock) → BlockchainFileSystem::mine_block → update_blocks_tree`.
 
 
+> **Source:** `blockchain.rs` — router → get_blockchain_info(handler)
+
 ```rust
-// router → get_blockchain_info(handler): bitcoin/src/web/handlers/blockchain.rs
 pub async fn get_blockchain_info(
     State(node): State<Arc<NodeContext>>,
 ) -> Result<Json<ApiResponse<BlockchainInfoResponse>>, StatusCode> {
-    // STATUS READ: "what is the current chain height?"
     let height = node
-        .get_blockchain_height() // delegate into NodeContext (which delegates to BlockchainService)
-        .await // await the async chain read
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?; // convert domain error → HTTP 500
+        .get_blockchain_height()
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    // STATUS READ: "what is the current tip block?"
     let last_block = node
-        .blockchain() // fetch the chainstate API handle (BlockchainService) from NodeContext
-        .get_last_block() // shared-lock read: read cached tip → sled.get(tip_hash) → deserialize Block
-        .await // await the async chain read
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?; // convert domain error → HTTP 500
-
+        .blockchain()
+        .get_last_block()
+        .await
+        // ... error handling
     let last_block_hash = last_block
-        .map(|block| block.get_hash().to_string()) // if present, format the tip hash for API output
-        .unwrap_or_else(|| "genesis".to_string()); // if None, we are at (or before) genesis in this API view
+        .map(|block| block.get_hash().to_string())
+        .unwrap_or_else(|| "genesis".to_string());
 
-    let mempool_size = node
-        .get_mempool_size() // mempool is in-memory runtime state, not sled persistence
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?; // convert domain error → HTTP 500
+    let mempool_size = node.get_mempool_size()?;
 
     // ... build response ...
     Ok(Json(ApiResponse::success(info)))
@@ -115,21 +140,17 @@ pub async fn get_blockchain_info(
 ```
 
 
+> **Source:** `mining.rs` — router → generate_to_address(handler)
+
 ```rust
-// router → generate_to_address(handler): bitcoin/src/web/handlers/mining.rs
-// Mine the block (already adds to blockchain and updates UTXO)
 let mined_block = node
-    .mine_block(&transactions) // coordinator call → NodeContext::mine_block → BlockchainService::mine_block (write lock)
-    .await // await local mining + persistence
-    .map_err(|e| {
-        // Convert a domain error into an HTTP 500 and log the details server-side.
-        error!("Failed to mine block {}: {}", block_num + 1, e);
-        StatusCode::INTERNAL_SERVER_ERROR
-    })?;
+    .mine_block(&transactions)
+    .await
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 ```
 
 #### Flow A — Status read (height + tip block): full call chain + code
-```
+```text
 GET /api/v1/blockchain  (status read)
   router → get_blockchain_info(handler)
     → NodeContext::get_blockchain_height()
@@ -138,41 +159,51 @@ GET /api/v1/blockchain  (status read)
           → Blockchain<Db>::db (sled) + Blockchain<Db>::tip_hash
 ```
 ##### Height read: `NodeContext::get_blockchain_height` → `BlockchainService::get_best_height` → `BlockchainFileSystem::get_best_height`
+> **Source:** `context.rs` — get_blockchain_info(handler) → NodeContext::get_blockchain_height
+
 ```rust
-// get_blockchain_info(handler) → NodeContext::get_blockchain_height: bitcoin/src/node/context.rs
 pub async fn get_blockchain_height(&self) -> Result<usize> {
-    // NodeContext is a coordinator; it delegates chain reads to BlockchainService.
-    self.blockchain.get_best_height().await // → BlockchainService::get_best_height(...)
+    // NodeContext is a coordinator; it delegates chain reads to
+    // BlockchainService.
+    // → BlockchainService::get_best_height(...)
+    self.blockchain.get_best_height().await
 }
 ```
 
+> **Source:** `chainstate.rs` — NodeContext::get_blockchain_height → BlockchainService::get_best_height
+
 ```rust
-// NodeContext::get_blockchain_height → BlockchainService::get_best_height: bitcoin/src/chain/chainstate.rs
 pub async fn get_best_height(&self) -> Result<usize> {
-    // Shared-lock boundary: many concurrent readers are allowed here.
+    // Shared-lock boundary: many concurrent
+    // readers are allowed here.
     self.read(
-        // Delegate the actual DB lookup to the persistence engine.
-        |blockchain: BlockchainFileSystem| async move { blockchain.get_best_height().await },
+        // Delegate DB lookup to persistence engine.
+        |blockchain: BlockchainFileSystem|
+        async move {
+            blockchain.get_best_height().await
+        },
     )
     .await
 }
 ```
 
+> **Source:** `file_system_db_chain.rs` — BlockchainService
+>> ::get_best_height → BlockchainFileSystem
+>> ::get_best_height
+
 ```rust
-// BlockchainService::get_best_height → BlockchainFileSystem::get_best_height: bitcoin/src/store/file_system_db_chain.rs
 pub async fn get_best_height(&self) -> Result<usize> {
-    // Persistence engine reads the tip block from sled and returns its height.
     if self.is_empty() {
         Ok(0)
     } else {
-        // Open the blocks tree and load the tip block bytes.
-        let block_tree = self.blockchain.db.open_tree(self.get_blocks_tree_path())?;
+        let block_tree = self.blockchain.db
+            .open_tree(self.get_blocks_tree_path())?;
         let tip_block_bytes = block_tree
-            // NOTE: `get_tip_hash()` reads the in-memory cached tip pointer, then we use it as a sled key.
             .get(self.get_tip_hash().await?)?
-            .ok_or(BtcError::GetBlockchainError("tip is invalid".to_string()))?;
-        // Deserialize the bytes into a Block so we can read its height.
-        let tip_block = Block::deserialize(tip_block_bytes.as_ref())?;
+            // ... error handling
+        let tip_block = Block::deserialize(
+            tip_block_bytes.as_ref()
+        )?;
         Ok(tip_block.get_height())
     }
 }
@@ -183,39 +214,53 @@ pub async fn get_best_height(&self) -> Result<usize> {
 - `BlockchainFileSystem::get_best_height(...)` hits sled via `self.blockchain.db` and uses the current tip hash (`self.get_tip_hash()`) to load the tip block bytes.
 
 ##### Tip-block read: `NodeContext::blockchain().get_last_block` → `BlockchainService::get_last_block` → `BlockchainFileSystem::get_last_block`
-```
+```text
     → NodeContext::blockchain().get_last_block()
       → BlockchainService::get_last_block() → read(...) [shared lock]
         → BlockchainFileSystem::get_last_block()
-          → get_tip_hash() (Blockchain<Db>::tip_hash) → sled.get(tip_hash) → Block
+          → get_tip_hash() → sled.get(tip_hash) → Block
 ```
 
+> **Source:** `file_system_db_chain.rs` — BlockchainService
+>> ::get_last_block → BlockchainFileSystem
+>> ::get_last_block
+
 ```rust
-// BlockchainService::get_last_block → BlockchainFileSystem::get_last_block: bitcoin/src/store/file_system_db_chain.rs
 pub async fn get_last_block(&self) -> Result<Option<Block>> {
-    // 1) Read the cached tip pointer (String).
+    // 1) Read cached tip pointer (String).
     let tip_hash = self.get_tip_hash().await?;
-    // 2) Use the tip hash as the sled key to load and deserialize the last block.
-    let block = self.get_block(tip_hash.as_bytes()).await?;
+    // 2) Use tip hash as sled key to load and
+    // deserialize the last block.
+    let block =
+        self.get_block(tip_hash.as_bytes()).await?;
     Ok(block)
 }
 ```
 
+> **Source:** `chainstate.rs` — NodeContext
+>> ::blockchain().get_last_block →
+>> BlockchainService::get_last_block
+
 ```rust
-// NodeContext::blockchain().get_last_block → BlockchainService::get_last_block: bitcoin/src/chain/chainstate.rs
 pub async fn get_last_block(&self) -> Result<Option<Block>> {
-    // Shared-lock boundary + delegation into persistence engine.
+    // Shared-lock boundary +
+    // delegation into persistence engine.
     self.read(
-        |blockchain: BlockchainFileSystem| async move { blockchain.get_last_block().await },
+        |blockchain: BlockchainFileSystem|
+        async move {
+            blockchain.get_last_block().await
+        },
     )
     .await
 }
 ```
 
+> **Source:** `file_system_db_chain.rs` — BlockchainFileSystem::get_last_block → BlockchainFileSystem::get_tip_hash
+
 ```rust
-// BlockchainFileSystem::get_last_block → BlockchainFileSystem::get_tip_hash: bitcoin/src/store/file_system_db_chain.rs
 pub async fn get_tip_hash(&self) -> Result<String> {
-    // This is reading the `tip_hash` field of `Blockchain<T>` (in-memory cache).
+    // This is reading the `tip_hash` field of `Blockchain<T>` (in-memory
+    // cache).
     let tip_hash = self.blockchain.tip_hash.read().await;
     Ok(tip_hash.clone())
 }
@@ -227,26 +272,30 @@ pub async fn get_tip_hash(&self) -> Result<String> {
 
 ##### Where chain state lives: `BlockchainFileSystem` owns `Blockchain<Db>` (tip cache + sled handle)
 
+> **Source:** `file_system_db_chain.rs` — BlockchainFileSystem (owns Blockchain<Db>)
+
 ```rust
-// BlockchainFileSystem (owns Blockchain<Db>): bitcoin/src/store/file_system_db_chain.rs
 #[derive(Clone, Debug)]
 pub struct BlockchainFileSystem {
-    blockchain: Blockchain<Db>, // type is defined in `bitcoin/src/primitives/blockchain.rs`
+    // type is defined in `bitcoin/src/primitives/blockchain.rs`
+    blockchain: Blockchain<Db>,
     file_system_tree_dir: String,
 }
 ```
 
+> **Source:** `blockchain.rs` — Blockchain<T> (chain container)
+
 ```rust
-// Blockchain<T> (chain container): bitcoin/src/primitives/blockchain.rs
 pub struct Blockchain<T> {
-    pub tip_hash: Arc<TokioRwLock<String>>, // in-memory cache of the persisted tip pointer
+    // in-memory cache of the persisted tip pointer
+    pub tip_hash: Arc<TokioRwLock<String>>,
     pub db: T,                              // sled Db handle (persistence)
     pub is_empty: bool,
 }
 ```
 
 #### Flow B — Append a block (write): full call chain + code
-```
+```text
     POST /api/v1/mining/generatetoaddress  (append-a-block write)
       router → generate_to_address(handler)
         → NodeContext::mine_block(txs)
@@ -256,63 +305,91 @@ pub struct Blockchain<T> {
 ```          
 
 ##### Write entry point: `node.mine_block(&transactions)`
-```
+```text
     router → generate_to_address(handler)
       → NodeContext::mine_block(txs)
 ```
 ##### NodeContext delegates into the chainstate API
-```
+```text
     → NodeContext::mine_block(txs)
       → BlockchainService::mine_block(txs) → write lock [exclusive]
         → BlockchainFileSystem::mine_block(txs)
         → update_blocks_tree(new_block) + cache tip_hash + update_utxo_set
 ```
+> **Source:** `context.rs` — generate_to_address(handler) → NodeContext::mine_block
+
 ```rust
-// generate_to_address(handler) → NodeContext::mine_block: bitcoin/src/node/context.rs
-pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
-    // Delegate the write to BlockchainService (which owns the exclusive-lock boundary).
+pub async fn mine_block(
+    &self,
+    transactions: &[Transaction],
+) -> Result<Block> {
+    // Delegate the write to BlockchainService
+    // (which owns the exclusive-lock boundary).
     self.blockchain.mine_block(transactions).await
 }
 ```
 
 ##### Exclusive-lock boundary + delegation: `BlockchainService::mine_block(...)`
+> **Source:** `chainstate.rs` — NodeContext
+>> ::mine_block → BlockchainService::mine_block
+
 ```rust
-// NodeContext::mine_block → BlockchainService::mine_block: bitcoin/src/chain/chainstate.rs
-pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
-    // Gate: validate before mutating persistent state.
+pub async fn mine_block(
+    &self,
+    transactions: &[Transaction],
+) -> Result<Block> {
+    // Gate: validate before mutating state.
     for trasaction in transactions {
-        // `verify(...)` may perform chain lookups; at the BlockchainService level, we're still pre-persistence.
+        // `verify(...)` may perform chain lookups;
+        // at BlockchainService level, we're
+        // still pre-persistence.
         let is_valid = trasaction.verify(self).await?;
         if !is_valid {
             return Err(BtcError::InvalidTransaction);
         }
     }
 
-    // Exclusive lock boundary (write path): only one writer can append/update chain state at a time.
+    // Exclusive lock boundary (write path):
+    // only one writer can append/update state
+    // at a time.
     let blockchain_guard = self.0.write().await;
-    // Delegate to persistence engine to perform the actual DB writes.
+    // Delegate to persistence engine to
+    // perform actual DB writes.
     blockchain_guard.mine_block(transactions).await
 }
 ```
 
 ##### Persistence engine performs the write: `BlockchainFileSystem::mine_block(...)`
+> **Source:** `file_system_db_chain.rs` — BlockchainService
+>> ::mine_block → BlockchainFileSystem::mine_block
+
 ```rust
-// BlockchainService::mine_block → BlockchainFileSystem::mine_block: bitcoin/src/store/file_system_db_chain.rs
 pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
     let best_height = self.get_best_height().await?;
 
-    // 1) Build the new block in memory (PoW happens inside Block::new_block).
-    let block = Block::new_block(self.get_tip_hash().await?, transactions, best_height + 1);
+    // 1) Build the new block in memory
+    // (PoW happens inside Block::new_block).
+    let block = Block::new_block(
+        self.get_tip_hash().await?,
+        transactions,
+        best_height + 1
+    );
     let block_hash = block.get_hash();
 
-    // 2) Persist `<block_hash> -> bytes(Block)` and `"tip_block_hash" -> <block_hash>` in one transaction.
-    let blocks_tree = self.blockchain.db.open_tree(self.get_blocks_tree_path())?;
-Self::update_blocks_tree(&blocks_tree, &block).await?;
+    // 2) Persist `<block_hash> -> bytes(Block)` and `"tip_block_hash" ->
+    // <block_hash>` in one transaction.
+    let blocks_tree = self.blockchain.db
+        .open_tree(self.get_blocks_tree_path())?;
+    Self::update_blocks_tree(&blocks_tree, &block)
+        .await?;
 
-    // 3) Update in-memory tip cache to match what we just persisted.
+    // 3) Update in-memory tip cache to match
+    // what we just persisted.
     self.set_tip_hash(block_hash).await?;
 
-    // 4) Update derived state (UTXO set) after the block bytes + tip pointer are persisted.
+    // 4) Update derived state (UTXO set)
+    // after block bytes + tip pointer are
+    // persisted.
     self.update_utxo_set(&block).await?;
 
     Ok(block)
@@ -320,15 +397,21 @@ Self::update_blocks_tree(&blocks_tree, &block).await?;
 ```
 
 #### Note:
-  - `BlockchainService::mine_block(...)` is the **exclusive lock boundary** for the “append block” write path.
-  - `BlockchainFileSystem::mine_block(...)` is where persistence happens: create block → write block bytes + tip key (sled transaction) → update in-memory tip cache → update derived state (UTXO).
+  - `BlockchainService::mine_block(...)` is the
+    **exclusive lock boundary** for the “append
+    block” write path.
+  - `BlockchainFileSystem::mine_block(...)` is
+    where persistence happens: create block →
+    write block bytes + tip key (sled transaction)
+    → update in-memory tip cache → update
+    derived state (UTXO).
 
 ---
 
 ### Step 1 — Construct the chainstate API handle (create vs open)
-#### Figure 2.4-3-S1: Call flow (construct the chainstate API handle)
+#### Figure 9-3-S1: Call flow (construct the chainstate API handle)
 
-```
+```text
 caller (node startup)
   │
   ├─ BlockchainService::default()
@@ -354,34 +437,25 @@ caller (node startup)
 
 #### Code walkthrough
 
-```rust
-// caller (node startup) → BlockchainService::{default, initialize}: bitcoin/src/chain/chainstate.rs
+> **Source:** `chainstate.rs` — caller (node startup) → BlockchainService::{default, initialize}
 
-#[derive(Debug)] // Enable `{:?}` formatting for logs/debug output.
-pub struct BlockchainService(
-    // Shared, async-safe handle to the persistence engine.
-    // - `Arc<T>`: multiple async tasks can own the same chain handle.
-    // - `TokioRwLock<T>`: many concurrent readers OR one exclusive writer.
-    Arc<TokioRwLock<BlockchainFileSystem>>,
-);
+```rust
+#[derive(Debug)]
+pub struct BlockchainService(Arc<TokioRwLock<BlockchainFileSystem>>);
 
 impl BlockchainService {
-    // “Create if needed”: may bootstrap genesis, then return a usable chain handle.
-    pub async fn initialize(genesis_address: &WalletAddress) -> Result<BlockchainService> {
-        // Delegate to the persistence engine:
-        // - If the chain exists, this will open it.
-        // - If not, this will create genesis and persist the initial tip pointer.
-        let blockchain = BlockchainFileSystem::create_blockchain(genesis_address).await?;
-        // Wrap the engine in Arc + TokioRwLock so all callers share one consistent chain handle.
-        Ok(BlockchainService(Arc::new(TokioRwLock::new(blockchain))))
+    pub async fn initialize(
+        genesis_address: &WalletAddress,
+    ) -> Result<BlockchainService> {
+        let blockchain =
+            BlockchainFileSystem::create_blockchain(genesis_address).await?;
+        Ok(BlockchainService(Arc::new(
+            TokioRwLock::new(blockchain)
+        )))
     }
 
-    // “Open only”: requires an already-initialized DB with a persisted tip key.
     pub async fn default() -> Result<BlockchainService> {
-        // Delegate to the persistence engine to open an existing DB.
-        // If the "tip_block_hash" key is missing, this returns an error (Step 3).
         let blockchain = BlockchainFileSystem::open_blockchain().await?;
-        // Same wrapping: Arc + TokioRwLock provides safe shared access across async tasks.
         Ok(BlockchainService(Arc::new(TokioRwLock::new(blockchain))))
     }
 }
@@ -408,9 +482,9 @@ This “read boundary” is **not Bitcoin-specific**, and it is **not described 
 - **Why this matters for state + storage**:
   - Our chain state is a combination of **in-memory cached fields** (like the tip hash) and **durable storage** (sled). The lock boundary ensures reads see a coherent snapshot while writes are in progress.
 
-#### Figure 2.4-3-S1.5: Call flow (shared-lock read boundary)
+#### Figure 9-3-S1.5: Call flow (shared-lock read boundary)
 
-```
+```text
 caller
   │
   ▼
@@ -432,33 +506,23 @@ BlockchainService::<read method>()
 
 #### Code walkthrough
 
+> **Source:** `chainstate.rs` — BlockchainService::<read method>() → BlockchainService::read(...)
+
 ```rust
-// BlockchainService::<read method>() → BlockchainService::read(...): bitcoin/src/chain/chainstate.rs
 impl BlockchainService {
-    /// Read helper: acquire a shared lock and delegate to the persistence engine.
     async fn read<F, Fut, T>(&self, f: F) -> Result<T>
     where
-        // The caller provides a one-shot function that consumes a `BlockchainFileSystem`
-        // handle and returns an async computation (a `Future`).
         F: FnOnce(BlockchainFileSystem) -> Fut + Send,
-        // That future must produce `Result<T>` when awaited.
         Fut: Future<Output = Result<T>> + Send,
-        // The result type must be safe to move across tasks/await points.
         T: Send + 'static,
     {
-        // Acquire the shared lock: many readers can run concurrently, but writers are blocked.
         let blockchain_guard = self.0.read().await;
-        // Clone the persistence engine handle so we can move it into the async closure.
-        // (This is typically cheap: the underlying sled handle is internally shared.)
         let blockchain = blockchain_guard.clone();
-        // Run the caller-supplied operation against the persistence engine.
         f(blockchain).await
     }
 
     pub async fn get_last_block(&self) -> Result<Option<Block>> {
-        // `get_last_block` is a read-only query, so it uses the shared-lock helper.
-        self.read(|blockchain: BlockchainFileSystem| async move {
-            // Delegate the actual DB work to the persistence engine.
+        self.read(|blockchain| async move {
             blockchain.get_last_block().await
         })
         .await
@@ -473,9 +537,9 @@ impl BlockchainService {
 ---
 
 ### Step 2 — Identify the persisted keys that define “chain exists”
-#### Figure 2.4-3-S2: Call flow (what “exists on disk”)
+#### Figure 9-3-S2: Call flow (what “exists on disk”)
 
-```
+```text
 persisted state in sled
   ├─ "tip_block_hash"  -> "<block_hash>"         // head pointer
   └─ "<block_hash>"    -> bytes(Block)           // historical log record
@@ -496,12 +560,17 @@ runtime cache
 
 #### Code walkthrough
 
+> **Source:** `file_system_db_chain.rs` — BlockchainFileSystem storage constants (tip key + tree names)
+
 ```rust
-// BlockchainFileSystem storage constants (tip key + tree names): bitcoin/src/store/file_system_db_chain.rs
-const DEFAULT_TIP_BLOCK_HASH_KEY: &str = "tip_block_hash"; // persisted head pointer (sled key)
-const DEFAULT_EMPTY_TIP_BLOCK_HASH_VALUE: &str = "empty";  // placeholder used by this codebase
-const DEFAULT_BLOCKS_TREE: &str = "blocks1"; // sled tree: "<block_hash>" -> bytes(Block)
-const DEFAULT_TREE_DIR: &str = "data1";      // on-disk directory for the default sled DB
+// persisted head pointer (sled key)
+const DEFAULT_TIP_BLOCK_HASH_KEY: &str = "tip_block_hash";
+// placeholder used by this codebase
+const DEFAULT_EMPTY_TIP_BLOCK_HASH_VALUE: &str = "empty";
+// sled tree: "<block_hash>" -> bytes(Block)
+const DEFAULT_BLOCKS_TREE: &str = "blocks1";
+// on-disk directory for the default sled DB
+const DEFAULT_TREE_DIR: &str = "data1";
 ```
 
 #### Note:
@@ -513,9 +582,9 @@ const DEFAULT_TREE_DIR: &str = "data1";      // on-disk directory for the defaul
 ### Step 3 — Open path: load tip from sled into memory (`open_blockchain`)
 - **Call chain**: `BlockchainService::default()` → `BlockchainFileSystem::open_blockchain()`
 
-#### Figure 2.4-3-S3: Call flow (open existing chain)
+#### Figure 9-3-S3: Call flow (open existing chain)
 
-```
+```text
 BlockchainService::default()
   └─> BlockchainFileSystem::open_blockchain()
        ├─> open Blockchain<Db>::db (sled)
@@ -528,37 +597,35 @@ BlockchainService::default()
   - **Which persisted key is required**:
     - `blocks_tree.get("tip_block_hash")` must succeed; otherwise `open_blockchain()` returns `BlockchainNotFoundError`.
   - **What state is reconstructed**:
-    - `db = sled::open(path)` reconstructs the DB handle.
-    - `tip_hash = String::from_utf8(tip_bytes)` reconstructs the canonical head pointer.
-    - `Blockchain<Db>::tip_hash = tip_hash` caches the pointer in memory for subsequent reads.
+    - `db = sled::open(path)` reconstructs DB.
+    - `tip_hash = String::from_utf8(tip_bytes)`
+      reconstructs the canonical head pointer.
+    - `Blockchain<Db>::tip_hash = tip_hash`
+      caches the pointer in memory for
+      subsequent reads.
   - **How this sets up the code below**:
-    - The next listing shows the precise sequence: open db → open tree → get `"tip_block_hash"` → decode → cache in `Blockchain { tip_hash, db, ... }`.
+    - The next listing shows: open db → open
+      tree → get `"tip_block_hash"` → decode →
+      cache in `Blockchain { tip_hash, db, ... }`.
 
 #### Code walkthrough
 
 ```rust
-pub async fn open_blockchain() -> Result<BlockchainFileSystem> {
-    // 1) Resolve on-disk location and open sled DB (creates the DB if missing on disk).
-    let db = sled::open(path).map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
-
-    // 2) Open the blocks tree (where both block records and the "tip_block_hash" pointer live).
+pub async fn open_blockchain()
+    -> Result<BlockchainFileSystem>
+{
+    let db = sled::open(path)?;
     let blocks_tree = db
-        .open_tree(file_system_tree_dir.clone())
-        .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
+        .open_tree(file_system_tree_dir.clone())?;
 
-    // 3) Read the persisted tip pointer. If missing, we treat this as “no existing chain”.
     let tip_bytes = blocks_tree
-        .get(DEFAULT_TIP_BLOCK_HASH_KEY)
-        .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?
+        .get(DEFAULT_TIP_BLOCK_HASH_KEY)?
         .ok_or(BtcError::BlockchainNotFoundError(
-            "No existing blockchain found. Connect to a blcock chain cluster first.".to_string(),
+            “No existing blockchain found.”.to_string(),
         ))?;
 
-    // 4) Decode the tip hash bytes back into a String.
-    let tip_hash = String::from_utf8(tip_bytes.to_vec())
-        .map_err(|e| BtcError::BlockChainTipHashError(e.to_string()))?;
+    let tip_hash = String::from_utf8(tip_bytes.to_vec())?;
 
-    // 5) Cache the tip hash in memory behind a lock for fast reads during runtime.
     Ok(BlockchainFileSystem {
         blockchain: Blockchain {
             tip_hash: Arc::new(TokioRwLock::new(tip_hash)),
@@ -579,15 +646,15 @@ pub async fn open_blockchain() -> Result<BlockchainFileSystem> {
 ### Step 4 — Create path: bootstrap genesis iff the tip key is missing (`create_blockchain`)
 - **Call chain**: `BlockchainService::initialize(genesis_address)` → `BlockchainFileSystem::create_blockchain(genesis_address)`
 
-#### Figure 2.4-3-S4: Call flow (create chain; maybe write genesis)
+#### Figure 9-3-S4: Call flow (create chain; maybe write genesis)
 
-```
+```text
 BlockchainService::initialize(genesis_address)
   └─> BlockchainFileSystem::create_blockchain(genesis_address)
        ├─> if blocks_tree.get("tip_block_hash") exists: load + cache
        └─> else:
             ├─> build genesis (coinbase tx + genesis block)
-            ├─> update_blocks_tree(genesis)  // writes block bytes + tip key atomically
+            ├─> update_blocks_tree(genesis)  // atomic write
             └─> cache: Blockchain<Db>::tip_hash = genesis_hash
 ```
 
@@ -604,49 +671,34 @@ BlockchainService::initialize(genesis_address)
 
 #### Code walkthrough
 
+> **Source:** `file_system_db_chain.rs` — BlockchainService::initialize(genesis_address) → BlockchainFileSystem::create_blockchain
+
 ```rust
-// BlockchainService::initialize(genesis_address) → BlockchainFileSystem::create_blockchain: bitcoin/src/store/file_system_db_chain.rs
-pub async fn create_blockchain(genesis_address: &WalletAddress) -> Result<Self> {
-    // 1) Open (or create) the sled DB (path resolution omitted here for brevity).
-    let db = sled::open(path).map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
+pub async fn create_blockchain(
+    genesis_address: &WalletAddress,
+) -> Result<Self> {
+    let db = sled::open(path)?;
+    let blocks_tree =
+        db.open_tree(file_system_tree_dir.clone())?;
 
-    // 2) Open the blocks tree where we store:
-    //    - "<block_hash>"   -> bytes(Block)
-    //    - "tip_block_hash" -> "<block_hash>"
-    let blocks_tree = db
-        .open_tree(file_system_tree_dir.clone())
-        .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
+    let data = blocks_tree.get(DEFAULT_TIP_BLOCK_HASH_KEY)?;
 
-    // 3) Existence check: is there already a persisted tip pointer?
-    let data = blocks_tree
-        .get(DEFAULT_TIP_BLOCK_HASH_KEY)
-        .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?;
-
-    // 4) Decide which tip hash we will cache in memory.
     let tip_hash = if let Some(data) = data {
-        // 4a) Existing chain: decode the persisted tip hash bytes into a String.
-        String::from_utf8(data.to_vec())
-            .map_err(|e| BtcError::BlockChainTipHashError(e.to_string()))?
+        String::from_utf8(data.to_vec())?
     } else {
-        // 4b) No tip key yet: create genesis deterministically from a coinbase transaction.
         let coinbase_tx = Transaction::new_coinbase_tx(genesis_address)?;
         let block = Block::generate_genesis_block(&coinbase_tx);
-
-        // 5) Persist genesis block bytes AND set the tip key in one atomic sled transaction.
         Self::update_blocks_tree(&blocks_tree, &block).await?;
-
-        // 6) Return the new tip hash so we can cache it in memory.
         String::from(block.get_hash())
     };
 
-    // 7) Construct the persistence engine with an in-memory cached tip pointer.
     Ok(BlockchainFileSystem {
         blockchain: Blockchain {
-            tip_hash: Arc::new(TokioRwLock::new(tip_hash)), // runtime cache of persisted tip
-            db,                                             // sled handle (durable storage)
+            tip_hash: Arc::new(TokioRwLock::new(tip_hash)),
+            db,
             is_empty: false,
         },
-        file_system_tree_dir, // which sled tree name/path we use for blocks
+        file_system_tree_dir,
     })
 }
 ```
@@ -661,9 +713,9 @@ pub async fn create_blockchain(genesis_address: &WalletAddress) -> Result<Self> 
 - **Call chain (when mining)**: `BlockchainService::mine_block(...)` → `BlockchainFileSystem::mine_block(...)` → `update_blocks_tree(...)`
 - **Call chain (when creating genesis)**: `BlockchainService::initialize(...)` → `BlockchainFileSystem::create_blockchain(...)` → `update_blocks_tree(...)`
 
-#### Figure 2.4-3-S5: Call flow (atomic persistence unit)
+#### Figure 9-3-S5: Call flow (atomic persistence unit)
 
-```
+```text
 update_blocks_tree(block):
   blocks_tree.transaction {
     insert("<block_hash>" -> bytes(Block))
@@ -685,17 +737,12 @@ update_blocks_tree(block):
 
 ```rust
 async fn update_blocks_tree(blocks_tree: &Tree, block: &Block) -> Result<()> {
-    // Key: the block hash string used to locate this block in sled.
     let block_hash = block.get_hash();
-    // Value: the serialized bytes of the Block stored under that hash.
     let block_ivec = IVec::try_from(block.clone())?;
 
-    // sled transaction: both inserts commit together (or neither commits).
-    let transaction_result: TransactionResult<(), ()> = blocks_tree.transaction(|tx_db| {
-        // 1) Persist the historical log record: "<block_hash>" -> bytes(Block)
-        let _ = tx_db.insert(block_hash, block_ivec.clone())?;
-        // 2) Persist the head pointer: "tip_block_hash" -> "<block_hash>"
-        let _ = tx_db.insert(DEFAULT_TIP_BLOCK_HASH_KEY, block_hash)?;
+    let transaction_result = blocks_tree.transaction(|tx_db| {
+        tx_db.insert(block_hash, block_ivec.clone())?;
+        tx_db.insert(DEFAULT_TIP_BLOCK_HASH_KEY, block_hash)?;
         Ok(())
     });
 
@@ -706,16 +753,20 @@ async fn update_blocks_tree(blocks_tree: &Tree, block: &Block) -> Result<()> {
 ```
 
 #### Note:
-  - “Atomic” in this subsection means: **block bytes + tip pointer** are updated together.
-  - Derived state (UTXO set) is **not** part of this transaction (it is updated as a later step).
+  - “Atomic” in this subsection means:
+    **block bytes + tip pointer** are updated
+    together.
+  - Derived state (UTXO set) is **not** part
+    of this transaction (it is updated as a
+    later step).
 
 ---
 
 ### Step 6 — Local extension: chainstate API boundary → persistence engine (`mine_block`)
 
-#### Figure 2.4-3-S6: Call flow (append block via local mining)
+#### Figure 9-3-S6: Call flow (append block via local mining)
 
-```
+```text
 NodeContext::mine_block(txs)
   └─> BlockchainService::mine_block(txs)
        ├─> verify(txs)                 // gate
@@ -740,44 +791,36 @@ NodeContext::mine_block(txs)
 
 #### Code walkthrough
 
+> **Source:** `chainstate.rs` — NodeContext::mine_block → BlockchainService::mine_block
+
 ```rust
-// NodeContext::mine_block → BlockchainService::mine_block: bitcoin/src/chain/chainstate.rs
 pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
-    // Gate: verify candidate transactions before we persist anything.
-    for trasaction in transactions {
-        let is_valid = trasaction.verify(self).await?;
-        if !is_valid {
+    for tx in transactions {
+        if !tx.verify(self).await? {
             return Err(BtcError::InvalidTransaction);
         }
     }
-
-    // Exclusive lock boundary for the chain write path.
     let blockchain_guard = self.0.write().await;
     blockchain_guard.mine_block(transactions).await
 }
 ```
 
+> **Source:** `file_system_db_chain.rs` — BlockchainService::mine_block → BlockchainFileSystem::mine_block
+
 ```rust
-// BlockchainService::mine_block → BlockchainFileSystem::mine_block: bitcoin/src/store/file_system_db_chain.rs
 pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
     let best_height = self.get_best_height().await?;
-
-    // 1) Create the block (PoW is performed inside Block::new_block).
-    let block = Block::new_block(self.get_tip_hash().await?, transactions, best_height + 1);
+    let block = Block::new_block(
+        self.get_tip_hash().await?,
+        transactions,
+        best_height + 1,
+    );
     let block_hash = block.get_hash();
 
-    // 2) Persist block bytes + update persisted tip key (atomic unit).
-    let blocks_tree = self
-        .blockchain
-        .db
-        .open_tree(self.get_blocks_tree_path())
-        .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
+    let blocks_tree = self.blockchain.db
+        .open_tree(self.get_blocks_tree_path())?;
     Self::update_blocks_tree(&blocks_tree, &block).await?;
-
-    // 3) Update the in-memory cached tip hash to match what we persisted.
     self.set_tip_hash(block_hash).await?;
-
-    // 4) Update derived state (separate tree/step).
     self.update_utxo_set(&block).await?;
 
     Ok(block)
@@ -796,9 +839,9 @@ pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
 
 ### Step 7 — Iterate the chain through the API (iterator → next → “blocks by height”)
 
-#### Figure 2.4-3-S7: Call flow (iterate blocks from tip backward)
+#### Figure 9-3-S7: Call flow (iterate blocks from tip backward)
 
-```
+```text
 caller
   └─> BlockchainService::iterator()
        └─> BlockchainService::read(...)  [shared lock]
@@ -809,109 +852,123 @@ caller
 ```
 
 - **What this figure shows**
-  - **Where iteration starts**: `BlockchainFileSystem::iterator()` seeds the iterator with the *current* tip hash (from cached `Blockchain<Db>::tip_hash`).
+  - **Where iteration starts**: `BlockchainFileSystem
+    ::iterator()` seeds the iterator with the
+    *current* tip hash (from cached
+    `Blockchain<Db>::tip_hash`).
   - **What each iterator step does**:
-    - Use the current hash as a sled key: `db.open_tree(...).get(current_hash)` → bytes(Block)
+    - Use current hash as sled key:
+      `db.open_tree(...).get(current_hash)`
+      → bytes(Block)
     - Deserialize → produce a `Block`
-    - Update the cursor: `current_hash = block.pre_block_hash` and repeat
+    - Update cursor:
+      `current_hash = block.pre_block_hash`
+      and repeat
   - **What state/storage this touches**:
-    - Reads the cached tip pointer (`tip_hash`) once at iterator creation.
-    - Performs repeated sled reads keyed by block hash (no tip-key writes; no UTXO updates).
+    - Reads cached tip pointer (`tip_hash`)
+      once at iterator creation.
+    - Performs repeated sled reads keyed by
+      block hash (no tip-key writes; no UTXO
+      updates).
   - **How this sets up the code below**:
-    - First listing: `BlockchainService::iterator` (shared lock + delegation).
-    - Second listing: `BlockchainFileSystem::iterator` (seed `BlockchainIterator`).
-    - Third listing: `BlockchainIterator::next` (the cursor-following loop).
+    - First listing: `BlockchainService
+      ::iterator` (shared lock + delegation).
+    - Second listing: `BlockchainFileSystem
+      ::iterator` (seed `BlockchainIterator`).
+    - Third listing: `BlockchainIterator::next`
+      (the cursor-following loop).
 
 #### Code walkthrough
 
+> **Source:** `chainstate.rs` — caller → BlockchainService::iterator
+
 ```rust
-// caller → BlockchainService::iterator: bitcoin/src/chain/chainstate.rs
-pub async fn iterator(&self) -> Result<BlockchainIterator> {
-    // API boundary: shared-lock read + delegation into persistence engine.
-    self.read(|blockchain: BlockchainFileSystem| async move { blockchain.iterator().await })
-        .await
+pub async fn iterator(
+    &self,
+) -> Result<BlockchainIterator> {
+    self.read(|blockchain| async move {
+        blockchain.iterator().await
+    })
+    .await
 }
 ```
 
+> **Source:** `file_system_db_chain.rs` —
+>> BlockchainService::iterator →
+>> BlockchainFileSystem::iterator
+
 ```rust
-// BlockchainService::iterator → BlockchainFileSystem::iterator: bitcoin/src/store/file_system_db_chain.rs
-pub async fn iterator(&self) -> Result<BlockchainIterator> {
-    // Seed iteration from the current canonical head pointer.
+pub async fn iterator(
+    &self,
+) -> Result<BlockchainIterator> {
     let hash = self.get_tip_hash().await?;
     Ok(BlockchainIterator::new(
         hash,
         self.blockchain.db.clone(),
-        self.get_blocks_tree_path(), // which sled tree to read from
+        self.get_blocks_tree_path(),
     ))
 }
 ```
 
+> **Source:** `file_system_db_chain.rs` — BlockchainFileSystem::iterator → BlockchainIterator::{new, next}
+
 ```rust
-// BlockchainFileSystem::iterator → BlockchainIterator::{new, next}: bitcoin/src/store/file_system_db_chain.rs
 pub struct BlockchainIterator {
-    db: Db, // sled DB handle used for lookups
-    file_system_blocks_tree: String, // which tree stores "<block_hash>" -> bytes(Block)
-    current_hash: String, // cursor: the hash key we will read next
+    db: Db,
+    file_system_blocks_tree: String,
+    current_hash: String,
 }
 
 impl BlockchainIterator {
-    fn new(tip_hash: String, db: Db, file_system_blocks_tree: String) -> BlockchainIterator {
+    fn new(
+        tip_hash: String,
+        db: Db,
+        file_system_blocks_tree: String,
+    ) -> Self {
         BlockchainIterator {
-            current_hash: tip_hash, // cursor starts at the current canonical tip
+            current_hash: tip_hash,
             file_system_blocks_tree,
             db,
         }
     }
 
     pub fn next(&mut self) -> Option<Block> {
-        // 1) Read the current hash key from the blocks tree.
-        // NOTE: this code uses `unwrap()`; in production code we would handle/open-tree errors explicitly.
-        let block_tree = self.db.open_tree(self.file_system_blocks_tree.clone()).unwrap();
-        let data = match block_tree.get(self.current_hash.clone()) {
-            Ok(Some(d)) => d,
-            Ok(None) => return None, // empty chain or missing block
-            Err(_) => return None,   // DB read error
-        };
-
-        // 2) Deserialize block bytes into a Block value.
-        let block = match Block::deserialize(data.to_vec().as_slice()) {
-            Ok(b) => b,
-            Err(_) => return None,
-        };
-
-        // 3) Move cursor “backward” to the previous block hash and return this block.
+        let block_tree = self.db
+            .open_tree(self.file_system_blocks_tree.clone())
+            .ok()?;
+        let data = block_tree
+            .get(self.current_hash.clone())
+            .ok()
+            .flatten()?;
+        let block = Block::deserialize(data.to_vec().as_slice())
+            .ok()?;
         self.current_hash = block.get_pre_block_hash().clone();
         Some(block)
     }
 }
 ```
 
+> **Source:** `chainstate.rs` — caller → BlockchainService::get_blocks_by_height
+
 ```rust
-// caller → BlockchainService::get_blocks_by_height: bitcoin/src/chain/chainstate.rs
 pub async fn get_blocks_by_height(
     &self,
-    initial_height: usize, // lower bound (inclusive)
-    height: usize,         // upper bound (inclusive)
+    initial_height: usize,
+    height: usize,
 ) -> Result<Vec<Block>> {
-    let mut blocks = Vec::new(); // results accumulator
-    let mut iterator = self.iterator().await?; // start at tip and walk backward
+    let mut blocks = Vec::new();
+    let mut iterator = self.iterator().await?;
 
     while let Some(block) = iterator.next() {
-        let h = block.get_height(); // extract height once to avoid repeating calls
-
-        // Keep blocks in the requested [initial_height, height] range.
+        let h = block.get_height();
         if h <= height && h >= initial_height {
             blocks.push(block.clone());
         }
-
-        // Stop early once we've walked outside the range.
-        // (Because we're iterating tip → ... → genesis, heights are monotonically decreasing.)
-        if h > height || h < initial_height {
+        if h < initial_height {
             break;
         }
     }
-
-    Ok(blocks) // return blocks found in range
+    Ok(blocks)
 }
 ```
 
@@ -924,9 +981,9 @@ pub async fn get_blocks_by_height(
 
 ### Step 8 — Network insertion: chainstate API boundary → persistence engine (`add_block`)
 
-#### Figure 2.4-3-S8: Call flow (append candidate from network)
+#### Figure 9-3-S8: Call flow (append candidate from network)
 
-```
+```text
 NodeContext::add_block(peer_block)
   └─> BlockchainService::add_block(peer_block)
        └─> write lock (exclusive)
@@ -953,68 +1010,41 @@ NodeContext::add_block(peer_block)
 
 #### Code walkthrough
 
+> **Source:** `chainstate.rs` — NodeContext::add_block(peer_block) → BlockchainService::add_block
+
 ```rust
-// NodeContext::add_block(peer_block) → BlockchainService::add_block: bitcoin/src/chain/chainstate.rs
 pub async fn add_block(&self, block: &Block) -> Result<()> {
-    // Exclusive lock boundary: network insertion mutates persisted chain state.
     let mut blockchain_guard = self.0.write().await;
-    // Delegate to persistence engine for the DB transaction and fork-choice update.
     blockchain_guard.add_block(block).await
 }
 ```
 
-```rust
-// BlockchainService::add_block(peer_block) → BlockchainFileSystem::add_block: bitcoin/src/store/file_system_db_chain.rs
-pub async fn add_block(&mut self, new_block: &Block) -> Result<()> {
-    let block_tree = self
-        .blockchain
-        .db
-        .open_tree(self.get_blocks_tree_path())
-        .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
+> **Source:** `file_system_db_chain.rs` — BlockchainService::add_block(peer_block) → BlockchainFileSystem::add_block
 
-    // 1) Idempotence: if we already have this block hash, do nothing.
-    if block_tree
-        .get(new_block.get_hash())
-        .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?
-        .is_some()
-    {
+```rust
+pub async fn add_block(&mut self, new_block: &Block) -> Result<()> {
+    let block_tree = self.blockchain.db.open_tree(self.get_blocks_tree_path())?;
+
+    if block_tree.get(new_block.get_hash())?.is_some() {
         return Ok(());
     }
 
-    // 2) Serialize the incoming block (what we persist).
     let block_bytes = new_block.serialize()?;
     let tip_hash = self.get_tip_hash().await?;
 
-    // 3) Atomic storage: persist candidate block bytes; update tip key if it “wins” by height.
-    let transaction_result: TransactionResult<(), ()> = block_tree.transaction(|transaction| {
-        let _ = transaction.insert(new_block.get_hash(), block_bytes.clone())?;
-
-        // Load current tip block inside the transaction so height comparison is consistent.
-        let tip_block_bytes = transaction.get(tip_hash.clone())?.ok_or(
-            UnabortableTransactionError::Storage(sled::Error::CollectionNotFound(IVec::from(
-                tip_hash.as_bytes(),
-            ))),
-        )?;
-        let tip_block = Block::deserialize(tip_block_bytes.as_ref()).map_err(|e| {
-            UnabortableTransactionError::Storage(sled::Error::Unsupported(e.to_string()))
-        })?;
-
-        // Fork-choice (simplified): higher height becomes the new persisted tip.
-        if new_block.get_height() > tip_block.get_height() {
-            let _ = transaction.insert(DEFAULT_TIP_BLOCK_HASH_KEY, new_block.get_hash())?;
+    let transaction_result = block_tree.transaction(|tx| {
+        tx.insert(new_block.get_hash(), block_bytes.clone())?;
+        // ... (load tip block and compare heights)
+        if new_block.get_height() > /* tip height */ {
+            tx.insert(DEFAULT_TIP_BLOCK_HASH_KEY, new_block.get_hash())?;
         }
-
         Ok(())
     });
 
-    if transaction_result.is_err() {
-        return Err(BtcError::BlockchainDBconnection(format!(
-            "Transaction failed: {:?}",
-            transaction_result
-        )));
-    }
+    transaction_result
+        .map_err(|e| BtcError::BlockchainDBconnection(format!(“{:?}”, e)))?;
 
-    // ... consensus tie-break + possible reorg logic follows ...
+    // ... consensus tie-break + reorg logic ...
     Ok(())
 }
 ```
@@ -1027,7 +1057,7 @@ pub async fn add_block(&mut self, new_block: &Block) -> Result<()> {
 
 <div align="center">
 
-**📚 [← Previous: Blockchain State Management](02-Blockchain-State-Management.md)** | **Chain State and Storage** | **[Next: UTXO Set →](04-UTXO-Set.md)** 📚
+**[← Previous: Blockchain State Management](02-Blockchain-State-Management.md)** | **Chain State and Storage** | **[Next: UTXO Set →](04-UTXO-Set.md)** 
 
 </div>
 

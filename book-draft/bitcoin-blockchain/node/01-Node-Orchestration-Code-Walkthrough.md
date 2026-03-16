@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. **Chapter 2.8: Node Orchestration** ← *You are here*
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -39,7 +58,7 @@
 
 # Node Orchestration — Code Walkthrough (NodeContext + Mempool + Mining + Peers)
 
-**Part I: Core Blockchain Implementation** | **Chapter 2.8.A: Node Orchestration — Code Walkthrough**
+**Part I: Foundations & Core Implementation** | **Chapter 13.A: Node Orchestration — Code Walkthrough**
 
 This chapter is a code-complete walkthrough of `bitcoin/src/node`. The intent is that you can read and understand the node runtime **without having the repository open**.
 
@@ -60,8 +79,8 @@ Two promises:
 
 ### Diagram: responsibilities and the control boundary
 
-```
-Network (Chapter 2.7)
+```text
+Network (Chapter 12)
   - decodes TCP stream into `Package`
   - calls into NodeContext methods
             |
@@ -73,7 +92,7 @@ Node orchestration (this chapter)
   - forwards blocks into chainstate (BlockchainService)
             |
             v
-Chain / storage (Chapters 2.4–2.6)
+Chain / storage (Chapters 9–11)
   - validates + connects blocks
   - persists chain state
   - maintains UTXO
@@ -106,7 +125,7 @@ This is the path you will trace most often when debugging “why didn’t my tra
 
 ### Diagram: the orchestration call graph for transactions
 
-```
+```text
 Inbound tx bytes
   -> (Network) Package::Tx
   -> NodeContext::process_transaction
@@ -123,39 +142,27 @@ Inbound tx bytes
 > - `NodeContext::submit_transaction_for_mining` (internal)
 > - `NodeContext::{btc_transaction, submit_transaction}` (front-door helpers)
 > - `txmempool::{add_to_memory_pool, transaction_exists_in_pool}`
-> - `send_inv(...)` (**defined earlier** in **[Chapter 2.7.A: Network Layer — Code Walkthrough](../net/01-Network-Operation-Code-Walkthrough.md)**)
+> - `send_inv(...)` (**defined earlier** in **[Chapter 12.A: Network Layer — Code Walkthrough](../net/01-Network-Operation-Code-Walkthrough.md)**)
 
-### Code Listing 2.8A-1.1 — `NodeContext` (transaction pipeline) (`bitcoin/src/node/context.rs`)
+### Code Listing 2.22A-1.1 — `NodeContext` initialization and transaction acceptance (part 1) (`bitcoin/src/node/context.rs`)
 
 ```rust
-use crate::GLOBAL_CONFIG;
 use crate::chain::{BlockchainService, UTXOSet};
 use crate::error::{BtcError, Result};
-use crate::net::net_processing::send_inv;
-use crate::node::miner;
-use crate::node::miner::{
-    cleanup_invalid_transactions, prepare_mining_utxo, process_mine_block, should_trigger_mining,
-};
-use crate::node::txmempool::{
-    add_to_memory_pool, remove_from_memory_pool, transaction_exists_in_pool,
-};
-use crate::node::{CENTERAL_NODE, GLOBAL_NODES, Node, OpType};
+use crate::node::miner::*;
+use crate::node::txmempool::*;
+use crate::node::GLOBAL_NODES;
 use crate::{Block, Transaction, WalletAddress};
 use std::net::SocketAddr;
-use tracing::{error, info, warn};
 
-// `NodeContext` is the orchestration façade: other layers call into it
-// instead of talking to mempool/miner/peers/chainstate directly.
+// Routes requests into mempool/miner/peers/chainstate subsystems.
 #[derive(Clone, Debug)]
 pub struct NodeContext {
-    // The only owned dependency here: chainstate + storage + mining hooks.
-    // Everything else is reached through module-level globals or helper modules.
-    blockchain: BlockchainService,
+    blockchain: BlockchainService,  // Only owned dependency
 }
 
 impl NodeContext {
     pub fn new(blockchain: BlockchainService) -> Self {
-        // Construction is intentionally cheap: the heavy state is inside `BlockchainService`.
         Self { blockchain }
     }
 
@@ -165,44 +172,30 @@ impl NodeContext {
         wlt_to_addr: &WalletAddress,
         amount: i32,
     ) -> Result<String> {
-        // This is a high-level “create + submit” helper:
-        // it builds a signed transaction from the UTXO view, then submits it to the normal pipeline.
         let utxo_set = UTXOSet::new(self.blockchain.clone());
-        let utxo =
-            Transaction::new_utxo_transaction(wlt_frm_addr, wlt_to_addr, amount, &utxo_set).await?;
-
-        // For locally-created transactions, the sender address is “us”.
+        let utxo = Transaction::new_utxo_transaction(
+            wlt_frm_addr, wlt_to_addr, amount, &utxo_set
+        ).await?;
         let addr_from = crate::GLOBAL_CONFIG.get_node_addr();
         self.process_transaction(&addr_from, utxo).await
     }
 
-    pub async fn submit_transaction(
-        &self,
-        addr_from: &std::net::SocketAddr,
-        utxo: Transaction,
-    ) -> Result<String> {
-        // Convenience wrapper: treat the provided tx as already-built and just run acceptance.
-        self.process_transaction(addr_from, utxo).await
-    }
-
     pub async fn process_transaction(
         &self,
-        addr_from: &std::net::SocketAddr,
+        addr_from: &SocketAddr,
         utxo: Transaction,
     ) -> Result<String> {
-        // 1) Dedupe: refuse if mempool already contains this tx.
+        // 1) Dedupe check
         if transaction_exists_in_pool(&utxo) {
-            info!("Transaction: {:?} already exists", utxo.get_id());
             return Err(BtcError::TransactionAlreadyExistsInMemoryPool(
                 utxo.get_tx_id_hex(),
             ));
         }
 
-        // 2) Accept into mempool (and set the “in mempool” flag in the UTXO view).
+        // 2) Accept into mempool (flags outputs as “in mempool”)
         add_to_memory_pool(utxo.clone(), &self.blockchain).await?;
 
-        // 3) Fire-and-forget: broadcast + trigger mining in a background task.
-        // The API call returns immediately after mempool acceptance.
+        // 3) Fire-and-forget: broadcast + mining in background task
         let context = self.clone();
         let addr_copy = *addr_from;
         let tx = utxo.clone();
@@ -210,87 +203,64 @@ impl NodeContext {
             let _ = context.submit_transaction_for_mining(&addr_copy, tx).await;
         });
 
-        // 4) Return txid for caller/UI.
         Ok(utxo.get_tx_id_hex())
     }
+```
 
+After accepting a transaction into the mempool, the node spawns background tasks for relay and mining decisions:
+
+### Code Listing 2.22A-2 — Background relay and mining submission (part 2)
+
+```rust
     async fn submit_transaction_for_mining(
         &self,
-        addr_from: &std::net::SocketAddr,
+        addr_from: &SocketAddr,
         utxo: Transaction,
     ) -> Result<()> {
-        // Background task: after mempool acceptance, we may relay and/or mine.
+        // Background: relay to peers (if central node) and maybe trigger mining
         let my_node_addr = GLOBAL_CONFIG.get_node_addr();
-
-        // Relay policy: only the “central node” relays inventory to the peer set.
-        if my_node_addr.eq(&CENTERAL_NODE) {
+        if my_node_addr == crate::node::CENTERAL_NODE {
             let nodes = self.get_nodes_excluding_sender(addr_from).await?;
-            self.broadcast_transaction_to_nodes(&nodes, utxo.get_id_bytes())
+            for node in &nodes {
+                send_inv(
+                    &node.get_addr(),
+                    OpType::Tx,
+                    &[utxo.get_id_bytes()],
+                )
                 .await;
+            }
         }
 
-        // Mining policy: start mining when mempool reaches threshold (and we are a miner).
+        // Mining: trigger if mempool reaches threshold
         if should_trigger_mining() {
-            if let Some(mining_address) = GLOBAL_CONFIG.get_mining_addr() {
-                match prepare_mining_utxo(&mining_address) {
-                    Ok(txs) => {
-                        if !txs.is_empty() {
-                            // Mine + broadcast happens inside `process_mine_block`.
-                            process_mine_block(txs, &self.blockchain).await.map(|_| ())
-                        } else {
-                            warn!("Mining triggered but no valid transactions to mine");
-                            Ok(())
-                        }
-                    }
-                    Err(e) => {
-                        error!("Failed to prepare mining transactions: {}", e);
-                        cleanup_invalid_transactions().await
+            if let Some(addr) = GLOBAL_CONFIG.get_mining_addr() {
+                if let Ok(txs) = prepare_mining_utxo(&addr) {
+                    if !txs.is_empty() {
+                        process_mine_block(txs, &self.blockchain).await?;
                     }
                 }
-            } else {
-                warn!("Mining triggered but no mining address configured");
-                Ok(())
             }
-        } else {
-            // Nothing to do: relay/mining policies didn’t trigger.
-            Ok(())
         }
+        Ok(())
     }
 
     async fn get_nodes_excluding_sender(
         &self,
-        addr_from: &std::net::SocketAddr,
+        addr_from: &SocketAddr,
     ) -> Result<Vec<Node>> {
-        // Avoid two common relay problems:
-        // - echoing back to the sender
-        // - sending to ourselves
         let nodes = GLOBAL_NODES
-            .get_nodes()
-            .expect("Global nodes get error")
+            .get_nodes()?
             .into_iter()
             .filter(|node| {
                 let node_addr = node.get_addr();
-                let my_addr = GLOBAL_CONFIG.get_node_addr();
-                node_addr != *addr_from && node_addr != my_addr
+                node_addr != *addr_from
+                    && node_addr != GLOBAL_CONFIG.get_node_addr()
             })
             .collect();
         Ok(nodes)
     }
 
-    async fn broadcast_transaction_to_nodes(&self, nodes: &[Node], txid: Vec<u8>) {
-        // Broadcast pattern: INV(txid) to every peer (in parallel tasks).
-        let txid_clone = txid.clone();
-        nodes.iter().for_each(|node| {
-            let node_addr = node.get_addr();
-            let txid = txid_clone.clone();
-            tokio::spawn(async move {
-                send_inv(&node_addr, OpType::Tx, &[txid]).await;
-            });
-        });
-    }
-
     pub async fn remove_from_memory_pool(&self, tx: Transaction) {
-        // Called after a transaction is confirmed in a block.
         remove_from_memory_pool(tx, &self.blockchain).await;
     }
 }
@@ -313,9 +283,9 @@ This is the subset of `NodeContext` that the network layer and UI/API use for:
 > - `NodeContext::{get_peers, get_peer_count}`
 > - `NodeContext::mine_empty_block(...)` (admin/testing convenience)
 >
-> The transaction pipeline methods are defined earlier in **Code Listing 2.8A-1.1**.
+> The transaction pipeline methods are defined earlier in **Code Listing 2.22A-1.1**.
 
-### Code Listing 2.8A-1.2 — `NodeContext` (block + chain queries) (`bitcoin/src/node/context.rs`)
+### Code Listing 2.22A-3 — `NodeContext` (block and chain queries) (`bitcoin/src/node/context.rs`)
 
 ```rust
 use crate::chain::BlockchainService;
@@ -324,49 +294,47 @@ use crate::node::miner;
 use crate::{Block, WalletAddress};
 use std::net::SocketAddr;
 
-// Continuation from Code Listing 2.8A-1.1: the `NodeContext` type and its `blockchain` field
-// are defined earlier; here we focus on the node-facing chain/peer query surface.
 impl NodeContext {
     pub fn get_blockchain(&self) -> &BlockchainService {
-        // Exposes chainstate for subsystems that need direct access.
         &self.blockchain
     }
 
     pub fn blockchain(&self) -> &BlockchainService {
-        // Alias kept for compatibility with earlier code.
         &self.blockchain
     }
 
     pub async fn add_block(&self, block: &Block) -> Result<()> {
-        // Important boundary:
-        // - the network layer hands a candidate block to the node
-        // - chainstate decides whether it becomes state (validate → connect → persist)
         self.blockchain.add_block(block).await
     }
 
     pub async fn get_blockchain_height(&self) -> Result<usize> {
-        // “Best height” means the current canonical tip height.
         self.blockchain.get_best_height().await
     }
 
     pub async fn get_block_hashes(&self) -> Result<Vec<Vec<u8>>> {
-        // Used by the network for sync: it can send an INV list of hashes.
         self.blockchain.get_block_hashes().await
     }
 
     pub async fn get_block(&self, block_hash: &[u8]) -> Result<Option<Block>> {
-        // Used by the network to answer GETDATA(Block).
         self.blockchain.get_block(block_hash).await
     }
+    // ... (continues with mining and peer methods)
+}
+```
 
-    pub async fn mine_empty_block(&self, wallet_address: &WalletAddress) -> Result<Block> {
-        // Administrative/testing convenience: mine a block with only coinbase.
+Additional methods on `NodeContext` provide mining and peer discovery functionality:
+
+```rust
+    pub async fn mine_empty_block(
+        &self,
+        wallet_address: &WalletAddress,
+    ) -> Result<Block> {
+        // Mining convenience for testing
         miner::mine_empty_block(&self.blockchain, wallet_address).await
     }
 
     pub fn get_peer_count(&self) -> Result<usize> {
         use crate::node::GLOBAL_NODES;
-        // `GLOBAL_NODES` is a shared peer set used by relay + mining announcements.
         let nodes = GLOBAL_NODES.get_nodes()?;
         Ok(nodes.len())
     }
@@ -391,60 +359,37 @@ The mempool module is deliberately small: it is a thin wrapper around `GLOBAL_ME
 > - `remove_from_memory_pool(...)`
 > - `transaction_exists_in_pool(...)`
 
-### Code Listing 2.8A-2.1 — Mempool helpers (`bitcoin/src/node/txmempool.rs`)
+### Code Listing 2.22A-6 — Mempool helpers (`bitcoin/src/node/txmempool.rs`)
 
 ```rust
 use crate::error::Result;
 use crate::node::GLOBAL_MEMORY_POOL;
 use crate::{BlockchainService, Transaction, UTXOSet};
-use tracing::debug;
 
 pub async fn add_to_memory_pool(
     tx: Transaction,
     blockchain_service: &BlockchainService,
 ) -> Result<()> {
-    // Logging banner (helpful during demos/tests).
-    debug!("\n");
-    debug!(
-        "******************************************************************************************************"
-    );
-    debug!(
-        "Adding transaction to memory pool: {:?}",
-        tx.get_tx_id_hex()
-    );
-    debug!(
-        "******************************************************************************************************\n"
-    );
+    // Store in pool + mark outputs “in mempool” to prevent double-spend
+    GLOBAL_MEMORY_POOL.add(tx.clone())?;
 
-    // 1) Store the transaction in the global in-memory pool.
-    GLOBAL_MEMORY_POOL
-        .add(tx.clone())
-        .expect("Memory pool add error");
-
-    // 2) Mark the referenced outputs as “in mempool” in the UTXO view.
-    // This repo uses the flag as a lightweight double-spend prevention within the mempool.
     let utxo_set = UTXOSet::new(blockchain_service.clone());
-    utxo_set.set_global_mem_pool_flag(&tx.clone(), true).await?;
+    utxo_set.set_global_mem_pool_flag(&tx, true).await?;
 
     Ok(())
 }
 
-pub async fn remove_from_memory_pool(tx: Transaction, blockchain: &BlockchainService) {
-    // 1) Remove tx from the global pool.
-    GLOBAL_MEMORY_POOL
-        .remove(tx.clone())
-        .expect("Memory pool remove error");
-
-    // 2) Clear the “in mempool” flags in the UTXO view.
+pub async fn remove_from_memory_pool(
+    tx: Transaction,
+    blockchain: &BlockchainService,
+) {
+    // Remove from pool + clear “in mempool” flags
+    let _ = GLOBAL_MEMORY_POOL.remove(tx.clone());
     let utxo_set = UTXOSet::new(blockchain.clone());
-    utxo_set
-        .set_global_mem_pool_flag(&tx.clone(), false)
-        .await
-        .expect("Failed to get blockchain");
+    let _ = utxo_set.set_global_mem_pool_flag(&tx, false).await;
 }
 
 pub fn transaction_exists_in_pool(tx: &Transaction) -> bool {
-    // Fast membership check to prevent duplicates.
     GLOBAL_MEMORY_POOL.contains_transaction(tx).unwrap_or(false)
 }
 ```
@@ -457,7 +402,7 @@ Mining is triggered by **policy** (`should_trigger_mining`) and executed by `pro
 
 ### Diagram: mining trigger → mining → relay
 
-```
+```text
 NodeContext::submit_transaction_for_mining
   |
   | if should_trigger_mining()
@@ -481,90 +426,73 @@ broadcast_new_block -> send_inv(op=Block, items=[block_hash])
 > - `mine_empty_block(...)`
 > - `cleanup_invalid_transactions(...)`
 
-### Code Listing 2.8A-3.1 — Mining implementation (`bitcoin/src/node/miner.rs`)
+### Code Listing 2.22A-3.1 — Mining trigger and block construction (part 1) (`bitcoin/src/node/miner.rs`)
 
 ```rust
 use super::txmempool::remove_from_memory_pool;
-use crate::error::{BtcError, Result};
+use crate::error::Result;
 use crate::net::net_processing::send_inv;
 use crate::node::{GLOBAL_MEMORY_POOL, GLOBAL_NODES, OpType};
-use crate::{Block, BlockchainService, GLOBAL_CONFIG, Transaction, WalletAddress};
-use tracing::info;
+use crate::{
+    Block, BlockchainService, GLOBAL_CONFIG, Transaction,
+    WalletAddress,
+};
 
 const TRANSACTION_THRESHOLD: usize = 3;
 
-fn create_mining_coinbase_transaction(to: &WalletAddress) -> Result<Transaction> {
-    // Coinbase is the “block reward” transaction (newly minted coins to the miner).
-    Transaction::new_coinbase_tx(to)
-}
-
 pub fn should_trigger_mining() -> bool {
-    // Mining policy in this implementation:
-    // - only mine if we are configured as a miner
-    // - only mine if mempool size crosses a small threshold
-    let pool_size = GLOBAL_MEMORY_POOL.len().expect("Memory pool length error");
-    let is_miner = GLOBAL_CONFIG.is_miner();
-    pool_size >= TRANSACTION_THRESHOLD && is_miner
+    // Policy: mine if miner configured AND mempool size exceeds threshold
+    GLOBAL_MEMORY_POOL.len().unwrap_or(0) >= TRANSACTION_THRESHOLD
+        && GLOBAL_CONFIG.is_miner()
 }
 
-pub fn prepare_mining_utxo(mining_address: &WalletAddress) -> Result<Vec<Transaction>> {
-    // Take a snapshot of mempool transactions (copy into a Vec).
-    let txs = GLOBAL_MEMORY_POOL.get_all()?;
-
-    info!("Preparing to mine with {} valid transactions", txs.len());
-
-    // Always include coinbase in the block template.
-    let coinbase_tx = create_mining_coinbase_transaction(mining_address)?;
-    let mut final_txs = txs;
-    final_txs.push(coinbase_tx);
-
-    Ok(final_txs)
+pub fn prepare_mining_utxo(
+    mining_address: &WalletAddress,
+) -> Result<Vec<Transaction>> {
+    // Snapshot mempool + add coinbase as block reward
+    let mut txs = GLOBAL_MEMORY_POOL.get_all()?;
+    txs.push(Transaction::new_coinbase_tx(mining_address)?);
+    Ok(txs)
 }
 
 pub async fn process_mine_block(
     txs: Vec<Transaction>,
     blockchain: &BlockchainService,
 ) -> Result<Block> {
-    // 1) Ask chainstate to mine a block for this transaction list.
-    // `blockchain.mine_block` encapsulates PoW and chainstate integration.
-    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
-
+    // 1) Mine: PoW + chainstate integration
     let new_block = blockchain.mine_block(&txs).await?;
 
-    info!(
-        "New block {} is mined by node {}!",
-        new_block.get_hash(),
-        my_node_addr
-    );
-
-    // 2) Remove transactions from mempool now that they are confirmed.
+    // 2) Remove confirmed txs from mempool
     for tx in &txs {
         remove_from_memory_pool(tx.clone(), blockchain).await;
     }
 
-    // 3) Announce the new block to peers (INV(block_hash)).
+    // 3) Announce block hash to peers (inventory-first)
     broadcast_new_block(&new_block).await?;
     Ok(new_block)
 }
 
 pub async fn broadcast_new_block(block: &Block) -> Result<()> {
-    // Relay is “inventory-first”: send hashes; peers request full bytes via GETDATA.
-    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
-    let nodes = GLOBAL_NODES.get_nodes().expect("Global nodes get error");
-    nodes
-        .iter()
-        // Don’t send inventory to ourselves.
-        .filter(|node| !my_node_addr.eq(&node.get_addr()))
-        .for_each(|node| {
-            let node_addr = node.get_addr();
-            let block_hash = block.get_hash_bytes();
+    let my_addr = GLOBAL_CONFIG.get_node_addr();
+    let nodes = GLOBAL_NODES.get_nodes()?;
+    for node in nodes {
+        if node.get_addr() != my_addr {
+            let addr = node.get_addr();
+            let hash = block.get_hash_bytes();
             tokio::spawn(async move {
-                send_inv(&node_addr, OpType::Block, &[block_hash]).await;
+                send_inv(&addr, OpType::Block, &[hash]).await;
             });
-        });
+        }
+    }
     Ok(())
 }
+```
 
+Empty block mining and transaction cleanup follow the main mining pipeline:
+
+### Code Listing 2.22A-3.2 — Empty block mining and cleanup (part 2)
+
+```rust
 pub async fn mine_empty_block(
     blockchain: &BlockchainService,
     wallet_address: &WalletAddress,
@@ -580,8 +508,8 @@ pub async fn mine_empty_block(
 }
 
 pub async fn cleanup_invalid_transactions() -> Result<()> {
-    // Placeholder: production nodes revalidate mempool and evict invalid txs over time.
-    info!("Cleaning up invalid transactions from memory pool");
+    // Placeholder for revalidation over time.
+    info!(“Cleaning up invalid transactions from memory pool”);
     Ok(())
 }
 ```
@@ -597,61 +525,38 @@ The peer set is a thread-safe wrapper around a `HashSet<Node>` guarded by an `Rw
 > - `Node::get_addr()`
 > - `Nodes::{add_node, add_nodes, evict_node, get_nodes, node_is_known}`
 
-### Code Listing 2.8A-4.1 — Peer data structures (`bitcoin/src/node/peers.rs`)
+### Code Listing 2.22A-16 — Peer data structures (`bitcoin/src/node/peers.rs`)
 
 ```rust
-use crate::error::{BtcError, Result};
+use crate::error::Result;
 use std::collections::HashSet;
 use std::net::SocketAddr;
 use std::sync::RwLock;
 
-// A `Node` is a thin wrapper around `SocketAddr` so it can be stored in a `HashSet`.
+// Thin wrapper to store SocketAddr in HashSet (must be Eq, Hash, etc.)
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
-pub struct Node {
-    addr: SocketAddr,
-}
+pub struct Node { addr: SocketAddr }
 
 impl Node {
-    fn new(addr: SocketAddr) -> Node {
-        Node { addr }
-    }
-
-    pub fn get_addr(&self) -> SocketAddr {
-        // Used heavily by relay/mining to compute broadcast targets.
-        self.addr
-    }
+    fn new(addr: SocketAddr) -> Self { Node { addr } }
+    pub fn get_addr(&self) -> SocketAddr { self.addr }
 }
 
-// `Nodes` is a thread-safe peer set:
-// - reads are frequent (broadcast target lists)
-// - writes happen on peer discovery or eviction
-pub struct Nodes {
-    inner: RwLock<HashSet<Node>>,
-}
+// Thread-safe peer set: many reads, occasional writes
+pub struct Nodes { inner: RwLock<HashSet<Node>> }
 
 impl Nodes {
-    pub fn new() -> Nodes {
-        Nodes {
-            inner: RwLock::new(HashSet::new()),
-        }
+    pub fn new() -> Self {
+        Nodes { inner: RwLock::new(HashSet::new()) }
     }
 
     pub fn add_node(&self, addr: SocketAddr) -> Result<()> {
-        // Acquire write lock and insert (deduped by HashSet semantics).
-        let mut inner = self
-            .inner
-            .write()
-            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
-        inner.insert(Node::new(addr));
+        self.inner.write()?.insert(Node::new(addr));
         Ok(())
     }
 
     pub fn add_nodes(&self, nodes: HashSet<SocketAddr>) -> Result<()> {
-        // Batch insert multiple peers.
-        let mut inner = self
-            .inner
-            .write()
-            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
+        let mut inner = self.inner.write()?;
         for node in nodes {
             inner.insert(Node::new(node));
         }
@@ -659,37 +564,20 @@ impl Nodes {
     }
 
     pub fn evict_node(&self, addr: &SocketAddr) -> Result<bool> {
-        // Remove a peer. Used when outbound connections fail.
-        let mut inner = self
-            .inner
-            .write()
-            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
-        Ok(inner.remove(&Node::new(*addr)))
+        Ok(self.inner.write()?.remove(&Node::new(*addr)))
     }
 
     pub fn get_nodes(&self) -> Result<Vec<Node>> {
-        // Snapshot the peer set into a Vec for iteration/broadcast.
-        let inner = self
-            .inner
-            .read()
-            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
-        Ok(inner.iter().cloned().collect())
+        Ok(self.inner.read()?.iter().cloned().collect())
     }
 
     pub fn node_is_known(&self, addr: &SocketAddr) -> Result<bool> {
-        // Membership query used by peer discovery logic.
-        let inner = self
-            .inner
-            .read()
-            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
-        Ok(inner.iter().any(|x| x.get_addr().eq(addr)))
+        Ok(self.inner.read()?.iter().any(|x| x.get_addr() == *addr))
     }
 }
 
 impl Default for Nodes {
-    fn default() -> Self {
-        Self::new()
-    }
+    fn default() -> Self { Self::new() }
 }
 ```
 
@@ -701,7 +589,7 @@ The network router is responsible for **decoding** and **dispatching**, and then
 
 > **Methods involved**
 >
-> - `process_stream(...)` (**defined earlier** in **[Chapter 2.7.A: Network Layer — Code Walkthrough](../net/01-Network-Operation-Code-Walkthrough.md)**)
+> - `process_stream(...)` (**defined earlier** in **[Chapter 12.A: Network Layer — Code Walkthrough](../net/01-Network-Operation-Code-Walkthrough.md)**)
 > - `NodeContext::process_transaction(...)` (printed above)
 > - `NodeContext::add_block(...)` (printed above)
 
@@ -725,7 +613,7 @@ This is the “runtime wiring” that makes the node feel like a single system r
 
 <div align="center">
 
-**📚 [← Chapter 2.8: Node Orchestration](README.md)** | **Chapter 2.8.A: Code Walkthrough** | **[Chapter 2.9: Wallet System →](../wallet/README.md)** 📚
+**[← Chapter 13: Node Orchestration](README.md)** | **Chapter 13.A: Code Walkthrough** | **[Chapter 14: Wallet System →](../wallet/README.md)** 
 
 </div>
 

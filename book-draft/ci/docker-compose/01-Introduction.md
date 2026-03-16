@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. **Chapter 8: Docker Compose Deployment** ← *You are here*
-21. <a href="../kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. **Chapter 22: Docker Compose Deployment** ← *You are here*
+35. <a href="01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -44,17 +63,22 @@
 
 ---
 
-## Chapter 8: Docker Compose Deployment - Complete Guide
+## Chapter 22: Docker Compose Deployment - Complete Guide
 
 **Part II: Deployment & Operations**
 
 <div align="center">
 
-**📚 [← Chapter 6: Web Admin UI](../../bitcoin-web-ui/06-Web-Admin-UI.md)** | **Chapter 8: Docker Compose** | **[Chapter 9: Kubernetes →](../kubernetes/README.md)** 📚
-
+**[← Chapter 21: Web Admin UI](../../bitcoin-web-ui/06-Web-Admin-UI.md)** | **Chapter 22: Docker Compose** | **[Chapter 23: Kubernetes →](../kubernetes/README.md)**
 </div>
 
 ---
+
+> **Prerequisites**: This chapter assumes basic familiarity with Docker (images, containers, volumes) and command-line usage. No prior Docker Compose experience is required — we explain the compose file format as we go. You should have completed the core implementation chapters (Part I) to understand what the services in each container are doing.
+
+**What you will learn in this chapter:** How to package the Rust blockchain node, admin UI, and web frontend into Docker images, wire them together with Docker Compose, and run a multi-node blockchain network on a single machine for development and testing.
+
+**Why deploy with containers?** Up to this point in the book, we have been running a single node from `cargo run`. But Bitcoin is a distributed system — you need multiple nodes to test peer discovery, block propagation, and chain synchronization. Docker Compose lets you spin up a configurable number of interconnected nodes with a single command, each with its own storage volume, while sharing a common network. This chapter bridges the gap between "the code compiles" and "the system actually works as a network."
 
 **Important**: All commands in this guide should be run from the `configs/` directory where `docker-compose.yml` and the helper scripts are located.
 
@@ -68,17 +92,11 @@ cd ci/docker-compose/configs  # Navigate to configs directory first
 
 1. [Introduction & Quick Start](#introduction--quick-start) - *Start here*
 2. [Docker Compose Code Listings (verbatim)](01A-Docker-Compose-Code-Listings.md) - *Source of truth for scripts + compose files*
-3. [Architecture & Container System](02-Architecture.md) - *Understand the system structure*
-4. [Execution Flow & Startup Process](03-Execution-Flow.md) - *Learn how the system operates*
-5. [Network Configuration & Node Connections](04-Network-Configuration.md) - *Understand networking fundamentals*
-6. [Sequential Startup](07-Sequential-Startup.md) - *Learn startup coordination*
-7. [Port Mapping & External Access](05-Port-Mapping.md) - *Configure external connectivity*
-8. [Scaling & Deployment](06-Scaling.md) - *Scale your deployment*
-9. [Deployment Scenarios & Examples](08-Deployment-Scenarios.md) - *Practical deployment patterns*
-10. [Accessing Webserver](09-Accessing-Webserver.md) - *Use the web interface*
-11. [Deployment Guide](10-Deployment-Guide.md) - *Production deployment procedures*
-12. [Deployment Execution Walkthrough](11-Deployment-Execution-Walkthrough.md) - *Deep dive into execution details*
-13. [DNS Resolution Mechanism](12-DNS-Resolution-Mechanism.md) - *Advanced networking internals*
+3. [Architecture & Execution Flow](02-Architecture-and-Execution.md) - *Understand system structure and startup*
+4. [Deployment Topology](03-Deployment-Topology.md) - *Network configuration, ports, scaling, and startup coordination*
+5. [Deployment Scenarios & Operations](04-Deployment-Scenarios-and-Operations.md) - *Practical deployment patterns and operational procedures*
+6. [Accessing Webserver](05-Accessing-Webserver.md) - *Use the web interface*
+7. [DNS Resolution Mechanism](06-DNS-Resolution-Mechanism.md) - *Advanced networking internals*
 
 ---
 
@@ -86,44 +104,15 @@ cd ci/docker-compose/configs  # Navigate to configs directory first
 
 ### Overview
 
-> **Methods involved**
-> - `docker-compose.yml` (`ci/docker-compose/configs/docker-compose.yml`, [Listing 8.1](01A-Docker-Compose-Code-Listings.md#listing-81-cidocker-composeconfigsdocker-composeyml))
-> - `docker-entrypoint.sh` (`ci/docker-compose/configs/docker-entrypoint.sh`, [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
-> - `wait-for-node.sh` (`ci/docker-compose/configs/wait-for-node.sh`, [Listing 8.3](01A-Docker-Compose-Code-Listings.md#listing-83-cidocker-composeconfigswait-for-nodesh))
-> - `docker-compose.scale.sh` (`ci/docker-compose/configs/docker-compose.scale.sh`, [Listing 8.4](01A-Docker-Compose-Code-Listings.md#listing-84-cidocker-composeconfigsdocker-composescalesh))
-> - `generate-compose-ports.sh` (`ci/docker-compose/configs/generate-compose-ports.sh`, [Listing 8.5](01A-Docker-Compose-Code-Listings.md#listing-85-cidocker-composeconfigsgenerate-compose-portssh))
-> - `scale-up.sh`, `scale-down.sh` ([Listings 8.6–8.7](01A-Docker-Compose-Code-Listings.md))
-> - Alternative files: `docker-compose.miner.yml`, `docker-compose.webserver.yml` ([Listings 8.8–8.9](01A-Docker-Compose-Code-Listings.md))
-> - Rate limiting config: `Settings.toml` ([Listing 8.10](01A-Docker-Compose-Code-Listings.md#listing-810-cidocker-composeconfigssettingstoml))
-
 This chapter explains how to deploy and operate the blockchain network using Docker Compose. The deployment is intentionally **code-driven**: Compose describes the container topology, while the real orchestration logic (instance numbering, port selection, sequential startup, hostname resolution) lives in the **entrypoint and helper scripts**.
 
 Every referenced artifact is printed in full in the companion listings chapter:
 
-- **[Chapter 8A: Docker Compose — Complete Code Listings](01A-Docker-Compose-Code-Listings.md)**
-
-### Our Learning Journey
-
-We've organized this chapter to guide you from basic concepts to advanced implementation details. As we progress, you'll build a complete understanding of how the deployment system works:
-
-1. **We'll Start Here**: Introduction & Quick Start (this section) - We'll get you up and running quickly so you can see the system in action.
-
-2. **We'll Build the Foundation**: Architecture → Execution Flow → Network Configuration - We'll explore how the system works under the hood, understanding the architecture and execution flow.
-
-3. **We'll Learn Operations**: Sequential Startup → Port Mapping → Scaling - We'll discover operational concepts that make the system reliable and scalable.
-
-4. **We'll Practice**: Deployment Scenarios → Accessing Webserver - We'll work through practical examples that show real-world deployment patterns.
-
-5. **We'll Go Deep**: Deployment Guide → Execution Walkthrough → DNS Resolution - We'll dive into the internals, understanding every detail of how the system operates.
-
-**What You'll Need:**
-- Basic understanding of Docker and Docker Compose (we'll explain as we go)
-- Familiarity with command-line interfaces
-- Knowledge of blockchain concepts is helpful but not required—we'll explain what you need to know
+- **[Chapter 22A: Docker Compose — Complete Code Listings](01A-Docker-Compose-Code-Listings.md)**
 
 ### Quick Start
 
-Let's get started! We'll begin with the simplest deployment: one miner and one webserver. Before we start, we need to set up wallet addresses. We have two methods to choose from:
+The simplest deployment uses one miner and one webserver. Before starting, we need to set up wallet addresses. There are two methods:
 
 **Method 1: Address Pool (Recommended)**
 
@@ -161,9 +150,9 @@ docker compose up -d
 
 When we run `docker compose up -d`, it uses the main `docker-compose.yml` which includes both `miner` and `webserver` services. Once started, the webserver will be accessible at `http://localhost:8080`.
 
-**A Note on Sequential Startup:** By default, sequential startup is enabled. This means each node waits for the previous node to be ready before starting. This ensures a stable network formation. We'll explore this mechanism in detail in [Section 5: Sequential Startup](07-Sequential-Startup.md).
+**A Note on Sequential Startup:** By default, sequential startup is enabled. This means each node waits for the previous node to be ready before starting. This ensures a stable network formation. We'll explore this mechanism in detail in [Section 3: Deployment Topology](03-Deployment-Topology.md).
 
-For detailed information on accessing the webserver, see [Section 9: Accessing Webserver](09-Accessing-Webserver.md). For deployment instructions, see [Section 10: Deployment Guide](10-Deployment-Guide.md).
+For detailed information on accessing the webserver, see [Section 5: Accessing Webserver](05-Accessing-Webserver.md). For deployment instructions, see [Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-Operations.md).
 
 We'll explore wallet address distribution in more detail in the [Wallet Address Distribution](#wallet-address-distribution) section below.
 
@@ -204,7 +193,7 @@ There are also standalone alternative compose files that can be used instead:
 
   Note: this file also starts a `redis` service for rate limiting.
 
-**Note:** These alternative files are **NOT automatically called**. They're manual alternatives you can use with the `-f` flag if you want to run only miners or only webservers separately. The main `docker-compose.yml` is recommended for most use cases as it supports scaling both services together.
+**Note:** We don't automatically invoke these files. Instead, we use them as manual alternatives with the `-f` flag to run only miners or only webservers. The main `docker-compose.yml` is recommended for most use cases since it supports scaling both services together.
 
 Full listings:
 
@@ -229,7 +218,7 @@ Each instance automatically configures unique internal ports:
 - Instance 3: Web port 8082, P2P port 2103
 - ... and so on
 
-For detailed information about port mapping and external access, see [Port Mapping & External Access](#port-mapping--external-access) and [Section 6: Port Mapping & External Access](05-Port-Mapping.md).
+For detailed information about port mapping and external access, see [Port Mapping & External Access](#port-mapping--external-access) and [Section 3: Deployment Topology](03-Deployment-Topology.md).
 
 ### Data Directories
 
@@ -276,7 +265,8 @@ docker exec -it <container_name> ls -la /app/wallets/
 docker exec -it <container_name> cat /app/wallets/wallets.dat
 
 # Check if wallet file exists
-docker exec -it <container_name> test -f /app/wallets/wallets.dat && echo "Wallet file exists"
+docker exec -it <container_name> test -f /app/wallets/wallets.dat \
+  && echo "Wallet file exists"
 ```
 
 **Method 2: Via Volume Inspection (Find Host Path)**
@@ -323,7 +313,8 @@ docker volume inspect configs_webserver-wallets
 # Example: /var/lib/docker/volumes/blockchain_miner-wallets/_data
 
 # The VM filesystem is stored on macOS at:
-# ~/Library/Containers/com.docker.docker/Data/vms/0/data/docker/volumes/<volume_name>/_data
+# ~/Library/Containers/com.docker.docker/Data/vms/0/data/docker/volumes/
+# <volume_name>/_data
 
 # However, accessing files directly requires navigating the VM disk image
 # Easier methods: use docker exec or docker cp commands
@@ -331,7 +322,8 @@ docker volume inspect configs_webserver-wallets
 
 **Windows (Docker Desktop):**
 ```bash
-# Similar to macOS, volumes are stored on local Windows storage inside a Linux VM
+# Similar to macOS, volumes are stored on local Windows storage
+# inside a Linux VM
 # Use docker volume inspect to get the path inside the VM
 docker volume inspect blockchain_miner-wallets
 
@@ -342,18 +334,25 @@ docker volume inspect blockchain_miner-wallets
 
 ```bash
 # Get the mountpoint (path inside Docker VM)
-docker volume inspect blockchain_miner-wallets --format '{{ .Mountpoint }}'
+docker volume inspect blockchain_miner-wallets \
+  --format '{{ .Mountpoint }}'
 
 # On Linux (direct host access):
 # Full wallet file path:
-$(docker volume inspect blockchain_miner-wallets --format '{{ .Mountpoint }}')/wallets.dat
+MOUNT_PATH=$(docker volume inspect blockchain_miner-wallets \
+  --format '{{ .Mountpoint }}')
+$MOUNT_PATH/wallets.dat
 
 # Example: List files in volume on Linux
-sudo ls -la $(docker volume inspect blockchain_miner-wallets --format '{{ .Mountpoint }}')
+MOUNT_PATH=$(docker volume inspect blockchain_miner-wallets \
+  --format '{{ .Mountpoint }}')
+sudo ls -la $MOUNT_PATH
 
 # On macOS (VM filesystem stored locally):
 # VM path: /var/lib/docker/volumes/blockchain_miner-wallets/_data
-# macOS storage location: ~/Library/Containers/com.docker.docker/Data/vms/0/data/docker/volumes/blockchain_miner-wallets/_data
+# macOS storage location:
+# ~/Library/Containers/com.docker.docker/Data/vms/0/data/docker/volumes/
+# blockchain_miner-wallets/_data
 # Note: The VM disk image format makes direct file access complex
 # Recommended: Use docker exec or docker cp for file operations
 ```
@@ -465,67 +464,6 @@ export WEBSERVER_ADDRESS_POOL="webserver-addr1,webserver-addr2"
 docker compose up -d --scale miner=3 --scale webserver=2
 ```
 
-### Wallet Address Distribution
-
-The blockchain node requires a wallet address (`wlt_mining_addr`) to be set on startup. Docker Compose supports two methods for distributing addresses:
-
-#### Method 1: Address Pool (Recommended)
-
-Use `WALLET_ADDRESS_POOL` with a comma-separated list. Each node automatically selects an address based on its instance number:
-
-```bash
-# Set up a pool of addresses (one per instance)
-export WALLET_ADDRESS_POOL="addr1,addr2,addr3,addr4,addr5"
-
-# Start multiple instances
-docker compose up -d --scale miner=3 --scale webserver=2
-
-# Result:
-# - miner_1 (instance 1) → selects addr1 (index 0)
-# - miner_2 (instance 2) → selects addr2 (index 1)
-# - miner_3 (instance 3) → selects addr3 (index 2)
-# - webserver_1 (instance 1) → selects addr4 (index 0, but in webserver context)
-# - webserver_2 (instance 2) → selects addr5 (index 1)
-```
-
-**Important Notes:**
-- Instance numbers are 1-indexed (1, 2, 3...)
-- Array indices are 0-indexed (0, 1, 2...)
-- Each service type (miner/webserver) has its own instance numbering
-- Ensure your pool has enough addresses for all instances you plan to run
-
-#### Method 2: Direct Assignment
-
-Use `NODE_MINING_ADDRESS` to assign the same address to all instances:
-
-```bash
-export NODE_MINING_ADDRESS=3npBNyKSEwhCQWTXHFjwR8Rb66kjq6khfZSdmLPm8Gde9XoTwW
-docker compose up -d --scale miner=3
-# All 3 miners use the same address
-```
-
-#### Method 3: Per-Service Pools (Advanced)
-
-For different address pools per service type:
-
-```bash
-# Create separate pools
-export MINER_POOL="miner-addr1,miner-addr2,miner-addr3"
-export WEBSERVER_POOL="webserver-addr1,webserver-addr2"
-
-# Use docker-compose.override.yml to assign per service
-```
-
-Create `docker-compose.override.yml`:
-```yaml
-services:
-  miner:
-    environment:
-      - WALLET_ADDRESS_POOL=${MINER_POOL}
-  webserver:
-    environment:
-      - WALLET_ADDRESS_POOL=${WEBSERVER_POOL}
-```
 
 ### Basic Examples
 
@@ -533,7 +471,9 @@ services:
 
 ```bash
 # Set up address pool with 2 addresses
-export WALLET_ADDRESS_POOL="3npBNyKSEwhCQWTXHFjwR8Rb66kjq6khfZSdmLPm8Gde9XoTwW,1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+export WALLET_ADDRESS_POOL="\
+3npBNyKSEwhCQWTXHFjwR8Rb66kjq6khfZSdmLPm8Gde9XoTwW,\
+1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
 
 # Start services
 cd ci/docker-compose/configs
@@ -591,24 +531,14 @@ docker compose ps
 #### View Logs
 
 ```bash
-# All services
-docker compose logs -f
-
-# Specific service
 docker compose logs -f miner
 docker compose logs -f webserver
-
-# Specific instance
-docker compose logs -f miner_1
-docker compose logs -f webserver_2
 ```
 
 #### Check Health
 
 ```bash
-# Webserver health check
 curl http://localhost:8080/api/health/liveness
-curl http://localhost:8081/api/health/liveness  # Instance 2
 ```
 
 ### Stopping Services
@@ -625,112 +555,50 @@ docker compose down -v
 
 #### Port Conflicts
 
-If you get port conflicts, check which ports are in use:
-
 ```bash
 docker compose ps
-netstat -tulpn | grep -E '2001|8080|2101'
-```
-
-#### Instance Numbers Not Detected
-
-If instance numbers aren't detected correctly, you can set them explicitly:
-
-```bash
-INSTANCE_NUMBER=1 docker compose up -d --scale miner=1
-INSTANCE_NUMBER=2 docker compose up -d --scale miner=2
+netstat -tulpn | grep -E '2001|8080'
 ```
 
 #### Data Persistence
 
-Each instance's data is stored in separate directories within the Docker volumes. To access data:
-
 ```bash
-# Inspect volumes
 docker volume ls
 docker volume inspect blockchain_miner-data
-
-# Access container filesystem
-docker compose exec miner_1 ls -la /app/data1
 ```
 
 ---
 
-## Architecture & Container System
+## Architecture & Execution Flow
 
-See [Section 2: Architecture & Container System](02-Architecture.md) for detailed information about:
-- Container naming conventions
-- Instance number detection
-- Service type identification
-- Volume and data directory structure
-- Container lifecycle
-
----
-
-## Execution Flow & Startup Process
-
-See [Section 3: Execution Flow & Startup Process](03-Execution-Flow.md) for detailed information about:
-- Complete code execution order
-- Docker Compose initialization
-- Container startup sequence
-- Entrypoint script execution
-- Blockchain binary execution
-- Health checks and dependencies
+See [Section 2: Architecture & Execution Flow](02-Architecture-and-Execution.md) for detailed information about:
+- Container naming and identification
+- Instance number detection and service type identification
+- Complete execution timeline and startup sequence
+- Docker Compose initialization and health checks
+- Entrypoint script execution and Rust binary startup
 
 ---
 
-## Network Configuration & Node Connections
+## Deployment Topology
 
-See [Section 4: Network Configuration & Node Connections](04-Network-Configuration.md) for detailed information about:
-- How nodes connect to each other
-- Miner connection chain
-- Webserver connection behavior
-- NODE_CONNECT_NODES configuration
-- Network topology
-
----
-
-## Port Mapping & External Access
-
-See [Section 6: Port Mapping & External Access](05-Port-Mapping.md) for detailed information about:
-- Port mapping limitations with `--scale`
-- Using the scaling helper script
-- Manual port override generation
-- Port assignment reference
-- External access strategies
+See [Section 3: Deployment Topology](03-Deployment-Topology.md) for detailed information about:
+- Network configuration and node connections
+- Miner connection chains and webserver networking
+- Port mapping and external access strategies
+- Scaling methods and incremental scaling
+- Sequential startup coordination and health checks
 
 ---
 
-## Scaling & Deployment
+## Deployment Scenarios & Operations
 
-See [Section 7: Scaling & Deployment](06-Scaling.md) for detailed information about:
-- Scaling methods comparison
-- Scaling running containers
-- Helper script usage
-- Incremental scaling
-- Data persistence during scaling
-
----
-
-## Sequential Startup
-
-See [Section 5: Sequential Startup](07-Sequential-Startup.md) for detailed information about:
-- How sequential startup works
-- Wait script behavior
-- Health checks and timeouts
-- Enabling/disabling sequential startup
-- Troubleshooting startup issues
-
----
-
-## Deployment Scenarios & Examples
-
-See [Section 8: Deployment Scenarios & Examples](08-Deployment-Scenarios.md) for detailed information about:
-- Common deployment scenarios
-- 1 Miner + 3 Webservers example
-- Separate services approach
-- Production deployment patterns
-- Best practices
+See [Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-Operations.md) for detailed information about:
+- Common deployment scenarios and patterns
+- Production deployment procedures
+- Operational guidance and troubleshooting
+- Detailed deployment execution walkthrough with examples
+- Best practices and complete workflows
 
 ---
 
@@ -740,9 +608,9 @@ See [Section 8: Deployment Scenarios & Examples](08-Deployment-Scenarios.md) for
 
 **Local Navigation - Table of Contents**
 
-| [← First Section: Introduction](#introduction--quick-start) | [↑ Table of Contents](#table-of-contents) | [Next Section: Architecture & Container System →](02-Architecture.md) |
+| [← First Section: Introduction](#introduction--quick-start) | [↑ Table of Contents](#table-of-contents) | [Next Section: Architecture & Execution Flow →](02-Architecture-and-Execution.md) |
 |:---:|:---:|:---:|
-| *Start of Chapter 7* | *Current Section* | *Section 2* |
+| *Start of Chapter 22* | *Current Section* | *Section 2* |
 
 </div>
 
@@ -753,6 +621,18 @@ See [Section 8: Deployment Scenarios & Examples](08-Deployment-Scenarios.md) for
 - Docker Compose documentation: https://docs.docker.com/compose/
 - Docker networking: https://docs.docker.com/network/
 - Volume management: https://docs.docker.com/storage/volumes/
+
+---
+
+> **Checkpoint:** With Docker Compose running, you now have a fully operational multi-node blockchain network. Verify it by running `docker compose ps` to confirm all containers are healthy, then `curl http://localhost:8080/api/admin/blockchain-info` to see the chain height increasing as blocks are mined. Open `http://localhost:8080` in your browser to see the Web Admin dashboard in action. If the chain height is stuck at 0, check the miner container logs with `docker compose logs miner_1` for error messages.
+
+---
+
+### Further Reading
+
+- **Multi-stage Docker builds** — Our Dockerfile uses a multi-stage build to keep the final image small (compile in a `rust:latest` stage, copy the binary into a minimal `debian:slim` stage). The Docker documentation on multi-stage builds explains the pattern in depth.
+- **Docker Compose profiles** — For more complex deployments (e.g., optional monitoring containers), Compose profiles let you define groups of services that are only started on demand.
+- **Container health checks** — Adding `healthcheck` directives to `docker-compose.yml` lets Compose wait for a service to be ready before starting dependent services, replacing the `wait-for-node.sh` script.
 
 ---
 

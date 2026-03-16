@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Section Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Section 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Section 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Section 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Section 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Section 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Section 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Section 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Section 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. **Section 2.4: Blockchain (Technical Foundations)** ← *You are here*
-10. <a href="../store/README.md">Section 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Section 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Section 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Section 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Section 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Section 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Section 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Section 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Section 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Section 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Section 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Section 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Section 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -37,7 +56,7 @@
 
 ---
 
-# Section 2.4.5: Transaction Lifecycle — Create → Sign → Verify → Mempool
+# Section 9.5: Transaction Lifecycle — Create → Sign → Verify → Mempool
 
 When you want to send coins to someone, what actually happens behind the scenes? This section traces a transaction through its complete lifecycle—from the moment you decide to send coins, through construction and signing, verification and mempool admission, to network propagation and eventual inclusion in a block.
 
@@ -51,9 +70,9 @@ We'll follow a transaction step-by-step through the exact Rust code that impleme
 - `bitcoin/src/node/txmempool.rs` — mempool storage and management
 - `bitcoin/src/node/context.rs` — node-level transaction processing
 
-## Scope within Section 2.4 (section flow)
+## Scope within Section 9 (section flow)
 
-This subsection covers **Section 2.4 (Blockchain — From Transaction to Block Acceptance) Steps 1–4**: transaction construction, signing, verification, mempool admission, and propagation triggers.
+This subsection covers **Section 9 (Blockchain — From Transaction to Block Acceptance) Steps 1–4**: transaction construction, signing, verification, mempool admission, and propagation triggers.
 
 
 **Important boundaries to understand**:
@@ -62,7 +81,7 @@ This subsection covers **Section 2.4 (Blockchain — From Transaction to Block A
 
 - **Mining boundary**: We also show where the system makes its **final "no invalid transactions" decision**. That decision happens in `BlockchainService::mine_block` (Step 7), which calls `Transaction::verify` for each transaction and aborts mining if any verification fails. This is a defensive check that ensures only valid transactions enter blocks.
 
-- **Mining triggers**: We show the **mining trigger entry points** (Step 8) that decide "should we start mining now?" and gather candidate transactions. The detailed block-building, Proof-of-Work, and persistence pipeline is explained in the next section (Section 2.4.6: Block Lifecycle and Mining).
+- **Mining triggers**: We show the **mining trigger entry points** (Step 8) that decide "should we start mining now?" and gather candidate transactions. The detailed block-building, Proof-of-Work, and persistence pipeline is explained in the next section (Section 9.6: Block Lifecycle and Mining).
 
 
 ### How to read this section
@@ -92,7 +111,7 @@ Before diving into the code, let's understand the big picture. A transaction goe
 
 This diagram shows the main stages a transaction passes through from creation to confirmation:
 
-```
+```text
 Wallet/client
   builds + signs a transaction:
     Transaction::new_utxo_transaction
@@ -101,7 +120,8 @@ Wallet/client
 Node (mempool acceptance boundary)
   NodeContext::process_transaction
     - store pending: GLOBAL_MEMORY_POOL.add
-    - reserve inputs (local conflict guard): UTXOSet::set_global_mem_pool_flag(true)
+    - reserve inputs (local conflict guard):
+      UTXOSet::set_global_mem_pool_flag(true)
     - spawn background work: submit_transaction_for_mining
           |
           +--> relay tx inventory to peers: send_inv(OpType::Tx, txid)
@@ -123,7 +143,7 @@ One important orientation detail: the “wallet builds + signs tx” box corresp
 
 Reading this top-to-bottom gives a short narrative of a transaction’s journey through the system. First, a wallet constructs and signs a transaction. Next, the node accepts it into the mempool and announces it to peers by `txid` (INV). Finally, at the mining boundary, the transaction is verified again before it can be included in a block.
 
-```
+```text
 Wallet (construct & sign a transaction):
   Transaction::new_utxo_transaction(...)
     -> UTXOSet::find_spendable_outputs(...)     // coin selection
@@ -133,10 +153,12 @@ Node (add transaction into mempool):
   NodeContext::process_transaction(tx)
     -> txmempool::add_to_memory_pool(tx)        // store pending
          -> UTXOSet::set_global_mem_pool_flag(true) // reserve inputs locally
-    -> spawn submit_transaction_for_mining(...) // async propagation/mining trigger
+    // async propagation/mining trigger
+    -> spawn submit_transaction_for_mining(...)
 
 Network (broadcast transaction to other nodes by txid):
-  send_inv(OpType::Tx, txid)                    // advertise inventory (txid only)
+  // advertise inventory (txid only)
+  send_inv(OpType::Tx, txid)
 
 Mining boundary (verify transaction before adding to blockchain and UTXO Set):
   BlockchainService::mine_block(txs)
@@ -174,14 +196,14 @@ Each step builds on the previous one, so reading them in order will give you a c
 
 Here's the path we'll follow through the code. Each step leads naturally to the next:
 
-- **Step 1** (`NodeContext::btc_transaction`) → Listing **2.4-5.1** — The entry point: user wants to send coins
-- **Step 2** (`Transaction::new_utxo_transaction`) → Listing **2.4-5.2** — Build the transaction: select inputs, create outputs, compute ID
-- **Step 3** (`trimmed_copy` / `sign` / `verify`) → Listing **2.4-5.3** — Authorize the transaction: sign inputs to prove ownership
-- **Step 4** (`NodeContext::process_transaction`) → Listing **2.4-5.4** — Accept into mempool: store pending transaction
-- **Step 5** (`txmempool.rs` add/remove/exists) → Listing **2.4-5.5** — Mempool internals: how transactions are stored and tracked
-- **Step 6** (`submit_transaction_for_mining` + broadcast helpers) → Listing **2.4-5.6** — Propagate to network: announce transaction to peers
-- **Step 7** (mining boundary verification in `BlockchainService::mine_block`) → Listing **2.4-5.7** — Final verification: check signatures before mining
-- **Step 8** (mining trigger entry points in `miner.rs`) → Listing **2.4-5.8** — Mining trigger: when to start mining a block
+- **Step 1** (`NodeContext::btc_transaction`) → Listing **9-18** — The entry point: user wants to send coins
+- **Step 2** (`Transaction::new_utxo_transaction`) → Listing **9-19** — Build the transaction: select inputs, create outputs, compute ID
+- **Step 3** (`trimmed_copy` / `sign` / `verify`) → Listing **9-5.3** — Authorize the transaction: sign inputs to prove ownership
+- **Step 4** (`NodeContext::process_transaction`) → Listing **9-5.4** — Accept into mempool: store pending transaction
+- **Step 5** (`txmempool.rs` add/remove/exists) → Listing **9-5.5** — Mempool internals: how transactions are stored and tracked
+- **Step 6** (`submit_transaction_for_mining` + broadcast helpers) → Listing **9-5.6** — Propagate to network: announce transaction to peers
+- **Step 7** (mining boundary verification in `BlockchainService::mine_block`) → Listing **9-5.7** — Final verification: check signatures before mining
+- **Step 8** (mining trigger entry points in `miner.rs`) → Listing **9-5.8** — Mining trigger: when to start mining a block
 
 ---
 
@@ -201,10 +223,11 @@ This is the highest-level orchestration method: it creates a transaction (wallet
   - submits the transaction into the node’s mempool/network pipeline (via `process_transaction`)
 - **Why this method exists**: it is the book’s “one call” entry point that turns a user intent (“send coins”) into a constructed UTXO transaction and then hands it to the node for distribution/confirmation.
 
-**Code Listing 2.4-5.1 (annotated)**: `NodeContext::btc_transaction`
+**Code Listing 9-18 (annotated)**: `NodeContext::btc_transaction`
+
+> **Source:** `context.rs` — Source
 
 ```rust
-// Source: bitcoin/src/node/context.rs
 pub async fn btc_transaction(
     &self,
     wlt_frm_addr: &WalletAddress,
@@ -212,21 +235,25 @@ pub async fn btc_transaction(
     amount: i32,
 ) -> Result<String> {
     // Create a UTXOSet handle (derived-state accessor).
-    // Why: transaction construction needs coin selection; signing needs previous-tx lookups via chainstate.
+    // Why: transaction construction needs coin selection; signing needs
+    // previous-tx lookups via chainstate.
     let utxo_set = UTXOSet::new(self.blockchain.clone());
 
     // Build + sign the transaction (wallet-side responsibility).
-    // Why: the node should not "invent" spends; it only accepts/relays what the wallet constructed.
-    let utxo =
-        Transaction::new_utxo_transaction(wlt_frm_addr, wlt_to_addr, amount, &utxo_set).await?;
+    // Why: the node should not "invent" spends; it only accepts/relays what the
+    // wallet constructed.
+    let utxo = Transaction::new_utxo_transaction(
+        wlt_frm_addr, wlt_to_addr, amount, &utxo_set,
+    ).await?;
 
     // Submit to the node’s mempool/network pipeline.
-    // Why: once constructed, a tx must enter the node’s pending set before it can be mined/relayed.
+    // Why: once constructed, a tx must enter the node’s pending set before it
+    // can be mined/relayed.
     let addr_from = crate::GLOBAL_CONFIG.get_node_addr();
     self.process_transaction(&addr_from, utxo).await
 }
 ```
-**Listing 2.4-5.1 explanation**:
+**Listing 9-18 explanation**:
 
 - It creates a `UTXOSet` handle so the constructor can perform coin selection and later resolve previous transactions during signing.
 - It constructs and signs a new spending transaction by calling `Transaction::new_utxo_transaction(...)`.
@@ -261,7 +288,7 @@ Now that we have the entry point, let's see how the transaction is actually buil
 
 ### Text diagram — outpoints and change
 
-```
+```text
 Inputs (vin): concrete outpoints spent
   - (txid_A, vout=0)
   - (txid_B, vout=1)
@@ -273,97 +300,47 @@ Outputs (vout): new coins created
 
 This diagram is the key UTXO mental model: **inputs consume specific previous outputs**; outputs **create new spendable coins**, including change when the selected inputs exceed the payment amount.
 
-**Code Listing 2.4-5.2 (annotated)**: `Transaction::new_utxo_transaction`
+**Code Listing 9-19 (annotated)**: `Transaction::new_utxo_transaction`
+
+> **Source:** `transaction.rs` — Source
 
 ```rust
-// Source: bitcoin/src/primitives/transaction.rs
 pub async fn new_utxo_transaction(
     from_wlt_addr: &WalletAddress,
     to_wlt_addr: &WalletAddress,
     tx_amount: i32,
     utxo_set: &UTXOSet,
 ) -> Result<Transaction> {
-    // Load sender wallet keys.
-    // Why: inputs carry the sender pubkey, and signatures must be produced by the sender's private key.
     let wallets = WalletService::new()?;
-    let from_wallet = wallets
-        .get_wallet(from_wlt_addr)
-        .ok_or_else(|| BtcError::UTXONotFoundError(from_wlt_addr.as_string()))?;
-    // Compute the "ownership identity" used by outputs in this implementation (pubkey-hash lock).
+    let from_wallet = wallets.get_wallet(from_wlt_addr)?;
     let from_public_key_hash = hash_pub_key(from_wallet.get_public_key());
-
-    // Ask the UTXO set for outpoints (txid, vout) that can cover the spend.
-    // Why: in UTXO systems you don't subtract from an account; you consume specific previous outputs.
     let (available_funds, valid_outputs) = utxo_set
-        .find_spendable_outputs(from_public_key_hash.as_slice(), tx_amount)
+        .find_spendable_outputs(&from_public_key_hash, tx_amount)
         .await?;
 
-    debug!(
-        "Transaction creation: from={}, to={}, amount={}",
-        from_wlt_addr.as_str(),
-        to_wlt_addr.as_str(),
-        tx_amount
-    );
-    debug!(
-        "Found spendable outputs: accumulated={}, valid_outputs={:?}",
-        available_funds, valid_outputs
-    );
+    if available_funds < tx_amount { return Err(BtcError::NotEnoughFunds); }
 
-    // Hard check: coin selection must cover the requested amount.
-    if available_funds < tx_amount {
-        return Err(BtcError::NotEnoughFunds);
-    }
-
-    // Convert selected outpoints (txid_hex + vout indexes) into TXInputs.
-    // Why: an input references a concrete previous output via the outpoint (txid, vout).
     let mut inputs = vec![];
     for (txid_hex, out_indexes) in valid_outputs {
-        // DB/JSON/logs use hex; tx structures use raw bytes.
-        let txid = HEXLOWER
-            .decode(txid_hex.as_bytes())
-            .map_err(|e| BtcError::TransactionIdHexDecodingError(e.to_string()))?;
-        for current_out_index in out_indexes {
-            let input = TXInput {
-                txid: txid.clone(),                 // which previous transaction
-                vout: current_out_index,            // which output inside it (0-based)
-                signature: vec![],                  // filled by sign(...)
-                pub_key: from_wallet.get_public_key().to_vec(), // lets verifiers derive the spender's pubkey-hash
-            };
-            inputs.push(input);
+        let txid = HEXLOWER.decode(txid_hex.as_bytes())?;
+        for vout_idx in out_indexes {
+            inputs.push(TXInput::new(&txid, vout_idx));
         }
     }
 
-    // Outputs: recipient + optional change.
-    // Why: UTXO inputs are consumed whole; any remainder must be recreated as a new output back to the sender.
     let mut outputs = vec![TXOutput::new(tx_amount, to_wlt_addr)?];
     if available_funds > tx_amount {
         let change = available_funds - tx_amount;
-        debug!(
-            "Creating change output: {} to {}",
-            change,
-            from_wlt_addr.as_str()
-        );
         outputs.push(TXOutput::new(change, from_wlt_addr)?);
     }
 
-    // Compute txid and attach signatures.
-    // Why: the txid is the identifier future spends will reference; signatures authorize this spend.
-    let mut tx = Transaction {
-        id: vec![],
-        vin: inputs,
-        vout: outputs,
-    };
+    let mut tx = Transaction { id: vec![], vin: inputs, vout: outputs };
     tx.id = tx.hash()?;
-    debug!(
-        "Created transaction with {} inputs and {} outputs",
-        tx.get_vin().len(),
-        tx.get_vout().len()
-    );
     tx.sign(utxo_set.get_blockchain(), from_wallet.get_pkcs8()).await?;
     Ok(tx)
 }
 ```
-**Listing 2.4-5.2 explanation**:
+**Listing 9-19 explanation**:
 
 - It loads the sender’s keys and derives the sender’s `pub_key_hash`, which is the “lock identity” used by outputs in this implementation.
 - It performs coin selection via `UTXOSet::find_spendable_outputs(...)`, producing concrete outpoints \((txid, vout)\) that cover the requested amount (or errors if funds are insufficient).
@@ -401,95 +378,58 @@ This project uses a common Bitcoin-like trick: signatures do not “sign themsel
   - reads previous transactions from chainstate (to bind signatures to referenced output locks)
 - **Why this pattern exists**: it avoids circular signing (“the signature cannot sign itself”) while still committing the signature to the exact outpoint and locking data being spent.
 
-**Code Listing 2.4-5.3 (annotated)**: `trimmed_copy`, `sign`, `verify`
+**Code Listing 9-5.3 (annotated)**: `trimmed_copy`, `sign`, `verify`
+
+> **Source:** `transaction.rs` — Source
 
 ```rust
-// Source: bitcoin/src/primitives/transaction.rs
 fn trimmed_copy(&self) -> Transaction {
-    let mut inputs = vec![];
-    let mut outputs = vec![];
-    for input in &self.vin {
-        // Keep only (txid, vout).
-        // Why: signatures must not sign themselves (no circular dependency).
-        let txinput = TXInput::new(input.get_txid(), input.get_vout());
-        inputs.push(txinput);
-    }
-    for output in &self.vout {
-        outputs.push(output.clone());
-    }
-    Transaction {
-        id: self.id.clone(),
-        vin: inputs,
-        vout: outputs,
-    }
+    let inputs = self.vin.iter()
+        .map(|i| TXInput::new(i.get_txid(), i.get_vout()))
+        .collect();
+    Transaction { id: self.id.clone(), vin: inputs, vout: self.vout.clone() }
 }
 
-async fn sign(&mut self, blockchain: &BlockchainService, private_key: &[u8]) -> Result<()> {
+async fn sign(
+    &mut self,
+    blockchain: &BlockchainService,
+    private_key: &[u8],
+) -> Result<()> {
     let mut tx_copy = self.trimmed_copy();
-
     for (idx, vin) in self.vin.iter_mut().enumerate() {
-        // Pull the previous transaction so we can bind the signature to the referenced output lock.
-        // Why: a signature must authorize spending *that specific* previous output.
-        let prev_tx_option = blockchain.find_transaction(vin.get_txid()).await?;
-        let prev_tx = match prev_tx_option {
-            Some(tx) => tx,
-            None => {
-                return Err(BtcError::TransactionNotFoundError(
-                    "(sign) Previous transaction is not correct".to_string(),
-                ));
-            }
-        };
+        let prev_tx = blockchain.find_transaction(vin.get_txid()).await??;
 
-        // Commit to the referenced output's pub_key_hash, but never to the signature field itself.
-        // Why: we want the signature to be invalid if you change which output is being spent.
-        tx_copy.vin[idx].signature = vec![];
-        tx_copy.vin[idx].pub_key = prev_tx.vout[vin.vout].pub_key_hash.clone(); // temporary "script/lock" binding
+        tx_copy.vin[idx].pub_key = prev_tx.vout[vin.vout].pub_key_hash.clone();
         tx_copy.id = tx_copy.hash()?;
-        tx_copy.vin[idx].pub_key = vec![];
-
         let signature = schnorr_sign_digest(private_key, tx_copy.get_id())?;
         vin.signature = signature;
+        tx_copy.vin[idx].pub_key = vec![];
     }
     Ok(())
 }
 
 pub async fn verify(&self, blockchain: &BlockchainService) -> Result<bool> {
-    if self.is_coinbase() {
-        // Coinbase has no real previous outpoints to authorize in this simplified model.
-        return Ok(true);
-    }
-    let mut trimmed_self_copy = self.trimmed_copy();
+    if self.is_coinbase() { return Ok(true); }
+    let mut trimmed_copy = self.trimmed_copy();
     for (idx, vin) in self.vin.iter().enumerate() {
-        let current_vin_tx_option = blockchain.find_transaction(vin.get_txid()).await?;
-        let current_vin_tx = match current_vin_tx_option {
-            Some(tx) => tx,
-            None => {
-                return Err(BtcError::TransactionNotFoundError(
-                    "(verify) Previous transaction is not correct".to_string(),
-                ));
-            }
-        };
-
-        // Rebuild the exact digest the signer committed to.
-        // Why: verification must reconstruct *the same* hash that was signed.
-        trimmed_self_copy.vin[idx].signature = vec![];
-        trimmed_self_copy.vin[idx].pub_key = current_vin_tx.vout[vin.vout].pub_key_hash.clone();
-        trimmed_self_copy.id = trimmed_self_copy.hash()?;
-        trimmed_self_copy.vin[idx].pub_key = vec![];
-
-        let verify = schnorr_sign_verify(
+        let prev_tx = blockchain.find_transaction(vin.get_txid()).await??;
+        let pkh = prev_tx.vout[vin.vout].pub_key_hash.clone();
+        trimmed_copy.vin[idx].pub_key = pkh;
+        trimmed_copy.id = trimmed_copy.hash()?;
+        let is_valid = schnorr_sign_verify(
             vin.get_pub_key(),
             vin.get_signature(),
-            trimmed_self_copy.get_id(),
+            trimmed_copy.get_id(),
         );
-        if !verify {
+        if !is_valid {
             return Ok(false);
         }
+        trimmed_copy.vin[idx].pub_key = vec![];
     }
     Ok(true)
 }
 ```
-**Listing 2.4-5.3 explanation**:
+**Listing 9-5.3 explanation**:
 
 - `trimmed_copy()` creates a “trimmed copy” of the transaction for signing/verification: it keeps the outputs, but rewrites each input to contain only its outpoint \((txid, vout)\), with signing-related fields (like `signature`, and later the temporary `pub_key`/lock binding) cleared. This gives us a stable payload to hash: the signature is computed over the transaction *shape* and referenced outpoints, not over the signature bytes themselves.
 - `sign(...)` signs each input separately: it looks up the previous transaction, temporarily injects the referenced output’s `pub_key_hash` into the copy, hashes that copy, and signs the digest; the resulting signature is written into the real input.
@@ -518,42 +458,32 @@ This is the node’s acceptance boundary: reject duplicates, add to the mempool,
   - spawns an async task for propagation/mining trigger
 - **Why this method exists**: it centralizes the node’s “mempool gate” so API and network submissions follow the same path.
 
-**Code Listing 2.4-5.4 (annotated)**: `NodeContext::process_transaction`
+**Code Listing 9-5.4 (annotated)**: `NodeContext::process_transaction`
+
+> **Source:** `context.rs` — Source
 
 ```rust
-// Source: bitcoin/src/node/context.rs
 pub async fn process_transaction(
     &self,
     addr_from: &std::net::SocketAddr,
     utxo: Transaction,
 ) -> Result<String> {
-    // 1) Fast duplicate suppression.
-    // Why: a mempool is a set; duplicates waste bandwidth and complicate mining selection.
     if transaction_exists_in_pool(&utxo) {
-        info!("Transaction: {:?} already exists", utxo.get_id());
-        return Err(BtcError::TransactionAlreadyExistsInMemoryPool(
-            utxo.get_tx_id_hex(),
-        ));
+        let txid = utxo.get_tx_id_hex();
+        return Err(BtcError::TransactionAlreadyExistsInMemoryPool(txid));
     }
-
-    // 2) Add to mempool and mark referenced outpoints as reserved locally.
-    // Why: pending txs must be tracked before they can be mined/relayed; reservation reduces local coin-selection races.
     add_to_memory_pool(utxo.clone(), &self.blockchain).await?;
 
-    // 3) Spawn network broadcast / mining trigger so callers aren’t blocked.
-    // Why: accepting a tx should be fast; propagation/mining can take time and run asynchronously.
     let context = self.clone();
     let addr_copy = *addr_from;
     let tx = utxo.clone();
     tokio::spawn(async move {
         let _ = context.submit_transaction_for_mining(&addr_copy, tx).await;
     });
-
-    // 4) Return txid immediately (API friendliness).
     Ok(utxo.get_tx_id_hex())
 }
 ```
-**Listing 2.4-5.4 explanation**:
+**Listing 9-5.4 explanation**:
 
 - It first checks whether this transaction is **already in the mempool** (a duplicate by `txid`) so the node doesn’t store, relay, or attempt to mine the same pending transaction twice.
 - It writes the transaction into the mempool via `add_to_memory_pool(...)` and applies local UTXO “reservation” so the node is less likely to build conflicting pending spends concurrently.
@@ -591,62 +521,35 @@ In our implementation, mempool admission “reserves” the inputs by marking th
   - mutates persisted UTXO flags (`set_global_mem_pool_flag`)
 - **Why this exists**: the mempool is the node’s holding area for unconfirmed txs, and the “reservation flag” reduces obvious local coin-selection races while a tx is pending.
 
-**Code Listing 2.4-5.5 (annotated)**: `transaction_exists_in_pool`, `add_to_memory_pool`, `remove_from_memory_pool`
+**Code Listing 9-5.5 (annotated)**: `transaction_exists_in_pool`, `add_to_memory_pool`, `remove_from_memory_pool`
+
+> **Source:** `txmempool.rs` — Source
 
 ```rust
-// Source: bitcoin/src/node/txmempool.rs
 pub async fn add_to_memory_pool(
     tx: Transaction,
-    blockchain_service: &BlockchainService,
+    blockchain: &BlockchainService,
 ) -> Result<()> {
-    // Logging only (helps when reading node traces).
-    debug!("\n");
-    debug!(
-        "******************************************************************************************************"
-    );
-    debug!(
-        "Adding transaction to memory pool: {:?}",
-        tx.get_tx_id_hex()
-    );
-    debug!(
-        "******************************************************************************************************\n"
-    );
-
-    // Store as "pending" so miners can include it in a candidate block.
-    // Why: mempool is the staging area between "seen" and "confirmed".
-    GLOBAL_MEMORY_POOL
-        .add(tx.clone())
-        .expect("Memory pool add error");
-
-    // Reserve referenced outpoints to reduce local conflicts while tx is pending.
-    // Why: avoid building multiple pending txs that try to spend the same coin concurrently.
-    let utxo_set = UTXOSet::new(blockchain_service.clone());
-    utxo_set.set_global_mem_pool_flag(&tx.clone(), true).await?;
-
+    GLOBAL_MEMORY_POOL.add(tx.clone())?;
+    let utxo_set = UTXOSet::new(blockchain.clone());
+    utxo_set.set_global_mem_pool_flag(&tx, true).await?;
     Ok(())
 }
 
-pub async fn remove_from_memory_pool(tx: Transaction, blockchain: &BlockchainService) {
-    // Remove from pending set.
-    // Why: once confirmed (or dropped), it should no longer be considered for mining.
-    GLOBAL_MEMORY_POOL
-        .remove(tx.clone())
-        .expect("Memory pool remove error");
-
-    // Un-reserve referenced outpoints once tx leaves the mempool.
+pub async fn remove_from_memory_pool(
+    tx: Transaction,
+    blockchain: &BlockchainService,
+) {
+    GLOBAL_MEMORY_POOL.remove(tx.clone()).ok();
     let utxo_set = UTXOSet::new(blockchain.clone());
-    utxo_set
-        .set_global_mem_pool_flag(&tx.clone(), false)
-        .await
-        .expect("Failed to get blockchain");
+    utxo_set.set_global_mem_pool_flag(&tx, false).await.ok();
 }
 
 pub fn transaction_exists_in_pool(tx: &Transaction) -> bool {
-    // Quick "is pending?" check.
     GLOBAL_MEMORY_POOL.contains_transaction(tx).unwrap_or(false)
 }
 ```
-**Listing 2.4-5.5 explanation**:
+**Listing 9-5.5 explanation**:
 
 - `add_to_memory_pool(...)` adds the tx to the in-memory pending set, then marks its referenced outpoints as “in mempool” in the UTXO store to reduce obvious local double-selection.
 - `remove_from_memory_pool(...)` removes the tx and clears those reservation flags, making those outpoints available for selection again.
@@ -676,83 +579,55 @@ After mempool admission, the node may broadcast the transaction to peers and may
   - may trigger mining and block broadcast if threshold is met
 - **Why this method exists**: it keeps mempool admission fast while moving propagation and mining triggers into background work.
 
-**Code Listing 2.4-5.6 (annotated)**: broadcast + mining trigger helpers
+**Code Listing 9-5.6 (annotated)**: broadcast + mining trigger helpers
+
+> **Source:** `context.rs` — Source
 
 ```rust
-// Source: bitcoin/src/node/context.rs
 async fn submit_transaction_for_mining(
     &self,
     addr_from: &std::net::SocketAddr,
     utxo: Transaction,
 ) -> Result<()> {
-    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
-
-    // Broadcast inventory to peers if this is the central node.
-    // Why: peers learn about txs via INV first, then request full data if needed.
-    if my_node_addr.eq(&CENTERAL_NODE) {
+    if GLOBAL_CONFIG.get_node_addr() == CENTERAL_NODE {
         let nodes = self.get_nodes_excluding_sender(addr_from).await?;
-        // Note: we broadcast only the txid bytes, not the full transaction payload.
         self.broadcast_transaction_to_nodes(&nodes, utxo.get_id_bytes()).await;
     }
 
-    // Trigger mining if threshold is met.
-    // Why: this implementation uses a simple threshold to decide when to mine.
     if should_trigger_mining() {
-        if let Some(mining_address) = GLOBAL_CONFIG.get_mining_addr() {
-            match prepare_mining_utxo(&mining_address) {
-                Ok(txs) => {
-                    if !txs.is_empty() {
-                        // Mine a block from the current mempool snapshot (+ coinbase).
-                        process_mine_block(txs, &self.blockchain).await.map(|_| ())
-                    } else {
-                        warn!("Mining triggered but no valid transactions to mine");
-                        Ok(())
-                    }
-                }
-                Err(e) => {
-                    error!("Failed to prepare mining transactions: {}", e);
-                    cleanup_invalid_transactions().await
-                }
+        if let Some(mining_addr) = GLOBAL_CONFIG.get_mining_addr() {
+            let txs = prepare_mining_utxo(&mining_addr)?;
+            if !txs.is_empty() {
+                process_mine_block(txs, &self.blockchain).await?;
             }
-        } else {
-            warn!("Mining triggered but no mining address configured");
-            Ok(())
         }
-    } else {
-        Ok(())
     }
+    Ok(())
 }
 
 async fn get_nodes_excluding_sender(
     &self,
     addr_from: &std::net::SocketAddr,
 ) -> Result<Vec<Node>> {
-    let nodes = GLOBAL_NODES
-        .get_nodes()
-        .expect("Global nodes get error")
+    let my_addr = GLOBAL_CONFIG.get_node_addr();
+    let nodes = GLOBAL_NODES.get_nodes()?
         .into_iter()
-        .filter(|node| {
-            let node_addr = node.get_addr();
-            let my_addr = GLOBAL_CONFIG.get_node_addr();
-            node_addr != *addr_from && node_addr != my_addr
-        })
+        .filter(|n| n.get_addr() != *addr_from && n.get_addr() != my_addr)
         .collect();
     Ok(nodes)
 }
 
 async fn broadcast_transaction_to_nodes(&self, nodes: &[Node], txid: Vec<u8>) {
-    let txid_clone = txid.clone();
-    nodes.iter().for_each(|node| {
-        let node_addr = node.get_addr();
-        let txid = txid_clone.clone();
+    for node in nodes {
+        let addr = node.get_addr();
+        let txid = txid.clone();
         tokio::spawn(async move {
-            // INV advertises knowledge of an object; peers can request it with GETDATA.
-            send_inv(&node_addr, OpType::Tx, &[txid]).await;
+            send_inv(&addr, OpType::Tx, &[txid]).await;
         });
-    });
+    }
 }
 ```
-**Listing 2.4-5.6 explanation**:
+**Listing 9-5.6 explanation**:
 
 - It optionally broadcasts an INV message (tx inventory) to peers, sending only the `txid` so peers can request the full transaction later if needed.
 - It checks whether mining should trigger, and if so prepares a mempool snapshot for mining and hands it to the mining pipeline; errors may lead to cleanup of invalid pending transactions.
@@ -781,25 +656,23 @@ This is where the implementation enforces transaction signature correctness befo
   - then calls into the underlying block-mining implementation
 - **Why this exists**: it establishes a hard correctness boundary: the node must not mine a block containing invalid signatures.
 
-**Code Listing 2.4-5.7 (annotated)**: `BlockchainService::mine_block`
+**Code Listing 9-5.7 (annotated)**: `BlockchainService::mine_block`
+
+> **Source:** `chainstate.rs` — Source
 
 ```rust
-// Source: bitcoin/src/chain/chainstate.rs
 pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
-    // Defensive validation: ensure every tx is signature-valid before mining.
-    // Why: producing a block with invalid txs wastes PoW and will be rejected by peers.
-    for trasaction in transactions {
-        let is_valid = trasaction.verify(self).await?;
-        if !is_valid {
+    // Defensive verification: ensure all txs are valid before mining
+    for tx in transactions {
+        if !tx.verify(self).await? {
             return Err(BtcError::InvalidTransaction);
         }
     }
-    // Hand off to the underlying mining/storage implementation.
     let blockchain_guard = self.0.write().await;
     blockchain_guard.mine_block(transactions).await
 }
 ```
-**Listing 2.4-5.7 explanation**:
+**Listing 9-5.7 explanation**:
 
 - It treats block production as a hard correctness boundary: every candidate transaction must pass `Transaction::verify(...)` before any proof-of-work effort is spent.
 - Only after validation does it delegate to the underlying mining implementation to build and mine a block from the provided transaction list.
@@ -833,82 +706,55 @@ This section’s goal is the transaction lifecycle, but it’s useful to see the
   - broadcasts new block inventory to peers
 - **Why this is shown here**: it demonstrates the immediate “next step” after mempool admission and clarifies where transactions transition from “pending” to “confirmed”.
 
-**Code Listing 2.4-5.8 (annotated)**: mining trigger and pipeline
+**Code Listing 9-5.8 (annotated)**: mining trigger and pipeline
+
+> **Source:** `miner.rs` — Source
 
 ```rust
-// Source: bitcoin/src/node/miner.rs
 const TRANSACTION_THRESHOLD: usize = 3;
 
-fn create_mining_coinbase_transaction(to: &WalletAddress) -> Result<Transaction> {
-    // Coinbase creates new coins as a mining reward (subsidy).
-    Transaction::new_coinbase_tx(to)
-}
-
 pub fn should_trigger_mining() -> bool {
-    let pool_size = GLOBAL_MEMORY_POOL.len().expect("Memory pool length error");
-    let is_miner = GLOBAL_CONFIG.is_miner();
-    // Why: only miners should mine, and we avoid mining "too often" by requiring a minimum pool size.
-    pool_size >= TRANSACTION_THRESHOLD && is_miner
+    let pool_size = GLOBAL_MEMORY_POOL.len().unwrap_or(0);
+    pool_size >= TRANSACTION_THRESHOLD && GLOBAL_CONFIG.is_miner()
 }
 
-pub fn prepare_mining_utxo(mining_address: &WalletAddress) -> Result<Vec<Transaction>> {
-    // Snapshot the current mempool transactions.
-    let txs = GLOBAL_MEMORY_POOL.get_all()?;
-
-    info!("Preparing to mine with {} valid transactions", txs.len());
-
-    // Always include coinbase so the miner gets the subsidy.
-    let coinbase_tx = create_mining_coinbase_transaction(mining_address)?;
-    let mut final_txs = txs;
-    final_txs.push(coinbase_tx);
-
-    Ok(final_txs)
+pub fn prepare_mining_utxo(
+    mining_address: &WalletAddress,
+) -> Result<Vec<Transaction>> {
+    let mut txs = GLOBAL_MEMORY_POOL.get_all()?;
+    let coinbase = Transaction::new_coinbase_tx(mining_address)?;
+    txs.push(coinbase);
+    Ok(txs)
 }
 
 pub async fn process_mine_block(
     txs: Vec<Transaction>,
     blockchain: &BlockchainService,
 ) -> Result<Block> {
-    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
-
-    // Mine a new block with the transactions in the memory pool.
-    // Note: `blockchain.mine_block` will verify tx signatures first in this implementation.
     let new_block = blockchain.mine_block(&txs).await?;
-
-    info!(
-        "New block {} is mined by node {}!",
-        new_block.get_hash(),
-        my_node_addr
-    );
-
-    // Remove mined transactions from the mempool and un-reserve their outpoints.
-    // Why: once confirmed in a block, they are no longer pending and their reservation flags should clear.
     for tx in &txs {
         remove_from_memory_pool(tx.clone(), blockchain).await;
     }
-
     broadcast_new_block(&new_block).await?;
     Ok(new_block)
 }
 
 pub async fn broadcast_new_block(block: &Block) -> Result<()> {
-    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
-    let nodes = GLOBAL_NODES.get_nodes().expect("Global nodes get error");
-    nodes
-        .iter()
-        .filter(|node| !my_node_addr.eq(&node.get_addr()))
-        .for_each(|node| {
-            let node_addr = node.get_addr();
-            let block_hash = block.get_hash_bytes();
+    let my_addr = GLOBAL_CONFIG.get_node_addr();
+    let nodes = GLOBAL_NODES.get_nodes()?;
+    for node in nodes {
+        if node.get_addr() != my_addr {
+            let addr = node.get_addr();
+            let hash = block.get_hash_bytes();
             tokio::spawn(async move {
-                // Announce the new block by inventory; peers can request it afterwards.
-                send_inv(&node_addr, OpType::Block, &[block_hash]).await;
+                send_inv(&addr, OpType::Block, &[hash]).await;
             });
-        });
+        }
+    }
     Ok(())
 }
 ```
-**Listing 2.4-5.8 explanation**:
+**Listing 9-5.8 explanation**:
 
 - `should_trigger_mining()` gates mining on “am I a miner?” and “is the mempool large enough?”.
 - `prepare_mining_utxo(...)` snapshots the mempool and appends a coinbase transaction so the mined block includes a reward.
@@ -929,14 +775,14 @@ pub async fn broadcast_new_block(block: &Block) -> Result<()> {
 
 ## Navigation
 
-- **Previous**: Section 2.4.4 (UTXO Set)
-- **Next**: Section 2.4.6 (Block Lifecycle and Mining)
+- **Previous**: Section 9.4 (UTXO Set)
+- **Next**: Section 9.6 (Block Lifecycle and Mining)
 
 ---
 
 <div align="center">
 
-**📚 [← Previous: UTXO Set](04-UTXO-Set.md)** | **Transaction Lifecycle** | **[Next: Block Lifecycle & Mining →](06-Block-Lifecycle-and-Mining.md)** 📚
+**[← Previous: UTXO Set](04-UTXO-Set.md)** | **Transaction Lifecycle** | **[Next: Block Lifecycle & Mining →](06-Block-Lifecycle-and-Mining.md)** 
 
 </div>
 

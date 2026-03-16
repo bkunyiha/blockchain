@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. **Chapter 10: Rust Language Guide** ← *You are here*
+34. <a href="../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -38,11 +57,9 @@
 ---
 # Error Handling: Result and Option
 
-Error handling is a critical aspect of any production system. In traditional languages, errors are often handled through exceptions or return codes, leading to error paths that are easy to ignore or forget. Rust takes a fundamentally different approach: errors are explicit in function signatures, and the type system forces us to handle them. This design prevents entire classes of bugs where errors are silently ignored.
+Error handling is explicit and type-safe in Rust. For comprehensive treatment, see [The Rust Book: Error Handling](https://doc.rust-lang.org/book/ch09-00-error-handling.html).
 
-In this chapter, we'll explore Rust's error handling mechanisms: the `Result` type for operations that can fail, the `Option` type for values that might not exist, and the `?` operator for concise error propagation. We'll see how these features work together to create robust, maintainable error handling in our blockchain.
-
-Rust provides two primary types for representing potential failures: `Result<T, E>` for operations that can fail, and `Option<T>` for operations that might not produce a value. Both types force explicit handling, making error paths visible and preventing accidental error propagation.
+`Result<T, E>` represents operations that can fail; `Option<T>` represents values that might not exist. Both force explicit handling, preventing silently ignored errors.
 
 ### Result Type: Explicit Success or Failure
 
@@ -178,27 +195,23 @@ pub fn get_blockchain_height(&self) -> Result<usize> {
 - **No exceptions**: Unlike exceptions in other languages, Rust's error handling doesn't require stack unwinding in the success case
 - **Optimization**: The compiler can optimize error handling aggressively
 
-### Error Propagation Patterns
+## Patterns: Early Return, Transformation, Context
 
-**Pattern 1: Early Return with `?`**
 ```rust
+// Early return with ?
 pub fn process_block(block: Block) -> Result<()> {
-    validate_block(&block)?;  // Early return on error
-    add_to_chain(block)?;     // Early return on error
+    validate(&block)?;
+    add_to_chain(block)?;
     Ok(())
 }
-```
 
-**Pattern 2: Error Transformation**
-```rust
+// Error transformation
 pub fn deserialize(bytes: &[u8]) -> Result<Block> {
     bincode::decode(bytes)
         .map_err(|e| BtcError::DeserializationError(e.to_string()))
 }
-```
 
-**Pattern 3: Error Context**
-```rust
+// Error context with ok_or_else
 pub fn get_block(height: usize) -> Result<Block> {
     self.blocks
         .get(height)
@@ -206,23 +219,16 @@ pub fn get_block(height: usize) -> Result<Block> {
 }
 ```
 
-### Error Handling Best Practices
+## Best Practices
 
-1. **Use `Result` for recoverable errors**: Operations that can fail should return `Result`
-2. **Use `Option` for missing values**: When a value might not exist, use `Option`
-3. **Propagate with `?`**: Use `?` for concise error propagation
-4. **Add context**: Use `map_err` to add context to errors
-5. **Match on specific errors**: Use pattern matching to handle different error cases differently
-
-In our blockchain, these patterns ensure robust error handling throughout the system, from transaction validation to network communication.
+- **`Result`** for recoverable errors; **`Option`** for missing values
+- Propagate with **`?`** operator for conciseness
+- Add context with **`map_err()`**
+- Match on specific error types for different handling
 
 ## Summary
 
-Rust's error handling is explicit and type-safe. The `Result` type represents operations that can fail, while `Option` represents values that might not exist. Both types force explicit handling, preventing bugs from silently ignored errors.
-
-The `?` operator makes error propagation concise and readable, while custom error types enable domain-specific error handling with rich context. This approach ensures errors are never silently ignored and provides the information needed to diagnose and fix issues.
-
-In the next chapter, we'll explore generics, which allow us to write reusable code that works with multiple types while maintaining type safety—another key feature that enables flexible, maintainable code.
+Rust's error handling is explicit and type-safe. `Result` and `Option` force explicit handling, preventing silently ignored errors. The `?` operator enables concise propagation. Custom error types provide domain-specific context.
 
 ---
 
@@ -244,7 +250,7 @@ In the next chapter, we'll explore generics, which allow us to write reusable co
 
 <div align="center">
 
-**📚 [← Rust Guide Index](README.md)** | **Error Handling** | **[← Previous](04-Traits.md)** | **[Next →](06-Generics.md)** 📚
+**[← Rust Guide Index](README.md)** | **Error Handling** | **[← Previous](04-Traits.md)** | **[Next →](06-Generics.md)** 
 
 </div>
 

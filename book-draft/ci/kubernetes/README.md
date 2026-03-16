@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. **Chapter 9: Kubernetes Deployment** ← *You are here*
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. **Chapter 23: Kubernetes Deployment** ← *You are here*
+37. <a href="01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -44,29 +63,26 @@
 
 ---
 
-## Chapter 9: Kubernetes Deployment
+## Chapter 23: Kubernetes Deployment
 
 **Part II: Deployment & Operations**
 
 <div align="center">
 
-**📚 [← Chapter 8: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 9: Kubernetes** | **[End of Book →](#)** 📚
-
+**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](#)**
 </div>
 
 ---
 
-In this final chapter, we'll learn how to deploy and manage our blockchain network on Kubernetes. This is where we transform our development system into a production-ready, scalable blockchain network that can handle real-world workloads.
+> **Prerequisites**: This chapter assumes you have read Chapter 22 (Docker Compose) and have basic familiarity with Kubernetes concepts (pods, services, deployments). If Kubernetes is new to you, the chapter defines each resource type as it appears — but having `kubectl` installed and a cluster available (even Minikube or Docker Desktop's built-in Kubernetes) will help you follow along.
 
-> **Methods involved**
-> - `deploy.sh` (`ci/kubernetes/manifests/deploy.sh`, [Listing 9.1](01A-Kubernetes-Code-Listings.md#listing-91-cikubernetesmanifestsdeploysh))
-> - `undeploy.sh` (`ci/kubernetes/manifests/undeploy.sh`, [Listing 9.2](01A-Kubernetes-Code-Listings.md#listing-92-cikubernetesmanifestsundeploysh))
-> - `kustomization.yaml` ([Listing 9.3](01A-Kubernetes-Code-Listings.md#listing-93-cikubernetesmanifestskustomizationyaml))
-> - Manifests (`ci/kubernetes/manifests/*.yaml`, [Listings 9.4–9.20](01A-Kubernetes-Code-Listings.md))
+**What you will learn in this chapter:** How to deploy the blockchain network on Kubernetes using Kustomize, how Kubernetes primitives (StatefulSets, Services, ConfigMaps) map to the components we built in Part I, and how to scale, monitor, and manage a multi-node blockchain in a production-like environment.
+
+**Why Kubernetes after Docker Compose?** Docker Compose is excellent for local development, but it runs on a single machine and has no built-in answer for node failures, rolling updates, or scaling beyond one host. Kubernetes solves these problems: if a blockchain node crashes, Kubernetes restarts it automatically; if you need more nodes, you change a replica count; if you push a new image, Kubernetes rolls it out without downtime. This chapter shows how the same Docker images from Chapter 22 are deployed into a system that can run in production.
 
 Every referenced deployment artifact is printed in full in the companion listings chapter:
 
-- **[Chapter 9A: Kubernetes — Complete Code Listings](01A-Kubernetes-Code-Listings.md)**
+- **[Chapter 23A: Kubernetes — Complete Code Listings](01A-Kubernetes-Code-Listings.md)**
 
 ## Table of Contents
 
@@ -84,7 +100,7 @@ Every referenced deployment artifact is printed in full in the companion listing
 2. [Section 2: Architecture & Core Concepts](02-Architecture.md)
 3. [Section 3: Migration Guide](03-Migration.md)
 4. [Section 4: Kubernetes Manifests](04-Manifests.md)
-4.5. [Chapter 9A: Kubernetes — Complete Code Listings](01A-Kubernetes-Code-Listings.md)
+4.5. [Chapter 23A: Kubernetes — Complete Code Listings](01A-Kubernetes-Code-Listings.md)
 5. [Section 5: Deployment & Operations](05-Deployment.md)
 6. [Section 6: Autoscaling](06-Autoscaling.md)
 7. [Section 7: Production & Advanced Topics](07-Production.md)
@@ -95,8 +111,8 @@ Every referenced deployment artifact is printed in full in the companion listing
 
 ### What You’ll Build
 
-In this section we’ll take our network from “it works on my laptop” to “it runs under a real orchestrator.”
-Concretely, you will deploy three building blocks:
+We’ll take our network from “it works on my laptop” to “it runs under a real orchestrator.”
+Concretely, we deploy three building blocks:
 
 - **Miners** as a **StatefulSet** (stable identity and stable storage per miner)
 - **Webservers** as a **StatefulSet** (each webserver has its own blockchain DB and wallets)
@@ -138,20 +154,21 @@ flowchart TB
   classDef pod fill:#eef,stroke:#445,stroke-width:1px;
   classDef svc fill:#efe,stroke:#454,stroke-width:1px;
   classDef workload fill:#fee,stroke:#544,stroke-width:1px;
+```
 
 ### Why Kubernetes (vs Docker Compose)
 
-Docker Compose is an excellent **local development** tool, but Kubernetes is built for **long-running** systems:
+Docker Compose excels for **local development**, but Kubernetes is built for **long-running** systems.
 
 | Feature | Docker Compose | Kubernetes |
 |---------|---------------|------------|
 | **Self-healing** | Limited | ✅ Restarts and reschedules failed pods |
-| **Rolling updates** | Manual | ✅ Built-in rollout/rollback mechanisms |
+| **Rolling updates** | Manual | ✅ Built-in rollout/rollback |
 | **Service discovery** | Docker DNS | ✅ Cluster DNS + Services |
 | **Autoscaling** | Manual | ✅ HPA (Horizontal Pod Autoscaler) |
 | **Stateful workloads** | Possible | ✅ First-class StatefulSets + PVC templates |
 
-In this repo, Kubernetes matters most because **miners and webservers are stateful** (disk-backed databases and wallets), and Kubernetes gives us the right primitives to manage that cleanly.
+In this repo, Kubernetes matters because **miners and webservers are stateful** (disk-backed databases and wallets), and Kubernetes gives us the right primitives to manage that cleanly.
 
 ### Prerequisites & Tools
 
@@ -185,7 +202,9 @@ brew install kubectx
 Install kubectl (official):
 
 ```bash
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+curl -LO \
+  "https://dl.k8s.io/release/$(curl -L -s \
+  https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin/
 kubectl version --client
@@ -194,7 +213,8 @@ kubectl version --client
 Install Minikube (official):
 
 ```bash
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+curl -LO \
+  https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 minikube version
 ```
@@ -224,29 +244,30 @@ cd ci/kubernetes
 minikube start --cpus=4 --memory=3072mb --addons=metrics-server
 ```
 
-Minikube **addons** are optional cluster components you can enable at cluster creation time (or later). They’re a convenient way to turn on common Kubernetes services without manually installing Helm charts or raw manifests.
+Minikube **addons** are optional cluster components we can enable at startup. They’re a convenient way to activate common Kubernetes services without manually installing Helm charts.
 
-- **Why we enable `metrics-server`**: it provides the Kubernetes **Metrics API** (`metrics.k8s.io`), which powers commands like `kubectl top pods` and supports CPU/memory-based autoscaling via HPA in many setups.
-- **How to list available addons**:
+- **Why we enable `metrics-server`**: it provides the **Metrics API** (`metrics.k8s.io`), which powers `kubectl top pods` and enables CPU/memory-based autoscaling via HPA.
+- **List available addons**:
 
 ```bash
 minikube addons list
 ```
 
-Some commonly useful addons (depending on your goals):
+Common useful addons include:
 
-- **`metrics-server`**: enables `kubectl top ...` and provides CPU/memory metrics to the cluster.
-- **`ingress`**: enables an Ingress controller (handy when you want HTTP routing without port-forward).
-- **`dashboard`**: enables the Kubernetes Dashboard UI (visual cluster inspection).
-- **`registry`**: runs a local container registry inside Minikube (useful if you want to push/pull images instead of `minikube docker-env`).
-- **`csi-hostpath-driver`**: storage driver used by some Minikube configurations for PVCs (often enabled by default depending on version/driver).
+- **`metrics-server`**: enables `kubectl top ...` and provides CPU/memory metrics.
+- **`ingress`**: enables an Ingress controller for HTTP routing without port-forward.
+- **`dashboard`**: enables the Kubernetes Dashboard UI for visual cluster inspection.
+- **`registry`**: runs a local container registry for push/pull operations.
+- **`csi-hostpath-driver`**: storage driver for PVCs (often enabled by default).
 
 To enable and access the Dashboard:
 
 ```bash
 minikube addons enable dashboard
 
-# Launches the dashboard and opens your browser (or prints a URL, depending on environment)
+# Launches the dashboard and opens your browser (or prints
+# a URL, depending on environment)
 minikube dashboard
 
 # If you prefer a URL you can open manually:
@@ -254,19 +275,23 @@ minikube dashboard --url
 ```
 
 <details>
-<summary><b>Optional deep dive: what did <code>minikube start</code> change?</b></summary>
+<summary><b>Deep dive: what did <code>minikube start</code> change?</b></summary>
 
-- It creates (or reuses) a local cluster and allocates CPU/memory for it.
-- It updates your kubeconfig (`~/.kube/config`) so `kubectl` can talk to Minikube (context usually becomes `minikube`).
-- It stores Minikube’s internal cluster state under `~/.minikube/`.
+- Creates a local cluster and allocates CPU/memory.
+- Updates your kubeconfig (`~/.kube/config`) so `kubectl` can connect (context becomes `minikube`).
+- Stores cluster state under `~/.minikube/`.
 
 Useful commands:
 
 ```bash
-minikube status                 # Shows whether Minikube and its Kubernetes components are running
-kubectl config current-context  # Shows which cluster/context kubectl is currently targeting (should be `minikube`)
-kubectl get nodes               # Lists cluster nodes and their readiness; confirms the cluster is schedulable
-minikube ip                     # Prints the Minikube node IP (useful for NodePort access and debugging networking)
+minikube status                 # Check if Minikube and
+                                # Kubernetes components are running
+kubectl config current-context  # Show which cluster kubectl
+                                # targets (should be `minikube`)
+kubectl get nodes               # List cluster nodes and
+                                # readiness; confirms schedulability
+minikube ip                     # Print the Minikube node IP
+                                # (useful for NodePort access)
 ```
 
 </details>
@@ -286,23 +311,21 @@ cd ci/kubernetes/manifests
 ```
 
 <details>
-<summary><b>Optional deep dive: what does <code>eval $(minikube docker-env)</code> do?</b></summary>
+<summary><b>Deep dive: what does <code>eval $(minikube docker-env)</code> do?</b></summary>
 
-It points your `docker` CLI at the Docker daemon *inside* Minikube, so `docker build ...` stores the image in the cluster node’s local image cache.
+It points your `docker` CLI at Minikube’s Docker daemon, so `docker build ...` stores images in the cluster.
 
-Without this, your `docker` CLI will still talk to your **local** Docker daemon (e.g. Docker Desktop on your laptop). In that case, the image you build exists only on your machine, and the Minikube node won’t be able to use it unless you push it to a registry (or otherwise load it into the cluster).
+Without this, your `docker` CLI talks to your **local** Docker daemon (e.g., Docker Desktop). The image you build exists only on your machine, and Minikube won’t use it unless you push to a registry.
 
-Once you’ve built the image, you usually want to “switch Docker back” to normal. Otherwise, later `docker ...` commands will still be targeting Minikube’s internal Docker daemon, which can be confusing (your normal local images/containers won’t appear, and you might wonder where they “went”).
-
-This is why we run:
+After building, we usually restore Docker to normal:
 
 ```bash
 eval $(minikube docker-env -u)
 ```
 
-`minikube docker-env -u` prints shell commands that **unset** the environment variables (`DOCKER_HOST`, TLS paths, etc.) that were redirecting your Docker CLI to Minikube. `eval $(...)` applies those unsets to **this terminal session only**.
+`minikube docker-env -u` prints shell commands that unset the environment variables redirecting your Docker CLI to Minikube. `eval` applies those to the current session only.
 
-It’s safe to run because it doesn’t delete images or change Minikube itself—it simply restores your shell back to using your usual local Docker daemon, which is what the rest of this chapter assumes.
+It’s safe because it doesn’t delete images or change Minikube—it simply restores your shell to use your usual Docker daemon.
 
 </details>
 
@@ -310,9 +333,9 @@ It’s safe to run because it doesn’t delete images or change Minikube itself�
 
 Edit `03-secrets.yaml` to set your API keys, or use defaults for testing.
 
-If you don’t provide a mining address (`MINER_ADDRESS`), the container will **auto-create** one on first startup and persist it in the wallet volume. This keeps the “quick start” smooth while still producing a real address you can later back up.
+If we don’t provide a mining address (`MINER_ADDRESS`), the container auto-creates one on first startup and persists it in the wallet volume. This keeps the quick start smooth while still producing a real address we can back up later.
 
-If you edit `03-secrets.yaml`, apply the Secret and restart the pods so the new values are injected as environment variables:
+To apply changes to `03-secrets.yaml`, we apply the Secret and restart pods to inject the new values:
 
 ```bash
 # From the repo root:
@@ -371,46 +394,48 @@ cd ci/kubernetes/manifests
 ```bash
 kubectl get pods -n blockchain
 
-kubectl wait --for=condition=ready pod -l app=miner -n blockchain --timeout=300s
-kubectl wait --for=condition=ready pod -l app=webserver -n blockchain --timeout=300s
+kubectl wait --for=condition=ready pod -l app=miner -n \
+  blockchain --timeout=300s
+kubectl wait --for=condition=ready pod -l app=webserver -n \
+  blockchain --timeout=300s
 ```
 
 #### Useful Kubernetes Commands (Quick Reference)
 
 Tip: these are grouped as copy/paste blocks. In most Markdown renderers you can click the code block’s copy button to copy the whole group.
 
-**Status (what’s running?)**
+**Status**
 
 ```bash
-# List all namespaces (cluster-wide)
+# List all namespaces
 kubectl get namespaces
 
-# Pod status + node/IP (best first snapshot)
+# Pod status + node/IP
 kubectl get pods -n blockchain -o wide
 
-# Services (stable names/ports inside the cluster)
+# Services
 kubectl get svc -n blockchain
 
-# Which pod IPs each Service routes to
+# Pod IPs each Service routes to
 kubectl get endpoints -n blockchain
 
-# PersistentVolumeClaims (what storage is bound)
+# PersistentVolumeClaims
 kubectl get pvc -n blockchain
 ```
 
 **Debug a single pod**
 
 ```bash
-# Events, probe failures, image pull errors, scheduling issues
+# Check events, probe failures, image pull errors
 kubectl describe pod <pod> -n blockchain
 
-# Recent logs
+# View recent logs
 kubectl logs -n blockchain <pod> -c blockchain-node --tail 200
 
-# Logs from the last crashed instance (CrashLoopBackOff)
+# View logs from last crashed instance
 kubectl logs -n blockchain <pod> -c blockchain-node --previous --tail 200
 
-# Shell inside the container
+# Open a shell in the container
 kubectl exec -n blockchain -it <pod> -- sh
 ```
 
@@ -424,9 +449,10 @@ kubectl rollout status statefulset/webserver -n blockchain
 kubectl rollout restart statefulset/webserver -n blockchain
 ```
 
-**Events (often the fastest root cause)**
+**Events**
 
 ```bash
+# Recent events (often the fastest root cause)
 kubectl get events -n blockchain --sort-by=.lastTimestamp | tail -50
 ```
 
@@ -497,7 +523,8 @@ kubectl rollout restart statefulset/miner -n blockchain
 
 ```bash
 # Set new image
-kubectl set image statefulset/webserver blockchain-node=blockchain-node:v1.1.0 -n blockchain
+kubectl set image statefulset/webserver \
+  blockchain-node=blockchain-node:v1.1.0 -n blockchain
 
 # Check rollout
 kubectl rollout status statefulset/webserver -n blockchain
@@ -525,11 +552,11 @@ minikube delete
 
 ### Troubleshooting
 
-This section is written as a practical playbook: start with the symptom you see, run the “diagnose” commands, then apply the fix.
+We've organized this as a practical playbook: start with the symptom, run the diagnose commands, then apply the fix.
 
-#### First: Get a High-Signal Snapshot
+#### Get a High-Signal Snapshot
 
-These commands answer “what is broken” in under 10 seconds:
+Run these commands to see “what is broken” in seconds:
 
 ```bash
 kubectl get pods -n blockchain -o wide
@@ -544,8 +571,10 @@ kubectl get pvc -n blockchain
 **Diagnose:**
 
 ```bash
-# "previous" shows logs from the last crashed container instance (most useful for crash loops)
-kubectl logs -n blockchain <pod-name> -c blockchain-node --previous --tail 200
+# "previous" shows logs from the last crashed container
+# instance (most useful for crash loops)
+kubectl logs -n blockchain <pod-name> -c blockchain-node \
+  --previous --tail 200
 
 # Events and probe failures
 kubectl describe pod <pod-name> -n blockchain
@@ -559,7 +588,9 @@ kubectl describe pod <pod-name> -n blockchain
   - Verify the secret value:
 
 ```bash
-kubectl get secret blockchain-secrets -n blockchain -o jsonpath='{.data.MINER_ADDRESS}' | base64 --decode; echo
+kubectl get secret blockchain-secrets -n blockchain \
+  -o jsonpath='{.data.MINER_ADDRESS}' | \
+  base64 --decode; echo
 ```
 
 #### Symptom: `Running` but `0/1` (Not Ready)
@@ -614,9 +645,9 @@ kubectl delete deployment webserver -n blockchain
 
 #### Services Not Accessible (from your laptop)
 
-**Why it happens:** cluster networking is not directly reachable from your host by default. For Minikube/local dev, the simplest path is port-forwarding.
+**Why:** cluster networking is not directly reachable from the host by default. Use port-forwarding for Minikube/local dev.
 
-**Fix (local):**
+**Fix:**
 
 ```bash
 kubectl port-forward -n blockchain svc/webserver-service 8080:8080
@@ -627,7 +658,8 @@ curl -f http://localhost:8080/api/health/ready
 
 ```bash
 kubectl get endpoints -n blockchain
-kubectl exec -n blockchain <pod-name> -- curl -f http://webserver-service:8080/api/health/ready
+kubectl exec -n blockchain <pod-name> -- \
+  curl http://webserver-service:8080/api/health/ready
 ```
 
 #### HPA Not Working

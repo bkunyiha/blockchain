@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. **Chapter 1.2: Introduction to Bitcoin & Blockchain** ← *You are here*
-3. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. **Chapter 2: Introduction to Bitcoin & Blockchain** ← *You are here*
+3. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="util/README.md">Chapter 7: Utilities</a>
+8. <a href="crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="net/README.md">Chapter 12: Network Layer</a>
+13. <a href="node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -38,11 +57,11 @@
 ---
 <div align="center">
 
-## Chapter 1.2: Introduction to Bitcoin & Blockchain
+## Chapter 2: Introduction to Bitcoin & Blockchain
 
 **Part I: Overview**
 
-**[← Back to Main Book](../README.md)** | **Introduction to Bitcoin & Blockchain** | **[Bitcoin Whitepaper Summary →](whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md)** 📚
+**[← Back to Main Book](../README.md)** | **Introduction to Bitcoin & Blockchain** | **[Bitcoin Whitepaper Summary →](whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md)**
 
 </div>
 
@@ -65,21 +84,11 @@
 
 ## Introduction
 
-To implement Bitcoin, we first need a clear technical foundation for what Bitcoin is and how blockchain systems work. In this chapter, we build a shared vocabulary (transactions, blocks, consensus, networking), connect it to the whitepaper, and use it to orient ourselves in this Rust project—so we can confidently contribute here and eventually build our own Bitcoin-like implementation in Rust.
-
-In this chapter, we will:
-
-- **Define Bitcoin and blockchain** at a systems level (what problems they solve and what guarantees they provide).
-- **Ground our understanding of Bitcoin and the Blockchain** which will help us in the next section where we'll go through the Bitcoin Whitepaper. Here, we separate *core ideas* from *protocol details*.
-- **Introduce the technical primitives** we’ll keep seeing throughout the codebase (hashing, signatures, Merkle trees, PoW, UTXO).
-- **Set expectations for the rest of the book**: once the concepts are clear, we can follow the implementation modules with fewer surprises.
-- **Lead into the next section**: we’ll go through the Bitcoin whitepaper end-to-end to lock in the conceptual model before we translate it into Rust.
+To implement Bitcoin, we first need a clear technical foundation for what Bitcoin is and how blockchain systems work. This chapter defines the core vocabulary — transactions, blocks, consensus, UTXO, proof-of-work — that every subsequent implementation chapter depends on. We ground these concepts in the problems they solve, then connect them to the whitepaper in Chapters 3 and 4 before translating them into Rust.
 
 ## What Is Bitcoin?
 
 Bitcoin is a decentralized digital currency and payment system that operates without a central authority or intermediary. It was introduced in 2008 through a whitepaper published by an individual or group using the pseudonym Satoshi Nakamoto. Bitcoin enables peer-to-peer transactions over the internet, allowing users to send and receive value directly without relying on traditional financial institutions.
-
-> **📖 Understanding the Foundation**: In the next section we will go through **Bitcoin Whitepaper Summary** and gain a comprehensive understanding of how Bitcoin and blockchain technology work. The next section provides a detailed explanation of Satoshi Nakamoto's original paper: [Bitcoin: A Peer-to-Peer Electronic Cash System](https://bitcoin.org/bitcoin.pdf). The current section summary covers the double-spending problem, proof-of-work, network operation, security analysis, and all key concepts that form the foundation of blockchain technology.
 
 At its core, Bitcoin is three things:
 
@@ -163,36 +172,17 @@ Bitcoin started with a paper: Satoshi Nakamoto’s **[Bitcoin: A Peer-to-Peer El
 
 In the next section, we go through the whitepaper end-to-end, focusing on the core ideas we must preserve when we implement Bitcoin.
 
-### Comprehensive Summary Document
-
-We provide a detailed summary of the Bitcoin whitepaper that explains the key ideas in accessible, implementation-oriented language:
-
-**📖 Bitcoin Whitepaper Summary →**
-
-This summary covers:
-
-- **The Double-Spending Problem**: how blockchain solves the fundamental challenge of digital currency
-- **Proof-of-Work Mechanism**: how computational work secures the network
-- **Network Operation**: the six steps that define how nodes coordinate
-- **Incentive Structure**: how mining rewards align economic interests with security
-- **Merkle Trees**: efficient storage and verification mechanisms
-- **Security Analysis**: mathematical analysis of attack resistance
-- **Privacy Considerations**: how privacy is maintained in a public ledger
-- **And much more**: complete coverage of all 12 sections of the original whitepaper
-
-**Why read it?** Understanding the whitepaper provides the theoretical foundation we use throughout the rest of this project. It helps us separate consensus-critical rules (must be implemented correctly) from engineering details (can vary without breaking consensus).
-
-**Next section**: Bitcoin Whitepaper Summary →
+Chapter 3 provides a section-by-section summary of the whitepaper, covering the double-spending problem, proof-of-work, network operation, the incentive structure, Merkle trees, and security analysis. Understanding the whitepaper provides the theoretical foundation we use throughout the rest of this project — it helps us separate consensus-critical rules (which must be implemented correctly) from engineering details (which can vary without breaking consensus).
 
 ## System Architecture: Centralized vs. Decentralized vs. Distributed
 
-Understanding the architectural differences between centralized, decentralized, and distributed systems is fundamental to grasping how blockchain technology represents a paradigm shift in system design. These three architectures represent different approaches to organizing computational resources, control, and data storage, each with distinct trade-offs in terms of performance, reliability, and governance.
+Understanding the architectural differences between centralized, decentralized, and distributed systems is fundamental to grasping how blockchain represents a paradigm shift in system design. These three architectures embody different approaches to organizing computational resources, control, and data storage, each with distinct trade-offs in performance, reliability, and governance.
 
 ### Centralized Systems
 
 Centralized systems consolidate control, processing, and data storage within a single central server or a tightly coupled cluster of servers. All client requests flow through this central point, which manages all operations, resources, and data. Clients typically possess minimal processing capabilities and depend entirely on the central server for computational tasks.
 
-The architecture offers several advantages: simplified management through a single administrative point, efficient resource utilization through centralized optimization, and straightforward security implementation since all controls exist in one location. However, centralized systems suffer from inherent limitations. They present a single point of failure—if the central server fails, the entire system becomes inoperative. Scalability becomes problematic as the central server becomes a bottleneck under increased load, and adding more clients strains server resources, leading to performance degradation.
+Centralized architecture offers several advantages: simplified management through a single administrative point, efficient resource utilization through centralized optimization, and straightforward security implementation since all controls exist in one location. However, centralized systems suffer from inherent limitations. They present a single point of failure—if the central server fails, the entire system becomes inoperative. Scalability becomes problematic as the central server becomes a bottleneck under increased load. Adding more clients strains server resources, leading to performance degradation.
 
 Traditional examples include enterprise resource planning (ERP) systems, customer relationship management (CRM) platforms, centralized email servers, and traditional banking systems. These systems excel in environments where centralized control, consistent data management, and simplified administration are priorities.
 
@@ -200,7 +190,7 @@ Traditional examples include enterprise resource planning (ERP) systems, custome
 
 Decentralized systems distribute control and processing power across multiple independent nodes without a single central authority. Each node operates autonomously while collaborating with others to achieve common system goals. This architecture eliminates single points of failure and distributes control, creating a more resilient and fault-tolerant system.
 
-The key characteristics of decentralized systems include distributed control where no single node has authority over others, enhanced fault tolerance where individual node failures don't compromise the entire system, and improved scalability through independent node addition without overwhelming a central point. However, this architecture introduces complexity: nodes must coordinate and communicate to maintain system integrity and consistency, often requiring sophisticated consensus algorithms and protocols.
+Decentralized systems have key characteristics: distributed control where no single node has authority over others, enhanced fault tolerance where individual node failures don't compromise the entire system, and improved scalability through independent node addition without overwhelming a central point. However, this architecture introduces complexity: nodes must coordinate and communicate to maintain system integrity and consistency, often requiring sophisticated consensus algorithms and protocols.
 
 Decentralized systems manifest in two primary categories: blockchain-based systems that leverage distributed ledger technology and consensus mechanisms, and non-blockchain systems that achieve decentralization through alternative architectural patterns.
 
@@ -246,15 +236,15 @@ Cloud computing platforms like Amazon Web Services (AWS) and Microsoft Azure exe
 
 ### The Blockchain Approach
 
-Bitcoin and blockchain technology combine aspects of both decentralized and distributed architectures. Like decentralized systems, blockchain networks have no central authority—each node operates independently and participates in consensus. Like distributed systems, blockchain networks distribute computational resources across geographically dispersed nodes that communicate over networks.
+Bitcoin and blockchain combine aspects of both decentralized and distributed architectures. Like decentralized systems, blockchain networks have no central authority—each node operates independently and participates in consensus. Like distributed systems, blockchain networks distribute computational resources across geographically dispersed nodes that communicate over networks.
 
 However, blockchain adds unique characteristics: cryptographic verification ensures data integrity without requiring trust in any single node, consensus mechanisms enable agreement on system state without central coordination, and immutability through cryptographic linking creates an auditable, tamper-resistant record. This hybrid approach provides the fault tolerance and censorship resistance of decentralization with the scalability and performance benefits of distribution.
 
-Understanding these architectural distinctions helps explain why blockchain technology represents such a fundamental shift. Traditional centralized systems require trust in a single authority, decentralized systems distribute control but may sacrifice efficiency, and distributed systems optimize performance but often retain centralized coordination. Blockchain's innovation lies in achieving decentralization while maintaining the performance and reliability characteristics of distributed systems through cryptographic guarantees and consensus mechanisms.
+Understanding these architectural distinctions helps explain why blockchain represents such a fundamental shift. Traditional centralized systems require trust in a single authority, decentralized systems distribute control but may sacrifice efficiency, and distributed systems optimize performance but often retain centralized coordination. Blockchain's innovation lies in achieving decentralization while maintaining the performance and reliability characteristics of distributed systems through cryptographic guarantees and consensus mechanisms.
 
 ## Technical Foundations
 
-Understanding blockchain requires familiarity with several key technical concepts. While we'll explore these in detail throughout this book, here's an introduction to the fundamental building blocks.
+Understanding blockchain requires familiarity with several key technical concepts. While we explore these in detail throughout this book, here's an introduction to the fundamental building blocks.
 
 ### Cryptographic Hash Functions
 
@@ -364,7 +354,7 @@ The protocol is designed to be:
 
 ## Applications and Advantages
 
-Blockchain technology has moved beyond cryptocurrency to enable innovative solutions across industries. The advantages of decentralization manifest differently across various domains, demonstrating blockchain's practical value and transformative potential.
+Blockchain has moved beyond cryptocurrency to enable innovative solutions across industries. The advantages of decentralization manifest differently across various domains, demonstrating blockchain's practical value and transformative potential.
 
 ### Financial Systems
 
@@ -388,7 +378,7 @@ Blockchain technology has moved beyond cryptocurrency to enable innovative solut
 **Real-World Applications**:
 - **Cross-Border Payments**: Cryptocurrencies enable near-instant transfers with minimal fees. Ripple (XRP) is used by financial institutions for cross-border payments, reducing settlement time from days to seconds. Stellar focuses on financial inclusion, enabling low-cost remittances.
 - **Remittances**: Direct peer-to-peer transfers eliminate intermediaries, reducing costs and increasing speed. Billions are saved annually in fees, with faster access to funds for recipients and financial inclusion for unbanked populations.
-- **Decentralized Finance (DeFi)**: Platforms recreate traditional financial services using blockchain and smart contracts, including peer-to-peer lending/borrowing, decentralized exchanges (DEXs), stablecoins, yield farming, and decentralized insurance protocols.
+- **Decentralized Finance (DeFi)**: Platforms recreate traditional financial services using blockchain and smart contracts—including peer-to-peer lending/borrowing, decentralized exchanges (DEXs), stablecoins, yield farming, and decentralized insurance protocols.
 
 ### Governance and Voting
 
@@ -400,12 +390,12 @@ Blockchain technology has moved beyond cryptocurrency to enable innovative solut
 - Expensive and time-consuming processes
 
 **Blockchain Voting Benefits**:
-- **Transparency**: All votes are recorded on a public ledger, verifiable by anyone
-- **Immutability**: Votes cannot be altered once recorded
-- **Verifiability**: Voters can verify their vote was counted without revealing their choice
-- **Accessibility**: Remote voting becomes more secure and feasible
-- **Auditability**: Complete audit trail of all voting activity
-- **Reduced Costs**: Automation reduces administrative overhead
+- **Transparency**: All votes are recorded on a public ledger, verifiable by anyone.
+- **Immutability**: Votes cannot be altered once recorded.
+- **Verifiability**: Voters can verify their vote was counted without revealing their choice.
+- **Accessibility**: Remote voting becomes more secure and feasible.
+- **Auditability**: Complete audit trail of all voting activity.
+- **Reduced Costs**: Automation reduces administrative overhead.
 
 **Decentralized Autonomous Organizations (DAOs)** represent a new form of organizational structure enabled by blockchain technology. DAOs offer democratic participation through token-weighted voting, transparent treasuries with publicly visible financial transactions, automated execution through smart contracts, global participation regardless of location, reduced corruption through transparent decision-making, and rapid iteration compared to traditional organizations.
 
@@ -546,44 +536,22 @@ Blockchain technology continues to evolve rapidly. Emerging trends include:
 
 ## Conclusion
 
-Bitcoin and blockchain represent a fundamental shift in how we think about trust, value transfer, and digital systems. By eliminating the need for trusted intermediaries and enabling direct peer-to-peer interactions, blockchain technology opens new possibilities across finance, governance, social media, supply chains, and beyond.
+Bitcoin and blockchain represent a fundamental shift in how we think about trust, value transfer, and digital systems. By eliminating the need for trusted intermediaries and enabling direct peer-to-peer interactions, blockchain opens new possibilities across finance, governance, social media, supply chains, and beyond.
 
-As we progress through this book, we'll build a complete Bitcoin blockchain implementation, understanding not just what these systems do, but how they work at the deepest technical levels. We'll explore the cryptographic primitives, data structures, network protocols, and consensus mechanisms that make blockchain possible.
+As we progress through this book, we build a complete Bitcoin blockchain implementation, understanding not just what these systems do, but how they work at the deepest technical levels. We explore the cryptographic primitives, data structures, network protocols, and consensus mechanisms that make blockchain possible.
 
-Whether you're interested in building blockchain applications, understanding the technology's potential, or simply learning how these systems work, the knowledge you'll gain will provide a solid foundation for working with blockchain technology in any context.
-
-The journey from understanding these concepts to implementing them is challenging but rewarding. By the end of this book, you'll have built a working blockchain system and gained insights that will serve you whether you're developing new blockchain applications, evaluating blockchain solutions, or contributing to the growing ecosystem of decentralized technologies.
+The concepts in this chapter — hashing, signatures, UTXO, consensus — reappear in every implementation module that follows. With this vocabulary established, we move to the whitepaper itself.
 
 ---
 
 ## Related Implementation Chapters
 
-Now that you understand the foundational concepts of Bitcoin and blockchain, explore how we implement these concepts:
-
-### Core Implementation Modules
-
-- **Cryptography**: See how cryptographic primitives (hash functions, digital signatures, key pairs) are implemented
-- **Transaction ID Format**: Understand how transaction IDs are represented and stored
-- **Blockchain State Management**: Learn how blockchain state, UTXO set, and chain operations are managed
-- **Network Layer**: Explore peer-to-peer networking, message processing, and network synchronization
-- **Node Orchestration**: Understand how node context coordinates blockchain, mempool, mining, and network operations
-- **Primitives**: Study the core data structures (Block, Transaction, Blockchain) that form the foundation
-- **Storage Layer**: Learn about persistent storage using file system databases and block persistence
-- **Utilities**: Discover utility functions and helpers used throughout the system
-- **Wallet System**: Explore wallet creation, key management, address generation, and transaction signing
-
-### Interface Layers
-
-- **Web API Architecture**: Learn how we build a REST API interface to interact with the blockchain, implementing the concepts covered in this chapter
+The implementation chapters that follow map directly to the concepts introduced here. Cryptography (Chapter 8) implements hashing and signatures. Primitives (Chapter 6) defines the `Block` and `Transaction` structs. Chain and consensus (Chapters 9–10) enforce the longest-chain rule. Storage (Chapter 11) persists blocks to disk. Networking (Chapter 12) propagates them between peers. The node orchestrator (Chapter 13) coordinates all subsystems, and the wallet (Chapter 14) manages keys and constructs transactions.
 
 ---
 
 <div align="center">
 
-**[📚 ← Back to Main Book](../README.md)** | **Chapter 1.2: Introduction to Bitcoin & Blockchain** | **[Bitcoin Whitepaper Summary →](whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** 📚
+**[← Back to Main Book](../README.md)** | **Chapter 2: Introduction to Bitcoin & Blockchain** | **[Bitcoin Whitepaper Summary →](whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)**
 
 </div>
-
----
-
-*This chapter has provided comprehensive foundational knowledge about Bitcoin and blockchain technology, covering their origins, core concepts, system architectures, technical foundations, applications, and challenges. We’ve explored the principles that make blockchain systems work: decentralization, immutability, transparency, security, and trustlessness. Understanding these concepts matters before we dive deeper into implementation, because they inform the design decisions we make throughout this Rust project. Next, we’ll walk through the **Bitcoin Whitepaper Summary**, then connect the whitepaper to concrete **Rust encoding** and implementation-oriented reasoning in **Bitcoin Whitepaper → Rust Encoding**. After that, we’ll move into **Cryptography** to study the primitives that secure transactions and blocks, or we can jump directly into the **[implementation chapters](#related-implementation-chapters)** to see how these concepts appear in the codebase.*

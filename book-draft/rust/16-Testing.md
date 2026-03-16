@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. **Chapter 10: Rust Language Guide** ← *You are here*
+34. <a href="../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -273,10 +292,12 @@ Testing multiple inputs with a single test function:
 #[test]
 fn test_hash_known_values() {
     let test_cases = vec![
-        (b"abc", "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"),
-        (b"", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
+        (b"abc", "ba7816bf8f01cfea414140de5dae2223b00361a39617\
+                  7a9cb410ff61f20015ad"),
+        (b"", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b93\
+               4ca495991b7852b855"),
     ];
-    
+
     for (input, expected_hex) in test_cases {
         let hash = sha256_digest(input);
         let expected = hex::decode(expected_hex).unwrap();
@@ -314,7 +335,7 @@ Our blockchain project uses a comprehensive testing strategy that combines multi
 
 ### Test Structure
 
-```
+```text
 bitcoin/
 ├── src/
 │   ├── lib.rs                    # Library entry point
@@ -358,7 +379,8 @@ mod tests {
         let test_cases = vec![
             (
                 b"abc".as_slice(),
-                "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "ba7816bf8f01cfea414140de5dae2223b00361a39617\
+                 7a9cb410ff61f20015ad",
             ),
             // ... more test cases
         ];
@@ -396,56 +418,61 @@ Using `#[tokio::test]` for async blockchain operations:
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     // Test fixture with automatic cleanup
     struct TestBlockchain {
         blockchain: BlockchainService,
         db_path: String,
     }
-    
+
     impl TestBlockchain {
         async fn new() -> Self {
-            // Create unique database path
-            let db_path = format!("test_blockchain_db_{}", uuid::Uuid::new_v4());
+            let uuid_str = uuid::Uuid::new_v4().to_string();
+            let db_path = format!("test_blockchain_db_{}", uuid_str);
             // ... setup blockchain
             TestBlockchain { blockchain, db_path }
         }
     }
-    
+
     impl Drop for TestBlockchain {
         fn drop(&mut self) {
-            // Automatic cleanup
             let _ = std::fs::remove_dir_all(&self.db_path);
         }
     }
-    
+
     #[tokio::test]
     async fn test_blockchain_creation() {
         crate::setup_test_environment();
         let test_blockchain = TestBlockchain::new().await;
-        
+
         assert_eq!(
             test_blockchain.blockchain().get_best_height().await.unwrap(),
             1
         );
-        
+
         crate::teardown_test_environment();
     }
-    
+```
+
+Additional tests verify block addition and mining operations using the same test fixture:
+
+```rust
     #[tokio::test]
     async fn test_add_block() {
         let test_blockchain = TestBlockchain::new().await;
         let genesis_address = generate_test_genesis_address();
-        
-        let coinbase_tx = Transaction::new_coinbase_tx(&genesis_address).unwrap();
+
+        let coinbase_tx = Transaction::new_coinbase_tx(
+            &genesis_address
+        ).unwrap();
         let new_block = test_blockchain
             .blockchain()
             .mine_block(&[coinbase_tx])
             .await
             .unwrap();
-        
+
         test_blockchain.blockchain().add_block(&new_block).await.unwrap();
-        
+
         assert_eq!(
             test_blockchain.blockchain().get_best_height().await.unwrap(),
             2
@@ -560,7 +587,10 @@ pub fn generate_test_genesis_address() -> WalletAddress {
 pub async fn create_test_blockchain() -> (BlockchainService, String) {
     let db_path = create_unique_db_path();
     let genesis_address = generate_test_genesis_address();
-    let blockchain = create_blockchain_with_config_clean(&genesis_address, &db_path).await;
+    let blockchain = create_blockchain_with_config_clean(
+        &genesis_address,
+        &db_path
+    ).await;
     (blockchain, db_path)
 }
 
@@ -666,11 +696,14 @@ mod tests {
         let test_cases = vec![
             (
                 b"abc".as_slice(),
-                "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+                "ba7816bf8f01cfea414140de5dae2223b00361a39617\
+                 7a9cb410ff61f20015ad",
             ),
             (
-                b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq".as_slice(),
-                "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1",
+                b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmn\
+                   lmnomnopnopq".as_slice(),
+                "248d6a61d20638b8e5c026930c3e6039a33ce45964ff\
+                 2167f6ecedd419db06c1",
             ),
         ];
         
@@ -863,7 +896,7 @@ Our project uses multiple testing approaches:
 
 <div align="center">
 
-**📚 [← Rust Guide Index](README.md)** | **Testing** | **[← Previous: Type Conversions](15-Type-Conversions.md)** | **[Next: Best Practices →](17-Best-Practices.md)** 📚
+**[← Rust Guide Index](README.md)** | **Testing** | **[← Previous: Type Conversions](15-Type-Conversions.md)** | **[Next: Best Practices →](17-Best-Practices.md)** 
 
 </div>
 

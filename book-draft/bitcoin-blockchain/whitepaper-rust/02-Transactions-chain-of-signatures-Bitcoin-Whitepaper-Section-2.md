@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. **Chapter 1.4: Bitcoin Whitepaper In Rust** ← *You are here*
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -63,7 +82,7 @@ In this section we’ll build three layers:
   - **Where it’s used**: txids are hashes of serialized transactions; signatures are computed over a specific serialized form; Merkle roots and PoW commit to hashes derived from these bytes.
   - **Why it matters**: consensus is “agree on bytes”. Deterministic serialization is what makes independent Rust implementations interoperate.
 
-### 2.1 Hashing primitive (Bitcoin uses double-SHA256)
+### 6 Hashing primitive (Bitcoin uses double-SHA256)
 
 The paper explicitly calls out SHA-256 for proof-of-work (“hashed, such as with SHA-256”). The deployed Bitcoin protocol commonly uses **double-SHA256** (apply SHA-256 twice) for txids, block hashes, and Merkle nodes. ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
 
@@ -100,7 +119,7 @@ If your hashing differs from your peers, you will disagree on txids, Merkle root
 - The `sha2` crate implements SHA-2 (SHA-256/SHA-512).
 - The `Digest` trait provides the convenience `digest(...)` API that returns a fixed-size output.
 
-### 2.2 Script and signatures (real-world representation of “chain of signatures”)
+### 7 Script and signatures (real-world representation of “chain of signatures”)
 
 The paper phrases **ownership** as “**signing a hash of the previous transaction** and the **public key of the next owner**”. In Bitcoin as implemented, that turns into:
 
@@ -114,7 +133,7 @@ Why we need this layer (and why it’s worth understanding):
 
 A minimal P2PKH-style `scriptPubKey` is:
 
-```
+```text
 OP_DUP OP_HASH160 <pubKeyHash> OP_EQUALVERIFY OP_CHECKSIG
 ```
 
@@ -136,14 +155,13 @@ If we visualize the spend as providing `scriptSig: <sig> <pubkey>`, then after `
 In Rust, you can represent scripts as `Vec<u8>` and build them deterministically. Example (P2PKH scriptPubKey builder):
 ```rust
 pub fn p2pkh_script_pubkey(pubkey_hash20: [u8; 20]) -> Vec<u8> {
-    // OP_DUP(0x76) OP_HASH160(0xA9) PUSH20(0x14) <20B> OP_EQUALVERIFY(0x88) OP_CHECKSIG(0xAC)
     let mut s = Vec::with_capacity(25);
-    s.push(0x76); // OP_DUP(0x76)
-    s.push(0xA9); // OP_HASH160(0xA9)
-    s.push(0x14); // PUSH20(0x14)
-    s.extend_from_slice(&pubkey_hash20); // <20B>
-    s.push(0x88); // OP_EQUALVERIFY(0x88
-    s.push(0xAC); // OP_CHECKSIG(0xAC)
+    s.push(0x76); // OP_DUP
+    s.push(0xA9); // OP_HASH160
+    s.push(0x14); // PUSH20
+    s.extend_from_slice(&pubkey_hash20);
+    s.push(0x88); // OP_EQUALVERIFY
+    s.push(0xAC); // OP_CHECKSIG
     s
 }
 ```
@@ -162,7 +180,7 @@ pub fn p2pkh_script_pubkey(pubkey_hash20: [u8; 20]) -> Vec<u8> {
 
 - Bitcoin uses ECDSA over the secp256k1 curve for signatures. The Rust `secp256k1` crate provides key types and signature verification primitives; Bitcoin’s Script rules decide *what* is signed and *where* signatures are placed.
 
-### 2.3 Consensus serialization (why bytes matter)
+### 8 Consensus serialization (why bytes matter)
 
 To be “closer to real Bitcoin”, you must serialize transactions and headers in a **canonical, little-endian** way (consensus encoding). That is what txids and block hashes are computed over.
 
@@ -178,33 +196,28 @@ CompactSize / varint (used for vector lengths and script lengths):
 Note: in our project codebase, `Transaction::serialize()` uses `bincode` serialization rather than Bitcoin Core-style consensus serialization in the examples bellow. The purpose of this section is to show what we would implement if/when we switch to consensus byte encoding.
 ```rust
 pub fn encode_compact_size(n: u64, out: &mut Vec<u8>) {
-    // Decoding rule (how many bytes are read after the first byte):
-    // - first byte in 0x00..=0xFC => 0 more bytes (the first byte *is* the value)
-    // - first byte == 0xFD        => read 2 more bytes (u16 little-endian)
-    // - first byte == 0xFE        => read 4 more bytes (u32 little-endian)
-    // - first byte == 0xFF        => read 8 more bytes (u64 little-endian)
+    // Decoding rule (how many bytes follow the first byte):
+    // 0x00..=0xFC => 0 more (value is the byte itself)
+    // 0xFD => 2 more bytes (u16 LE)
+    // 0xFE => 4 more bytes (u32 LE)
+    // 0xFF => 8 more bytes (u64 LE)
     match n {
-        // 0..=252 (decimal) == 0x00..=0xFC (hex): encode the value directly as a single byte.
-        // This branch uses *no marker byte* — the byte we write *is* the value.
+        // 0..=252: encode directly as a single byte
         0..=252 => out.push(n as u8),
 
-        // 253..=0xFFFF: prefix marker byte 0xFD (hex) == 253 (decimal),
-        // then encode the value as a 2-byte little-endian u16.
-        // Little-endian matters: consensus serialization is byte-for-byte specified.
+        // 253..=0xFFFF: marker 0xFD + 2-byte little-endian u16
         253..=0xFFFF => {
             out.push(0xFD);
             out.extend_from_slice(&(n as u16).to_le_bytes());
         }
 
-        // 0x1_0000..=0xFFFF_FFFF: prefix marker byte 0xFE (hex) == 254 (decimal),
-        // then encode the value as a 4-byte little-endian u32.
+        // 0x1_0000..=0xFFFF_FFFF: marker 0xFE + 4-byte u32 LE
         0x1_0000..=0xFFFF_FFFF => {
             out.push(0xFE);
             out.extend_from_slice(&(n as u32).to_le_bytes());
         }
 
-        // Otherwise: prefix marker byte 0xFF (hex) == 255 (decimal),
-        // then encode the value as an 8-byte little-endian u64.
+        // Otherwise: marker 0xFF + 8-byte u64 LE
         _ => {
             out.push(0xFF);
             out.extend_from_slice(&n.to_le_bytes());

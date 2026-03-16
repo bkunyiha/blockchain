@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. **Chapter 3: Web API Architecture** ← *You are here*
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -46,11 +65,11 @@
 
 # Utoipa Framework Guide
 
-**Part I: Core Blockchain Implementation** | **Technical Reference: Utoipa OpenAPI Framework**
+**Part I: Foundations & Core Implementation** | **Technical Reference: Utoipa OpenAPI Framework**
 
 <div align="center">
 
-**[📚 ← Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Utoipa Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md)** 📚
+**[← Chapter 15: Web API Architecture](README.md)** | **Utoipa Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
 
 </div>
 
@@ -67,7 +86,7 @@ In our blockchain API, Utoipa is used for:
 - **Path Documentation**: Documenting endpoints with request/response details
 - **Type Safety**: Ensuring documentation matches implementation
 
-> **📘 See the full implementation**: This guide explains Utoipa concepts. To see how Utoipa is used in our complete web API architecture, see the OpenAPI Documentation chapter and the Data Models chapter.
+> **See the full implementation**: This guide explains Utoipa concepts. To see how Utoipa is used in our complete web API architecture, see the OpenAPI Documentation chapter and the Data Models chapter.
 
 ---
 
@@ -118,69 +137,23 @@ Utoipa generates OpenAPI specifications by:
 
 ## OpenApi Derive Macro
 
-The `#[derive(OpenApi)]` macro generates the complete OpenAPI specification for your API.
+The `#[derive(OpenApi)]` macro generates complete OpenAPI specifications.
 
 ### Implementation in `openapi.rs`
 
-Our OpenAPI definition in `openapi.rs`:
-
 ```rust
-use utoipa::OpenApi;
-use utoipa_swagger_ui::SwaggerUi;
-
 #[derive(OpenApi)]
 #[openapi(
-    paths(
-        // Health endpoints
-        health::health_check,
-        health::liveness,
-        health::readiness,
-        // Blockchain endpoints
-        blockchain::get_blockchain_info,
-        blockchain::get_blocks,
-        // ... more endpoints
-    ),
-    components(
-        schemas(
-            // Response schemas
-            crate::web::models::responses::HealthResponse,
-            crate::web::models::responses::BlockchainInfoResponse,
-            // ... more schemas
-        )
-    ),
-    tags(
-        (name = "Health", description = "Health check endpoints"),
-        (name = "Blockchain", description = "Blockchain data and information"),
-        // ... more tags
-    ),
-    info(
-        title = "Blockchain API",
-        version = "0.1.0",
-        description = "A comprehensive blockchain API"
-    ),
-    servers(
-        (url = "http://localhost:8080", description = "Local development server")
-    )
+    paths(health::health_check, blockchain::get_blockchain_info),
+    components(schemas(HealthResponse, BlockchainInfoResponse)),
+    tags((name = "Health", description = "Health check endpoints")),
+    info(title = "Blockchain API", version = "0.1.0"),
+    servers((url = "http://localhost:8080"))
 )]
 pub struct ApiDoc;
 ```
 
-**What the macro does:**
-- **`paths(...)`**: Lists all API endpoints to document
-- **`components(schemas(...))`**: Lists all data models used in the API
-- **`tags(...)`**: Defines tags for organizing endpoints
-- **`info(...)`**: Provides API metadata (title, version, description)
-- **`servers(...)`**: Lists API server URLs
-
-### OpenAPI Structure
-
-The generated OpenAPI specification includes:
-
-1. **Info Section**: API title, version, description
-2. **Servers**: Base URLs for the API
-3. **Paths**: All endpoints with methods, parameters, responses
-4. **Components**: Reusable schemas, parameters, responses
-5. **Tags**: Organization and grouping of endpoints
+The OpenAPI spec includes: Info (title, version), Servers (URLs), Paths (endpoints), Components (schemas), Tags (organization)
 
 ---
 
@@ -215,45 +188,7 @@ pub struct BlockchainInfoResponse {
 
 ### Generated Schema
 
-The `ToSchema` macro generates an OpenAPI schema like:
-
-```json
-{
-  "BlockchainInfoResponse": {
-    "type": "object",
-    "properties": {
-      "height": {
-        "type": "integer",
-        "format": "int64"
-      },
-      "difficulty": {
-        "type": "integer",
-        "format": "int32"
-      },
-      "total_blocks": {
-        "type": "integer",
-        "format": "int64"
-      },
-      "total_transactions": {
-        "type": "integer",
-        "format": "int64"
-      },
-      "mempool_size": {
-        "type": "integer",
-        "format": "int64"
-      },
-      "last_block_hash": {
-        "type": "string"
-      },
-      "last_block_timestamp": {
-        "type": "string",
-        "format": "date-time"
-      }
-    },
-    "required": ["height", "difficulty", "total_blocks", "total_transactions", "mempool_size", "last_block_hash", "last_block_timestamp"]
-  }
-}
-```
+The `ToSchema` macro generates OpenAPI schemas with proper type mappings for JSON serialization.
 
 ### Generic Types
 
@@ -275,11 +210,9 @@ When used with a concrete type like `ApiResponse<BlockchainInfoResponse>`, Utoip
 
 ## Path Documentation
 
-Path documentation uses the `#[utoipa::path(...)]` attribute to document individual endpoints.
+Use `#[utoipa::path(...)]` to document individual endpoints.
 
 ### Basic Path Documentation
-
-In our `handlers/blockchain.rs`:
 
 ```rust
 /// Get blockchain information
@@ -291,7 +224,11 @@ In our `handlers/blockchain.rs`:
     path = "/api/v1/blockchain",
     tag = "Blockchain",
     responses(
-        (status = 200, description = "Blockchain information retrieved successfully", body = ApiResponse<BlockchainInfoResponse>),
+        (
+            status = 200,
+            description = "Blockchain information retrieved successfully",
+            body = ApiResponse<BlockchainInfoResponse>
+        ),
         (status = 500, description = "Internal server error")
     )
 )]
@@ -310,56 +247,37 @@ pub async fn get_blockchain_info(
 
 ### Path Parameters
 
-For endpoints with path parameters:
-
 ```rust
 #[utoipa::path(
     get,
     path = "/api/v1/blockchain/blocks/{hash}",
     tag = "Blockchain",
-    params(
-        ("hash" = String, Path, description = "Block hash")
-    ),
-    responses(
-        (status = 200, description = "Block retrieved successfully", body = ApiResponse<BlockResponse>),
-        (status = 404, description = "Block not found"),
-        (status = 500, description = "Internal server error")
-    )
+    params(("hash" = String, Path, description = "Block hash")),
+    responses((status = 200, body = ApiResponse<BlockResponse>))
 )]
 pub async fn get_block_by_hash(
     State(node): State<Arc<NodeContext>>,
     Path(hash): Path<String>,
 ) -> Result<Json<ApiResponse<BlockResponse>>, StatusCode> {
-    // ... handler implementation
+    // ...
 }
 ```
 
-**Path Parameters:**
-- **`params(...)`**: Documents path parameters
-- **`("hash" = String, Path, ...)`**: Parameter name, type, location, description
-
 ### Query Parameters
-
-For endpoints with query parameters:
 
 ```rust
 #[utoipa::path(
     get,
     path = "/api/v1/transactions",
     tag = "Transaction",
-    params(
-        ("page" = Option<u32>, Query, description = "Page number"),
-        ("limit" = Option<u32>, Query, description = "Items per page")
-    ),
-    responses(
-        (status = 200, description = "Transactions retrieved successfully", body = ApiResponse<Vec<TransactionResponse>>)
-    )
+    params(("page" = Option<u32>, Query), ("limit" = Option<u32>, Query)),
+    responses((status = 200, body = ApiResponse<Vec<TransactionResponse>>))
 )]
 pub async fn get_transactions(
     State(node): State<Arc<NodeContext>>,
     Query(params): Query<BlockQuery>,
 ) -> Result<Json<ApiResponse<Vec<TransactionResponse>>>, StatusCode> {
-    // ... handler implementation
+    // ...
 }
 ```
 
@@ -371,59 +289,37 @@ Schemas can be documented with descriptions and examples using attributes.
 
 ### Schema Descriptions
 
-Add descriptions to schemas:
-
 ```rust
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
-#[schema(description = "Comprehensive blockchain information including statistics and status")]
+#[schema(description = "Blockchain information")]
 pub struct BlockchainInfoResponse {
-    /// Current blockchain height (number of blocks)
-    #[schema(description = "Current blockchain height")]
+    #[schema(description = "Blockchain height")]
     pub height: usize,
-    
-    /// Mining difficulty
-    #[schema(description = "Current mining difficulty")]
+    #[schema(description = "Mining difficulty")]
     pub difficulty: u32,
-    
-    // ... other fields
 }
 ```
 
 ### Schema Examples
 
-Provide examples for schemas:
-
 ```rust
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
-#[schema(example = json!({
-    "height": 100,
-    "difficulty": 1,
-    "total_blocks": 100,
-    "total_transactions": 250,
-    "mempool_size": 5
-}))]
+#[schema(example = json!({"height": 100, "difficulty": 1}))]
 pub struct BlockchainInfoResponse {
-    // ... fields
+    // ...
 }
 ```
 
 ### Field Documentation
 
-Document individual fields:
-
 ```rust
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct SendTransactionRequest {
-    /// Source wallet address
-    #[schema(description = "Source wallet address for the transaction")]
+    #[schema(description = "Source address")]
     pub from_address: WalletAddress,
-    
-    /// Destination wallet address
-    #[schema(description = "Destination wallet address for the transaction")]
+    #[schema(description = "Destination address")]
     pub to_address: WalletAddress,
-    
-    /// Transaction amount in satoshis
-    #[schema(description = "Transaction amount in satoshis", minimum = 1)]
+    #[schema(description = "Amount in satoshis", minimum = 1)]
     pub amount: i32,
 }
 ```
@@ -436,8 +332,6 @@ Swagger UI provides interactive API documentation. Utoipa integrates Swagger UI 
 
 ### Creating Swagger UI
 
-In our `openapi.rs`:
-
 ```rust
 use utoipa_swagger_ui::SwaggerUi;
 
@@ -447,150 +341,72 @@ pub fn create_swagger_ui() -> SwaggerUi {
 }
 ```
 
-**How it works:**
-1. **`SwaggerUi::new("/swagger-ui")`**: Creates Swagger UI at `/swagger-ui` path
-2. **`.url(...)`**: Points to the OpenAPI JSON specification
-3. **`ApiDoc::openapi()`**: Generates the OpenAPI spec from our `ApiDoc` struct
-
 ### Accessing Swagger UI
 
 Once configured, Swagger UI is available at:
 - **URL**: `http://localhost:8080/swagger-ui`
 - **OpenAPI JSON**: `http://localhost:8080/api-docs/openapi.json`
 
-### Swagger UI Features
-
-Swagger UI provides:
-- **Interactive Testing**: Test endpoints directly from the browser
-- **Schema Exploration**: Browse request/response schemas
-- **Example Generation**: See example requests and responses
-- **Authentication**: Test authenticated endpoints
-- **Response Validation**: See actual API responses
+Swagger UI provides interactive testing, schema exploration, example generation, and response validation.
 
 ---
 
 ## Tags and Organization
 
-Tags help organize endpoints in the OpenAPI documentation.
-
-### Defining Tags
-
-In our `openapi.rs`:
+Use tags to organize endpoints:
 
 ```rust
 tags(
     (name = "Health", description = "Health check endpoints"),
-    (name = "Blockchain", description = "Blockchain data and information"),
-    (name = "Wallet", description = "Wallet management and operations"),
-    (name = "Transaction", description = "Transaction creation and management"),
-    (name = "Mining", description = "Mining operations and status"),
+    (name = "Blockchain", description = "Blockchain data operations"),
 )
 ```
 
-**Tag Structure:**
-- **`name`**: Tag identifier (used in path documentation)
-- **`description`**: Human-readable description
-
-### Using Tags in Paths
-
-Assign tags to endpoints:
-
-```rust
-#[utoipa::path(
-    get,
-    path = "/api/v1/blockchain",
-    tag = "Blockchain",  // ← Tag assignment
-    // ...
-)]
-```
-
-**Benefits:**
-- **Organization**: Endpoints grouped by functionality
-- **Navigation**: Easy to find related endpoints
-- **Clarity**: Clear API structure
+Assign in path documentation with `tag = "TagName"`.
 
 ---
 
 ## Request/Response Documentation
 
-Utoipa documents request bodies and response types automatically.
-
 ### Request Body Documentation
-
-For POST endpoints with request bodies:
 
 ```rust
 #[utoipa::path(
     post,
     path = "/api/v1/transactions",
     tag = "Transaction",
-    request_body = SendTransactionRequest,  // ← Request body schema
-    responses(
-        (status = 202, description = "Transaction accepted", body = ApiResponse<SendBitCoinResponse>),
-        (status = 400, description = "Bad request")
-    )
+    request_body = SendTransactionRequest,
+    responses((status = 202, body = ApiResponse<SendBitCoinResponse>))
 )]
 pub async fn send_transaction(
     State(node): State<Arc<NodeContext>>,
     Json(request): Json<SendTransactionRequest>,
 ) -> Result<Json<ApiResponse<SendBitCoinResponse>>, StatusCode> {
-    // ... handler implementation
+    // ...
 }
 ```
 
-**Request Body:**
-- **`request_body = SendTransactionRequest`**: References the request schema
-- Swagger UI shows the request body structure
-- Users can test with example data
-
 ### Response Documentation
-
-Document multiple response types:
 
 ```rust
 #[utoipa::path(
     get,
     path = "/api/v1/blockchain/blocks/{hash}",
     tag = "Blockchain",
-    params(
-        ("hash" = String, Path, description = "Block hash")
-    ),
+    params(("hash" = String, Path)),
     responses(
-        (status = 200, description = "Block retrieved successfully", body = ApiResponse<BlockResponse>),
-        (status = 404, description = "Block not found", body = ApiResponse<()>),
-        (status = 500, description = "Internal server error", body = ApiResponse<()>)
+        (status = 200, body = ApiResponse<BlockResponse>),
+        (status = 404, description = "Not found"),
+        (status = 500, description = "Server error")
     )
 )]
 ```
-
-**Response Documentation:**
-- **Status Codes**: Document all possible status codes
-- **Response Bodies**: Specify the response body type for each status
-- **Descriptions**: Human-readable descriptions
 
 ---
 
 ## Error Documentation
 
-Document error responses to help API consumers understand failure cases.
-
-### Error Response Schema
-
-Our `ErrorResponse` in `models/errors.rs`:
-
-```rust
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub struct ErrorResponse {
-    pub error: String,
-    pub message: String,
-    pub status_code: u16,
-    pub timestamp: DateTime<Utc>,
-}
-```
-
-### Documenting Error Responses
-
-In path documentation:
+Document error responses:
 
 ```rust
 #[utoipa::path(
@@ -599,89 +415,23 @@ In path documentation:
     tag = "Transaction",
     request_body = SendTransactionRequest,
     responses(
-        (status = 202, description = "Transaction accepted", body = ApiResponse<SendBitCoinResponse>),
-        (status = 400, description = "Bad request - invalid addresses or amount", body = ApiResponse<ErrorResponse>),
-        (status = 401, description = "Unauthorized - missing or invalid API key", body = ApiResponse<ErrorResponse>),
-        (status = 500, description = "Internal server error", body = ApiResponse<ErrorResponse>)
+        (status = 202, body = ApiResponse<SendBitCoinResponse>),
+        (status = 400, description = "Bad request"),
+        (status = 500, description = "Server error")
     )
 )]
 ```
-
-**Error Documentation Benefits:**
-- **Clear Expectations**: Users know what errors to expect
-- **Error Handling**: Clients can handle errors appropriately
-- **Debugging**: Easier to troubleshoot issues
 
 ---
 
 ## Best Practices
 
-### 1. Document All Endpoints
-
-Every endpoint should have `#[utoipa::path(...)]` documentation:
-
-```rust
-#[utoipa::path(
-    get,
-    path = "/api/v1/endpoint",
-    tag = "TagName",
-    responses(/* ... */)
-)]
-```
-
-### 2. Provide Descriptions
-
-Add descriptions to schemas and fields:
-
-```rust
-#[schema(description = "Clear description of what this represents")]
-pub struct Response {
-    #[schema(description = "What this field represents")]
-    pub field: String,
-}
-```
-
-### 3. Document All Response Codes
-
-Include all possible status codes:
-
-```rust
-responses(
-    (status = 200, /* success */),
-    (status = 400, /* bad request */),
-    (status = 404, /* not found */),
-    (status = 500, /* server error */)
-)
-```
-
-### 4. Use Meaningful Tags
-
-Organize endpoints with clear tags:
-
-```rust
-tags(
-    (name = "Blockchain", description = "Blockchain data operations"),
-    (name = "Wallet", description = "Wallet management"),
-)
-```
-
-### 5. Provide Examples
-
-Include examples in schemas when helpful:
-
-```rust
-#[schema(example = json!({
-    "field1": "value1",
-    "field2": 100
-}))]
-```
-
-### 6. Keep Documentation Updated
-
-Since Utoipa generates docs from code:
-- Update code → documentation updates automatically
-- Change types → schemas update automatically
-- Add endpoints → appear in documentation automatically
+1. **Document All Endpoints**: Use `#[utoipa::path(...)]`
+2. **Provide Descriptions**: Add to schemas and fields
+3. **Document All Response Codes**: Include all status codes (200, 400, 404, 500)
+4. **Use Meaningful Tags**: Organize with clear tags
+5. **Provide Examples**: Include schema examples
+6. **Keep Updated**: Code changes automatically update docs
 
 ---
 
@@ -753,7 +503,7 @@ Utoipa's integration with Axum and Serde creates a seamless documentation workfl
 
 <div align="center">
 
-**[📚 ← Web API Index](README.md)** | **Utoipa Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Tower** | **Serde** | **Tracing** | **Tokio** 📚
+**[← Web API Index](README.md)** | **Utoipa Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Tower** | **Serde** | **Tracing** | **Tokio** 
 
 </div>
 

@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. **Chapter 1.4: Bitcoin Whitepaper In Rust** ← *You are here*
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -44,7 +63,7 @@ This section is where the whitepaper’s “**hard to find, easy to verify**” 
 - *One hash*: take the block header bytes (80 bytes in Bitcoin), run the PoW hash function (conceptually “double‑SHA256” in Bitcoin) to get a 32‑byte hash.
 - *One comparison*: check whether that hash is ≤ the target threshold derived from the difficulty (nBits).
 
-### 4.1 `nBits` (difficulty_bits) → target: expand compact encoding and check `block_hash <= target`
+### 16 `nBits` (difficulty_bits) → target: expand compact encoding and check `block_hash <= target`
 For more on `nBits`, see: **nBits → target: why exponent is byte-length**.
 
 - **Why it’s “hard to find, easy to verify”**:
@@ -54,69 +73,37 @@ For more on `nBits`, see: **nBits → target: why exponent is byte-length**.
 
 ```rust
 pub fn bits_to_target(difficulty_bits: u32) -> [u8; 32] {
-    // Bitcoin "compact" target format (difficulty_bits(nBits)): [exponent (1 byte)] [mantissa (3 bytes)]
-    // Interpreted as: target = mantissa * 256^(exponent-3)
-
-    // Shifting right by 24 extracts the *top byte* (the exponent), which is why we do `>> 24`.
-    // i.e. it discards the 24 least-significant bits and leaves the 8 exponent bits.
-    let exp = (difficulty_bits >> 24) as u8; // exponent (8 bits / 1 byte)
-
-    // 0x00FF_FFFF in binary is top 8 bits: 00000000 and bottom 24 bits: 11111111 11111111 11111111
-    // So difficulty_bits & 0x00FF_FFFF zeros out the top 8 exponent bits and keeps only the lowest 24 bits.
-    let mant = difficulty_bits & 0x00FF_FFFF; // mantissa (low 24 bits / 3 bytes)
-
-    // Allocate a 32-byte (256-bit) buffer for the expanded target threshold.
-    // We start with all zeros and then place the mantissa bytes at the position implied by `exp`.
+    let exp = (difficulty_bits >> 24) as u8;
+    let mant = difficulty_bits & 0x00FF_FFFF;
     let mut target = [0u8; 32];
 
-    // If the mantissa is 0, the compact encoding describes a target of 0.
-    // That would make PoW impossible to satisfy (only hash==0 would pass), so in practice
-    // this is either malformed input or an invalid header value.
     if mant == 0 {
-        // If mantissa is zero, then target = 0 * 256^(...) = 0. (In practice, invalid/unusable for PoW.)
         return target;
     }
 
-    // If `exp <= 3`, and target = mantissa * 256^(exp-3), then expanded target is <= 3 bytes wide, 
-    //  so we must shift the mantissa
-    // *right* to shrink it down to `exp` bytes (instead of shifting left to grow it).
-    //  For code details, see `Worked byte example (how the mantissa bytes get placed)` below.
     if exp <= 3 {
-        // If exponent is small, the mantissa is shifted right.
         let shift_bytes = (3 - exp) as u32;
         let m = (mant >> (8 * shift_bytes)) as u32;
         target[28..32].copy_from_slice(&m.to_be_bytes());
         return target;
     }
 
-    // `start` is a byte index into the 32‑byte big-endian target array.
-    // Intuition: `exp` says the expanded target should be `exp` bytes wide, 
-    //  so it begins at offset: start = 32 - exp
-    // Example: if exp=29, start=3, so the expanded number occupies 
-    //  target[3..32] and target[0..3] are leading zeros.
-    // `saturating_sub` is used to avoid underflow if an invalid header provides exp > 32.
-    //  For code details, see `Worked byte example (how the mantissa bytes get placed)` below.
-    let start = 32usize.saturating_sub(exp as usize); // start = 32 - exp
+    let start = 32usize.saturating_sub(exp as usize);
     if start + 3 <= 32 {
-        // Write 3 mantissa bytes
-        // For a more detailed explanation, 
-        // write the first mantissa byte (the most-significant of the 3) into target[start]
         target[start] = ((mant >> 16) & 0xFF) as u8;
-
-        // Write the next mantissa byte into target[start+1]
         target[start + 1] = ((mant >> 8) & 0xFF) as u8;
-        
-        // Write the last mantissa byte into target[start+2]
         target[start + 2] = (mant & 0xFF) as u8;
     }
     target
 }
+```
 
+After expanding the compact target format, the validation function checks whether a mined block hash falls below the target threshold:
+
+```rust
 pub fn meets_target(block_hash: [u8; 32], target_be: [u8; 32]) -> bool {
-    // Bitcoin's displayed hashes are typically reversed, but for numeric compare
-    // treat both as big-endian integers.
     let mut h = block_hash;
-    h.reverse(); // convert from little-endian digest bytes to big-endian compare
+    h.reverse();
     h <= target_be
 }
 ```
@@ -146,12 +133,12 @@ Inside `bits_to_target`, we expand the compact `difficulty_bits(nBits)` value by
 ```
 
 - **Why we shift right in this case**:
-  - The compact rule is `target = mantissa * 256^(exp-3)`. If `exp <= 3`, then `(exp-3)` is **0 or negative**, which means we are not “growing” the mantissa; we are keeping it the same size (`exp=3`) or **shrinking** it (`exp<3`).
+  - The compact rule is `target = mantissa * 256^(exp-15)`. If `exp <= 3`, then `(exp-15)` is **0 or negative**, which means we are not “growing” the mantissa; we are keeping it the same size (`exp=3`) or **shrinking** it (`exp<3`).
 
 ```text
-exp = 3: exp-3 =  0  => target = mantissa * 256^0  = mantissa       (no shift)
-exp = 2: exp-3 = -1  => target = mantissa / 256    (shift right 1 byte)
-exp = 1: exp-3 = -2  => target = mantissa / 256^2  (shift right 2 bytes)
+exp = 3: exp-15 =  0  => target = mantissa * 256^0  = mantissa       (no shift)
+exp = 2: exp-15 = -1  => target = mantissa / 256    (shift right 1 byte)
+exp = 1: exp-15 = -2  => target = mantissa / 256^2  (shift right 2 bytes)
 ```
 
   - Division by 256 is exactly a right shift by 8 bits (one byte), so the code implements this “divide by 256^(3-exp)” by shifting the mantissa right.
@@ -193,8 +180,8 @@ let m = (mant >> (8 * shift_bytes)) as u32;
 ```text
 mant = 0x00AABBCC
 
-exp = 2 => shift_bytes = 1(ie 3-2) => mant >> 8  = 0x0000AABB  (drops CC, keeps AA BB)
-exp = 1 => shift_bytes = 2(ie 3-1) => mant >> 16 = 0x000000AA  (drops BB CC, keeps AA)
+exp = 2 => shift_bytes = 1 => mant >> 8  = 0x0000AABB  (keeps AA BB)
+exp = 1 => shift_bytes = 2 => mant >> 16 = 0x000000AA  (keeps AA)
 ```
 
 These two steps implement the “divide by 256^(3-exp)” idea to shrink the 3-byte mantissa down to an `exp`-byte value.
@@ -204,8 +191,10 @@ These two steps implement the “divide by 256^(3-exp)” idea to shrink the 3-b
     let start = 32usize.saturating_sub(exp as usize); // start = 32 - exp
     if start + 3 <= 32 {
         // Write 3 mantissa bytes
-        // For a more detailed explanation, see `Worked byte example (how the mantissa bytes get placed)` below.
-        // write the first mantissa byte (the most-significant of the 3) into target[start]
+        // For a more detailed explanation, see `Worked byte example (how the
+        // mantissa bytes get placed)` below.
+        // write the first mantissa byte (the most-significant of the 3) into
+        // target[start]
         target[start] = ((mant >> 16) & 0xFF) as u8;
 
         // Write the next mantissa byte into target[start+1]
@@ -258,7 +247,7 @@ mant & 0x000000FF = 0x000000CC
 
 - The whitepaper describes “leading zero bits” as an intuition for “hard to find, easy to verify”. The target comparison is the concrete deployed mechanism. ([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf))
 
-### 4.2 Mining loop (nonce scan)
+### 17 Mining loop (nonce scan)
 
 ```rust
 pub fn mine(mut header: BlockHeader) -> (BlockHeader, [u8; 32]) {

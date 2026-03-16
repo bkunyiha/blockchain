@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. **Chapter 2.1: Primitives** ← *You are here*
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -38,19 +57,19 @@
 ---
 <div align="right">
 
-**[← Back to Cryptography](../crypto/README.md)** | **[Chapter 10: Rust Language Guide](../../rust/README.md)** | **[Tokio Runtime Guide](../Tokio.md)**
+**[← Back to Cryptography](../crypto/README.md)** | **[Chapter 24: Rust Language Guide](../../rust/README.md)** | **[Tokio Runtime Guide](../Tokio.md)**
 
 </div>
 
 ---
 
-# Chapter 2.2: Transaction ID Format
+# Chapter 7: Transaction ID Format
 
-**Part I: Core Blockchain Implementation**
+**Part I: Foundations & Core Implementation**
 
 <div align="center">
 
-**[📚 ← Primitives](README.md)** | **[Chapter 2.1: Transaction ID Format](02-Transaction-ID-Format.md)** 📚
+**[← Primitives](README.md)** | **[Chapter 6: Transaction ID Format](02-Transaction-ID-Format.md)** 
 
 </div>
 
@@ -99,7 +118,7 @@ SHA-256 outputs raw bytes:
 ```rust
 // Hash function produces binary
 fn sha256(data: &[u8]) -> [u8; 32] {
-    // Returns: [0x9a, 0x2f, 0x3c, ..., 0xef]  (32 bytes)
+    // Returns: [0x23A, 0x2f, 0x3c, ..., 0xef]  (32 bytes)
     //     NOT: "9a2f3c...ef"  (64 character string)
 }
 ```
@@ -108,31 +127,15 @@ fn sha256(data: &[u8]) -> [u8; 32] {
 
 | Type | Size | Example |
 |------|------|---------|
-| **`Vec<u8>`** | **32 bytes** | `[0x9a, 0x2f, 0x3c, ...]` |
+| **`Vec<u8>`** | **32 bytes** | `[0x23A, 0x2f, 0x3c, ...]` |
 | `String` (hex) | **64+ bytes** | `"9a2f3c4d5e6f..."` |
 | **Memory Savings** | **50%** | **Binary is half the size!** |
-
-#### Real Example:
-
-```rust
-// Binary storage (efficient)
-let txid_binary: Vec<u8> = vec![
-    0x9a, 0x2f, 0x3c, 0x4d, 0x5e, 0x6f, 0x7a, 0x8b,
-    // ... 32 bytes total
-];
-// Memory: 32 bytes + Vec overhead (24 bytes) = 56 bytes
-
-// String storage (inefficient)
-let txid_hex: String = "9a2f3c4d5e6f7a8b...".to_string();
-// Memory: 64 bytes + String overhead (24 bytes) = 88 bytes
-// 57% more memory!
-```
 
 ### The Bitcoin Protocol Uses Binary
 
 When we look at how Bitcoin actually works at the protocol level, we discover another important reason for using binary storage. The Bitcoin P2P protocol transmits **raw bytes**, not hex strings:
 
-```
+```text
 ┌──────────────────────────────────────────────┐
 │  Bitcoin Wire Format (inv message)           │
 ├──────────────────────────────────────────────┤
@@ -164,7 +167,7 @@ But with binary storage, we get zero-cost network operations:
 ```rust
 // ✅ GOOD: Binary storage, zero conversions
 struct Transaction {
-    id: Vec<u8>,  // Binary [0x9a, 0x2f, ...]
+    id: Vec<u8>,  // Binary [0x23A, 0x2f, ...]
 }
 
 // Send over network = direct
@@ -179,7 +182,11 @@ Let's see how this works in our actual implementation:
 
 ```rust
 // src/node/context.rs (line 99-110)
-pub async fn process_transaction(&self, addr_from: &SocketAddr, tx: Transaction) -> Result<String> {
+pub async fn process_transaction(
+    &self,
+    addr_from: &SocketAddr,
+    tx: Transaction,
+) -> Result<String> {
     // Add to memory pool
     add_to_memory_pool(tx, &self.blockchain).await;
     
@@ -188,7 +195,8 @@ pub async fn process_transaction(&self, addr_from: &SocketAddr, tx: Transaction)
     // Broadcast using BINARY format
     if my_node_addr.eq(&CENTERAL_NODE) {
         let nodes = self.get_nodes_excluding_sender(addr_from).await?;
-        self.broadcast_transaction_to_nodes(&nodes, tx.get_id_bytes()).await;
+        self.broadcast_transaction_to_nodes(&nodes, tx.get_id_bytes())
+            .await;
         //                                           ^^^^^^^^^^^^^^^^
         //                                           Binary for network!
     }
@@ -212,42 +220,7 @@ fn compare_hex(a: &str, b: &str) -> bool {
 }
 ```
 
-#### Merkle Tree Construction:
-
-```rust
-// From blockchain systems (like Bitcoin Core)
-
-// ✅ With Vec<u8>: Direct hashing
-fn build_merkle_root(txids: &[Vec<u8>]) -> Vec<u8> {
-    let mut level = txids.to_vec();
-    while level.len() > 1 {
-        let mut next_level = vec![];
-        for pair in level.chunks(2) {
-            let combined = [pair[0].as_slice(), pair[1].as_slice()].concat();
-            next_level.push(sha256d(&combined));  // Direct hashing!
-        }
-        level = next_level;
-    }
-    level[0].clone()
-}
-
-// ❌ With String: Must decode, hash, encode
-fn build_merkle_root_hex(txids: &[String]) -> String {
-    let mut level: Vec<Vec<u8>> = txids.iter()
-        .map(|hex| hex::decode(hex).unwrap())  // Decode overhead!
-        .collect();
-    
-    while level.len() > 1 {
-        let mut next_level = vec![];
-        for pair in level.chunks(2) {
-            let combined = [pair[0].as_slice(), pair[1].as_slice()].concat();
-            next_level.push(sha256d(&combined));
-        }
-        level = next_level;
-    }
-    hex::encode(&level[0])  // Encode overhead!
-}
-```
+For Merkle tree operations, binary format is essential for hashing efficiency.
 
 ### Database Storage Efficiency
 
@@ -275,9 +248,11 @@ db.insert(hex_key.as_bytes(), serialized_tx)?;  // 64-byte key (2x space!)
 ```rust
 // src/store/file_system_db_chain.rs
 impl BlockchainFileSystem {
-    pub async fn get_transaction(&self, id: &[u8]) -> Result<Option<Transaction>> {
-        //                                    ^^^^
-        //                                    Binary for efficient DB lookup
+    pub async fn get_transaction(
+        &self,
+        id: &[u8],
+    ) -> Result<Option<Transaction>> {
+        // Binary for efficient DB lookup.
         let tx_tree = self.blockchain.db.open_tree(TRANSACTIONS_CF)?;
         
         match tx_tree.get(id)? {  // Direct binary key lookup
@@ -360,263 +335,14 @@ impl Transaction {
 
 ### Practical Examples from Our Codebase
 
-#### 1. Network Protocol (Uses Bytes)
 
-```rust
-// src/node/context.rs (line 154-162)
-async fn broadcast_transaction_to_nodes(&self, nodes: &[Node], txid: Vec<u8>) {
-    //                                                         ^^^^^^^^^^
-    //                                                         Binary for P2P protocol
-    let txid_clone = txid.clone();
-    nodes.iter().for_each(|node| {
-        let node_addr = node.get_addr();
-        let txid = txid_clone.clone();
-        tokio::spawn(async move {
-            send_inv(&node_addr, OpType::Tx, &[txid]).await;
-            //                                  ^^^^
-            //                                  Raw bytes sent over network
-        });
-    });
-}
-```
+**Use case summary:**
+- Network Protocol: `Vec<u8>` (binary)
+- API Response: `String` (hex)
+- Logging: `String` (hex)
+- Database: `Vec<u8>` (binary)
 
-#### 2. API Response (Uses Hex)
-
-When we expose our blockchain through a web API, we face a fundamental challenge: how do we represent binary data in a format that's both human-readable and universally compatible with web standards? The answer is hexadecimal encoding, and understanding why reveals important principles about API design and data representation.
-
-**Why Hex for API Responses?**
-
-The choice to use hex in API responses stems from several critical requirements:
-
-1. **JSON Compatibility**: JSON (JavaScript Object Notation) is the de facto standard for web APIs, but JSON doesn't natively support binary data. While JSON supports strings, it has no binary type. Hex encoding bridges this gap by representing binary data as a string of ASCII characters that can be safely embedded in JSON.
-
-2. **Human Readability**: When developers interact with our API, they need to be able to read and understand transaction IDs. Binary data displayed as raw bytes (`[0x9a, 0x2f, 0x3c, ...]`) is difficult to read and compare. Hex strings (`"9a2f3c..."`) are immediately recognizable and can be easily compared, copied, and shared.
-
-3. **Web Standards**: The web ecosystem expects string-based identifiers. URLs, query parameters, and HTTP headers all work with strings. Hex encoding allows transaction IDs to be used directly in URLs like `/api/transactions/9a2f3c4d5e6f7a8b...` without encoding issues.
-
-4. **Cross-Platform Compatibility**: Different systems and programming languages handle binary data differently, but all can work with hex strings. A JavaScript client, a Python script, or a mobile app can all parse and display hex strings without special binary handling.
-
-5. **Debugging and Logging**: When troubleshooting API issues, hex strings appear in logs, error messages, and debugging tools in a readable format. Developers can quickly identify transaction IDs in error traces and network dumps.
-
-Let's see how this works in practice:
-
-```rust
-// src/node/context.rs (line 86-101)
-pub async fn process_transaction(
-    &self,
-    addr_from: &std::net::SocketAddr,
-    tx: Transaction,
-) -> Result<String> {
-    // Internally, we work with binary (efficient)
-    if transaction_exists_in_pool(&tx) {
-        // But for API responses, we convert to hex (readable)
-        return Err(BtcError::TransactionAlreadyExistsInMemoryPool(
-            tx.get_tx_id_hex()  // ← Hex: "9a2f3c4d5e6f7a8b..."
-        ));
-    }
-    
-    // Internal operations use binary (no conversion overhead)
-    add_to_memory_pool(tx, &self.blockchain).await;
-    
-    // API boundary: convert to hex for external consumption
-    Ok(tx.get_tx_id_hex())  // ← Hex string for JSON response
-}
-```
-
-**The Conversion Boundary**
-
-This pattern establishes a clear boundary: **binary inside, hex at the edges**. Internally, our system operates on binary data for efficiency. Only when data crosses the API boundary do we convert to hex. This conversion happens once, at the point of serialization, minimizing overhead while maximizing compatibility.
-
-**Performance Consideration**
-
-While hex conversion has a cost, it's a necessary trade-off at API boundaries. The conversion from 32 bytes to a 64-character hex string involves:
-- Reading 32 bytes from memory
-- Encoding each byte as two hex characters (0-9, a-f)
-- Allocating a 64-byte string
-
-For a single API response, this overhead is negligible (~100 nanoseconds). The benefits of human readability and JSON compatibility far outweigh this small cost at the API boundary.
-
-**Example: JSON Response**
-
-```rust
-// When serialized to JSON, hex strings are clean and readable:
-{
-    "txid": "9a2f3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2",
-    "status": "confirmed",
-    "confirmations": 6
-}
-
-// Compare to binary representation (not JSON-compatible):
-{
-    "txid": [154, 47, 60, 77, 94, 111, ...],  // ❌ Not standard JSON
-    // or base64: "mj08TV5v..."  // Less readable than hex
-}
-```
-
-**Industry Standard**
-
-This pattern mirrors how Bitcoin Core handles RPC responses. When Bitcoin Core's RPC interface returns transaction IDs, it uses hex strings, not binary. This consistency means our API responses are familiar to developers who have worked with Bitcoin's RPC interface, reducing cognitive load and improving developer experience.
-
-#### 3. Logging (Uses Hex)
-
-```rust
-// src/node/context.rs (line 93)
-if transaction_exists_in_pool(&tx) {
-    info!("Transaction: {:?} already exists", tx.get_id());
-    //                                        ^^^^^^^^^^^
-    //                                        Binary logged (debug format)
-    //                                        Better: tx.get_tx_id_hex()
-}
-```
-
-#### 4. Database Operations (Uses Bytes Reference)
-
-Database operations are where performance and memory efficiency matter most. When we're processing thousands of transactions per second, every allocation, every copy, and every conversion adds up. Understanding why we use byte references in database operations reveals fundamental principles of efficient systems programming.
-
-**Why Bytes Reference (`&[u8]`) for Database Operations?**
-
-The choice to use byte references rather than owned values or hex strings in database operations is driven by several critical performance considerations:
-
-1. **Zero-Copy Semantics**: A reference (`&[u8]`) is just a pointer and a length—two machine words (16 bytes on 64-bit systems). There's no allocation, no copying of the actual 32 bytes of transaction ID data. The database can use this reference directly to perform lookups without any memory overhead.
-
-2. **Memory Efficiency**: In a high-throughput blockchain system, we might perform millions of database lookups per day. If each lookup cloned the transaction ID (32 bytes), we'd allocate 32 MB of memory for just 1 million lookups. Using references eliminates this allocation entirely.
-
-3. **CPU Cache Performance**: Modern CPUs have sophisticated cache hierarchies. When we use references, we're working with data that's already in memory (the transaction ID in the `Transaction` struct). This means better cache locality—the CPU can keep the transaction ID in its fast L1 or L2 cache, making lookups extremely fast.
-
-4. **Database Key Format**: Most key-value databases (like Sled, RocksDB, or LevelDB) expect byte slices as keys. They're designed to work with binary data efficiently. Using `&[u8]` directly matches this expectation without conversion overhead.
-
-5. **Borrowing vs Ownership**: Database lookups are read operations—we don't need to own the transaction ID, we just need to read it. Rust's borrowing system allows us to express this intent clearly: we're borrowing the ID temporarily for the lookup, then returning it.
-
-Let's examine how this works in practice:
-
-```rust
-// Efficient lookup without cloning
-fn lookup_transaction(db: &Db, tx: &Transaction) -> Result<Option<Vec<u8>>> {
-    // Using get_id() returns &[u8] - a reference, not a copy
-    Ok(db.get(tx.get_id())?)  
-    //           ^^^^^^^^^
-    //           This is zero-cost: just a pointer (8 bytes) + length (8 bytes)
-    //           No allocation, no copying of the 32-byte transaction ID
-    //           The database uses this reference directly for its internal lookup
-}
-```
-
-**The Performance Difference**
-
-To understand the impact, let's compare the approaches:
-
-```rust
-// ❌ INEFFICIENT: Cloning the transaction ID
-fn lookup_transaction_slow(db: &Db, tx: &Transaction) -> Result<Option<Vec<u8>>> {
-    let txid_copy = tx.get_id_bytes();  // Allocates 32 bytes + Vec overhead
-    Ok(db.get(&txid_copy)?)  // Database uses the copy
-    // Memory cost: 32 bytes + 24 bytes (Vec overhead) = 56 bytes per lookup
-}
-
-// ✅ EFFICIENT: Using a reference
-fn lookup_transaction_fast(db: &Db, tx: &Transaction) -> Result<Option<Vec<u8>>> {
-    Ok(db.get(tx.get_id())?)  // Just a pointer, zero allocation
-    // Memory cost: 16 bytes (pointer + length) per lookup
-    // 71% less memory usage!
-}
-```
-
-**Real-World Impact**
-
-Consider a blockchain node processing 1,000 transactions per second. Each transaction might trigger multiple database lookups (checking if it exists, verifying inputs, updating UTXO set, etc.). Let's say each transaction requires 5 database lookups:
-
-```rust
-// Per second: 1,000 transactions × 5 lookups = 5,000 lookups/second
-
-// With cloning (inefficient):
-// 5,000 lookups × 56 bytes = 280 KB/second = 24.2 GB/day
-
-// With references (efficient):
-// 5,000 lookups × 16 bytes = 80 KB/second = 6.9 GB/day
-
-// SAVINGS: 17.3 GB/day of memory allocations avoided!
-```
-
-**Database Key Storage**
-
-When we store data in the database, the key format matters. Binary keys are compact and efficient:
-
-```rust
-// From our codebase: src/store/file_system_db_chain.rs
-impl BlockchainFileSystem {
-    pub async fn get_transaction(&self, id: &[u8]) -> Result<Option<Transaction>> {
-        //                                    ^^^^
-        //                                    Binary reference - most efficient format
-        let tx_tree = self.blockchain.db.open_tree(TRANSACTIONS_CF)?;
-        
-        // Database performs lookup using binary key directly
-        // No conversion, no allocation - just a direct memory comparison
-        match tx_tree.get(id)? {  
-            //      ^^
-            //      The database's internal B-tree uses this binary key
-            //      for efficient O(log n) lookup
-            Some(tx_bytes) => {
-                let tx = bincode::deserialize(&tx_bytes)?;
-                Ok(Some(tx))
-            }
-            None => Ok(None),
-        }
-    }
-}
-```
-
-**When Ownership is Required**
-
-There are cases where we need owned values rather than references. For example, when storing transaction IDs as keys in a `HashMap` or when crossing thread boundaries:
-
-```rust
-// When you need ownership (e.g., for storage in collections)
-fn store_in_mempool(tx: Transaction) {
-    // HashMap requires owned keys, so we clone
-    MEMPOOL.insert(tx.get_id_bytes(), tx);
-    //                ^^^^^^^^^^^^^^
-    //                Owned Vec<u8> - required for HashMap<String, Transaction>
-    //                This allocation is necessary because HashMap needs to own the key
-}
-
-// But for lookups, we can still use references:
-fn check_mempool(tx: &Transaction) -> bool {
-    // We can convert to owned only when needed for lookup
-    MEMPOOL.contains_key(&tx.get_id_bytes())  
-    // Note: HashMap lookup still benefits from binary comparison
-    // (faster than string comparison)
-}
-```
-
-**Database Index Efficiency**
-
-Binary keys also enable more efficient database indexing. Consider a B-tree index structure:
-
-```
-Binary Key Index (32 bytes per key):
-├─ Node capacity: ~400 keys per 16KB page
-├─ Tree height: 3 levels for 64M transactions
-└─ Index size: ~2 GB for 64M transactions
-
-Hex Key Index (64 bytes per key):
-├─ Node capacity: ~250 keys per 16KB page  
-├─ Tree height: 4 levels for 64M transactions (deeper tree!)
-└─ Index size: ~4 GB for 64M transactions
-
-Result: Binary keys use 50% less index space and enable faster lookups
-        due to shallower tree depth (3 vs 4 levels).
-```
-
-**The Rust Borrow Checker Advantage**
-
-Rust's ownership system makes this pattern safe and efficient. The borrow checker ensures that:
-- The transaction ID reference remains valid for the duration of the database lookup
-- No data races can occur (Rust's type system prevents concurrent mutation)
-- Memory safety is guaranteed without runtime overhead
-
-This is a powerful example of how Rust's type system enables zero-cost abstractions—we get memory safety and performance without sacrificing either.
-
-### Conversion Cost Analysis
+ Analysis
 
 Understanding the cost of each operation helps us make informed decisions about when to use which method. Let's break down the actual costs:
 
@@ -638,10 +364,12 @@ let id_vec: Vec<u8> = tx.get_id_bytes();
 
 // get_tx_id_hex() - ENCODE + ALLOCATE
 let id_hex: String = tx.get_tx_id_hex();  
-// Cost: 32 bytes read + 64 bytes allocated (hex string) + String overhead (24 bytes)
+// Cost: 32 bytes read + 64 bytes allocated (hex string) + String overhead (24
+// bytes)
 //       = 88 bytes allocated + encoding computation
 //       CPU: ~50-100 nanoseconds (encoding each byte to 2 hex chars)
-//       This conversion is necessary at API boundaries but should be avoided internally
+// This conversion is necessary at API boundaries but should be avoided
+// internally
 ```
 
 **Real-World Performance Impact**
@@ -657,7 +385,7 @@ These costs might seem small, but they compound:
 
 // Over 1 day (86,400 seconds):
 // References: 172 milliseconds total
-// Cloning: 1.3 seconds total
+// Cloning: 3 seconds total
 // Hex encoding: 6.5 seconds total
 
 // The difference becomes significant at scale!
@@ -702,7 +430,7 @@ These represent different ways to get a reference to the transaction ID bytes, a
 
 ```rust
 let tx = Transaction { 
-    txid: vec![0x9a, 0x2f, 0x3c, /* ... */], 
+    txid: vec![0x23A, 0x2f, 0x3c, /* ... */], 
     // ... 
 };
 
@@ -730,136 +458,6 @@ takes_slice(tx.id.as_slice());  // ✅ Explicit conversion
 if &tx.id == other_slice { }            // ✅ Works
 if tx.id.as_slice() == other_slice { }  // ✅ Same result
 ```
-
-### When They're Different
-
-#### 1. Method Availability
-
-```rust
-// &Vec<u8> has Vec-specific methods:
-let capacity = (&tx.id).capacity();  // ✅ Works - Vec has capacity()
-let len = (&tx.id).len();            // ✅ Works
-
-// &[u8] only has slice methods:
-// let cap = tx.id.as_slice().capacity();  // ❌ Error! Slices don't have capacity()
-let len = tx.id.as_slice().len();          // ✅ Works
-```
-
-#### 2. Type Matching (Strict Generics)
-
-```rust
-// Function requires exactly &Vec<u8>
-fn requires_vec_ref(v: &Vec<u8>) {
-    println!("Capacity: {}", v.capacity());
-}
-
-requires_vec_ref(&tx.id);            // ✅ Works
-// requires_vec_ref(tx.id.as_slice()); // ❌ Type error!
-
-// Function requires exactly &[u8]
-fn requires_slice(s: &[u8]) {
-    println!("Length: {}", s.len());
-}
-
-requires_slice(&tx.id);            // ✅ Works (auto-converts)
-requires_slice(tx.id.as_slice());  // ✅ Works
-```
-
-#### 3. Explicit Intent
-
-```rust
-// Use as_slice() to make intent crystal clear
-fn hash_transaction_id(txid: &[u8]) -> Vec<u8> {
-    sha256(txid)
-}
-
-// Both work, but as_slice() shows you know you want a slice
-hash_transaction_id(&tx.id);            // Works, but less explicit
-hash_transaction_id(tx.id.as_slice()); // Clear: "I want a slice"
-```
-
-### Examples from Our Codebase
-
-```rust
-// src/node/context.rs
-// The codebase primarily uses &tx.id (simpler, cleaner)
-
-// Example: Broadcasting (could use either)
-async fn broadcast_transaction_to_nodes(&self, nodes: &[Node], txid: Vec<u8>) {
-    let txid_clone = txid.clone();
-    nodes.iter().for_each(|node| {
-        // ...
-        send_inv(&node_addr, OpType::Tx, &[txid]).await;
-        //                                  ^^^^
-        //       Could be: &txid or txid.as_slice() - same result
-    });
-}
-```
-
-### Performance: Identical at Runtime!
-
-When Rust's compiler optimizes your code, both approaches result in identical machine code. The deref coercion happens at compile time, not runtime:
-
-```rust
-// Both compile to exactly the same assembly code:
-
-let ref1 = &tx.id;            // Cost: 0 (pointer + length)
-let ref2 = tx.id.as_slice();  // Cost: 0 (pointer + length)
-
-// The generated assembly is identical:
-// mov rax, [tx + offset]     ; Load pointer to Vec data
-// mov rdx, [tx + offset + 8] ; Load length
-// ; Both approaches produce these same two instructions
-
-// No difference in:
-// - Memory usage (both are 16 bytes: pointer + length)
-// - CPU cycles (both are 2-3 CPU instructions)
-// - Generated code (identical assembly output)
-// - Cache behavior (both reference the same memory location)
-```
-
-This is a perfect example of Rust's "zero-cost abstractions" philosophy: the language provides multiple ways to express the same intent, but they all compile to equally efficient code.
-
-### Recommendation: When to Use Which
-
-The choice between `&tx.id` and `tx.id.as_slice()` is often a matter of style and intent:
-
-```rust
-// ✅ PREFERRED: Use &tx.id (simpler, idiomatic Rust)
-// This is the most common pattern in Rust codebases
-fn process_txid(txid: &[u8]) -> bool {
-    // Function signature accepts &[u8]
-    // ...
-}
-
-process_txid(&tx.id);  // Clean and simple
-// Rust's deref coercion automatically converts &Vec<u8> to &[u8]
-// This is idiomatic and preferred in most cases
-
-// ✅ Use as_slice() when being explicit helps readability
-// Sometimes making the conversion explicit clarifies intent
-let slice: &[u8] = tx.id.as_slice();
-assert_eq!(slice.len(), 32);
-// This makes it clear: "I'm converting to a slice intentionally"
-
-// ✅ Use &tx.id when you might need Vec methods
-// If you need Vec-specific functionality, keep it as &Vec<u8>
-let vec_ref = &tx.id;
-if vec_ref.capacity() > 100 {
-    // Can access Vec methods like capacity(), reserve(), etc.
-    // This wouldn't work with as_slice() which returns &[u8]
-}
-
-// ✅ Use as_slice() in generic contexts where type inference might struggle
-// Sometimes the compiler needs a hint about which type you want
-fn generic_function<T: AsRef<[u8]>>(data: T) {
-    let slice = data.as_ref();  // Works with both &Vec<u8> and &[u8]
-}
-```
-
-**The Bottom Line**: In practice, `&tx.id` is preferred because it's shorter and Rust's deref coercion handles the conversion automatically. Use `as_slice()` when you want to be explicit about the conversion or when working with generic code that benefits from the explicit type.
-
----
 
 ## Bitcoin Core Comparison
 
@@ -951,7 +549,7 @@ void SendInventory(CNode* node, const std::vector<CInv>& inventory) {
 // Our code: src/node/context.rs
 async fn broadcast_transaction_to_nodes(&self, nodes: &[Node], txid: Vec<u8>) {
     //                                                         ^^^^^^^^^^
-    //                                                         Binary (like uint256)
+    // Binary (like uint256)
     nodes.iter().for_each(|node| {
         tokio::spawn(async move {
             send_inv(&node_addr, OpType::Tx, &[txid]).await;
@@ -1112,187 +710,29 @@ fn store_transaction(db: &Db, tx: &Transaction) -> Result<()> {
 
 ---
 
-## Performance Benchmarks
 
-### Memory Usage (1 Million Transactions)
+## Performance Notes
 
-| Storage Type | Size per TXID | Total for 1M | Overhead |
-|-------------|---------------|--------------|----------|
-| **`Vec<u8>` (binary)** | **32 bytes** | **32 MB** | **Baseline** |
-| `String` (hex) | 64 bytes | 64 MB | +100% |
-| + String overhead | 88 bytes | 88 MB | +175% |
+The choice between `Vec<u8>` and `String` (hex) has runtime tradeoffs:
+- **Memory**: Binary is 2-4x more efficient than hex string representation
+- **CPU**: Hex conversion has minimal cost (~microseconds per transaction)
+- **Database**: Binary keys are faster to compare and index
 
-### Operation Speed Comparison
-
-```rust
-// Benchmark setup
-let tx = create_test_transaction();
-let iterations = 1_000_000;
-
-// Binary operations (Vec<u8>)
-// Time: ~50ms for 1M operations
-for _ in 0..iterations {
-    let _ = tx.get_id();  // Reference: O(1)
-}
-
-// Hex conversions (String)
-// Time: ~2,500ms for 1M operations (50x slower!)
-for _ in 0..iterations {
-    let _ = tx.get_tx_id_hex();  // Conversion: O(n)
-}
-```
-
-### Database Performance
-
-| Operation | Binary Key | Hex Key | Speedup |
-|-----------|-----------|---------|---------|
-| Insert | 1.2 μs | 2.1 μs | 1.75x |
-| Lookup | 0.8 μs | 1.5 μs | 1.87x |
-| Index size | 32 MB | 64 MB | 2x smaller |
-
-### Network Bandwidth (1000 tx/s)
-
-| Format | Bandwidth | Daily Data |
-|--------|-----------|------------|
-| **Binary** | **32 KB/s** | **2.76 GB/day** |
-| Hex | 64 KB/s | 5.52 GB/day |
-| **Savings** | **50%** | **2.76 GB/day** |
+For a blockchain node processing 1000 tx/sec, the difference is negligible in absolute terms (microseconds), but storage savings can be significant: ~32GB for 1 billion transactions in binary vs ~128GB in hex.
 
 ---
 
 ## Summary
 
-Throughout this chapter, we've explored the fundamental principles of efficient data representation in blockchain systems. The patterns we've learned aren't just about transaction IDs—they apply to all binary data in our system: block hashes, Merkle roots, public keys, and signatures.
+**Use `Vec<u8>` for internal storage and wire protocol.**
 
-### The Golden Rules
+**Use `String` (hex) for external APIs and logging.**
 
-These principles form the foundation of efficient blockchain implementation:
-
-```rust
-// 1. ✅ Store as binary (Vec<u8>)
-//    Binary is the native format: 50% smaller, zero conversion overhead
-struct Transaction {
-    txid: Vec<u8>,  // Internal: binary - matches hash function output
-}
-
-// 2. ✅ Pass as slice reference (&[u8])
-//    Zero-cost borrowing: no allocation, no copying
-fn process_tx(txid: &[u8]) { }
-//            ^^^^^^
-//            Just a pointer + length (16 bytes), not 32 bytes copied
-
-// 3. ✅ Return hex for display (String)
-//    Convert only at API/user boundaries, not internally
-fn get_txid_for_api() -> String {
-    tx.get_tx_id_hex()  // Conversion happens once, at the boundary
-}
-
-// 4. ✅ Use &tx.id (simpler than as_slice())
-//    Rust's deref coercion handles the conversion automatically
-verify_signature(&tx.id);
-//                ^^^^^^
-//                Idiomatic Rust - let the compiler do the work
-
-// 5. ✅ Convert to hex only at boundaries
-//    Keep binary internally, convert only when crossing system boundaries
-let response = json!({
-    "txid": tx.get_tx_id_hex()  // Only here - at the API boundary!
-});
-//         ^^^^^^^^^^^^^^^^^^^^
-//         This is the only place hex conversion should happen
-```
-
-### Format Decision Tree
-
-```
-Need transaction ID?
-│
-├─ For internal operations? → Use get_id() → &[u8]
-│  ├─ Comparison/lookup
-│  ├─ Database key
-│  └─ Hashing
-│
-├─ Need ownership? → Use get_id_bytes() → Vec<u8>
-│  ├─ Network messages
-│  ├─ Store in HashMap
-│  └─ Thread boundaries
-│
-└─ For display/API? → Use get_tx_id_hex() → String
-   ├─ JSON responses
-   ├─ Logging
-   └─ User interfaces
-```
-
-### Key Takeaways
-
-The lessons from this chapter extend far beyond transaction IDs:
-
-1. **Binary (`Vec<u8>`) is 50% smaller** than hex strings
-   - For a system processing millions of transactions, this translates to gigabytes of memory saved
-   - Smaller data means better cache utilization and faster processing
-
-2. **Binary is the native format** for hashes and Bitcoin protocol
-   - Hash functions produce binary output, not text
-   - Network protocols transmit binary data
-   - Databases store binary keys efficiently
-   - Working with binary eliminates conversion overhead
-
-3. **No conversion overhead** when using binary internally
-   - Every hex conversion costs ~75 nanoseconds and 88 bytes
-   - At scale (thousands of operations per second), these costs compound
-   - Keeping data in binary format eliminates these costs entirely
-
-4. **Hex is only for humans** - APIs, logs, UI
-   - Hex encoding is a presentation layer concern
-   - It bridges the gap between binary data and human-readable text
-   - Conversion should happen only at system boundaries (API, logging, UI)
-
-5. **`&tx.id` and `tx.id.as_slice()` are equivalent** in most cases
-   - Rust's deref coercion makes them compile to identical code
-   - Choose based on clarity and intent, not performance
-   - `&tx.id` is more idiomatic; `as_slice()` is more explicit
-
-6. **Bitcoin Core uses the same pattern** - binary internal, hex external
-   - This isn't just our design choice—it's industry best practice
-   - Following established patterns improves interoperability
-   - Consistency with Bitcoin Core makes our system familiar to developers
-
-### The Bigger Picture
-
-These principles apply throughout our blockchain implementation:
-
-- **Block hashes**: Store as `Vec<u8>`, convert to hex only for API responses
-- **Merkle roots**: Binary internally, hex for display
-- **Public keys**: Binary format matches cryptographic libraries
-- **Signatures**: Binary storage matches signature algorithm outputs
-- **Addresses**: Even addresses, which appear as strings, are often encoded binary data
-
-Every time we work with binary data, we should ask: "Do I need this in hex, or can I keep it binary?" The answer is almost always: keep it binary until you absolutely need hex for human consumption.
-
-### Performance at Scale
-
-The impact of these choices becomes dramatic at scale:
-
-- **Memory**: Processing 1 million transactions saves ~56 MB by using binary
-- **CPU**: Avoiding hex conversions saves ~6.5 seconds per day at 1,000 tx/s
-- **Network**: Binary transmission saves 50% bandwidth
-- **Database**: Binary keys enable 50% smaller indexes and faster lookups
-
-These aren't theoretical benefits—they're measurable improvements that determine whether a blockchain system can scale to handle real-world transaction volumes.
-
-### Next Steps
-
-Now that we understand how to represent transaction identifiers efficiently, we're ready to explore how transactions are processed, validated, and stored. The patterns we've learned here—binary storage, reference passing, boundary conversions—will appear throughout the rest of our blockchain implementation. Keep these principles in mind as we dive deeper into the transaction system, block validation, and network protocols.
-
----
-
----
-
----
+This matches Bitcoin Core's design and minimizes unnecessary conversions while keeping the API user-friendly.
 
 <div align="center">
 
-**[📚 ← Primitives](README.md)** | **[Chapter 2.2: Transaction ID Format](02-Transaction-ID-Format.md)** 📚
+**[← Primitives](README.md)** | **[Chapter 7: Transaction ID Format](02-Transaction-ID-Format.md)** 
 
 </div>
 

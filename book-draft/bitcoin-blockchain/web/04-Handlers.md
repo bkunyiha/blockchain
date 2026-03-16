@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. **Chapter 3: Web API Architecture** ← *You are here*
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -44,13 +63,13 @@
 
 ---
 
-# Chapter 3.4: Request Handlers
+# Chapter 15.4: Request Handlers
 
-**Part I: Core Blockchain Implementation** | **Web API Architecture**
+**Part I: Foundations & Core Implementation** | **Web API Architecture**
 
 <div align="center">
 
-**[📚 ← Chapter 2.2: Transaction ID Format](../primitives/02-Transaction-ID-Format.md)** | **Chapter 3.4: Request Handlers** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md)** 📚
+**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.4: Request Handlers** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
 
 </div>
 
@@ -58,7 +77,7 @@
 
 ## Request Handlers
 
-Handlers contain the business logic for processing requests. Each handler is an async function that extracts data from the request, processes it, and returns a response.
+Handlers contain the business logic for processing requests. Each handler is an async function that extracts data from the request, processes the data, and returns a response.
 
 ### Handler Pattern
 
@@ -76,21 +95,21 @@ pub async fn handler_name(
 }
 ```
 
-**Key Components:**
+**Key Components**
 
-1. **State Extraction**: `State(node)` gives us access to the blockchain node - see [State Injection in Axum](Axum.md#state-injection) for detailed technical information on state injection, type requirements, and shared ownership patterns
-2. **Input Extraction**: `Path`, `Query`, `Json` extract data from the request - see [Request Extractors in Axum](Axum.md#request-extractors) for comprehensive details on all extractor types, type-safe extraction, and custom extractors. The `Json` extractor uses Serde for deserialization - see [Request Deserialization in Serde](Serde.md#request-deserialization)
-3. **Return Type**: `Result<Json<ApiResponse<T>>, StatusCode>` provides type-safe responses - see [Response Types in Axum](Axum.md#response-types) for detailed information on response types, JSON responses, and error responses. The `Json` wrapper uses Serde for serialization - see [Response Serialization in Serde](Serde.md#response-serialization)
-4. **Error Handling**: Errors are converted to appropriate HTTP status codes - see [Error Handling in Axum](Axum.md#error-handling) for comprehensive error handling patterns, error conversion, and error middleware
-5. **Async/Await**: All handlers are async functions - see [Async/Await in Axum](Axum.md#asyncawait) for details on async handler patterns and concurrency
+1. **State Extraction**: `State(node)` gives us access to the blockchain node—see [State Injection in Axum](Axum.md#state-injection) for detailed technical information on state injection, type requirements, and shared ownership patterns
+2. **Input Extraction**: `Path`, `Query`, `Json` extract data from the request—see [Request Extractors in Axum](Axum.md#request-extractors) for comprehensive details on all extractor types, type-safe extraction, and custom extractors. The `Json` extractor uses Serde for deserialization—see [Request Deserialization in Serde](Serde.md#request-deserialization)
+3. **Return Type**: `Result<Json<ApiResponse<T>>, StatusCode>` provides type-safe responses—see [Response Types in Axum](Axum.md#response-types) for detailed information on response types, JSON responses, and error responses. The `Json` wrapper uses Serde for serialization—see [Response Serialization in Serde](Serde.md#response-serialization)
+4. **Error Handling**: We convert errors to appropriate HTTP status codes—see [Error Handling in Axum](Axum.md#error-handling) for comprehensive error handling patterns, error conversion, and error middleware
+5. **Async/Await**: All handlers are async functions—see [Async/Await in Axum](Axum.md#asyncawait) for details on async handler patterns and concurrency
 
 ### Blockchain Handlers
 
-Blockchain handlers in `handlers/blockchain.rs` provide access to blockchain data:
+We provide access to blockchain data through blockchain handlers in `handlers/blockchain.rs`:
 
-**Get Blockchain Info:**
+**Get Blockchain Info**
 
-The `get_blockchain_info()` function in `handlers/blockchain.rs`:
+We implement the `get_blockchain_info()` function in `handlers/blockchain.rs`:
 
 ```rust
 pub async fn get_blockchain_info(
@@ -119,16 +138,16 @@ pub async fn get_blockchain_info(
 }
 ```
 
-**What This Handler Does:**
+**What This Handler Does**
 
 1. **Extracts blockchain data**: Gets height, last block, mempool size
 2. **Calculates statistics**: Computes total transactions
 3. **Builds response**: Creates a structured response with all the information
 4. **Error handling**: Converts errors to HTTP status codes
 
-**Get Block by Hash:**
+**Get Block by Hash**
 
-The `get_block_by_hash()` function in `handlers/blockchain.rs`:
+We implement the `get_block_by_hash()` function in `handlers/blockchain.rs`:
 
 ```rust
 pub async fn get_block_by_hash(
@@ -152,17 +171,17 @@ pub async fn get_block_by_hash(
 }
 ```
 
-**Path Parameter Extraction:**
+**Path Parameter Extraction**
 
 The `Path(hash)` extractor automatically extracts the `{hash}` parameter from the URL. Axum handles the parsing and validation for us. See [Request Extractors in Axum](Axum.md#request-extractors) for detailed technical information on path extraction, type-safe path parameters, and extraction patterns.
 
 ### Wallet Handlers
 
-Wallet handlers in `handlers/wallet.rs` manage wallet operations:
+We manage wallet operations through wallet handlers in `handlers/wallet.rs`:
 
-**Create Wallet:**
+**Create Wallet**
 
-The `create_wallet()` function in `handlers/wallet.rs`:
+We implement the `create_wallet()` function in `handlers/wallet.rs`:
 
 ```rust
 pub async fn create_wallet(
@@ -188,11 +207,11 @@ pub async fn create_wallet(
 }
 ```
 
-> **📘 Response Conversion**: The `WalletResponse` struct is converted to an HTTP response through Axum's `IntoResponse` trait. See [Example: Converting WalletResponse to HTTP Response](Axum.md#example-converting-walletresponse-to-http-response) in the Axum Framework Guide for a detailed step-by-step explanation of how `WalletResponse` → `ApiResponse<WalletResponse>` → `Json<ApiResponse<WalletResponse>>` → HTTP `Response`.
+> **Response Conversion**: The `WalletResponse` struct is converted to an HTTP response through Axum's `IntoResponse` trait. See [Example: Converting WalletResponse to HTTP Response](Axum.md#example-converting-walletresponse-to-http-response) in the Axum Framework Guide for a detailed step-by-step explanation of how `WalletResponse` → `ApiResponse<WalletResponse>` → `Json<ApiResponse<WalletResponse>>` → HTTP `Response`.
 
-**Get Balance:**
+**Get Balance**
 
-The `get_balance()` function in `handlers/wallet.rs`:
+We implement the `get_balance()` function in `handlers/wallet.rs`:
 
 ```rust
 pub async fn get_balance(
@@ -217,17 +236,17 @@ pub async fn get_balance(
 }
 ```
 
-**Type-Safe Path Parameters:**
+**Type-Safe Path Parameters**
 
 Notice that `Path(address)` extracts a `WalletAddress` directly, not a `String`. This is because Axum can deserialize path parameters into custom types, providing compile-time type safety. See [Request Extractors in Axum](Axum.md#request-extractors) for detailed technical information on type-safe extraction, custom type deserialization, and extractor composition.
 
 ### Transaction Handlers
 
-Transaction handlers in `handlers/transaction.rs` manage transaction operations:
+We manage transaction operations through transaction handlers in `handlers/transaction.rs`:
 
-**Send Transaction:**
+**Send Transaction**
 
-The `send_transaction()` function in `handlers/transaction.rs`:
+We implement the `send_transaction()` function in `handlers/transaction.rs`:
 
 ```rust
 pub async fn send_transaction(
@@ -254,22 +273,22 @@ pub async fn send_transaction(
 }
 ```
 
-**Error Handling in Handlers:**
+**Error Handling in Handlers**
 
 When `btc_transaction` fails, we:
 1. Log the error for debugging
 2. Map it to `BAD_REQUEST` (400) status code
 3. Return early with the error
 
-This provides clear feedback to the client about what went wrong.
+This approach provides clear feedback to the client about what went wrong.
 
 ### Mining Handlers
 
-Mining handlers in `handlers/mining.rs` provide mining operations:
+We provide mining operations through mining handlers in `handlers/mining.rs`:
 
-**Get Mining Info:**
+**Get Mining Info**
 
-The `get_mining_info()` function in `handlers/mining.rs`:
+We implement the `get_mining_info()` function in `handlers/mining.rs`:
 
 ```rust
 pub async fn get_mining_info(
@@ -294,9 +313,9 @@ pub async fn get_mining_info(
 }
 ```
 
-**Generate to Address:**
+**Generate to Address**
 
-The `generate_to_address()` function in `handlers/mining.rs`:
+We implement the `generate_to_address()` function in `handlers/mining.rs`:
 
 ```rust
 pub async fn generate_to_address(
@@ -325,11 +344,11 @@ pub async fn generate_to_address(
 
 ### Health Check Handlers
 
-Health check handlers in `handlers/health.rs` provide system status:
+We provide system status through health check handlers in `handlers/health.rs`:
 
-**Health Check:**
+**Health Check**
 
-The `health_check()` function in `handlers/health.rs`:
+We implement the `health_check()` function in `handlers/health.rs`:
 
 ```rust
 pub async fn health_check(
@@ -353,9 +372,9 @@ pub async fn health_check(
 }
 ```
 
-**Liveness Probe:**
+**Liveness Probe**
 
-The `liveness()` function in `handlers/health.rs`:
+We implement the `liveness()` function in `handlers/health.rs`:
 
 ```rust
 pub async fn liveness() -> Result<Json<ApiResponse<String>>, StatusCode> {
@@ -363,9 +382,9 @@ pub async fn liveness() -> Result<Json<ApiResponse<String>>, StatusCode> {
 }
 ```
 
-**Readiness Probe:**
+**Readiness Probe**
 
-The `readiness()` function in `handlers/health.rs`:
+We implement the `readiness()` function in `handlers/health.rs`:
 
 ```rust
 pub async fn readiness(
@@ -384,7 +403,7 @@ pub async fn readiness(
 - **`/health/live`**: Simple liveness check (is the process running?)
 - **`/health/ready`**: Readiness check (can the service handle requests?)
 
-Kubernetes uses `/health/live` to determine if a pod should be restarted, and `/health/ready` to determine if traffic should be routed to the pod.
+Kubernetes uses `/health/live` to determine if a pod should be restarted and `/health/ready` to determine if traffic should be routed to the pod.
 
 ---
 
@@ -400,7 +419,7 @@ Kubernetes uses `/health/live` to determine if a pod should be restarted, and `/
 
 <div align="center">
 
-**[📚 ← Previous: Routing](03-Routing.md)** | **[Chapter 3.4: Request Handlers](04-Handlers.md)** | **[Next: Middleware →](05-Middleware.md)** 📚
+**[← Previous: Routing](03-Routing.md)** | **[Chapter 15.4: Request Handlers](04-Handlers.md)** | **[Next: Middleware →](05-Middleware.md)** 
 
 **[← Web API Index](README.md)** | **Introduction & Architecture Overview**
 

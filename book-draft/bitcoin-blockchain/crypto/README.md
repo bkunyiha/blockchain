@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. **Chapter 2.3: Cryptography** ← *You are here*
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. **Chapter 8: Cryptography** ← *You are here*
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -46,12 +65,11 @@
 
 # Cryptography in Blockchain
 
-**Part I: Core Blockchain Implementation** | **Section 2.3: Cryptography (Cryptographic Primitives and Libraries)**
+**Part I: Foundations & Core Implementation** | **Chapter 8: Cryptography (Cryptographic Primitives and Libraries)**
 
 <div align="center">
 
-**[← Utilities](../util/README.md)** | **Cryptography** | **[Blockchain (Technical Foundations) →](../chain/README.md)** 📚
-
+**[← Utilities](../util/README.md)** | **Cryptography** | **[Blockchain (Technical Foundations) →](../chain/README.md)** 
 </div>
 
 ---
@@ -59,8 +77,8 @@
 ## Introduction
 
 Cryptography is the foundation of blockchain security. Every transaction must be signed, every address must be derived from keys, and every block must be hashed. In this section, we explore how our blockchain implementation uses cryptographic primitives to ensure security, authenticity, and integrity.
-This section examines the cryptographic libraries we use, why we chose them, and how they're applied throughout the blockchain. We'll see how Rust's type system and memory safety 
-enable secure cryptographic operations, and how different libraries serve different purposes in our implementation.
+
+This section examines the cryptographic libraries we use, why we chose them, and how they're applied throughout the blockchain. We'll see how Rust's type system and memory safety enable secure cryptographic operations, and how different libraries serve different purposes in our implementation.
 
 In the whitepaper, Satoshi’s system relies on a few cryptographic building blocks:
 
@@ -81,7 +99,7 @@ Some of this code is used by consensus-critical paths today (hashing and Schnorr
 
 ## Section map
 
-In this section, we provide a high-level tour of the cryptography layer. For detailed implementations and deeper explanations, we go part-by-part here:
+In this section, we provide a high-level tour of the cryptography layer. For detailed implementations and deeper explanations, we discuss each component here:
 
 ### Section 1: Hash Functions
 
@@ -126,12 +144,14 @@ pub use address::{base58_decode, base58_encode};
 pub use hash::{sha256_digest, taproot_hash};
 pub use keypair::{get_schnorr_public_key, new_key_pair, new_schnorr_key_pair};
 pub use signature::{
-    ecdsa_p256_sha256_sign_digest, ecdsa_p256_sha256_sign_verify, schnorr_sign_digest,
+    ecdsa_p256_sha256_sign_digest,
+    ecdsa_p256_sha256_sign_verify,
+    schnorr_sign_digest,
     schnorr_sign_verify,
 };
 ```
 
-Because `bitcoin/src/lib.rs` re-exports the crypto module (`pub use crypto::*;`), most call sites inside the crate simply use `crate::sha256_digest(...)` or `crate::schnorr_sign_verify(...)`. This is a deliberate ergonomics choice: it keeps cryptographic call sites readable while still letting us centralize cryptographic decisions inside `bitcoin/src/crypto/`.
+Because `bitcoin/src/lib.rs` re-exports the crypto module (`pub use crypto::*;`), most call sites inside the crate simply use `crate::sha256_digest(...)` or `crate::schnorr_sign_verify(...)`. This is a deliberate ergonomics choice: it keeps cryptographic call sites readable while also letting us centralize cryptographic decisions inside `bitcoin/src/crypto/`.
 
 ## Technical foundations (what this code is based on)
 
@@ -355,20 +375,30 @@ In this section, we provide credible references you can use to validate the conc
 
 <div align="center">
 
-**[📚 ← Utilities](../util/README.md)** | **Section 2.3: Cryptography** | **[Start Reading: Hash Functions →](01-Hash-Functions.md)** 📚
-
+**[← Utilities](../util/README.md)** | **Chapter 8: Cryptography** | **[Start Reading: Hash Functions →](01-Hash-Functions.md)** 
 </div>
 
 ---
 
-**📖 Continue Reading Cryptography Documentation:**
-
-- **01: Hash Functions** - SHA-256 hashing for transaction IDs, block hashes, and Merkle trees
-- **02: Digital Signatures** - Schnorr and ECDSA signatures for transaction authorization
-- **03: Key Pair Generation** - Secure key pair generation and public key derivation
-- **04: Address Encoding** - Base58 encoding for human-readable addresses
-- **05: Security and Performance** - Security best practices and performance considerations
+The subsections that follow cover each component in detail: hash functions (01), digital signatures (02), key pair generation (03), address encoding (04), and security considerations (05).
 
 ---
 
-*In this section, we connected the whitepaper’s security model to real Rust code. We saw where hashing and Schnorr verification show up in the running system today, and we identified which crypto helpers are currently “book scaffolding” versus production dependencies. Next, we dive into Hash Functions and trace how SHA-256 shows up in transaction IDs, block linking, and proof-of-work.*
+### Common Errors
+
+> **Troubleshooting: Cryptography**
+>
+> **Signature verification fails on a valid transaction** — The most common cause is signing the transaction bytes in a different order than the verifier expects. Ensure both sides serialize the transaction identically (same field order, same Serde configuration) before hashing.
+>
+> **”invalid key length” when parsing a public key** — ECDSA public keys are 33 bytes (compressed) or 65 bytes (uncompressed). If you are passing a hex string, make sure you are decoding it to bytes first, not passing the raw hex characters.
+>
+> **Hash output does not match expected value** — Check whether you are double-hashing (SHA-256d, as Bitcoin does for block hashes) or single-hashing. Our `hash_transaction` uses a single SHA-256 pass; block hashes may differ from Bitcoin Core’s convention.
+
+---
+
+### Further Reading
+
+- **[secp256k1 crate](https://docs.rs/secp256k1)** — The Rust binding to libsecp256k1, the same elliptic curve library used by Bitcoin Core. Production-grade and constant-time.
+- **[RustCrypto project](https://github.com/RustCrypto)** — A collection of pure-Rust cryptographic algorithm implementations, including SHA-2, HMAC, and PBKDF2.
+- **BIP-340 (Schnorr Signatures)** — The specification for Schnorr signatures over secp256k1, adopted by Bitcoin in the Taproot upgrade.
+- **BIP-143 (Transaction Signature Verification)** — Defines the transaction digest algorithm for SegWit, which changes how transaction bytes are serialized before signing.

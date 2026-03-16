@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. **Chapter 9: Kubernetes Deployment** ← *You are here*
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -44,13 +63,13 @@
 
 ---
 
-## Chapter 9, Section 7: Production & Advanced Topics
+## Chapter 23, Section 7: Production & Advanced Topics
 
-**Part II: Deployment & Operations** | **Chapter 9: Kubernetes Deployment**
+**Part II: Deployment & Operations** | **Chapter 23: Kubernetes Deployment**
 
 <div align="center">
 
-**📚 [← Chapter 8: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 9: Kubernetes** | **[End of Book →](../../../README.md)** 📚
+**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](../../../README.md)** 
 
 </div>
 
@@ -135,8 +154,10 @@ spec:
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
-      # Pods with ordinal < partition are updated; pods >= partition are left alone.
-      # Example: partition: 1 updates webserver-0 but keeps webserver-1, webserver-2, ...
+      # Pods with ordinal < partition are updated; pods >=
+      # partition are left alone.
+      # Example: partition: 1 updates webserver-0 but keeps
+      # webserver-1, webserver-2, ...
       partition: 1
 ```
 
@@ -189,8 +210,6 @@ Why it matters: short-lived credentials reduce blast radius and remove the “se
 
 **Config example: minimal namespace-scoped RBAC for CI deploys**
 
-This example grants a CI service account the ability to apply common objects and update StatefulSets in the `blockchain` namespace. (In real production, tighten this further to exactly what your deployment method needs.)
-
 ```yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -204,19 +223,15 @@ metadata:
   name: ci-deployer-role
   namespace: blockchain
 rules:
-  # Apply and update common namespace-scoped resources
   - apiGroups: [""]
-    resources: ["configmaps", "services", "endpoints", "pods", "events", "persistentvolumeclaims"]
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+    resources: ["configmaps", "services", "endpoints", "persistentvolumeclaims"]
+    verbs: ["get", "list", "create", "update", "patch"]
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
+    verbs: ["get", "list", "create", "update", "patch"]
   - apiGroups: ["autoscaling"]
     resources: ["horizontalpodautoscalers"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
-  - apiGroups: ["policy"]
-    resources: ["poddisruptionbudgets"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
+    verbs: ["get", "list", "create", "update", "patch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -262,9 +277,7 @@ spec:
     - Egress
 ```
 
-**Config example: allow webserver → miner-service + redis (egress)**
-
-This illustrates a typical “tight egress” stance for the `webserver` pods.
+**Config example: allow webserver egress to miner + redis**
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -279,15 +292,13 @@ spec:
   policyTypes:
   - Egress
   egress:
-    # Allow calls to miners (P2P sync)
     - to:
         - podSelector:
-        matchLabels:
+            matchLabels:
               app: miner
-    ports:
-    - protocol: TCP
-      port: 2001
-    # Allow calls to Redis (rate limiting backend)
+      ports:
+        - protocol: TCP
+          port: 2001
     - to:
         - podSelector:
             matchLabels:
@@ -295,18 +306,12 @@ spec:
       ports:
         - protocol: TCP
           port: 6379
-    # Allow DNS (otherwise most clusters break name resolution)
     - to:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: kube-system
-          podSelector:
-            matchLabels:
-              k8s-app: kube-dns
       ports:
         - protocol: UDP
-          port: 53
-        - protocol: TCP
           port: 53
 ```
 
@@ -377,18 +382,9 @@ reclaimPolicy: Retain
 volumeBindingMode: WaitForFirstConsumer
 ```
 
-**Config example: CSI snapshot + restore workflow**
-
-Snapshots are typically expressed via `VolumeSnapshotClass` and `VolumeSnapshot` objects (requires snapshot controller + CSI support):
+**Config example: VolumeSnapshot for backup**
 
 ```yaml
-apiVersion: snapshot.storage.k8s.io/v1
-kind: VolumeSnapshotClass
-metadata:
-  name: csi-snapshots
-driver: ebs.csi.aws.com
-deletionPolicy: Retain
----
 apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshot
 metadata:
@@ -398,17 +394,13 @@ spec:
   volumeSnapshotClassName: csi-snapshots
   source:
     persistentVolumeClaimName: webserver-data-webserver-0
-```
-
-Then restore by creating a PVC from the snapshot (and wiring that PVC into a replacement pod/workload):
-
-```yaml
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: webserver-data-restore
   namespace: blockchain
-    spec:
+spec:
   storageClassName: fast-ssd
   dataSource:
     name: webserver-0-snapshot
@@ -624,19 +616,24 @@ Example pipeline outline (conceptual):
 
 ```bash
 # Build
-docker build -t your-registry/blockchain-node:${GITHUB_SHA} -f Dockerfile .
+docker build -t your-registry/blockchain-node:${GITHUB_SHA} \
+  -f Dockerfile .
 
 # Push (registry-specific auth omitted here)
 docker push your-registry/blockchain-node:${GITHUB_SHA}
 
 # Deploy (example approaches)
 #
-# Option A (GitOps-style): update your Kustomize overlay (image tag) in Git,
-# and let Argo CD / Flux reconcile the cluster.
+# Option A (GitOps-style): update your Kustomize overlay
+# (image tag) in Git, and let Argo CD / Flux reconcile.
 #
 # Option B (imperative): set image directly, then verify rollout.
-kubectl set image statefulset/webserver blockchain-node=your-registry/blockchain-node:${GITHUB_SHA} -n blockchain
-kubectl set image statefulset/miner blockchain-node=your-registry/blockchain-node:${GITHUB_SHA} -n blockchain
+kubectl set image statefulset/webserver \
+  blockchain-node=your-registry/blockchain-node:${GITHUB_SHA} \
+  -n blockchain
+kubectl set image statefulset/miner \
+  blockchain-node=your-registry/blockchain-node:${GITHUB_SHA} \
+  -n blockchain
 
 # Verify
 kubectl rollout status statefulset/webserver -n blockchain
@@ -665,7 +662,7 @@ on:
 permissions:
   contents: read
   packages: write
-  id-token: write # required for OIDC flows (cloud auth)
+  id-token: write
 
 concurrency:
   group: blockchain-production
@@ -702,15 +699,15 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+            ${{ env.IMAGE_REGISTRY }}/${{
+              env.IMAGE_NAME }}:sha-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+```
 
-      # Option A: GitOps-style deploy (recommended)
-      # - Commit an updated Kustomize overlay (image tag) to a config repo
-      # - Let Argo CD / Flux reconcile the cluster
-      #
-      # Option B: Imperative deploy (shown here)
+After building and pushing the image, the workflow deploys to the Kubernetes cluster using kubeconfig authentication and verifies that the rollout completes:
+
+```yaml
       - name: Set kubeconfig
         run: |
           mkdir -p ~/.kube
@@ -720,14 +717,20 @@ jobs:
 
       - name: Deploy (update images)
         run: |
-          kubectl set image statefulset/webserver webserver=${IMAGE} -n ${NAMESPACE}
-          kubectl set image statefulset/miner miner=${IMAGE} -n ${NAMESPACE}
+          kubectl set image statefulset/webserver \
+            webserver=${IMAGE} -n ${NAMESPACE}
+          kubectl set image statefulset/miner \
+            miner=${IMAGE} -n ${NAMESPACE}
         env:
-          IMAGE: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+          IMAGE: >-
+            ${{ env.IMAGE_REGISTRY }}/${{
+            env.IMAGE_NAME }}:sha-${{ github.sha }}
 
       - name: Verify rollouts
         run: |
-          kubectl rollout status statefulset/webserver -n ${NAMESPACE} --timeout=10m
+          kubectl rollout status \
+            statefulset/webserver \
+            -n ${NAMESPACE} --timeout=10m
           kubectl rollout status statefulset/miner -n ${NAMESPACE} --timeout=10m
 
       - name: Smoke test (health endpoint)
@@ -775,12 +778,17 @@ Example pipeline outline (conceptual):
 
 ```bash
 # Build/push
-docker build -t $CI_REGISTRY_IMAGE/blockchain-node:$CI_COMMIT_SHA -f Dockerfile .
+docker build -t $CI_REGISTRY_IMAGE/blockchain-node:$CI_COMMIT_SHA \
+  -f Dockerfile .
 docker push $CI_REGISTRY_IMAGE/blockchain-node:$CI_COMMIT_SHA
 
 # Deploy
-kubectl set image statefulset/webserver blockchain-node=$CI_REGISTRY_IMAGE/blockchain-node:$CI_COMMIT_SHA -n blockchain
-kubectl set image statefulset/miner blockchain-node=$CI_REGISTRY_IMAGE/blockchain-node:$CI_COMMIT_SHA -n blockchain
+kubectl set image statefulset/webserver \
+  blockchain-node=$CI_REGISTRY_IMAGE/blockchain-node:$CI_COMMIT_SHA \
+  -n blockchain
+kubectl set image statefulset/miner \
+  blockchain-node=$CI_REGISTRY_IMAGE/blockchain-node:$CI_COMMIT_SHA \
+  -n blockchain
 kubectl rollout status statefulset/webserver -n blockchain
 ```
 
@@ -815,7 +823,8 @@ build-image:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
   script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" \
+        "$CI_REGISTRY"
     - docker build -t "$IMAGE" -f Dockerfile .
     - docker push "$IMAGE"
   only:
@@ -954,7 +963,7 @@ At a technical level, GitOps is a control loop (a reconciler) very similar in sp
 
 Conceptually:
 
-```
+```text
 Git (desired manifests) ──► GitOps controller ──► Kubernetes API (live state)
          ▲                         │
          └──────────── drift detection + reconciliation ────────────┘
@@ -1056,7 +1065,7 @@ In many systems, “multi-region” is not the first step; focus on a reliable s
 ## Troubleshooting
 For general Kubernetes troubleshooting (CrashLoopBackOff, readiness probes, service access, DB lock issues, metrics-server), see the playbook in:
 
-- **Chapter 9 (Kubernetes Deployment)** → **Troubleshooting** (Section 1)
+- **Chapter 23 (Kubernetes Deployment)** → **Troubleshooting** (Section 1)
 
 This section focuses on production-specific failure modes.
 
@@ -1124,9 +1133,9 @@ This section covered:
 
 **Local Navigation - Table of Contents**
 
-| [← Previous Section: Autoscaling](06-Autoscaling.md) | [↑ Table of Contents](#table-of-contents) | [End of Chapter 9 →](../../../README.md) |
+| [← Previous Section: Autoscaling](06-Autoscaling.md) | [↑ Table of Contents](#table-of-contents) | [End of Chapter 23 →](../../../README.md) |
 |:---:|:---:|:---:|
-| *Section 6* | *Current Section* | *End of Chapter 9* |
+| *Section 6* | *Current Section* | *End of Chapter 23* |
 
 </div>
 
@@ -1143,12 +1152,12 @@ This section covered:
 
 <div align="center">
 
-**📚 [← Section 6: Autoscaling](06-Autoscaling.md)** | **Section 7: Production & Advanced Topics** | **[End of Book →](../../../README.md)** 📚
+**[← Section 6: Autoscaling](06-Autoscaling.md)** | **Section 7: Production & Advanced Topics** | **[End of Book →](../../../README.md)** 
 
 </div>
 
 ---
 
-*This chapter has explored production-grade Kubernetes deployment for the blockchain network. We've examined architecture and core concepts, migration from Docker Compose, Kubernetes manifests, deployment and operations, autoscaling capabilities, and production considerations with advanced topics. Kubernetes provides industry-standard container orchestration with automatic scaling, high availability, rolling updates, and production-grade operational capabilities. The deployment system transforms our development blockchain network into a scalable, resilient, production-ready system. In the next chapter, we'll explore [Chapter 10: Rust Language Guide](../../rust/README.md) to understand the comprehensive Rust language features used throughout our blockchain implementation.*
+*This chapter has explored production-grade Kubernetes deployment for the blockchain network. We've examined architecture and core concepts, migration from Docker Compose, Kubernetes manifests, deployment and operations, autoscaling capabilities, and production considerations with advanced topics. Kubernetes provides industry-standard container orchestration with automatic scaling, high availability, rolling updates, and production-grade operational capabilities. The deployment system transforms our development blockchain network into a scalable, resilient, production-ready system. In the next chapter, we'll explore [Chapter 24: Rust Language Guide](../../rust/README.md) to understand the comprehensive Rust language features used throughout our blockchain implementation.*
 
 For more detailed information, see the complete guide sections on each topic.

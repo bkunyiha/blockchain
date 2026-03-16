@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. **Chapter 2.7: Network Layer** ← *You are here*
-13. <a href="../node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../util/README.md">Chapter 7: Utilities</a>
+8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="README.md">Chapter 12: Network Layer</a>
+13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -39,7 +58,7 @@
 
 # Network Layer Appendix: `std::net::TcpStream` vs `tokio::net::TcpStream`
 
-**Part I: Core Blockchain Implementation** | **Chapter 2.7: Network Layer**
+**Part I: Foundations & Core Implementation** | **Chapter 12: Network Layer**
 
 This document explains, using the actual architecture of this repository, why the P2P implementation currently uses `std::net::TcpStream` in its message processing path, what trade-offs that implies inside a Tokio runtime, and what a migration to `tokio::net::TcpStream` would require.
 
@@ -72,7 +91,7 @@ The intended audience is a Rust developer who wants to:
 > - `net_processing::process_stream(...)` (deserialization + dispatch; takes `std::net::TcpStream`)
 > - `net_processing::send_data(...)` (outbound send; uses `std::net::TcpStream::connect`)
 >
-> Full listings: **[Chapter 2.7.A: Network Layer — Code Walkthrough](01-Network-Operation-Code-Walkthrough.md)**.
+> Full listings: **[Chapter 12.A: Network Layer — Code Walkthrough](01-Network-Operation-Code-Walkthrough.md)**.
 
 ### 1) Accept loop: Tokio TCP accept, then convert to std stream
 
@@ -82,7 +101,7 @@ However, it converts that stream into a standard TCP stream in order to call the
 Conceptually, the critical fragment looks like this:
 
 ```rust
-// (See Chapter 2.7.A for the full method listing.)
+// (See Chapter 12.A for the full method listing.)
 let (stream, _peer) = listener.accept().await?;
 tokio::spawn(async move {
     match stream.into_std() {
@@ -112,7 +131,7 @@ That design is internally consistent **only if the stream behaves like a blockin
 Similarly, the outbound primitive opens a new standard TCP connection:
 
 ```rust
-// (See Chapter 2.7.A for the full method listing.)
+// (See Chapter 12.A for the full method listing.)
 let mut stream = std::net::TcpStream::connect(addr_to)?;
 let _ = serde_json::to_writer(&stream, &pkg);
 let _ = stream.flush();
@@ -304,266 +323,24 @@ The fix is usually not to avoid async; it is to make the shared-state transition
 
 ---
 
-## Migration blueprint with code examples
-
-This section is intentionally concrete. It describes what you would implement, in roughly the order you would implement it, to migrate to Tokio TCP streams.
-
-> **Methods involved**
->
-> - `net_processing::process_stream(...)` (today; std stream)
-> - `net_processing::send_data(...)` (today; std stream connect/write)
-> - `NetworkServer::serve(...)` (today; converts stream into std stream)
->
-> Full listings of today’s code: **[Chapter 2.7.A](01-Network-Operation-Code-Walkthrough.md)**.
-
-### Step 0: Decide whether you keep “one message per connection”
-
-This repo’s current send primitive opens a TCP connection, writes one JSON value, and drops the stream.
-That design strongly suggests the inbound side can safely read until EOF, parse one `Package`, and dispatch it.
-
-If you keep that design, migration is substantially simpler.
-
-If you want persistent connections, skip to [Option B](#option-b-persistent-connections-with-framing).
-
----
-
-### Option A: Minimal migration (one message per connection)
-
-#### A.1 Implement an async inbound processor
-
-Replace the `BufReader + Deserializer::from_reader(...)` loop with:
-
-1. read bytes until EOF,
-2. parse one `Package`,
-3. dispatch via the same match logic.
-
-Example skeleton:
-
-```rust
-use tokio::io::AsyncReadExt;
-use tokio::net::TcpStream;
-
-use crate::node::NodeContext;
-use crate::node::Package;
-
-pub async fn process_stream_tokio(
-    node_context: NodeContext,
-    mut stream: TcpStream,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let peer_addr = stream.peer_addr()?;
-
-    // Read the entire message (connection-delimited).
-    // This matches the "one package per connection" behavior of send_data(...).
-    let mut buf = Vec::new();
-    stream.read_to_end(&mut buf).await?;
-
-    // Parse exactly one package.
-    let pkg: Package = serde_json::from_slice(&buf)?;
-
-    // Dispatch using the same logic as the existing std::net::TcpStream processor.
-    dispatch_package(node_context, peer_addr, pkg).await?;
-    Ok(())
-}
-
-// The goal is to reuse the existing match arms without duplicating logic.
-async fn dispatch_package(
-    node_context: NodeContext,
-    peer_addr: std::net::SocketAddr,
-    pkg: Package,
-) -> Result<(), Box<dyn std::error::Error>> {
-    // match pkg { ... }  // existing routing logic moved into a shared function
-    Ok(())
-}
-```
-
-Design notes:
-
-- This keeps the protocol stable (still JSON, still one package per connection).
-- The most invasive part is extracting the current dispatch `match` logic into a shared function so both implementations can reuse it.
-
-#### A.2 Implement an async sender
-
-The async version mirrors the behavior of the current `send_data(...)`:
-
-- connect,
-- serialize one package,
-- write bytes,
-- flush/close.
-
-Example:
-
-```rust
-use tokio::io::AsyncWriteExt;
-use tokio::net::TcpStream;
-
-use crate::node::Package;
-
-pub async fn send_data_tokio(
-    addr_to: std::net::SocketAddr,
-    pkg: Package,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let mut stream = TcpStream::connect(addr_to).await?;
-
-    // Serialize into a byte buffer so we can use AsyncWrite.
-    let bytes = serde_json::to_vec(&pkg)?;
-    stream.write_all(&bytes).await?;
-
-    // Optional: explicitly half-close to signal EOF to the receiver.
-    // (The receiver in Option A reads to EOF.)
-    stream.shutdown().await?;
-    Ok(())
-}
-```
-
-Design notes:
-
-- This preserves the “connection is the message boundary” semantic.
-- In exchange, each message is a fresh TCP connection (simple, but not as efficient as persistent peers).
-
-#### A.3 Update the server accept loop (remove `into_std()`)
-
-Once you have `process_stream_tokio(...)`, the accept loop no longer needs to convert the socket:
-
-```rust
-// Pseudocode: the real file is `bitcoin/src/node/server.rs`.
-loop {
-    tokio::select! {
-        _ = shutdown.recv() => break,
-        accept_res = listener.accept() => {
-            match accept_res {
-                Ok((stream, _peer)) => {
-                    let node_context = self.node_context.clone();
-                    tokio::spawn(async move {
-                        if let Err(e) = net_processing::process_stream_tokio(node_context, stream).await {
-                            tracing::error!("Serve error: {e}");
-                        }
-                    });
-                }
-                Err(e) => tracing::error!("accept error: {e}"),
-            }
-        }
-    }
-}
-```
-
-This removes the “blocking std stream inside Tokio task” hazard from the inbound path.
-
-#### A.4 Timeouts, backpressure, and graceful shutdown become simpler
-
-With Tokio sockets you can add timeouts around read/write points:
-
-```rust
-use tokio::time::{timeout, Duration};
-
-let mut buf = Vec::new();
-timeout(Duration::from_secs(5), stream.read_to_end(&mut buf)).await??;
-```
-
-And you can integrate shutdown into a per-connection task:
-
-```rust
-tokio::select! {
-    _ = shutdown.recv() => return Ok(()),
-    res = process_stream_tokio(node_context, stream) => res,
-}
-```
-
-These patterns are not “impossible” with standard blocking streams, but they are significantly more awkward and usually require thread interruption or `spawn_blocking`.
-
----
-
-### Option B: Persistent connections with framing
-
-If you want a “real P2P peer connection” (send many messages over one TCP connection), you must answer a new question:
-
-> How does the receiver know where one message ends and the next begins?
-
-In Option A, EOF is the delimiter. In Option B, you need explicit framing.
-
-Two common framing strategies:
-
-1. **Length-delimited frames** (binary prefix indicating how many bytes follow)
-2. **Newline-delimited JSON** (each JSON message ends with `\n`)
-
-Length-delimited framing is typically more robust.
-
-#### B.1 Length-delimited frames with `tokio_util::codec`
-
-Example receiver loop:
-
-```rust
-use futures_util::StreamExt;
-use tokio::net::TcpStream;
-use tokio_util::codec::{Framed, LengthDelimitedCodec};
-
-use crate::node::{NodeContext, Package};
-
-pub async fn process_peer_framed(
-    node_context: NodeContext,
-    stream: TcpStream,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let peer_addr = stream.peer_addr()?;
-    let mut framed = Framed::new(stream, LengthDelimitedCodec::new());
-
-    while let Some(frame) = framed.next().await {
-        let bytes = frame?; // Bytes
-        let pkg: Package = serde_json::from_slice(&bytes)?;
-        dispatch_package(node_context.clone(), peer_addr, pkg).await?;
-    }
-
-    Ok(())
-}
-```
-
-Example sender:
-
-```rust
-use tokio::net::TcpStream;
-use tokio_util::codec::{Framed, LengthDelimitedCodec};
-use futures_util::SinkExt;
-
-use crate::node::Package;
-
-pub async fn send_pkg_framed(
-    stream: TcpStream,
-    pkg: Package,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let mut framed = Framed::new(stream, LengthDelimitedCodec::new());
-    let bytes = serde_json::to_vec(&pkg)?;
-    framed.send(bytes.into()).await?;
-    Ok(())
-}
-```
-
-Design notes:
-
-- Option B is a better long-term P2P structure, but it is a protocol change:
-  - you must update both sender and receiver.
-- You will likely also want:
-  - a dedicated per-peer task for writing (queue via `mpsc`),
-  - and a per-peer read loop to process inbound messages in order.
-
----
-
-## A pragmatic middle ground: keep `std::net::TcpStream`, but move it off the Tokio worker threads
-
-If a migration is too large right now, there is an intermediate step:
-
-- keep `process_stream(...)` as-is,
-- but run it in `tokio::task::spawn_blocking`.
-
-That does not improve protocol design, but it prevents a slow peer from blocking the async runtime threads.
-
-Conceptually:
-
-```rust
-tokio::task::spawn_blocking(move || {
-    // blocking deserialize + process
-    // (would require process_stream to be sync, or to create a nested runtime, so this is not a free change)
-});
-```
-
-In this codebase, `process_stream` is `async fn` and calls async chain logic, so you cannot simply drop it into `spawn_blocking` without redesigning the async boundary. This is why Option A (Tokio socket + connection-delimited read) is often the cleaner path.
+## Migration blueprint (summary)
+
+Two main paths for migrating to `tokio::net::TcpStream`:
+
+**Option A: Minimal migration** (one message per connection)
+- Replace `BufReader + serde_json::Deserializer::from_reader` with async read-to-EOF
+- Parse one `Package` per connection using existing dispatch logic
+- Update accept loop to pass Tokio sockets directly (no `into_std()` conversion)
+- Add async timeouts via `tokio::time::timeout()` around critical I/O
+- Lowest refactor risk; preserves protocol design
+
+**Option B: Persistent connections with framing** (advanced)
+- Use `tokio_util::codec::LengthDelimitedCodec` or newline-delimited framing
+- Implement separate per-peer read and write loops with `mpsc` queue
+- Requires protocol change (both sender and receiver must support framing)
+- Better long-term P2P structure; higher implementation cost
+
+For full code examples and step-by-step walkthroughs, see **[Chapter 12.A: Network Layer Code Walkthrough](01-Network-Operation-Code-Walkthrough.md)**.
 
 ---
 
@@ -579,7 +356,7 @@ In this codebase, `process_stream` is `async fn` and calls async chain logic, so
 
 <div align="center">
 
-**📚 [← Chapter 2.7.A: Network Layer — Code Walkthrough](01-Network-Operation-Code-Walkthrough.md)** | **Appendix: std vs Tokio TCP** | **[Back to Network Layer README →](README.md)** 📚
+**[← Chapter 12.A: Network Layer — Code Walkthrough](01-Network-Operation-Code-Walkthrough.md)** | **Appendix: std vs Tokio TCP** | **[Back to Network Layer README →](README.md)** 
 
 </div>
 

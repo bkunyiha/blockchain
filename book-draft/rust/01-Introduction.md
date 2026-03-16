@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="../bitcoin-blockchain/util/README.md">Chapter 7: Utilities</a>
+8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="../bitcoin-blockchain/store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="../bitcoin-blockchain/net/README.md">Chapter 12: Network Layer</a>
+13. <a href="../bitcoin-blockchain/node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="../bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. **Chapter 10: Rust Language Guide** ← *You are here*
+34. <a href="../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -73,387 +92,23 @@ Many blockchain systems, including Bitcoin Core, are written in C++. While C++ i
 
 ### 1. Memory Safety Without Runtime Overhead
 
-**The C++ Problem:**
+C++ requires manual memory management, leading to bugs like double-free, use-after-free, and buffer overflow—all preventing secure blockchain implementation. Bitcoin Core CVEs (CVE-2018-17144, CVE-2018-17145, CVE-2019-15947) stem from these issues.
 
-C++ requires manual memory management, which leads to entire classes of bugs that can compromise blockchain security:
+Rust's ownership system prevents these at compile time with zero runtime overhead. For details, see [The Rust Book: Ownership](https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html).
 
-```cpp
-// C++: Bitcoin Core example (simplified)
-class CTransaction {
-    uint256 hash;  // 32-byte hash
-    std::vector<CTxIn> vin;
-    std::vector<CTxOut> vout;
-    
-public:
-    // Potential issues:
-    // 1. Buffer overflow if vin/vout grow unexpectedly
-    // 2. Use-after-free if transaction is deleted while referenced
-    // 3. Double-free if destructor called twice
-    // 4. Memory leak if exception thrown before cleanup
-};
-```
+### 2. Thread Safety at Compile Time
 
-**Real-World Impact:** Bitcoin Core CVEs include CVE-2018-17144 (double-spend from memory handling), CVE-2018-17145 (DoS from buffer overflow), and CVE-2019-15947 (memory exhaustion)—all prevented by Rust's compile-time checks.
+C++ provides no compile-time guarantees about thread safety. Missing locks cause data races that are difficult to detect. Rust's type system (`Arc`, `RwLock`, `Send`, `Sync` traits) enforces thread safety at compile time. For details, see [The Rust Book: Fearless Concurrency](https://doc.rust-lang.org/book/ch16-00-concurrency.html).
 
-**The Rust Solution:**
+### 3. Explicit Error Handling
 
-Rust's ownership system prevents these issues at compile time:
+Rust's `Result` type makes errors explicit and type-safe. Unlike C++ exceptions (which have runtime overhead ~100-1000ns per exception), Rust's Result is zero-cost. For details, see [The Rust Book: Error Handling](https://doc.rust-lang.org/book/ch09-00-error-handling.html).
 
-```rust
-// Rust: Our implementation
-pub struct Transaction {
-    txid: Vec<u8>,  // 32 bytes - bounds checked automatically
-    vin: Vec<TXInput>,
-    vout: Vec<TXOutput>,
-}
+### 4. Type Safety and Null Safety
 
-// The compiler guarantees:
-// ✅ No buffer overflows (bounds checking at compile/runtime)
-// ✅ No use-after-free (borrow checker prevents dangling references)
-// ✅ No double-free (ownership ensures single cleanup)
-// ✅ No memory leaks (RAII enforced by type system)
-```
+Rust's `Option` type makes nullability explicit, preventing null pointer crashes. For a complete treatment of null safety, see [The Rust Book: Error Handling](https://doc.rust-lang.org/book/ch09-00-error-handling.html).
 
-**Performance:** Rust's memory management compiles to the same efficient code as C++, but with compile-time safety guarantees. See the benchmark results in section 6 for detailed performance comparisons.
-
-### 2. Thread Safety Guaranteed at Compile Time
-
-**The C++ Problem:**
-
-C++ provides no compile-time guarantees about thread safety. Data races are runtime errors that are difficult to detect:
-
-```cpp
-// C++: Bitcoin Core - potential data race
-class CBlockChain {
-    std::map<uint256, CBlockIndex*> mapBlockIndex;  // Not thread-safe!
-    mutable CCriticalSection cs_main;  // Manual locking required
-    
-public:
-    bool AddToBlockIndex(const CBlock& block) {
-        LOCK(cs_main);  // Must remember to lock!
-        // If developer forgets LOCK(), data race occurs
-        mapBlockIndex[block.GetHash()] = new CBlockIndex(block);
-        return true;
-    }
-    
-    // Easy to forget locking in one method:
-    CBlockIndex* FindBlock(const uint256& hash) {
-        // Missing LOCK(cs_main) - DATA RACE!
-        return mapBlockIndex[hash];  // Unsafe concurrent access
-    }
-};
-```
-
-**Real-World Impact:** Missing locks in Bitcoin Core can cause corrupted state, undefined behavior, and difficult-to-reproduce crashes.
-
-**The Rust Solution:**
-
-Rust's type system prevents data races at compile time:
-
-```rust
-// Rust: Thread safety enforced by types
-use std::sync::{Arc, RwLock};
-
-pub struct Blockchain {
-    // Arc = Atomic Reference Counting (thread-safe shared ownership)
-    // RwLock = Read-write lock (enforced by type system)
-    blocks: Arc<RwLock<HashMap<[u8; 32], Block>>>,
-}
-
-impl Blockchain {
-    // The compiler ensures:
-    // ✅ No data races (Send + Sync traits)
-    // ✅ Proper locking (RwLock enforces access patterns)
-    // ✅ No deadlocks (type system prevents common patterns)
-    
-    pub fn add_block(&self, block: Block) -> Result<()> {
-        let mut blocks = self.blocks.write().unwrap();  // Lock enforced
-        blocks.insert(block.hash(), block);
-        Ok(())
-    }
-    
-    pub fn find_block(&self, hash: &[u8; 32]) -> Option<Block> {
-        let blocks = self.blocks.read().unwrap();  // Read lock enforced
-        blocks.get(hash).cloned()
-    }
-}
-
-// If you try to access without lock, compiler error:
-// error[E0382]: borrow of moved value
-```
-
-**Concurrency Example:**
-
-```rust
-// Rust: Safe concurrent transaction processing
-use tokio::sync::RwLock;
-
-async fn process_transactions_concurrently(
-    blockchain: Arc<RwLock<Blockchain>>,
-    transactions: Vec<Transaction>,
-) -> Result<()> {
-    // Process 1000 transactions concurrently - compiler guarantees safety
-    let futures: Vec<_> = transactions
-        .into_iter()
-        .map(|tx| {
-            let blockchain = Arc::clone(&blockchain);
-            tokio::spawn(async move {
-                let chain = blockchain.read().await;
-                chain.validate_transaction(&tx).await
-            })
-        })
-        .collect();
-    
-    // All futures run concurrently, but Rust ensures:
-    // ✅ No data races (enforced by RwLock)
-    // ✅ No use-after-free (Arc manages lifetime)
-    // ✅ No deadlocks (async locks prevent common deadlock patterns)
-    
-    futures::future::try_join_all(futures).await?;
-    Ok(())
-}
-```
-
-### 3. Explicit Error Handling vs Exceptions
-
-**The C++ Problem:**
-
-C++ uses exceptions, which can be thrown anywhere and must be caught or they terminate the program:
-
-```cpp
-// C++: Bitcoin Core error handling
-bool ProcessBlock(const CBlock& block) {
-    try {
-        // Many functions can throw exceptions
-        if (!CheckBlock(block)) {
-            throw std::runtime_error("Invalid block");
-        }
-        
-        // What if ConnectBlock() throws? Unclear error path
-        if (!ConnectBlock(block)) {
-            throw std::runtime_error("Failed to connect");
-        }
-        
-        return true;
-    } catch (const std::exception& e) {
-        // Exception caught, but:
-        // ❌ Error type information lost
-        // ❌ Caller doesn't know what can fail
-        // ❌ Performance overhead (exception handling)
-        LogPrintf("Error: %s\n", e.what());
-        return false;
-    }
-}
-```
-
-**The Rust Solution:**
-
-Rust's `Result` type makes errors explicit and part of the type system:
-
-```rust
-// Rust: Explicit error handling
-#[derive(Debug, thiserror::Error)]
-pub enum BlockchainError {
-    #[error("Invalid block: {0}")]
-    InvalidBlock(String),
-    #[error("Failed to connect block: {0}")]
-    ConnectionFailed(String),
-    #[error("Database error: {0}")]
-    Database(#[from] sled::Error),
-}
-
-pub async fn process_block(
-    &self,
-    block: &Block,
-) -> Result<(), BlockchainError> {
-    // ✅ Caller knows exactly what can fail
-    // ✅ Error type is explicit (BlockchainError)
-    // ✅ No exceptions - zero runtime overhead
-    // ✅ Must handle errors (can't ignore)
-    
-    self.check_block(block)?;  // ? operator propagates errors
-    self.connect_block(block).await?;
-    Ok(())
-}
-
-// Usage: Errors are explicit
-match blockchain.process_block(&block).await {
-    Ok(()) => println!("Block processed"),
-    Err(BlockchainError::InvalidBlock(msg)) => {
-        // Handle specific error type
-    }
-    Err(e) => return Err(e),  // Propagate other errors
-}
-```
-
-**Performance:** Rust's `Result` type is zero-cost (just a tagged union), while C++ exceptions have overhead from stack unwinding (~100-1000ns per exception). For 1M operations with 1% error rate, this saves ~5ms.
-
-### 4. Modern Tooling and Developer Experience
-
-**The C++ Problem:**
-
-Bitcoin Core's build system is complex:
-- Requires CMake or autotools
-- Dependency management is manual
-- Cross-compilation is difficult
-- No standard package manager
-
-**The Rust Solution:**
-
-Rust's tooling is modern and integrated:
-
-```toml
-# Cargo.toml - Simple, declarative dependency management
-[package]
-name = "bitcoin-blockchain"
-version = "1.0.0"
-
-[dependencies]
-tokio = { version = "1.35", features = ["full"] }
-sled = "0.34"
-serde = { version = "1.0", features = ["derive"] }
-thiserror = "1.0"
-
-# One command builds everything:
-# cargo build --release
-```
-
-**Developer Experience:** Rust provides clear, actionable error messages with suggestions. Compare this to C++ template errors that can span hundreds of lines.
-
-### 5. Type Safety and Null Safety
-
-**The C++ Problem:**
-
-C++ allows null pointers, leading to crashes:
-
-```cpp
-// C++: Null pointer dereference possible
-CTransaction* GetTransaction(const uint256& hash) {
-    // Returns nullptr if not found - caller must check
-    return mapTransactions[hash];  // Could be nullptr
-}
-
-// Easy to forget null check:
-CTransaction* tx = GetTransaction(hash);
-tx->GetHash();  // CRASH if tx is nullptr
-```
-
-**The Rust Solution:**
-
-Rust's `Option` type makes nullability explicit:
-
-```rust
-// Rust: Option<T> makes nullability explicit
-pub fn get_transaction(&self, hash: &[u8; 32]) -> Option<Transaction> {
-    // Returns Option<Transaction>, not Transaction*
-    // Caller MUST handle the None case
-    self.transactions.get(hash).cloned()
-}
-
-// Usage: Compiler forces null check
-match blockchain.get_transaction(&hash) {
-    Some(tx) => {
-        // tx is guaranteed to be valid here
-        println!("Found: {}", tx.get_tx_id_hex());
-    }
-    None => {
-        println!("Transaction not found");
-    }
-}
-
-// Or use ? operator for early return:
-let tx = blockchain.get_transaction(&hash)?;  // Returns error if None
-// tx is guaranteed non-null here
-```
-
-### 5.5. Immutable Borrows: `&T` vs `AsRef<T>`
-
-Rust provides two ways to accept borrowed data: direct references (`&T`) and the `AsRef<T>` trait. Understanding the difference helps us write more flexible, generic code.
-
-**`&T` - Direct References:**
-
-Direct references accept a specific type (with deref coercion):
-
-```rust
-fn hash_data(data: &[u8]) -> Vec<u8> {
-    sha256_digest(data)
-}
-
-let bytes = vec![1, 2, 3];
-hash_data(&bytes);  // ✅ Works - &Vec<u8> coerces to &[u8]
-
-let txid: TransactionId = TransactionId(vec![1, 2, 3]);
-hash_data(&txid);  // ❌ Error! TransactionId doesn't implement Deref<[u8]>
-// Why? Deref is for smart pointers (Box<T>, Rc<T>) where the wrapper IS the value.
-// TransactionId is a newtype wrapper (distinct type for safety), not a smart pointer.
-// Using Deref would be semantically incorrect. AsRef<[u8]> is correct for "can be viewed as &[u8]".
-```
-
-**`AsRef<T>` - Generic Borrowing:**
-
-The `AsRef<T>` trait enables generic functions that accept multiple types:
-
-```rust
-fn hash_data<T: AsRef<[u8]>>(data: T) -> Vec<u8> {
-    sha256_digest(data.as_ref())
-}
-
-// Works with Vec, arrays, slices, and custom types:
-hash_data(&vec![1, 2, 3]);     // ✅ Borrowed Vec
-hash_data(vec![1, 2, 3]);      // ✅ Owned Vec
-hash_data(&[1, 2, 3]);          // ✅ Array
-hash_data(TransactionId(vec![1, 2, 3])); // ✅ Custom type
-```
-
-**Key Differences:**
-
-| Aspect | `&T` | `AsRef<T>` |
-|--------|------|------------|
-| **Flexibility** | Specific type only | Any type implementing `AsRef<T>` |
-| **Owned Values** | Must borrow (`&value`) | Can accept owned (`value`) |
-| **Custom Types** | Requires `Deref` | Requires `AsRef` |
-| **Use Case** | Concrete types | Generic, flexible APIs |
-
-**How Our Project Uses `AsRef<T>`:**
-
-1. **Database Operations:** Sled's `IVec` implements `AsRef<[u8]>`, allowing zero-cost conversion for deserialization without allocating.
-
-2. **Cryptographic Signatures:** Signature types from `ring` implement `AsRef<[u8]>`, enabling conversion to `Vec<u8>` for storage.
-
-3. **Generic Hash Functions:** Functions accept multiple types (`Vec<u8>`, arrays, slices, custom types) seamlessly.
-
-4. **Database Key Lookups:** Database operations accept `AsRef<[u8]>` for keys because keys can come in many forms (`Vec<u8>`, `[u8; 32]`, `&[u8]`, or custom types like `BlockHash`). `AsRef` allows the database API to accept all of them efficiently:
-
-```rust
-// src/net/net_processing.rs
-.added_blocks.remove(added_block_hash.as_ref())
-//                              ^^^^^^^^^^^^
-//                              BlockHash implements AsRef<[u8]>
-
-// Database works with any key type:
-let db: sled::Db = sled::open("blockchain.db")?;
-db.insert(&vec_key, value)?;      // ✅ Vec<u8>
-db.insert(&array_key, value)?;   // ✅ [u8; 32]
-db.insert(&block_hash, value)?;  // ✅ BlockHash (custom type)
-```
-
-**Why `AsRef` for Database Keys:**
-
-- **Flexibility**: Accepts multiple key types without conversions
-- **Zero-cost**: No allocations or copying, just a reference view
-- **Type safety**: Custom types like `BlockHash` prevent mixing up different hash types while still working with database APIs
-- **Ergonomics**: Developers can pass keys in whatever form they have
-
-This is why Sled (and most Rust database libraries) use `AsRef<[u8]>`—maximum flexibility with zero runtime cost.
-
-**When to Use `&T` vs `AsRef<T>`:**
-
-- **Use `&T`** when you need a specific type or type-specific methods (e.g., `Vec::capacity()`)
-- **Use `AsRef<T>`** when you want flexibility to accept multiple types that can be viewed as `T`
-
-Both are zero-cost abstractions. In our blockchain, `AsRef<[u8]>` is particularly useful because many types represent byte data (`Vec<u8>`, `[u8; 32]`, `IVec`, signature types, etc.), and `AsRef` allows us to write generic functions that work with all of them seamlessly.
-
-### 6. Performance: Zero-Cost Abstractions
+### 5. Performance: Zero-Cost Abstractions
 
 Rust's abstractions compile to the same efficient machine code as C++. High-level code like iterator chains optimizes to loops, and bounds checking is optimized away in release builds.
 
@@ -464,7 +119,7 @@ Rust's abstractions compile to the same efficient machine code as C++. High-leve
 | Transaction validation | 2,500 tx/s | 2,500 tx/s | 0% |
 | Block validation | 15 blocks/s | 15 blocks/s | 0% |
 | Database operations | 50k ops/s | 52k ops/s | +4% |
-| Memory usage | 2.1 GB | 1.9 GB | -10% |
+| Memory usage | 6 GB | 1.9 GB | -10% |
 
 **Why Rust Can Match or Exceed C++ Performance:**
 
@@ -473,19 +128,11 @@ Rust's abstractions compile to the same efficient machine code as C++. High-leve
 3. **Better memory layout**: Ownership system enables better cache locality
 4. **Safer optimizations**: Compiler can optimize more aggressively knowing memory is safe
 
-### 7. Real-World Security Benefits
+### 6. Security and Maintainability
 
-Many Bitcoin Core CVEs wouldn't be possible in Rust:
-- **CVE-2018-17144** (double-spend): Ownership prevents double-free
-- **CVE-2018-17145** (buffer overflow): Bounds checking prevents overflow
-- **CVE-2019-15947** (memory exhaustion): Type system makes resource limits explicit
-- **CVE-2020-14198** (integer overflow): Explicit checked arithmetic (`checked_add`, `saturating_add`)
+Many Bitcoin Core CVEs result from memory bugs, buffer overflows, and integer overflows—all prevented by Rust's compile-time checks. Rust's ownership system makes code self-documenting, reducing the need for extensive review.
 
-### 8. Code Maintainability
-
-Bitcoin Core (~200,000 lines of C++) requires extensive code review to catch memory bugs and complex locking strategies. Rust's ownership system makes code self-documenting—ownership, lifetimes, and error paths are explicit in the type system, reducing the need for manual review.
-
-### Summary: Why Rust for Blockchain
+## Summary: Why Rust for Blockchain
 
 | Aspect | C++ (Bitcoin Core) | Rust (Our Implementation) |
 |--------|-------------------|---------------------------|
@@ -502,73 +149,20 @@ Bitcoin Core (~200,000 lines of C++) requires extensive code review to catch mem
 
 Rewriting in Rust doesn't sacrifice performance—it gains safety, maintainability, and developer productivity. For blockchain systems where a single bug can cause financial loss, Rust's compile-time safety is a strategic advantage.
 
-## What You'll Learn
-
-This guide covers Rust's essential language features, organized into logical sections:
-
-**Foundations** (Chapters 1-4): Core concepts including ownership, data structures, and traits that form the basis of Rust programming.
-
-**Error Handling and Type System** (Chapters 5-7): How Rust handles errors explicitly and how generics and lifetimes enable flexible, safe code.
-
-**Advanced Memory Management** (Chapters 8-9): Smart pointers for shared ownership and pattern matching for exhaustive case handling.
-
-**Code Organization** (Chapters 10-11): How to organize code with modules and leverage derive macros for automatic implementations.
-
-**Concurrency** (Chapters 12-13): Async programming and thread-safe concurrent code.
-
-**Functional Programming** (Chapters 14-15): Iterators, closures, and type conversions that enable functional programming patterns.
-
-**Testing** (Chapter 16): Writing reliable tests and test strategies.
-
-**Best Practices** (Chapter 17): Idiomatic Rust patterns, production guidelines, and testing best practices.
-
-For cryptographic primitives and libraries used in blockchain implementation, see the **[Cryptography Guide](../bitcoin-blockchain/crypto/README.md)**.
-
-Each chapter builds on previous concepts and includes practical examples from our blockchain implementation, showing how these features work together in real-world code.
-
-## How to Use This Guide
-
-This guide is designed to be read sequentially, with each chapter building on previous concepts. However, each chapter is also self-contained, so you can jump to specific topics as needed. Code examples throughout are taken from our actual blockchain implementation, providing real-world context for each concept.
-
-**For beginners**: Start with the Introduction and work through chapters sequentially. Take time to understand ownership before moving to more advanced topics.
-
-**For experienced developers**: Use the Table of Contents to jump to specific topics. Each chapter includes cross-references to related concepts.
-
-**For quick reference**: Use the summary sections at the end of each chapter for quick review of key concepts.
-
-> **📘 Implementation Context**: This guide explains Rust language features with examples from our blockchain implementation. To see these features applied in specific contexts, see the [Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) chapter for ownership and data structures, the [Web API Architecture](../bitcoin-blockchain/web/README.md) for async patterns and error handling, and the [Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md) for asynchronous programming details.
-
 ---
 
 ## Next Steps
 
-Ready to begin? Start with **[Ownership and Borrowing](02-Ownership-and-Borrowing.md)**, the foundation of Rust's memory safety guarantees. Understanding ownership is essential for everything that follows.
-
----
-
-## Navigation
-
-- **[Next: Ownership and Borrowing →](02-Ownership-and-Borrowing.md)** - Understanding Rust's memory management system
-- **[Rust Guide Index](README.md)** - Complete guide overview and table of contents
-- **[Ownership and Borrowing](02-Ownership-and-Borrowing.md)** - Core memory model concepts
-- **[Data Structures](03-Data-Structures.md)** - Structs and Enums
-- **[Error Handling](05-Error-Handling.md)** - Result and Option types
-- **[Testing](16-Testing.md)** - Writing reliable tests
-- **[Best Practices](17-Best-Practices.md)** - Rust idioms and patterns
-
-**Related Guides:**
-- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - See Rust features in action
-- **[Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md)** - Async programming in Rust
-- **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Rust in web development
+Start with **[Ownership and Borrowing](02-Ownership-and-Borrowing.md)**.
 
 ---
 
 <div align="center">
 
-**📚 [← Rust Installation & Setup](00-Rust-Installation-Setup.md)** | **Introduction** | **[Next: Ownership and Borrowing →](02-Ownership-and-Borrowing.md)** 📚
+**[← Rust Installation & Setup](00-Rust-Installation-Setup.md)** | **Introduction** | **[Next: Ownership and Borrowing →](02-Ownership-and-Borrowing.md)** 
 
 </div>
 
 ---
 
-*This chapter introduces Rust and its design philosophy. Continue to [Ownership and Borrowing](02-Ownership-and-Borrowing.md) to learn Rust's unique memory management system.*
+*Continue to [Ownership and Borrowing](02-Ownership-and-Borrowing.md) to learn Rust's memory system.*

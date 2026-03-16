@@ -1,35 +1,54 @@
 <div align="left">
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. **Chapter 3: Web API Architecture** ← *You are here*
-16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
+2. <a href="README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
+4. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href="Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
+6. <a href="primitives/README.md">Chapter 6: Primitives</a>
+7. <a href="util/README.md">Chapter 7: Utilities</a>
+8. <a href="crypto/README.md">Chapter 8: Cryptography</a>
+9. <a href="chain/README.md">Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href="chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
+11. <a href="store/README.md">Chapter 11: Storage Layer</a>
+12. <a href="net/README.md">Chapter 12: Network Layer</a>
+13. <a href="node/README.md">Chapter 13: Node Orchestration</a>
+14. <a href="wallet/README.md">Chapter 14: Wallet System</a>
+15. <a href="web/README.md">Chapter 15: Web API Architecture</a>
+16. <a href="../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
+17. <a href="../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
+18. <a href="../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
+19. <a href="../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
+20. <a href="../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href="../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
+22. <a href="../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
+23. <a href="../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
+24. <a href="../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+25. <a href="../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
+26. <a href="../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+27. <a href="../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
+28. <a href="../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
+29. <a href="../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
+30. <a href="../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+31. <a href="../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
+32. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+33. <a href="../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. <a href="../rust/README.md">Chapter 10: Rust Language Guide</a> - Rust programming language reference
+34. <a href="../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+35. <a href="../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
+36. <a href="../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+37. <a href="../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href="../rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -46,11 +65,11 @@
 
 # Tokio Runtime Guide
 
-**Part I: Core Blockchain Implementation** | **Technical Reference: Tokio Async Runtime**
+**Part I: Foundations & Core Implementation** | **Technical Reference: Tokio Async Runtime**
 
 <div align="center">
 
-**[← Back to Web API Index](web/README.md)** | **[Tokio Runtime Guide](Tokio.md)** | **[Web API Architecture Index →](web/README.md)** 📚
+**[← Back to Web API Index](web/README.md)** | **[Tokio Runtime Guide](Tokio.md)** | **[Web API Architecture Index →](web/README.md)** 
 
 </div>
 
@@ -68,7 +87,7 @@ In our blockchain project, Tokio powers:
 - **Signal Handling**: Graceful shutdown on Ctrl+C
 - **Task Coordination**: Task spawning, synchronization, cancellation
 
-> **📘 See the full implementation**: This guide explains Tokio concepts with examples from our codebase. To see how Tokio integrates with our web API, see the Server Setup chapter. For network operations, see the blockchain node implementation.
+> **See the full implementation**: This guide explains Tokio concepts with examples from our codebase. To see how Tokio integrates with our web API, see the Server Setup chapter. For network operations, see the blockchain node implementation.
 
 ---
 
@@ -135,38 +154,21 @@ Our blockchain uses Tokio extensively:
 
 ## Async Runtime Fundamentals
 
-### What is an Async Runtime?
+Tokio manages:
+- **Polling Futures**: Checking if async operations are ready
+- **Task Scheduling**: Running and switching between tasks
+- **I/O Event Loop**: Monitoring I/O and waking waiting tasks
+- **Thread Pool**: Distributing work efficiently
 
-An async runtime is responsible for:
-1. **Polling Futures**: Checking if async operations are ready
-2. **Scheduling Tasks**: Deciding which tasks to run and when
-3. **I/O Event Loop**: Monitoring I/O events and waking waiting tasks
-4. **Thread Pool Management**: Distributing work across threads
-
-### Tokio Runtime Components
-
-- **Reactor**: Handles I/O events (network, file system)
-- **Scheduler**: Manages task execution and scheduling
-- **Timer**: Provides time-based operations (delays, intervals)
-
-### Async/Await Syntax
-
-Rust's `async`/`await` syntax creates futures that Tokio executes:
+**Async/Await in Practice:**
 
 ```rust
-// Async function returns a Future
 async fn process_block(block: Block) -> Result<()> {
-    // .await yields control back to the runtime
+    // .await yields control to Tokio, which polls other tasks
     let result = validate_block(&block).await?;
     Ok(result)
 }
 ```
-
-**How it works:**
-1. `async fn` creates a state machine (Future)
-2. `.await` points yield control back to Tokio
-3. Tokio polls the future when I/O completes
-4. Future resumes execution from the `.await` point
 
 ---
 
@@ -248,107 +250,39 @@ handle.spawn(async {
 
 Task spawning allows concurrent execution of async operations. Tokio provides `tokio::spawn` to create independent tasks.
 
-### Basic Task Spawning
+### Task Spawning Patterns in Our Project
 
-In our network processing (`bitcoin/src/net/net_processing.rs`), we spawn tasks for concurrent message sending:
-
+**Network message sending** (`bitcoin/src/net/net_processing.rs`):
 ```rust
-// Send known nodes to multiple peers concurrently
 nodes_to_add.iter().for_each(|node| {
-    let node_addr = *node;
-    let all_nodes = all_known_nodes_addresses.clone();
     tokio::spawn(async move {
-        send_known_nodes(&node_addr, all_nodes).await;
+        send_known_nodes(&node, all_nodes.clone()).await;
     });
 });
 ```
 
-**What happens:**
-1. `tokio::spawn` creates a new task
-2. Task is scheduled on Tokio's thread pool
-3. Task executes independently of the caller
-4. Caller continues immediately (fire-and-forget)
-
-### Spawning with JoinHandle
-
-Tasks can return values via `JoinHandle`:
-
+**Background transaction processing** (`bitcoin/src/node/context.rs`):
 ```rust
-// In bitcoin/src/main.rs
-let network_handle = tokio::spawn(async move {
-    network_server
-        .run_with_shutdown(&socket_addr, connect_nodes_set, net_shutdown_rx)
-        .await;
-});
-
-// Later, wait for completion
-let _ = network_handle.await;
-```
-
-**JoinHandle Benefits:**
-- **Await Results**: Wait for task completion
-- **Cancel Tasks**: Abort tasks if needed
-- **Error Handling**: Propagate errors from spawned tasks
-
-### Background Transaction Processing
-
-In our node context (`bitcoin/src/node/context.rs`), we spawn background tasks for transaction processing:
-
-```rust
-// Submit transaction for mining and broadcast in background
-// This prevents blocking the API response
-let context = self.clone();
-let addr_copy = *addr_from;
-let tx = utxo.clone();
 tokio::spawn(async move {
-    let _ = context.submit_transaction_for_mining(&addr_copy, tx).await;
+    let _ = context.submit_transaction_for_mining(&addr, tx).await;
 });
-
-// Return transaction ID immediately
-Ok(utxo.get_tx_id_hex())
+// Return immediately, processing happens in background
 ```
 
-**Why Background Processing?**
-
-- **Non-Blocking API**: API handler returns immediately
-- **Concurrent Execution**: Mining and broadcasting happen in parallel
-- **Better UX**: Users don't wait for background operations
-
-### Connection Handling
-
-In our network server (`bitcoin/src/node/server.rs`), each connection is handled in a spawned task:
-
+**Connection handling** (`bitcoin/src/node/server.rs`):
 ```rust
-accept_res = listener.accept() => {
-    match accept_res {
-        Ok((stream, _peer)) => {
-            let blockchain = self.node_context.clone();
-            tokio::spawn(async move {
-                // Process each connection concurrently
-                match stream.into_std() {
-                    Ok(std_stream) => {
-                        if let Err(e) = net_processing::process_stream(blockchain, std_stream).await {
-                            error!("Serve error: {}", e);
-                        }
-                    }
-                    Err(e) => {
-                        error!("Failed to convert stream: {}", e);
-                    }
-                }
-            });
-        }
-        Err(e) => {
-            error!("accept error: {}", e);
-        }
+tokio::spawn(async move {
+    if let Err(e) = net_processing::process_stream(blockchain, stream).await {
+        error!("Serve error: {}", e);
     }
-}
+});
 ```
 
-**Concurrent Connection Handling:**
-- Each connection spawns a new task
-- Multiple connections processed simultaneously
-- Isolated error handling per connection
-- No blocking of the accept loop
+**Spawned tasks:**
+- Execute independently on Tokio's thread pool
+- Enable non-blocking operations (API returns while background work continues)
+- Support concurrent execution (multiple connections, messages, transactions)
+- Require error handling within the task
 
 ---
 
@@ -356,9 +290,9 @@ accept_res = listener.accept() => {
 
 `tokio::select!` allows waiting on multiple futures simultaneously, executing the first one that completes.
 
-### Basic select! Usage
+### select! Usage
 
-In our network server (`bitcoin/src/node/server.rs`), we use `select!` to handle shutdown and connections:
+In our network server (`bitcoin/src/node/server.rs`), handle shutdown and connections:
 
 ```rust
 loop {
@@ -368,28 +302,17 @@ loop {
             break;
         }
         accept_res = listener.accept() => {
-            match accept_res {
-                Ok((stream, _peer)) => {
-                    // Handle connection
-                }
-                Err(e) => {
-                    error!("accept error: {}", e);
-                }
+            if let Ok((stream, _peer)) = accept_res {
+                // Handle connection
             }
         }
     }
 }
 ```
 
-**How select! Works:**
-1. **Polls All Branches**: Checks all futures simultaneously
-2. **First Ready Wins**: Executes the branch whose future completes first
-3. **Cancels Others**: Other branches are cancelled (if they support cancellation)
-4. **Non-Blocking**: Doesn't block waiting for a specific future
-
 ### Multiple Server Coordination
 
-In our main function (`bitcoin/src/main.rs`), we coordinate multiple servers with `select!`:
+In `bitcoin/src/main.rs`, coordinate multiple servers:
 
 ```rust
 tokio::select! {
@@ -397,35 +320,12 @@ tokio::select! {
         info!("Ctrl-C received, initiating shutdown...");
         let _ = shutdown_tx.send(());
     }
-    _ = &mut web_handle => {
-        info!("Web server task finished");
-    }
-    _ = &mut network_handle => {
-        info!("Network server task finished");
-    }
+    _ = &mut web_handle => { info!("Web server task finished"); }
+    _ = &mut network_handle => { info!("Network server task finished"); }
 }
 ```
 
-**Server Coordination:**
-- **Shutdown Signal**: Ctrl+C triggers graceful shutdown
-- **Server Completion**: Either server finishing triggers cleanup
-- **Concurrent Monitoring**: All servers monitored simultaneously
-- **Graceful Shutdown**: Broadcast shutdown signal to all servers
-
-### Why Mutable References?
-
-Note the `&mut` in `&mut web_handle`. This is required because:
-- `select!` polls futures by mutable reference
-- `JoinHandle` must be mutable to poll
-- Shadowing creates mutable bindings:
-
-```rust
-// Shadow to make mutable
-let mut web_handle = web_handle;
-tokio::select! {
-    _ = &mut web_handle => { /* ... */ }
-}
-```
+**select! executes the first future that completes**, enabling concurrent monitoring and graceful shutdown coordination.
 
 ---
 
@@ -433,64 +333,34 @@ tokio::select! {
 
 Tokio provides async network primitives for efficient I/O operations.
 
-### TCP Listener
+### Network I/O in Our Project
 
-In our web server (`bitcoin/src/web/server.rs`), we bind a TCP listener:
-
+**Web server** (`bitcoin/src/web/server.rs`):
 ```rust
 let addr = SocketAddr::from(([0, 0, 0, 0], self.config.port));
 let listener = tokio::net::TcpListener::bind(addr).await?;
 ```
 
-**Async Binding:**
-- `.await` yields control during bind operation
-- Non-blocking: doesn't block the thread
-- Returns immediately if binding fails
-
-### TCP Listener in Network Server
-
-In our network server (`bitcoin/src/node/server.rs`), we use `TcpListener` for peer connections:
-
+**Network server** (`bitcoin/src/node/server.rs`):
 ```rust
-use tokio::net::TcpListener;
-
-// Create listener
 let listener = TcpListener::bind(socket_addr).await?;
-
-// Accept connections in a loop
 loop {
     tokio::select! {
         accept_res = listener.accept() => {
-            // Handle new connection
+            if let Ok((stream, _peer)) = accept_res {
+                // Handle connection
+            }
         }
     }
 }
 ```
 
-**Connection Acceptance:**
-- `accept()` is async and non-blocking
-- Returns `(TcpStream, SocketAddr)` when connection arrives
-- Can be used in `select!` for concurrent operations
+**Stream processing**: Each accepted stream spawned as a task for concurrent handling.
 
-### Stream Processing
-
-TCP streams are processed asynchronously:
-
-```rust
-tokio::spawn(async move {
-    match stream.into_std() {
-        Ok(std_stream) => {
-            // Process stream asynchronously
-            net_processing::process_stream(blockchain, std_stream).await
-        }
-    }
-});
-```
-
-**Async Stream Processing:**
-- Each stream processed in its own task
-- Non-blocking I/O operations
-- Concurrent stream handling
+Tokio's async I/O:
+- Non-blocking network operations
+- Efficient connection handling
+- Concurrent processing of multiple streams
 
 ---
 
@@ -508,9 +378,16 @@ use tokio::sync::RwLock as TokioRwLock;
 pub struct BlockchainService(Arc<TokioRwLock<BlockchainFileSystem>>);
 
 impl BlockchainService {
-    pub async fn initialize(genesis_address: &WalletAddress) -> Result<BlockchainService> {
-        let blockchain = BlockchainFileSystem::create_blockchain(genesis_address).await?;
-        Ok(BlockchainService(Arc::new(TokioRwLock::new(blockchain))))
+    pub async fn initialize(
+        genesis_address: &WalletAddress,
+    ) -> Result<BlockchainService> {
+        let blockchain = BlockchainFileSystem::create_blockchain(
+            genesis_address,
+        )
+        .await?;
+        Ok(BlockchainService(Arc::new(
+            TokioRwLock::new(blockchain),
+        )))
     }
 }
 ```
@@ -664,161 +541,48 @@ tokio::select! {
 
 ## Bridging Sync and Async
 
-Sometimes we need to bridge synchronous and asynchronous code.
+Our desktop applications (Iced Admin UI and Wallet UI) need to bridge the Iced UI executor (sync) with Tokio (async) for HTTP operations.
 
-### block_on
+### Desktop Runtimes Pattern
 
-In our desktop runtimes (`bitcoin-desktop-ui-iced/src/runtime.rs` and `bitcoin-wallet-ui-iced/src/runtime.rs`), we use `block_on` to keep the runtime alive:
+In `bitcoin-desktop-ui-iced/src/runtime.rs` and `bitcoin-wallet-ui-iced/src/runtime.rs`:
 
 ```rust
-std::thread::spawn(move || {
-    rt.block_on(async {
-        // Keep the runtime alive indefinitely
-        std::future::pending::<()>().await;
+pub fn init_runtime() {
+    let rt = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
+    TOKIO_HANDLE.set(rt.handle().clone()).expect("Failed to set Tokio handle");
+
+    std::thread::spawn(move || {
+        rt.block_on(async {
+            std::future::pending::<()>().await; // Keep runtime alive
+        });
     });
-});
-```
+}
 
-**block_on Usage:**
-- Runs async code from synchronous context
-- Blocks current thread until future completes
-- Used here to keep runtime alive in background thread
-
-### Spawning from Sync Context
-
-Our `spawn_on_tokio` function bridges Iced (sync) and Tokio (async):
-
-```rust
 pub fn spawn_on_tokio<F>(fut: F) -> impl std::future::Future<Output = F::Output> + Send
-where
-    F: std::future::Future + Send + 'static,
-    F::Output: Send + 'static,
+where F: std::future::Future + Send + 'static, F::Output: Send + 'static,
 {
-    let handle = TOKIO_HANDLE
-        .get()
-        .expect("Tokio runtime not initialized")
-        .clone();
+    let handle = TOKIO_HANDLE.get().expect("Tokio runtime not initialized").clone();
     async move { handle.spawn(fut).await.unwrap() }
 }
 ```
 
-**Bridging Pattern:**
-1. Get runtime handle from global storage
-2. Spawn task on Tokio runtime
-3. Return future that yields task result
-4. Iced can `.await` the returned future
-
-**Why This Pattern?**
-
-- **Iced Executor**: Iced has its own executor for UI tasks (used in both Admin UI and Wallet UI)
-- **Tokio Requirement**: HTTP clients (`reqwest`) need Tokio runtime
-- **Bridge Function**: `spawn_on_tokio` bridges the two executors
+**Why This Pattern:**
+- Iced has its own executor for UI tasks
+- HTTP clients (`reqwest`) require Tokio
+- `spawn_on_tokio` bridges the two executors
 
 ---
 
-## Best Practices
+## Best Practices for Our Project
 
-### 1. Prefer Async Over Blocking
-
-Use async I/O operations instead of blocking ones:
-
-```rust
-// ✅ Good: Async TCP listener
-let listener = tokio::net::TcpListener::bind(addr).await?;
-
-// ❌ Bad: Blocking TCP listener (blocks thread)
-let listener = std::net::TcpListener::bind(addr)?;
-```
-
-### 2. Spawn Tasks for Independent Work
-
-Spawn tasks for operations that can run independently:
-
-```rust
-// ✅ Good: Spawn background task
-tokio::spawn(async move {
-    process_transaction(tx).await;
-});
-
-// ❌ Bad: Blocking the caller
-process_transaction(tx).await; // Blocks until complete
-```
-
-### 3. Use select! for Concurrent Operations
-
-Use `select!` when waiting on multiple operations:
-
-```rust
-// ✅ Good: Concurrent waiting
-tokio::select! {
-    result = operation1() => { /* ... */ }
-    result = operation2() => { /* ... */ }
-}
-
-// ❌ Bad: Sequential waiting (slower)
-let result1 = operation1().await;
-let result2 = operation2().await;
-```
-
-### 4. Handle Errors in Spawned Tasks
-
-Always handle errors in spawned tasks:
-
-```rust
-// ✅ Good: Error handling
-tokio::spawn(async move {
-    if let Err(e) = process().await {
-        error!("Task error: {}", e);
-    }
-});
-
-// ❌ Bad: Ignoring errors
-tokio::spawn(async move {
-    process().await; // Errors are lost
-});
-```
-
-### 5. Use Async Locks for Shared State
-
-Use `TokioRwLock` instead of `std::sync::RwLock` in async code:
-
-```rust
-// ✅ Good: Async lock
-use tokio::sync::RwLock as TokioRwLock;
-let lock = TokioRwLock::new(data);
-let guard = lock.read().await;
-
-// ❌ Bad: Blocking lock (blocks thread)
-use std::sync::RwLock;
-let lock = RwLock::new(data);
-let guard = lock.read().unwrap(); // Blocks thread
-```
-
-### 6. Coordinate Shutdown Gracefully
-
-Use broadcast channels for coordinated shutdown:
-
-```rust
-// ✅ Good: Broadcast shutdown
-let (shutdown_tx, _) = tokio::sync::broadcast::channel(1);
-// ... spawn tasks with shutdown_rx
-shutdown_tx.send(()); // All tasks receive signal
-
-// ❌ Bad: No coordination
-// Tasks don't know when to shut down
-```
-
-### 7. Keep Runtime Handle Accessible
-
-Store runtime handle globally for access from any thread:
-
-```rust
-// ✅ Good: Global handle
-static TOKIO_HANDLE: OnceLock<tokio::runtime::Handle> = OnceLock::new();
-
-// ❌ Bad: Runtime not accessible
-// Can't spawn tasks from other threads
-```
+1. **Use Async I/O**: Prefer async operations (`tokio::net::TcpListener::bind`) over blocking ones
+2. **Spawn Tasks for Background Work**: Non-blocking execution with `tokio::spawn`
+3. **Use select! for Coordination**: Handle multiple operations concurrently (shutdown, connections)
+4. **Handle Task Errors**: Always handle errors in spawned tasks with proper logging
+5. **Use Async Locks**: `TokioRwLock` instead of `std::sync::RwLock` to avoid blocking threads
+6. **Coordinate Shutdown**: Broadcast channels for graceful, coordinated shutdown
+7. **Global Runtime Handle**: Store handle globally for access from any thread (required for UI frameworks like Iced)
 
 ---
 
@@ -852,7 +616,7 @@ Tokio's design allows our blockchain to handle thousands of concurrent connectio
 
 <div align="center">
 
-**[📚 ← Back to Web API Index](web/README.md)** | **[Tokio Runtime Guide](Tokio.md)** | **[Web API Architecture Index →](web/README.md)** | **Tower** | **Serde** | **Utoipa** 📚
+**[← Back to Web API Index](web/README.md)** | **[Tokio Runtime Guide](Tokio.md)** | **[Web API Architecture Index →](web/README.md)** | **Tower** | **Serde** | **Utoipa** 
 
 </div>
 

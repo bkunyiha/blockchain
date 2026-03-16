@@ -300,10 +300,11 @@ async fn start_node(
                 }
             });
 
-            // Wait for Ctrl+C or any server to stop.
-            // Shadow the JoinHandles as mutable because tokio::select! polls branches by &mut,
             // requiring mutable bindings to pass &mut handle into the select arms below.
             let mut web_handle = web_handle;
+
+            // Wait for Ctrl+C or any server to stop.
+            // Shadow the JoinHandles as mutable because tokio::select! polls branches by &mut,
             tokio::select! {
                 _ = tokio::signal::ctrl_c() => {
                     info!("Ctrl-C received, initiating shutdown...");

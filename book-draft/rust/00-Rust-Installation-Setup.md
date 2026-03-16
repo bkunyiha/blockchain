@@ -1,35 +1,54 @@
-<div align="left">
+<div align=”left”>
 
 <details>
-<summary><b>📑 Chapter Navigation ▼</b></summary>
+<summary><b>Chapter Navigation ▼</b></summary>
 
-### Part I: Core Blockchain Implementation
+### Part I: Foundations & Core Implementation
 
-1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a> - Book introduction, project structure, technical stack
-2. <a href="../bitcoin-blockchain/README.md">Chapter 1.2: Introduction to Bitcoin & Blockchain</a> - Bitcoin and blockchain fundamentals
-3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 1.3: Bitcoin Whitepaper</a> - Bitcoin Whitepaper
-4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 1.4: Bitcoin Whitepaper In Rust</a> - Bitcoin Whitepaper In Rust
-5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 2.0: Rust Blockchain Project</a> - Blockchain Project
-6. <a href="../bitcoin-blockchain/primitives/README.md">Chapter 2.1: Primitives</a> - Core data structures
-7. <a href="../bitcoin-blockchain/util/README.md">Chapter 2.2: Utilities</a> - Utility functions and helpers
-8. <a href="../bitcoin-blockchain/crypto/README.md">Chapter 2.3: Cryptography</a> - Cryptographic primitives and libraries
-9. <a href="../bitcoin-blockchain/chain/README.md">Chapter 2.4: Blockchain (Technical Foundations)</a> - Proof Of Work
-10. <a href="../bitcoin-blockchain/store/README.md">Chapter 2.5: Storage Layer</a> - Persistent storage implementation
-11. <a href="../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 2.6: Block Acceptance (Whitepaper §5, Step 5)</a> - Proof Of Work
-12. <a href="../bitcoin-blockchain/net/README.md">Chapter 2.7: Network Layer</a> - Peer-to-peer networking and protocol
-13. <a href="../bitcoin-blockchain/node/README.md">Chapter 2.8: Node Orchestration</a> - Node context and coordination
-14. <a href="../bitcoin-blockchain/wallet/README.md">Chapter 2.9: Wallet System</a> - Wallet implementation and key management
-15. <a href="../bitcoin-blockchain/web/README.md">Chapter 3: Web API Architecture</a> - REST API implementation
-16. <a href="../bitcoin-desktop-ui-iced/03-Desktop-Admin-UI.md">Chapter 4: Desktop Admin Interface</a> - Iced framework architecture
-17. <a href="../bitcoin-wallet-ui-iced/04-Wallet-UI.md">Chapter 5: Wallet User Interface</a> - Wallet UI implementation
-18. <a href="../bitcoin-wallet-ui-iced/05-Embedded-Database.md">Chapter 6: Embedded Database & Persistence</a> - SQLCipher integration
-19. <a href="../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 7: Web Admin Interface</a> - React/TypeScript web UI
+1. <a href=”../01-Introduction.md”>Chapter 1: Introduction & Overview</a>
+2. <a href=”../bitcoin-blockchain/README.md”>Chapter 2: Introduction to Bitcoin & Blockchain</a>
+3. <a href=”../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md”>Chapter 3: Bitcoin Whitepaper</a>
+4. <a href=”../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md”>Chapter 4: Bitcoin Whitepaper In Rust</a>
+5. <a href=”../bitcoin-blockchain/Rust-Project-Index.md”>Chapter 5: Rust Blockchain Project</a>
+6. <a href=”../bitcoin-blockchain/primitives/README.md”>Chapter 6: Primitives</a>
+7. <a href=”../bitcoin-blockchain/util/README.md”>Chapter 7: Utilities</a>
+8. <a href=”../bitcoin-blockchain/crypto/README.md”>Chapter 8: Cryptography</a>
+9. <a href=”../bitcoin-blockchain/chain/README.md”>Chapter 9: Blockchain (Technical Foundations)</a>
+10. <a href=”../bitcoin-blockchain/chain/10-Whitepaper-Step-5-Block-Acceptance.md”>Chapter 10: Block Acceptance</a>
+11. <a href=”../bitcoin-blockchain/store/README.md”>Chapter 11: Storage Layer</a>
+12. <a href=”../bitcoin-blockchain/net/README.md”>Chapter 12: Network Layer</a>
+13. <a href=”../bitcoin-blockchain/node/README.md”>Chapter 13: Node Orchestration</a>
+14. <a href=”../bitcoin-blockchain/wallet/README.md”>Chapter 14: Wallet System</a>
+15. <a href=”../bitcoin-blockchain/web/README.md”>Chapter 15: Web API Architecture</a>
+16. <a href=”../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md”>Chapter 16: Desktop Admin (Iced)</a>
+17. <a href=”../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md”>16A: Code Walkthrough</a>
+18. <a href=”../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md”>16B: Update Loop</a>
+19. <a href=”../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md”>16C: View Layer</a>
+20. <a href=”../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md”>Chapter 17: Desktop Admin (Tauri)</a>
+21. <a href=”../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md”>17A: Rust Backend</a>
+22. <a href=”../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md”>17B: Frontend Infrastructure</a>
+23. <a href=”../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md”>17C: Frontend Pages</a>
+24. <a href=”../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md”>Chapter 18: Wallet UI (Iced)</a>
+25. <a href=”../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md”>18A: Code Listings</a>
+26. <a href=”../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md”>Chapter 19: Wallet UI (Tauri)</a>
+27. <a href=”../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md”>19A: Rust Backend</a>
+28. <a href=”../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md”>19B: Frontend Infrastructure</a>
+29. <a href=”../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md”>19C: Frontend Pages</a>
+30. <a href=”../embedded-database/06-Embedded-Database.md”>Chapter 20: Embedded Database</a>
+31. <a href=”../embedded-database/06A-Embedded-Database-Code-Listings.md”>20A: Code Listings</a>
+32. <a href=”../bitcoin-web-ui/06-Web-Admin-UI.md”>Chapter 21: Web Admin Interface</a>
+33. <a href=”../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md”>21A: Code Listings</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="../ci/docker-compose/01-Introduction.md">Chapter 8: Docker Compose Deployment</a> - Docker Compose guide
-21. <a href="../ci/kubernetes/README.md">Chapter 9: Kubernetes Deployment</a> - Kubernetes production guide
-22. **Chapter 10: Rust Language Guide** ← *You are here*
+34. <a href=”../ci/docker-compose/01-Introduction.md”>Chapter 22: Docker Compose Deployment</a>
+35. <a href=”../ci/docker-compose/01A-Docker-Compose-Code-Listings.md”>22A: Code Listings</a>
+36. <a href=”../ci/kubernetes/README.md”>Chapter 23: Kubernetes Deployment</a>
+37. <a href=”../ci/kubernetes/01A-Kubernetes-Code-Listings.md”>23A: Code Listings</a>
+
+### Part III: Language Reference
+
+38. <a href=”README.md”>Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -37,215 +56,90 @@
 
 ---
 
-# Rust installation and local setup
+# Rust Installation and Setup
 
-In this chapter, we set up Rust on a local machine so we can build, run, and debug the code in this repository. Our goal is pragmatic: by the end, we can run `cargo build`, `cargo test`, `cargo fmt`, and `cargo clippy`, and we know where the important Rust project files live.
+## Quick Setup
 
-## What “done” looks like
+Install Rust using rustup (the official toolchain manager):
 
-Before we move on to language features, we want a working baseline:
-
-- **Toolchain**: `rustc` and `cargo` are installed and on `PATH`
-- **Formatting**: `cargo fmt` runs successfully
-- **Linting**: `cargo clippy` runs successfully
-- **Project build**: the `bitcoin/` crate builds and tests pass locally
-
-## Quickstart (copy/paste)
-
-If Rust is already installed, this block is the fastest path to a clean baseline for this repository. We run a build/test cycle first, then run formatting and linting to catch issues early.
-
+**macOS / Linux:**
 ```bash
-# From the repository root:
-cd bitcoin
-
-# Build + test
-cargo build
-cargo test
-
-# Format + lint
-cargo fmt
-cargo clippy
+curl --proto ‘=https’ --tlsv2 -sSf https://sh.rustup.rs | sh
+source “$HOME/.cargo/env”
 ```
 
-## Install Rust (rustup)
-
-We install Rust using `rustup`, which is the official toolchain manager. It installs `rustc` (the compiler) and `cargo` (the build tool), and it also lets us add components like `clippy` and `rustfmt`.
-
-### macOS / Linux
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
-# Make `cargo` available in this shell session:
-source "$HOME/.cargo/env"
-```
-
-### Windows (PowerShell)
-
-On Windows, `winget` installs rustup system-wide:
-
+**Windows (PowerShell):**
 ```powershell
 winget install --id Rustlang.Rustup -e
 ```
 
-### Verify
-
-These commands confirm the compiler and toolchain manager are installed and discoverable via `PATH`:
-
+**Verify installation:**
 ```bash
 rustc --version
 cargo --version
-rustup --version
 ```
 
-## Official online references (bookmark these)
+For a full treatment of Rust setup, see [The Rust Book: Installation](https://doc.rust-lang.org/book/ch01-01-installation.html).
 
-- **Rust + rustup**: [Install Rust](https://www.rust-lang.org/tools/install)
-- **The Rust Book**: [The Rust Programming Language](https://doc.rust-lang.org/book/)
-- **Cargo**: [The Cargo Book](https://doc.rust-lang.org/cargo/)
-- **rustfmt**: [rustfmt](https://github.com/rust-lang/rustfmt)
-- **Clippy**: [Clippy](https://github.com/rust-lang/rust-clippy)
-- **rust-analyzer**: [rust-analyzer](https://rust-analyzer.github.io/)
-- **VS Code extension**: [rust-analyzer (VS Code Marketplace)](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
-- **IntelliJ/CLion plugin**: [Rust plugin](https://plugins.jetbrains.com/plugin/8182-rust)
+## Essential Tools
 
-If we are on a team, it is common to standardize on the **stable** toolchain:
+Rust includes three essential tools via cargo:
 
-This makes sure “it works on my machine” means “it works on the team’s machine”:
+- **`cargo build`** (compile), **`cargo test`** (test), **`cargo run`** (execute)
+- **`cargo fmt`** (format code consistently)
+- **`cargo clippy`** (lint and flag common mistakes)
 
+If missing, install with:
 ```bash
-rustup default stable
-rustup update
+rustup component add rustfmt clippy
 ```
 
-## Cargo: package manager + build tool
+## IDE Setup
 
-Cargo is Rust’s standard workflow tool. It builds code, runs tests, downloads dependencies, and generates documentation.
+Use **rust-analyzer** for IDE features (go-to-definition, type hints, diagnostics):
 
-- **Build**: `cargo build` (debug), `cargo build --release`
-- **Run**: `cargo run`
-- **Test**: `cargo test`
-- **Docs**: `cargo doc --open`
+- **VS Code**: Install [rust-analyzer extension](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- **IntelliJ / CLion**: Install [Rust plugin](https://plugins.jetbrains.com/plugin/8182-rust)
 
-In Rust projects, `Cargo.toml` declares dependencies and metadata. `Cargo.lock` pins dependency versions for reproducible builds (commonly committed for binaries).
+## Project Structure
 
-## Formatting and linting: rustfmt + clippy
-
-Rust projects typically use two standard tools to keep the codebase readable and maintainable:
-
-- **`rustfmt`**: the official Rust formatter. It rewrites code into a consistent style so we do not waste time in code review debating formatting.
-- **`clippy`**: the official Rust linter. It flags suspicious patterns and common mistakes (performance footguns, needless allocations, unintuitive code) and often suggests the more idiomatic alternative.
-
-In day-to-day work, we run them like this:
-
-```bash
-cargo fmt
-cargo clippy
-```
-
-If `cargo fmt` or `cargo clippy` are missing, we can add them to the toolchain explicitly:
-
-```bash
-rustup component add rustfmt
-rustup component add clippy
-```
-
-If we want stricter CI-like checking locally, we can also run:
-
-```bash
-cargo fmt --check
-```
-
-## IDE integration (rust-analyzer)
-
-We get the best experience by using an editor with `rust-analyzer`, which provides IDE features backed by the compiler’s understanding of the code (types, traits, macro expansion, etc.).
-
-- **rust-analyzer (project docs)**: the official documentation site for features, configuration, and troubleshooting.  
-  Link: [rust-analyzer](https://rust-analyzer.github.io/) (`https://rust-analyzer.github.io/`)
-- **VS Code (extension install page)**: install/enable the extension so VS Code can power “go to definition”, inline errors, and code actions for Rust.  
-  Link: [rust-analyzer extension](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) (`https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer`)
-- **IntelliJ / CLion (Rust plugin page)**: install/enable JetBrains’ Rust plugin for IDE support (code navigation, inspections, run configurations).  
-  Link: [Rust plugin](https://plugins.jetbrains.com/plugin/8182-rust) (`https://plugins.jetbrains.com/plugin/8182-rust`)
-
-Once enabled, we should see:
-
-- jump-to-definition and symbol search
-- in-editor compiler diagnostics
-- inline type hints
-- test discovery and run buttons
-
-## Hello world (sanity-check the toolchain)
-
-We can verify our local toolchain with a small project. `cargo new` creates a tiny crate, and `cargo run` builds + runs it.
-
-```bash
-cargo new hello-rust
-cd hello-rust
-cargo run
-```
-
-## What the key files/directories mean
-
-If you just ran `cargo new hello-rust` above, the folder that command created is a concrete example of a “typical Rust crate layout”. In most Rust crates, we will see:
+Our blockchain implementation lives in `bitcoin/`:
 
 ```text
-hello-rust/
-  Cargo.toml
+bitcoin/
+  Cargo.toml      # Dependencies and metadata
   src/
-    main.rs
-  # (later you may also see: tests/, benches/, examples/, and target/)
+    main.rs       # Binary entry point
+    lib.rs        # Library API
+  tests/          # Integration tests
 ```
 
-- **`Cargo.toml`**: crate metadata + dependencies
-- **`src/`**: source code
-  - `src/main.rs`: binary entry point (when the crate builds an executable)
-  - `src/lib.rs`: library entry point (when the crate exports a library API)
-- **`tests/`**: integration tests
-- **`target/`**: build outputs (generated; safe to delete if we need a clean rebuild)
-
-In this repository, the Rust implementation we walk through lives under `bitcoin/` (it contains its own `Cargo.toml` and `src/`).
-
-## Build this repository’s Rust project
-
-From the repository root, we enter the `bitcoin/` crate and build/test it. This ensures dependencies resolve and the project compiles on our machine.
+## Build This Project
 
 ```bash
 cd bitcoin
 cargo build
 cargo test
-```
-
-If we are iterating quickly, it also helps to keep a lint loop handy:
-
-This catches formatting drift and common mistakes early (before a larger refactor makes them harder to spot):
-
-```bash
 cargo fmt
 cargo clippy
 ```
 
-## Common setup issues (quick fixes)
-
-- **`command not found: cargo`**: the `rustup` install script typically adds Cargo to your shell profile; restart the shell or ensure `$HOME/.cargo/bin` is on `PATH`.
-- **Clippy/fmt missing**: run `rustup component add clippy rustfmt`.
-- **Build works in one terminal but not another**: different shells can load different profiles; check `echo $PATH`.
-
 ---
 
-## Next steps
+## Next Steps
 
 Continue to **[Introduction →](01-Introduction.md)**.
 
 ---
 
-<div align="center">
+<div align=”center”>
 
-**📚 [← Rust Guide Index](README.md)** | **Rust installation and local setup** | **[Introduction →](01-Introduction.md)** 📚
+**[← Rust Guide Index](README.md)** | **Rust Installation and Setup** | **[Introduction →](01-Introduction.md)** 
 
 </div>
 
 ---
 
-*In this chapter, we set up Rust and our local development tooling. Continue to [Introduction](01-Introduction.md) to learn Rust’s design philosophy and how we use it in this project.*
+*This chapter covers local setup. Continue to [Introduction](01-Introduction.md) to learn Rust’s design philosophy.*
 
 
