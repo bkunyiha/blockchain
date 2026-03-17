@@ -2,7 +2,7 @@
 
 This appendix provides an annotated directory structure for each module covered in the book. Rather than printing verbatim listings (see companion chapters A/B/C), we map out the repository's organization so you can navigate to the exact files discussed in each chapter.
 
-> The complete source code for this book is available at the repository. Each section below maps to a companion chapter that contains the full source listings. Use the directory trees to orient yourself in the repository and find the files discussed in each chapter.
+> The complete source code for this book is available at **https://github.com/bkunyiha/rust-blockchain**. Each section below maps to a companion chapter that contains the full source listings. Use the directory trees to orient yourself in the repository and find the files discussed in each chapter.
 
 ---
 
@@ -14,11 +14,14 @@ This is a single-window Rust desktop application using the Iced GUI toolkit. It 
 
 ```text
 bitcoin-desktop-ui-iced/
-├── Cargo.toml                 # Dependencies (iced, tokio, tracing, bitcoin-api)
+├── Cargo.toml                 # Dependencies (iced, tokio, tracing,
+│                              # bitcoin-api)
 └── src/
     ├── main.rs                # Application entrypoint, logging, Tokio init
-    ├── runtime.rs             # Tokio runtime bridge (keeps async executor alive)
-    ├── types.rs               # Message enum (event vocabulary) + Menu navigation
+    ├── runtime.rs             # Tokio runtime bridge (keeps async
+    │                           # executor alive)
+    ├── types.rs               # Message enum (event vocabulary) +
+    │                           # Menu navigation
     ├── app.rs                 # AdminApp struct (the "model") + defaults
     ├── api.rs                 # Async HTTP helpers (AdminClient wrappers)
     ├── update.rs              # Message dispatcher (state mutations + tasks)
@@ -44,7 +47,8 @@ This is a cross-platform desktop app using Tauri 2 (Rust backend) + React/TypeSc
 bitcoin-desktop-ui-tauri/
 ├── Cargo.toml                 # Rust workspace (root level)
 ├── src-tauri/
-│   ├── Cargo.toml             # Backend dependencies (tauri, tokio, bitcoin-api)
+│   ├── Cargo.toml             # Backend dependencies (tauri, tokio,
+│   │                           # bitcoin-api)
 │   ├── tauri.conf.json        # Tauri config (window, build, security)
 │   ├── capabilities/
 │   │   └── main.json          # Tauri security scopes for main window
@@ -70,7 +74,8 @@ bitcoin-desktop-ui-tauri/
 │           ├── health.rs      # Health, liveness, readiness checks
 │           └── settings.rs    # Settings update command
 └── src/ (Frontend - React/TypeScript)
-    ├── package.json           # Frontend deps (@tauri-apps/api, react, tanstack)
+    ├── package.json           # Frontend deps (@tauri-apps/api, react,
+    │                           # tanstack)
     ├── vite.config.ts         # Vite bundler config
     ├── tailwind.config.js     # Tailwind CSS config
     ├── tsconfig.json          # TypeScript config
@@ -78,7 +83,8 @@ bitcoin-desktop-ui-tauri/
     ├── main.tsx               # React entry point (ReactDOM.render)
     ├── App.tsx                # 18 routes + provider nesting
     ├── types/
-    │   └── index.ts           # Shared TypeScript interfaces (BlockchainInfo, etc.)
+    │   └── index.ts           # Shared TypeScript interfaces
+    │                           # (BlockchainInfo, etc.)
     ├── lib/
     │   ├── commands.ts        # Tauri invoke() wrappers (22 commands)
     │   └── utils.ts           # Helpers (truncateHash, formatDate, etc.)
@@ -86,7 +92,8 @@ bitcoin-desktop-ui-tauri/
     │   ├── useAppStore.ts     # Zustand store (theme, menu, status)
     │   └── toastStore.ts      # Toast notifications state
     ├── hooks/
-    │   ├── useInvoke.ts       # Custom hook for command execution + loading state
+    │   ├── useInvoke.ts       # Custom hook for command execution +
+    │   │                       # loading state
     │   └── useClipboard.ts    # Clipboard copy helper
     ├── components/
     │   ├── AppLayout.tsx      # Root layout (sidebar + main area)
@@ -146,12 +153,14 @@ A second Iced desktop application focused on wallet operations (create, list, se
 
 ```text
 bitcoin-wallet-ui-iced/
-├── Cargo.toml                 # Dependencies (iced, tokio, sqlcipher, bitcoin-api)
+├── Cargo.toml                 # Dependencies (iced, tokio, sqlcipher,
+│                              # bitcoin-api)
 └── src/
     ├── main.rs                # Entry point, logging, Tokio init, database init
     ├── runtime.rs             # Tokio bridge (same pattern as Admin UI)
     ├── types.rs               # Message enum (wallet-focused events) + Menu
-    ├── app.rs                 # WalletApp state (wallets, selected address, etc.)
+    ├── app.rs                 # WalletApp state (wallets, selected
+    │                           # address, etc.)
     ├── api.rs                 # HTTP wrappers for wallet endpoints
     ├── database.rs            # SQLCipher integration (load/save wallets)
     ├── update.rs              # Message dispatcher (state + persistence)
@@ -178,7 +187,8 @@ A Tauri version of the Wallet UI (Rust backend + React frontend). Same functiona
 bitcoin-wallet-ui-tauri/
 ├── Cargo.toml                 # Workspace (root)
 ├── src-tauri/
-│   ├── Cargo.toml             # Backend deps (tauri, tokio, sqlcipher, bitcoin-api)
+│   ├── Cargo.toml             # Backend deps (tauri, tokio, sqlcipher,
+│   │                           # bitcoin-api)
 │   ├── tauri.conf.json        # Tauri config
 │   ├── capabilities/
 │   │   └── main.json          # Security scopes
@@ -207,7 +217,8 @@ bitcoin-wallet-ui-tauri/
     ├── tsconfig.json          # TypeScript config
     ├── index.css              # Styles
     ├── main.tsx               # React entry point
-    ├── App.tsx                # Routes: WalletList, CreateWallet, WalletInfo, etc.
+    ├── App.tsx                # Routes: WalletList, CreateWallet,
+    │                           # WalletInfo, etc.
     ├── types/
     │   └── index.ts           # Wallet, Address, Balance, Transaction types
     ├── hooks/
@@ -346,11 +357,13 @@ Configuration files and scripts for running the Bitcoin node and all UIs (Tauri 
 ```text
 ci/docker-compose/
 ├── configs/
-│   ├── docker-compose.yml           # Main service definition (node, miners, web)
+│   ├── docker-compose.yml           # Main service definition (node,
+│   │                                 # miners, web)
 │   ├── docker-compose.scale.sh      # Script to run multiple containers
 │   ├── docker-compose.miner.yml     # Miner-only compose config
 │   ├── docker-compose.webserver.yml # Web UI + API server config
-│   ├── Dockerfile                   # Image build (Bitcoin node + Tauri backend)
+│   ├── Dockerfile                   # Image build (Bitcoin node +
+│   │                                 # Tauri backend)
 │   ├── docker-entrypoint.sh         # Container startup script
 │   ├── wait-for-node.sh             # Health check + wait utility
 │   ├── scale-up.sh                  # Scale replica count
@@ -436,10 +449,10 @@ This is a focused mathematical deep-dive (16 lines of introduction + 150+ lines 
 | 17 | Desktop Admin | Tauri (Rust + React) | `bitcoin-desktop-ui-tauri/` |
 | 18 | Wallet UI | Iced (Rust GUI) | `bitcoin-wallet-ui-iced/` |
 | 19 | Wallet UI | Tauri (Rust + React) | `bitcoin-wallet-ui-tauri/` |
-| 6 | Embedded DB | SQLCipher | `(wallet UIs)` |
-| 7 | Web Admin | React/TypeScript | `bitcoin-web-ui/` |
-| 8 | Docker Compose | Docker | `ci/docker-compose/` |
-| 9 | Kubernetes | K8s manifests | `ci/kubernetes/` |
+| 20 | Embedded DB | SQLCipher | `(wallet UIs)` |
+| 21 | Web Admin | React/TypeScript | `bitcoin-web-ui/` |
+| 22 | Docker Compose | Docker | `ci/docker-compose/` |
+| 23 | Kubernetes | K8s manifests | `ci/kubernetes/` |
 | — | Whitepaper | Math/Encoding | `bitcoin-blockchain/whitepaper-rust/` |
 
 Each companion chapter (A/B/C suffixed files) contains complete source listings keyed to these directory trees.

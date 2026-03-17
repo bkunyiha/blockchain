@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -72,6 +72,14 @@ This section provides a comprehensive guide to the web API layer that powers our
 
 Built using Rust's Axum framework, the web layer implements a complete system for handling authentication, request validation, error handling, and API documentation. This section explores how we've structured the REST API, how requests flow through the system, and the architectural decisions that make it secure, scalable, and maintainable.
 
+> **What you will learn in this chapter:**
+> - Structure REST endpoints using the Axum web framework
+> - Implement request handlers, middleware, and error handling for a blockchain API
+> - Configure authentication, CORS, and security layers
+> - Generate OpenAPI documentation automatically with Utoipa
+
+> **Scope:** This chapter covers the REST API for a development/learning environment. We do not cover WebSocket subscriptions, GraphQL APIs, gRPC interfaces, or production rate limiting and DDoS protection.
+
 This page serves as the index for the Web API section. For the full architecture overview and design principles, begin with **Introduction & Architecture Overview** (Section 01).
 
 ---
@@ -80,39 +88,79 @@ This page serves as the index for the Web API section. For the full architecture
 
 ### Part 1: Core Concepts
 
-1. **01: Introduction & Architecture Overview** - Architecture overview, design principles, and component organization
-2. **02: Server Setup and Configuration** - Server initialization, configuration, and lifecycle management
-3. **03: Routing System** - Route definitions, nesting, and endpoint organization
+1. **01: Introduction & Architecture Overview** — Architecture overview, design principles, and component organization
+2. **02: Server Setup and Configuration** — Server initialization, configuration, and lifecycle management
+3. **03: Routing System** — Route definitions, nesting, and endpoint organization
 
 ### Part 2: Request Processing
 
-4. **04: Request Handlers** - Handler patterns, business logic, and request processing
-5. **05: Middleware Layer** - Authentication, CORS, logging, and cross-cutting concerns
-6. **06: Data Models** - Request/response structures, validation, and type safety
+4. **04: Request Handlers** — Handler patterns, business logic, and request processing
+5. **05: Middleware Layer** — Authentication, CORS, logging, and cross-cutting concerns
+6. **06: Data Models** — Request/response structures, validation, and type safety
 
 ### Part 3: Advanced Topics
 
-7. **07: Error Handling** - Error management strategies and patterns
-8. **08: Rate Limiting Implementation** - Rate limiting algorithms, implementation, and configuration
-9. **09: OpenAPI Documentation** - Automatic API documentation generation
-10. **10: Security Architecture** - Authentication, authorization, and security measures
-11. **11: Best Practices and Patterns** - Design patterns and conventions
+7. **07: Error Handling** — Error management strategies and patterns
+8. **08: Rate Limiting Implementation** — Rate limiting algorithms, implementation, and configuration
+9. **09: OpenAPI Documentation** — Automatic API documentation generation
+10. **10: Security Architecture** — Authentication, authorization, and security measures
+11. **11: Best Practices and Patterns** — Design patterns and conventions
 
 ### Reference Materials
 
-- **Axum Framework Guide** - Comprehensive Axum framework reference
-- **Tower Framework Guide** - Middleware framework and tower_http components
-- **Serde Framework Guide** - Serialization and deserialization framework
-- **Utoipa Framework Guide** - OpenAPI documentation generation
-- **Tracing Framework Guide** - Structured logging and diagnostics
-- **Tokio Runtime Guide** - Async runtime framework
-- **Chapter 24: Rust Language Guide** - Comprehensive Rust language reference
+- **Axum Framework Guide** — Comprehensive Axum framework reference
+- **Tower Framework Guide** — Middleware framework and tower_http components
+- **Serde Framework Guide** — Serialization and deserialization framework
+- **Utoipa Framework Guide** — OpenAPI documentation generation
+- **Tracing Framework Guide** — Structured logging and diagnostics
+- **Tokio Runtime Guide** — Async runtime framework
+- **Chapter 24: Rust Language Guide** — Comprehensive Rust language reference
+
+> **Tip:** The generated OpenAPI specification is available at `/api-docs` when the server is running. Open it in Swagger UI to interactively test endpoints without writing any client code.
+
+> **Warning:** The default development configuration has no rate limiting. Before exposing the API to external traffic, add rate limiting middleware to prevent denial-of-service attacks.
 
 ---
 
 ## Architecture Principles
 
 The web layer enforces separation of concerns: routes, handlers, middleware, and models live in distinct modules. Rust's type system provides compile-time validation of request/response shapes. The entire stack is async, built on Tokio and Axum, with authentication, CORS, and error handling wired in at the middleware level. OpenAPI documentation is generated automatically via Utoipa.
+
+**Figure 15-1: API Request Flow**
+
+```text
+ HTTP Request
+      │
+      ▼
+ ┌──────────┐
+ │  CORS    │  Middleware Layer
+ │  Auth    │  (Tower)
+ │  Logging │
+ └────┬─────┘
+      │
+      ▼
+ ┌──────────┐
+ │  Router  │  Axum Route Matching
+ │ /api/v1/ │
+ └────┬─────┘
+      │
+      ▼
+ ┌──────────┐
+ │ Handler  │  Extract params, call logic
+ └────┬─────┘
+      │
+      ▼
+ ┌──────────┐
+ │  Node    │  Blockchain operations
+ │ Context  │
+ └────┬─────┘
+      │
+      ▼
+ ┌──────────┐
+ │ Response │  Serialize to JSON
+ │  (JSON)  │
+ └──────────┘
+```
 
 ### Technology Stack
 
@@ -137,12 +185,29 @@ All code examples in this section are taken from the actual implementation:
 
 ---
 
-<div align="center">
+## What We Covered
 
-**[← Previous: Wallet System](../wallet/README.md)** | **[Chapter 15: Web API Architecture](README.md)** | **[Next: Introduction & Architecture Overview →](01-Introduction.md)** 
-</div>
+- We structured a REST API using Axum with typed handlers, extractors, and shared state for blockchain operations.
+- We implemented middleware layers for authentication, CORS, logging, and comprehensive error handling.
+- We built request handlers that translate HTTP operations into blockchain actions through the NodeContext.
+- We generated OpenAPI documentation automatically with Utoipa, providing a self-documenting API surface.
+
+In the next chapter, we build the first of four user interfaces: a desktop admin panel using the Iced framework's pure Rust MVU architecture.
 
 ---
+
+## Exercises
+
+1. **Add a New Endpoint** — Implement a new `GET /api/v1/difficulty` endpoint that returns the current mining difficulty target. Write the handler function, add the route to the router, create the response data model, and generate OpenAPI documentation with Utoipa. Test with curl or the Swagger UI.
+
+2. **Middleware Investigation** — Examine the middleware stack (authentication, CORS, logging) and trace how a request passes through each layer. Temporarily disable CORS and observe what changes in browser-based API calls. What security implications does this have?
+
+---
+
+<div align="center">
+
+**[← Previous: Wallet System](../wallet/README.md)** | **[Chapter 15: Web API Architecture](README.md)** | **[Next: Introduction & Architecture Overview →](01-Introduction.md)**
+</div>
 
 ---
 

@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -117,25 +117,13 @@ let result: Vec<i32> = vec![1, 2, 3, 4, 5]
 
 Operations are lazy; no computation until `collect()`. Compiler optimizes to efficient code.
 
-## Summary
-
-Iterators provide lazy, composable data processing with zero-cost abstractions. Closures capture environment and pass behavior as values. Together they enable expressive, efficient functional programming patterns.
-    .sum();
-
-// Compiler optimizes to roughly:
-// let mut sum = 0;
-// for tx in transactions {
-//     if tx.is_valid() {
-//         sum += tx.value();
-//     }
-// }
-```
-
 **Key Performance Points:**
 - **Lazy evaluation**: Iterators don't compute until consumed
 - **Loop fusion**: Multiple iterator operations can be fused into a single loop
-- **Zero allocations**: Iterator chains typically don't allocate intermediate collections
-- **SIMD optimization**: Compiler can vectorize iterator operations when possible
+- **Zero allocations**: Iterator chains typically don't allocate
+  intermediate collections
+- **SIMD optimization**: Compiler can vectorize iterator operations
+  when possible
 
 ### Advanced Iterator Patterns
 
@@ -219,41 +207,59 @@ let total_value: i64 = blocks
     .sum();
 ```
 
-In our blockchain, iterators enable concise, efficient processing of transactions, blocks, and network messages, combining readability with performance.
+In our blockchain, iterators enable concise, efficient processing of
+transactions, blocks, and network messages, combining readability
+with performance.
 
 ## Summary
 
-Iterators and closures enable functional programming patterns in Rust with zero runtime overhead. Iterators provide lazy, composable iteration that compiles to efficient loops. Closures capture their environment and can be passed as data, enabling flexible, expressive code.
+Iterators and closures enable functional programming patterns in Rust
+with zero runtime overhead. Iterators provide lazy, composable
+iteration that compiles to efficient loops. Closures capture their
+environment and can be passed as data, enabling flexible, expressive
+code.
 
-The compiler optimizes iterator chains aggressively, often producing code as efficient as hand-written loops. Understanding closure capture modes helps us write efficient closures, and iterator adapters enable powerful data transformations.
+The compiler optimizes iterator chains aggressively, often producing
+code as efficient as hand-written loops. Understanding closure capture
+modes helps us write efficient closures, and iterator adapters enable
+powerful data transformations.
 
-In the next chapter, we'll explore type conversions, which enable converting between types safely and explicitly.
+In the next chapter, we'll explore type conversions, which enable
+converting between types safely and explicitly.
 
 ---
 
 ## Navigation
 
 - **[← Previous: Modules](13-Modules.md)** - Code organization and visibility
-- **[Next: Type Conversions →](15-Type-Conversions.md)** - Converting between types
-- **[Rust Guide Index](README.md)** - Complete guide overview and table of contents
+- **[Next: Type Conversions →](15-Type-Conversions.md)** - Converting
+  between types
+- **[Rust Guide Index](README.md)** - Complete guide overview and
+  table of contents
 - **[Pattern Matching](09-Pattern-Matching.md)** - Matching in iterator chains
 - **[Generics](06-Generics.md)** - Generic iterator functions
 - **[Testing](16-Testing.md)** - Testing iterators
 - **[Best Practices](17-Best-Practices.md)** - Iterator patterns
 
 **Related Guides:**
-- **[Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)** - Iterators in practice
-- **[Web API Architecture](../bitcoin-blockchain/web/README.md)** - Processing collections
+- Iterators in practice - see
+  **[Transaction ID Format]
+  (../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md)**
+- **[Web API Architecture](../bitcoin-blockchain/web/README.md)** -
+  Processing collections
 
 ---
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Iterators and Closures** | **[← Previous](13-Modules.md)** | **[Next →](15-Type-Conversions.md)** 
+**[← Rust Guide Index](README.md)** | **Iterators and Closures** |
+**[← Previous](13-Modules.md)** | **[Next →](15-Type-Conversions.md)**
 
 </div>
 
 ---
 
 
-*This chapter covers iterators and closures. Continue to [Type Conversions](15-Type-Conversions.md) to learn how to convert between types.*
+*This chapter covers iterators and closures. Continue to
+[Type Conversions](15-Type-Conversions.md) to learn how to convert
+between types.*

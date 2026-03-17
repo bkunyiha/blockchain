@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -78,8 +78,6 @@
 
 > **When to read this chapter**: This chapter is designed as a reference you can read before starting Part I or consult as needed while working through the implementation chapters. If you are already comfortable with Rust ownership, traits, generics, error handling, and async/await, you can safely skip ahead and return here when you encounter unfamiliar syntax.
 
-**What you will learn in this chapter:** The Rust language features that appear most frequently in the blockchain implementation — ownership and borrowing, traits and generics, error handling with `Result`/`Option`, async programming with Tokio, and serialization with Serde — explained through concrete examples drawn from the codebase.
-
 In this section, we teach Rust as a working tool for a real systems project: we explain the language features we rely on, then we show how those features appear in our blockchain implementation. Our goal is not to memorize Rust syntax; our goal is to build the mental model that lets us implement correct, performant systems code.
 
 Rust is a systems language that gives us memory safety and thread safety without a garbage collector. It does this with ownership, borrowing, and a type system that makes illegal states harder to represent. Throughout this guide, we use those tools to build a Bitcoin-shaped implementation that stays readable under real engineering constraints.
@@ -94,6 +92,13 @@ Blockchain systems have unusual constraints: they process untrusted input, they 
 
 In this guide, we illustrate each concept with code-shaped examples from the repository, so we can connect “language feature” → “implementation decision” → “system behavior”.
 
+> **What you will learn in this chapter:**
+> - Apply Rust's ownership and borrowing rules to write memory-safe code
+> - Use traits, generics, and lifetimes to build flexible, reusable abstractions
+> - Handle errors idiomatically with Result, Option, and the `?` operator
+> - Write async code with Tokio and manage concurrency with channels and synchronization primitives
+> - Test Rust code at unit and integration levels using the built-in test framework
+
 ### How This Guide is Organized
 
 This guide is structured to build understanding progressively:
@@ -105,15 +110,17 @@ This guide is structured to build understanding progressively:
 
 Each chapter builds on previous concepts, so reading sequentially will provide the most comprehensive understanding. However, each chapter is also self-contained, allowing you to jump to specific topics as needed.
 
+> **Tip:** If any Rust concept in the main chapters is unclear, use this guide as a reference. Each section includes examples drawn directly from the blockchain codebase, so you will see how these language features work in practice.
+
 > **Implementation Context**: This guide explains Rust language features with examples from our blockchain implementation. To see these features applied in specific contexts, see the [Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) chapter for ownership and data structures, the [Web API Architecture](../bitcoin-blockchain/web/README.md) for async patterns and error handling, and the [Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md) for asynchronous programming details.
 
 ---
 
 ## Table of Contents
 
-This guide is organized into seven parts, each building on previous concepts:
+This guide is organized into seven sections, each building on previous concepts:
 
-### Part I: Foundations
+### Section I: Foundations
 
 The foundation of Rust programming—understanding how Rust manages memory and models data.
 
@@ -123,7 +130,7 @@ The foundation of Rust programming—understanding how Rust manages memory and m
 4. **[Data Structures](03-Data-Structures.md)** - Structs and Enums for modeling domain concepts
 5. **[Traits](04-Traits.md)** - Polymorphism and code reuse through trait-based design
 
-### Part II: Error Handling and Type System
+### Section II: Error Handling and Type System
 
 How Rust handles errors explicitly and enables flexible, type-safe code.
 
@@ -131,35 +138,35 @@ How Rust handles errors explicitly and enables flexible, type-safe code.
 7. **[Generics](06-Generics.md)** - Type parameters and zero-cost abstractions
 8. **[Lifetimes](07-Lifetimes.md)** - Managing reference validity and memory safety
 
-### Part III: Advanced Memory Management
+### Section III: Advanced Memory Management
 
 Advanced techniques for managing memory and handling different cases.
 
 9. **[Smart Pointers](08-Smart-Pointers.md)** - Shared ownership with Arc and Rc
 10. **[Pattern Matching](09-Pattern-Matching.md)** - Exhaustive case handling with match and if let
 
-### Part IV: Code Organization and Reuse
+### Section IV: Code Organization and Reuse
 
 Tools for organizing code and reducing boilerplate.
 
 11. **[Derive Macros](10-Derive-Macros.md)** - Automatic trait implementations
 12. **[Modules](13-Modules.md)** - Code organization and visibility control
 
-### Part V: Concurrency and Async Programming
+### Section V: Concurrency and Async Programming
 
 Concurrent and asynchronous programming in Rust.
 
 13. **[Async/Await](11-Async-Await.md)** - Asynchronous programming and non-blocking I/O
 14. **[Concurrency](12-Concurrency.md)** - Thread safety with Send, Sync, and locks
 
-### Part VI: Functional Programming
+### Section VI: Functional Programming
 
 Functional programming patterns that enable expressive, efficient code.
 
 15. **[Iterators and Closures](14-Iterators-Closures.md)** - Functional programming patterns
 16. **[Type Conversions](15-Type-Conversions.md)** - Converting between types with From, Into, and TryFrom
 
-### Part VII: Putting It All Together
+### Section VII: Putting It All Together
 
 Synthesizing concepts into production-ready patterns.
 
@@ -274,8 +281,6 @@ Each chapter includes:
 - **Navigation links** to related chapters
 
 Whether you're new to Rust or looking to deepen your understanding, this guide provides the technical depth and practical examples you need to write effective Rust code.
-
----
 
 ---
 

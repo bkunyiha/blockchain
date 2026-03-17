@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -72,6 +72,47 @@ In this chapter, we define the core data structures that every other module depe
 
 These are the atomic building blocks from which we construct all blockchain operations. By the end of this chapter, you will understand every field in a block and a transaction, why we chose `Vec<u8>` for hashes, and how Serde derives make these types serialization-ready from day one.
 
+> **What you will learn in this chapter:**
+> - Define the Block, Transaction, and Blockchain data structures that form the system's foundation
+> - Explain why transaction IDs use `Vec<u8>` rather than hex strings
+> - Describe the role of each field in the block header and transaction structure
+> - Understand how these pure data types are used by every other module in the codebase
+
+**Figure 6-1: Block Structure**
+
+```text
+┌─────────────────────────────────────────┐
+│                   Block                      │
+├─────────────────────────────────────────┤
+│  ┌─────────────────────────────────────┐    │
+│  │           Block Header              │    │
+│  ├─────────────────────────────────────┤    │
+│  │  hash:           [u8; 32]           │    │
+│  │  previous_hash:  [u8; 32]  ──────────┐  │
+│  │  timestamp:      i64                │ │  │
+│  │  nonce:          u64                │ │  │
+│  │  difficulty:     u32                │ │  │
+│  │  merkle_root:    [u8; 32]           │ │  │
+│  └─────────────────────────────────────┘ │  │
+│                                           │  │
+│  ┌─────────────────────────────────────┐ │  │
+│  │        Transactions: Vec<Tx>        │ │  │
+│  ├─────────────────────────────────────┤ │  │
+│  │  tx[0]: Coinbase (miner reward)     │ │  │
+│  │  tx[1]: Alice → Bob (3.5 BTC)      │ │  │
+│  │  tx[2]: Bob → Carol (1.2 BTC)      │ │  │
+│  │  ...                                │ │  │
+│  └─────────────────────────────────────┘ │  │
+└──────────────────────────────────────────┘  │
+                                              │
+     ┌────────────────────────────────────────┘
+     │  Points to previous block's hash
+     ▼
+┌────────────────┐
+│ Previous Block │
+└────────────────┘
+```
+
 ## Key Components
 
 ### Block
@@ -135,7 +176,11 @@ This module aligns with Bitcoin Core's primitives directory:
 
 **Why `Vec<u8>` for hashes and IDs?** Transaction IDs and block hashes are stored as raw byte vectors rather than hex strings. This avoids repeated hex-encode/decode round-trips and keeps hashing deterministic (we hash bytes, not string representations). Chapter 6.1 (Transaction ID Format) explores this decision in depth, including comparisons with Bitcoin Core's approach.
 
+> **Important:** Transaction IDs are stored as `Vec<u8>` (raw bytes) rather than hex strings throughout the codebase. This is a deliberate design choice: byte comparisons are faster, storage is more compact, and we avoid repeated hex encoding/decoding. You will see this pattern in every module that handles transaction IDs.
+
 **Serde for serialization.** All primitives derive `Serialize` and `Deserialize`, enabling JSON serialization for the REST API (Chapter 15) and binary encoding via bincode for storage (Chapter 11). The `#[derive(Serialize, Deserialize)]` pattern appears on every struct in this module.
+
+> **Warning:** Changing any field in a block — even a single byte — invalidates the block hash and breaks the chain of hashes linking it to subsequent blocks. This is what makes blockchain tamper-evident.
 
 ## How These Primitives Connect to Later Chapters
 
@@ -192,8 +237,35 @@ let block = blockchain_service.get_block_by_hash(&hash).await?;
 
 ---
 
+## Exercises
+
+1. **Observe the Avalanche Effect in Block Hashing** — Create a `Block` with a specific timestamp, then change the timestamp by one second. Hash both blocks and compare the output. Verify that even a tiny change produces a completely different hash, demonstrating why blockchain is tamper-evident.
+
+2. **Trace Transaction ID Encoding** — Take a sample transaction and manually trace how its ID is computed: serialize the transaction fields, apply SHA-256, and store the result as `Vec<u8>`. Compare this with calling the actual `hash_transaction` function. Explain why the ID changes if any field is modified.
+
+---
+
+## Further Reading
+
+- **[Bitcoin Block Structure (Bitcoin Wiki)](https://en.bitcoin.it/wiki/Block)** — Detailed specification of the Bitcoin block format.
+- **[serde_derive Documentation](https://docs.rs/serde_derive/)** — How derive macros generate serialization code for our data structures.
+- **[Bitcoin Transaction (Bitcoin Wiki)](https://en.bitcoin.it/wiki/Transaction)** — Reference for the transaction data model.
+
+---
+
+## What We Covered
+
+- We defined the Block, Transaction, and Blockchain structs that serve as the atomic building blocks for every operation in the system.
+- We explained the Transaction ID format and the deliberate choice to store IDs as `Vec<u8>` rather than hex strings, optimizing for programmatic use.
+- We examined every field in the block header — hash, previous hash, timestamp, nonce, difficulty — and its role in blockchain integrity.
+- We saw how these pure data types remain dependency-free, allowing every other module to build on them without circular references.
+
+In the next chapter, we build the utility functions that operate on these structures — timestamps, functional helpers, and cross-cutting concerns that every module in the system needs.
+
+---
+
 <div align="center">
 
-**[← Chapter 5: Rust Project](../Rust-Project-Index.md)** | **Chapter 6: Primitives** | **[Transaction ID Format →](02-Transaction-ID-Format.md)** 
+**[← Chapter 5: Rust Project](../Rust-Project-Index.md)** | **Chapter 6: Primitives** | **[Transaction ID Format →](02-Transaction-ID-Format.md)**
 </div>
 

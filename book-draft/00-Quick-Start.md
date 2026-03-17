@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="bitcoin-blockchain/README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -22,17 +22,19 @@
 15. <a href="bitcoin-blockchain/web/README.md">Chapter 15: Web API Architecture</a>
 16. <a href="bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
 17. <a href="bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
-18. <a href="embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
-19. <a href="bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
+18. <a href="bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
+19. <a href="bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
+20. <a href="embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
+21. <a href="bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
 
 ### Part II: Deployment & Operations
 
-20. <a href="ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
-21. <a href="ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
+22. <a href="ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
+23. <a href="ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
 
 ### Part III: Language Reference
 
-22. <a href="rust/README.md">Chapter 24: Rust Language Guide</a>
+24. <a href="rust/README.md">Chapter 24: Rust Language Guide</a>
 
 </details>
 
@@ -44,15 +46,21 @@
 
 **Time required: under 5 minutes.** You need only Docker and Docker Compose installed.
 
-This page exists so you can see the finish line before starting the journey. By the end of these steps, you will have a multi-node Bitcoin blockchain network running on your machine — mining blocks, propagating them to peers, and serving a web admin interface. No Rust installation required.
+This page exists so you can see the finish line before starting the journey. By the end of these steps, you will have a multi-node blockchain network, like the one Bitcoin runs on, running on your machine — mining blocks, propagating them to peers, and serving a web admin interface. No Rust installation required.
+
+> **What you will learn in this chapter:**
+> - Deploy a multi-node blockchain network with a single command using Docker Compose
+> - Observe blocks being mined, hashed, and propagated between peers in real time
+> - Query the blockchain REST API and view the web admin dashboard
+> - Understand which chapters of the book correspond to each running component
 
 ---
 
 ## Step 1: Clone the repository
 
 ```bash
-git clone <REPOSITORY_URL> rust-bitcoin
-cd rust-bitcoin
+git clone https://github.com/bkunyiha/rust-blockchain.git
+cd rust-blockchain
 ```
 
 ## Step 2: Start the network

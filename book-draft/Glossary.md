@@ -24,6 +24,8 @@ This glossary defines terms used throughout the book. Each entry includes the ch
 
 **Consensus** — The mechanism by which nodes agree on which chain of blocks is valid. In our implementation, consensus follows the longest-chain rule with proof-of-work. *(Ch 10)*
 
+**Difficulty Target** — A 256-bit number that a block's hash must be less than for the block to be valid. Adjusted periodically to maintain consistent block times. *(Ch 10)*
+
 **Difficulty** — A measure of how hard it is to mine a new block. Our implementation uses a simplified fixed difficulty target. *(Ch 10)*
 
 **Double-spend** — An attempt to spend the same UTXO in two different transactions. Prevented by the consensus layer rejecting blocks that reference already-spent outputs. *(Ch 3, 10)*
@@ -32,11 +34,11 @@ This glossary defines terms used throughout the book. Each entry includes the ch
 
 **Genesis block** — The hardcoded first block in the chain (height 0). It has no parent hash. *(Ch 9)*
 
-**Mempool** — The set of unconfirmed transactions that a node has received but not yet included in a block. Implemented as an in-memory collection in the node module. *(Ch 13)*
+**Mempool (Memory Pool)** — The set of unconfirmed transactions waiting to be included in a block. Each node maintains its own mempool, prioritizing transactions by fee rate. *(Ch 13)*
 
 **Merkle root** — A single hash that summarizes all transactions in a block, computed by recursively hashing pairs of transaction hashes into a binary tree. *(Ch 9)*
 
-**Nonce** — A number that miners increment to produce a block hash below the difficulty target. The core mechanism of proof-of-work. *(Ch 10)*
+**Nonce** — A 32-bit field in the block header that miners increment to search for a valid block hash. The nonce is the variable that makes mining a trial-and-error process. *(Ch 10)*
 
 **Outpoint** — A reference to a specific output of a previous transaction, consisting of a transaction ID and an output index. Used as the "pointer" in transaction inputs. *(Ch 6)*
 
@@ -44,7 +46,7 @@ This glossary defines terms used throughout the book. Each entry includes the ch
 
 **Proof-of-work (PoW)** — The consensus mechanism where miners must find a nonce that makes the block hash fall below a target. Proves computational effort was spent. *(Ch 3, 10)*
 
-**SPV (Simplified Payment Verification)** — A method for lightweight clients to verify transactions without downloading the full blockchain, using Merkle proofs. Not implemented in this book. *(Ch 3)*
+**SPV (Simplified Payment Verification)** — A method that allows lightweight clients to verify transactions without downloading the entire blockchain, using Merkle proofs to confirm inclusion in a block. *(Ch 3)*
 
 **Transaction** — A data structure that transfers value by consuming UTXOs (inputs) and creating new UTXOs (outputs). Represented as the `Transaction` struct. *(Ch 6)*
 
@@ -56,9 +58,11 @@ This glossary defines terms used throughout the book. Each entry includes the ch
 
 ## Rust Language Terms
 
-**`async`/`await`** — Rust's syntax for asynchronous programming. Functions marked `async fn` return a `Future` that is lazily executed. Used throughout the networking, node, and web API layers. *(Ch 12, 10)*
+**`async`/`await`** — Rust's syntax for asynchronous programming. Functions marked `async fn` return a `Future` that is lazily executed. Used throughout the networking, node, and web API layers. *(Ch 10, 12)*
 
 **Borrow checker** — The Rust compiler's system for enforcing ownership rules at compile time. Prevents data races and use-after-free bugs without runtime overhead. *(Ch 24)*
+
+**Cargo Workspace** — A set of related Rust packages (crates) that share a common Cargo.lock and output directory. This project uses a workspace to organize its many crates. *(Ch 5)*
 
 **Channel (`mpsc`)** — A multi-producer, single-consumer message-passing primitive from Tokio. Used in the node module for routing messages between subsystems. *(Ch 13)*
 
@@ -66,9 +70,13 @@ This glossary defines terms used throughout the book. Each entry includes the ch
 
 **`enum` (algebraic data type)** — A type that can hold one of several variants. Used for message types (`Package`), error types, and UI messages in the Iced framework. *(Ch 12, 16)*
 
+**Feature Flags** — Conditional compilation markers in Cargo.toml that enable or disable optional dependencies and code paths at build time. *(Ch 5)*
+
 **Lifetime** — An annotation (e.g., `'a`) that tells the borrow checker how long a reference is valid. Most lifetimes in this book are elided (inferred by the compiler). *(Ch 24)*
 
 **Monomorphization** — The process by which the Rust compiler generates specialized versions of generic functions for each concrete type. Produces zero-cost abstractions. *(Ch 24)*
+
+**Pin** — A wrapper type that prevents a value from being moved in memory. Required for certain async patterns where futures hold self-referential pointers. *(Ch 24)*
 
 **`Option<T>`** — A type representing either `Some(value)` or `None`. Used instead of null pointers. *(Ch 24)*
 
@@ -78,9 +86,11 @@ This glossary defines terms used throughout the book. Each entry includes the ch
 
 **Serde** — The Rust ecosystem's standard serialization/deserialization framework. All primitive types derive `Serialize` and `Deserialize` for JSON and binary encoding. *(Ch 6)*
 
-**Tokio** — The async runtime used throughout this project. Provides task spawning (`tokio::spawn`), TCP networking, timers, and synchronization primitives. *(Ch 12, 10)*
+**Tokio** — The async runtime used throughout this project. Provides task spawning (`tokio::spawn`), TCP networking, timers, and synchronization primitives. *(Ch 10, 12)*
 
 **Trait** — Rust's mechanism for defining shared behavior (similar to interfaces). Key traits in this project include `Serialize`, `Deserialize`, `Clone`, and custom traits for the API layer. *(Ch 24)*
+
+**Trait Object** — A dynamically dispatched reference to a type implementing a trait, written as `dyn Trait`. Used when the concrete type is not known at compile time. *(Ch 24)*
 
 **`Vec<u8>`** — A growable byte vector. Used throughout the primitives module for hashes, transaction IDs, and serialized data. Chosen over fixed-size arrays for flexibility. *(Ch 6)*
 
@@ -88,15 +98,15 @@ This glossary defines terms used throughout the book. Each entry includes the ch
 
 ## Project-Specific Terms
 
-**`bitcoin-api` crate** — The shared API layer that both the Iced and Tauri admin UIs consume. Wraps the node's admin endpoints into a Rust client library. *(Ch 15, 16, 17)*
+**bitcoin-api** — The shared API client crate consumed by all frontend applications (Iced, Tauri, and web). Provides a framework-agnostic interface to the blockchain node's REST API. *(Ch 15, 16, 17)*
 
-**`BlockchainFileSystem`** — The storage abstraction that wraps sled and provides methods like `create_blockchain`, `get_tip_hash`, and `update_blocks_tree`. *(Ch 11)*
+**BlockchainFileSystem** — The storage abstraction that wraps the Sled embedded database, providing persistence for blocks, chain state, and UTXO data. *(Ch 11)*
 
 **`ChainState`** — The in-memory representation of the current blockchain state: the canonical chain, the UTXO set, and the tip hash. *(Ch 9)*
 
-**Companion chapter** — A chapter suffixed with A, B, or C (e.g., 11.A, 17B) containing complete code listings. These are available online but excluded from the print edition. *(Throughout)*
+**Companion Chapter** — A supplementary chapter (suffixed A, B, or C) containing complete, unabridged code listings for its parent chapter. Excluded from the print edition. *(Throughout)*
 
-**`NodeContext`** — The central coordination struct in the node module. Routes inbound messages from the network to the appropriate subsystem (mempool, chainstate, mining, relay). *(Ch 13)*
+**NodeContext** — The central orchestration struct that coordinates blockchain state, mempool, network operations, mining, and validation behind a unified API. *(Ch 13)*
 
 **`Package`** — The typed message enum used in the network layer. Variants include `NewBlock`, `NewTransaction`, `RequestBlock`, and peer-management messages. *(Ch 12)*
 

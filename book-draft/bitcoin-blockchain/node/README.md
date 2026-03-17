@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -64,7 +64,11 @@ This chapter explains the `bitcoin/src/node` module as a Rust implementer reads 
 
 > **Prerequisites**: This chapter ties together every module built so far — primitives (6), crypto (8), chain state (9–10), storage (11), and networking (12). You should be comfortable with Tokio's `spawn`, `mpsc` channels, and `Arc<Mutex<T>>` patterns. If any of those are unfamiliar, the async primer in Chapter 12's opening or Chapter 24 (Rust Language Guide) covers them.
 
-**What you will learn in this chapter:** How a single `NodeContext` struct coordinates message dispatch across the mempool, chainstate, mining, and peer relay subsystems — and why this coordination layer exists as a separate module rather than being spread across the network and chain code.
+> **What you will learn in this chapter:**
+> - Coordinate blockchain state, mempool, network, mining, and validation through the NodeContext API
+> - Understand how the node module provides a unified interface over multiple subsystems
+> - Trace how an incoming request flows through the node context to the appropriate handler
+> - Explain why centralized orchestration simplifies the interaction between blockchain components
 
 ---
 
@@ -85,6 +89,8 @@ TCP -> Package -> NodeContext -> (mempool | add_block | mining | relay)
 
 The key entry points are `NodeContext::process_transaction` (mempool admission), `NodeContext::add_block` (chain extension from a peer), and `NodeContext::mine_empty_block` (local mining trigger). These delegate to `txmempool::{add_to_memory_pool, remove_from_memory_pool}` for mempool state and `miner::{should_trigger_mining, process_mine_block, broadcast_new_block}` for the mining pipeline.
 
+> **Important:** NodeContext is the single entry point for all blockchain operations. Every user-facing interface — the web API, the desktop admin UIs, and the wallet applications — communicates with the blockchain exclusively through NodeContext. Understanding this module is essential for understanding how the system's components fit together.
+
 ---
 
 ## Where the full code walkthrough lives
@@ -102,9 +108,34 @@ It includes full method bodies for:
 
 ---
 
+## Exercises
+
+1. **Request Flow Tracing** — Pick any REST API endpoint (e.g., submit transaction) and trace the request from the HTTP handler through NodeContext to the final blockchain state change. Identify every module boundary the request crosses.
+
+2. **Subsystem Interaction Map** — Draw a diagram showing how NodeContext interacts with each subsystem: chain state, mempool, network, mining, and validation. For each interaction, label the function called and the data exchanged.
+
+---
+
+## Further Reading
+
+- **[Tokio Documentation](https://tokio.rs/)** — The async runtime that powers node orchestration.
+- **[Bitcoin Core Architecture](https://developer.bitcoin.org/devguide/p2p_network.html)** — How Bitcoin Core organizes its node operations.
+
+---
+
+## What We Covered
+
+- We built the NodeContext that serves as the central coordination point for all blockchain node operations.
+- We unified interactions between blockchain state, transaction mempool, network operations, mining, and validation behind a single API.
+- We saw how the node module abstracts the complexity of coordinating multiple subsystems into clean, testable interfaces.
+
+In the next chapter, we build the wallet system — key generation, address derivation, and transaction signing — that gives users the ability to hold and spend cryptocurrency.
+
+---
+
 <div align="center">
 
-**[← Chapter 12: Network Layer](../net/README.md)** | **Chapter 13: Node Orchestration** | **[Chapter 13.A: Code Walkthrough →](01-Node-Orchestration-Code-Walkthrough.md)** 
+**[← Chapter 12: Network Layer](../net/README.md)** | **Chapter 13: Node Orchestration** | **[Chapter 13.A: Code Walkthrough →](01-Node-Orchestration-Code-Walkthrough.md)**
 </div>
 
 ---

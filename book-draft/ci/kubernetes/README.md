@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../../bitcoin-blockchain/README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -76,9 +76,15 @@
 
 > **Prerequisites**: This chapter assumes you have read Chapter 22 (Docker Compose) and have basic familiarity with Kubernetes concepts (pods, services, deployments). If Kubernetes is new to you, the chapter defines each resource type as it appears — but having `kubectl` installed and a cluster available (even Minikube or Docker Desktop's built-in Kubernetes) will help you follow along.
 
-**What you will learn in this chapter:** How to deploy the blockchain network on Kubernetes using Kustomize, how Kubernetes primitives (StatefulSets, Services, ConfigMaps) map to the components we built in Part I, and how to scale, monitor, and manage a multi-node blockchain in a production-like environment.
-
 **Why Kubernetes after Docker Compose?** Docker Compose is excellent for local development, but it runs on a single machine and has no built-in answer for node failures, rolling updates, or scaling beyond one host. Kubernetes solves these problems: if a blockchain node crashes, Kubernetes restarts it automatically; if you need more nodes, you change a replica count; if you push a new image, Kubernetes rolls it out without downtime. This chapter shows how the same Docker images from Chapter 22 are deployed into a system that can run in production.
+
+> **What you will learn in this chapter:**
+> - Deploy the blockchain network on Kubernetes for production-grade orchestration
+> - Configure horizontal pod autoscaling and high availability
+> - Migrate from Docker Compose to Kubernetes manifests
+> - Implement production monitoring, troubleshooting, and operational procedures
+
+> **Scope:** This chapter covers Kubernetes deployment using Minikube for learning and local development. We do not cover managed Kubernetes services (EKS, GKE, AKS), service mesh (Istio, Linkerd), or GitOps deployment pipelines (ArgoCD, Flux).
 
 Every referenced deployment artifact is printed in full in the companion listings chapter:
 
@@ -117,6 +123,8 @@ Concretely, we deploy three building blocks:
 - **Miners** as a **StatefulSet** (stable identity and stable storage per miner)
 - **Webservers** as a **StatefulSet** (each webserver has its own blockchain DB and wallets)
 - **Redis** as a small in-cluster service used by the webserver for **rate limiting** (shared state for `axum_rate_limiter`)
+
+> **Important:** Kubernetes deployments require persistent volume claims for blockchain data. Without persistent storage, pod restarts will lose the entire chain state and force a full resynchronization.
 
 By the end, you’ll be able to `kubectl port-forward` the webserver service and use the API from your machine.
 
@@ -765,8 +773,6 @@ See [Section 7: Production & Advanced Topics](07-Production.md) for detailed inf
 
 ---
 
----
-
 <div align="center">
 
 **Local Navigation - Table of Contents**
@@ -776,6 +782,25 @@ See [Section 7: Production & Advanced Topics](07-Production.md) for detailed inf
 | *Current Section* | *Section 2* |
 
 </div>
+
+---
+
+## What We Covered
+
+- We deployed the blockchain network on Kubernetes for production-grade orchestration.
+- We configured horizontal pod autoscaling and high availability.
+- We migrated from Docker Compose to Kubernetes manifests.
+- We implemented production monitoring, troubleshooting, and operational procedures.
+
+> **Companion Chapter:** Complete Kubernetes manifests and deployment scripts are available in [23A: Code Listings](01A-Kubernetes-Code-Listings.md). In the print edition, these listings appear in the Appendix: Source Reference.
+
+---
+
+## Exercises
+
+1. **Autoscaling Configuration** — Configure a Horizontal Pod Autoscaler to scale the blockchain node deployment between 3 and 10 replicas, targeting 60% CPU utilization. Submit a burst of transactions and observe the scaling behavior using `kubectl get hpa --watch`.
+
+2. **Rolling Update Simulation** — Perform a rolling update of the blockchain node image. Monitor the update progress with `kubectl rollout status` and verify that no transactions are lost during the upgrade. What happens to in-flight requests during pod replacement?
 
 ---
 

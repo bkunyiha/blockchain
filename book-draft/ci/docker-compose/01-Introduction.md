@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../../bitcoin-blockchain/README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -76,9 +76,15 @@
 
 > **Prerequisites**: This chapter assumes basic familiarity with Docker (images, containers, volumes) and command-line usage. No prior Docker Compose experience is required — we explain the compose file format as we go. You should have completed the core implementation chapters (Part I) to understand what the services in each container are doing.
 
-**What you will learn in this chapter:** How to package the Rust blockchain node, admin UI, and web frontend into Docker images, wire them together with Docker Compose, and run a multi-node blockchain network on a single machine for development and testing.
-
 **Why deploy with containers?** Up to this point in the book, we have been running a single node from `cargo run`. But Bitcoin is a distributed system — you need multiple nodes to test peer discovery, block propagation, and chain synchronization. Docker Compose lets you spin up a configurable number of interconnected nodes with a single command, each with its own storage volume, while sharing a common network. This chapter bridges the gap between "the code compiles" and "the system actually works as a network."
+
+> **What you will learn in this chapter:**
+> - Deploy a multi-node blockchain network using Docker Compose
+> - Configure container networking, port mapping, and volume management
+> - Scale services and manage deployment topologies for development and testing
+> - Troubleshoot common Docker Compose deployment issues
+
+> **Scope:** This chapter covers local development and small-scale Docker Compose deployments. For production-grade orchestration with autoscaling and high availability, see Chapter 23 (Kubernetes).
 
 **Important**: All commands in this guide should be run from the `configs/` directory where `docker-compose.yml` and the helper scripts are located.
 
@@ -110,9 +116,39 @@ Every referenced artifact is printed in full in the companion listings chapter:
 
 - **[Chapter 22A: Docker Compose — Complete Code Listings](01A-Docker-Compose-Code-Listings.md)**
 
+**Figure 22-1: Docker Compose Deployment Topology**
+
+```text
+ ┌─────────────── Docker Network ──────────────────┐
+ │                                                  │
+ │  ┌──────────┐  ┌──────────┐  ┌──────────┐      │
+ │  │  Node 1  │  │  Node 2  │  │  Node 3  │      │
+ │  │ :8000    │  │ :8001    │  │ :8002    │      │
+ │  │ ┌──────┐ │  │ ┌──────┐ │  │ ┌──────┐ │      │
+ │  │ │ Web  │ │  │ │ Web  │ │  │ │ Web  │ │      │
+ │  │ │ API  │ │  │ │ API  │ │  │ │ API  │ │      │
+ │  │ ├──────┤ │  │ ├──────┤ │  │ ├──────┤ │      │
+ │  │ │ Node │◀┼──┼▶│ Node │◀┼──┼▶│ Node │ │      │
+ │  │ │ P2P  │ │  │ │ P2P  │ │  │ │ P2P  │ │      │
+ │  │ ├──────┤ │  │ ├──────┤ │  │ ├──────┤ │      │
+ │  │ │Store │ │  │ │Store │ │  │ │Store │ │      │
+ │  │ └──────┘ │  │ └──────┘ │  │ └──────┘ │      │
+ │  │  vol_1   │  │  vol_2   │  │  vol_3   │      │
+ │  └──────────┘  └──────────┘  └──────────┘      │
+ │                                                  │
+ └──────────────────────────────────────────────────┘
+       :8000          :8001          :8002
+         │              │              │
+    ─────┴──────────────┴──────────────┴───── Host
+```
+
 ### Quick Start
 
 The simplest deployment uses one miner and one webserver. Before starting, we need to set up wallet addresses. There are two methods:
+
+> **Tip:** Always run `docker compose down` before changing configuration files. Applying changes to a running deployment can leave containers in an inconsistent state.
+
+> **Warning:** Docker volumes persist data across `docker compose down` and `up` cycles. To start with a completely clean blockchain, use `docker compose down -v` to remove volumes, or `docker volume prune` to remove all unused volumes.
 
 **Method 1: Address Pool (Recommended)**
 
@@ -602,8 +638,6 @@ See [Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-O
 
 ---
 
----
-
 <div align="center">
 
 **Local Navigation - Table of Contents**
@@ -621,6 +655,25 @@ See [Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-O
 - Docker Compose documentation: https://docs.docker.com/compose/
 - Docker networking: https://docs.docker.com/network/
 - Volume management: https://docs.docker.com/storage/volumes/
+
+---
+
+## What We Covered
+
+- We deployed a multi-node blockchain network using Docker Compose.
+- We configured container networking, port mapping, and volume management.
+- We scaled services and managed deployment topologies for development and testing.
+- We troubleshooted common Docker Compose deployment issues.
+
+> **Companion Chapter:** Complete Docker Compose configuration files and deployment scripts are available in [22A: Code Listings](01A-Docker-Compose-Code-Listings.md). In the print edition, these listings appear in the Appendix: Source Reference.
+
+---
+
+## Exercises
+
+1. **Scale to Five Nodes** — Modify the Docker Compose configuration to deploy 5 blockchain nodes instead of 3. Observe how the new nodes discover peers and synchronize the chain. Measure the time from startup to full synchronization.
+
+2. **Volume Persistence Test** — Submit several transactions, mine a few blocks, then run `docker compose down` followed by `docker compose up`. Verify that the blockchain data persisted across the restart. Then run `docker compose down -v` and observe the difference.
 
 ---
 

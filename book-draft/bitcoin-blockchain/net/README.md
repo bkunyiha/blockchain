@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -64,9 +64,15 @@ This chapter explains the network layer as an implementer reads it in Rust: **as
 
 > **Prerequisites**: This chapter relies heavily on async Rust — Tokio tasks, `TcpStream`, `async fn`, and channels. If you are not yet comfortable with `tokio::spawn` and `mpsc`, read the async primer in Chapter 24 (Rust Language Guide) first. You should also be familiar with the `Block` and `Transaction` types from Chapter 6.
 
-**What you will learn in this chapter:** How nodes discover each other, how blocks and transactions are serialized and transmitted over TCP, and how the message dispatcher routes inbound data to the correct subsystem (mempool, chainstate, or peer relay).
-
 **Why networking matters for Bitcoin.** A blockchain that cannot communicate with peers is just a local database. The network layer is what turns isolated nodes into a consensus system: it propagates new transactions so miners can include them in blocks, relays newly mined blocks so all nodes converge on the same chain, and synchronizes new nodes that need to catch up with the canonical history. Every guarantee Bitcoin makes — immutability, double-spend prevention, censorship resistance — depends on this protocol layer working correctly.
+
+> **What you will learn in this chapter:**
+> - Process peer-to-peer messages for blockchain synchronization
+> - Manage peer connections and handle discovery of new nodes
+> - Coordinate blockchain synchronization across a distributed network
+> - Understand the network protocol that enables decentralized consensus
+
+> **Scope:** This chapter implements a simplified P2P protocol for blockchain synchronization. We do not cover NAT traversal, relay nodes, the full Bitcoin protocol message set, or Tor/I2P privacy layers.
 
 ---
 
@@ -85,6 +91,8 @@ The core implementation lives in:
 
 - `bitcoin/src/net/net_processing.rs`
 - `bitcoin/src/node/server.rs` (TCP accept loop + bootstrap wiring)
+
+> **Warning:** This implementation uses a simplified P2P protocol suitable for learning. It does not implement NAT traversal, relay nodes, or the full Bitcoin protocol message set. Production networking would require significantly more robust connection handling.
 
 ---
 
@@ -116,6 +124,14 @@ The key functions are `process_stream` (the dispatcher that routes each inbound 
 
 ---
 
+## Exercises
+
+1. **Message Flow Trace** — Run two nodes locally and submit a transaction to one node. Trace the P2P messages exchanged as the transaction propagates to the second node. Document the message sequence: which message types are sent, in what order, and what each contains.
+
+2. **Partition Recovery Scenario** — Imagine a network partition splits your nodes into two groups. Each group mines blocks independently for 5 minutes. When the partition heals, describe the chain synchronization process. Which chain wins, and what happens to transactions in the losing chain?
+
+---
+
 ## Where the full walkthrough lives
 
 The full, code-centric walkthrough (with complete method listings) is in:
@@ -128,9 +144,20 @@ An additional technical appendix explains the transport trade-offs and an action
 
 ---
 
+## What We Covered
+
+- We built the peer-to-peer networking layer that enables blockchain nodes to communicate and synchronize.
+- We implemented message processing for block and transaction propagation across the network.
+- We designed peer connection management for discovery, handshake, and ongoing communication.
+- We established the network synchronization protocol that keeps all nodes' chain state consistent.
+
+In the next chapter, we bring all these subsystems together under a unified NodeContext API that coordinates blockchain state, mempool, network, and mining.
+
+---
+
 <div align="center">
 
-**[← Chapter 11: Storage Layer](../store/README.md)** | **Chapter 12: Network Layer** | **[Chapter 12.A: Network Layer — Code Walkthrough →](01-Network-Operation-Code-Walkthrough.md)** 
+**[← Chapter 11: Storage Layer](../store/README.md)** | **Chapter 12: Network Layer** | **[Chapter 12.A: Network Layer — Code Walkthrough →](01-Network-Operation-Code-Walkthrough.md)**
 </div>
 
 ---

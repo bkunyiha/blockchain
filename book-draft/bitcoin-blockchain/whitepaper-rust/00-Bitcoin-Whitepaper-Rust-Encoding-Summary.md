@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. **Chapter 4: Bitcoin Whitepaper In Rust** ← *You are here*
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -57,7 +57,7 @@
 ---
 # Bitcoin Whitepaper Summary: Rust Implementation (Rust Encoding)
 
-**Part III: Chapter 4** Bitcoin Whitepaper To(→) Rust Implementation (Rust Encoding)
+**Part I: Chapter 4** Bitcoin Whitepaper To Rust Implementation (Rust Encoding)
 <div align="center">
 
 **[← Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | Bitcoin Whitepaper → Rust Implementation (Rust Encoding) | **[Business Objects →](00-business-objects.md)**
@@ -70,6 +70,14 @@
 ## **Chapter 4** Bitcoin Whitepaper → Rust Implementation (Rust Encoding)
 
 Now that we’ve walked through the Bitcoin whitepaper, we switch from **theory to implementation**. In the sections that follow, we translate the whitepaper’s ideas into **concrete Rust modules and methods**, with complete code listings and explanations—calling out what we implement exactly, what we intentionally simplify, and where real-world Bitcoin Core adds additional rules.
+
+> **What you will learn in this chapter:**
+> - Map each Bitcoin whitepaper concept to a concrete Rust data structure
+> - Explain the hashing and serialization rules that connect whitepaper theory to working code
+> - Trace how each whitepaper section corresponds to modules in the repository
+> - Understand the business objects that form the foundation of the implementation
+
+> **Tip:** Read this chapter alongside Chapter 3 (Bitcoin Whitepaper Summary). Each section here maps directly to a whitepaper section, and understanding the theory first makes the Rust encoding decisions much clearer.
 
 ### Rust refresher (optional)
 
@@ -184,6 +192,25 @@ The whitepaper itself does **not** fully specify:
 - production P2P protocol message formats
 
 That’s fine for learning: the whitepaper is the conceptual contract, and implementations supply the missing exactness. Our goal is to make the missing pieces explicit (especially byte encoding), because consensus is ultimately “agree on bytes”.
+
+---
+
+## Further Reading
+
+- **[Bitcoin Whitepaper](https://bitcoin.org/bitcoin.pdf)** — Read alongside this chapter for the full context behind each Rust encoding.
+- **[serde Documentation](https://serde.rs/)** — The serialization framework used throughout the implementation.
+- **[Bitcoin Developer Reference](https://developer.bitcoin.org/reference/)** — Technical specifications for Bitcoin data structures.
+
+---
+
+## What We Covered
+
+- We mapped every Bitcoin whitepaper concept to a concrete Rust data structure, showing how theory translates into working code.
+- We defined the core business objects — Block, Transaction, BlockHeader, and their supporting types — that form the implementation's foundation.
+- We traced hashing and serialization rules from whitepaper descriptions to Rust implementations using SHA-256 and serde.
+- We established the mapping between whitepaper sections and repository modules, creating a bridge between concept and code.
+
+In the next chapter, we examine how the Rust project is organized — the crate workspace, dependency graph, and build configuration that make all of this compile and run.
 
 ---
 

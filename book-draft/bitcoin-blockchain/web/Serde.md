@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -725,7 +725,9 @@ Document your Axum handlers with Utoipa attributes that reference your Serde typ
         (
             status = 200,
             description = "Blockchain information retrieved successfully",
-            body = ApiResponse<BlockchainInfoResponse>  // ← References Serde type
+            body = ApiResponse<
+                BlockchainInfoResponse
+            >  // ← References Serde type
         ),
         (status = 500, description = "Internal server error")
     )

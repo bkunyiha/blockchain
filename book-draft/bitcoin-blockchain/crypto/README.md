@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -78,7 +78,7 @@
 
 Cryptography is the foundation of blockchain security. Every transaction must be signed, every address must be derived from keys, and every block must be hashed. In this section, we explore how our blockchain implementation uses cryptographic primitives to ensure security, authenticity, and integrity.
 
-This section examines the cryptographic libraries we use, why we chose them, and how they're applied throughout the blockchain. We'll see how Rust's type system and memory safety enable secure cryptographic operations, and how different libraries serve different purposes in our implementation.
+This section examines the cryptographic libraries we use, why we chose them, and how they’re applied throughout the blockchain. We’ll see how Rust’s type system and memory safety enable secure cryptographic operations, and how different libraries serve different purposes in our implementation.
 
 In the whitepaper, Satoshi’s system relies on a few cryptographic building blocks:
 
@@ -96,6 +96,14 @@ Cryptography is the part of a Bitcoin implementation that answers three practica
 - **How do we represent these ideas as bytes?** We standardize key formats, signature formats, and address encodings so nodes can interoperate.
 
 Some of this code is used by consensus-critical paths today (hashing and Schnorr verification). Some pieces exist as learning scaffolding or forward-looking building blocks (for example, alternative signature schemes), and we call that out explicitly where it matters.
+
+> **What you will learn in this chapter:**
+> - Implement SHA-256 hashing to create unique transaction and block identifiers
+> - Sign and verify transactions using ECDSA on the secp256k1 curve
+> - Generate cryptographic key pairs and derive addresses via Base58Check encoding
+> - Understand why the crypto crate exposes a minimal surface area: hash, sign, verify, and key generation
+
+> **Scope:** This chapter covers the cryptographic primitives used in our implementation: SHA-256 hashing, ECDSA signing on secp256k1, and Base58Check address encoding. We do not cover zero-knowledge proofs, Schnorr signatures (BIP 340), post-quantum cryptography, or multi-party computation schemes.
 
 ## Section map
 
@@ -185,6 +193,8 @@ When we say “SHA-256,” we are relying on specific properties:
 In Bitcoin Core, many identifiers are computed using **double SHA-256** (often written as \(\text{SHA256}(\text{SHA256}(\cdot))\)). In this project, some places currently use a **single** SHA-256 for simplicity.
 
 This is not a moral failing; it is a deliberate scope choice. But it is consensus-relevant: if you want byte-for-byte compatibility with Bitcoin’s formats, you will need to align those hashing rules.
+
+> **Note:** Our implementation uses single SHA-256 hashing. Production Bitcoin uses double SHA-256 (hashing the hash) as an additional safeguard. We use single hashing to keep the teaching implementation clear and focused.
 
 ### Proof-of-work: “hard to compute, easy to verify”
 
@@ -317,6 +327,8 @@ Two more files exist because a Bitcoin implementation needs a bridge from “mat
 
 These functions are used primarily through the wallet layer today (for example, Base58 encoding/decoding and Taproot-style public-key hashing). As we expand wallet and script functionality, this is where we will tighten format compatibility and add richer address types.
 
+> **Important:** Private keys must never be logged, serialized to plaintext files, or transmitted over the network. The crypto crate's API is designed to make key material hard to accidentally expose.
+
 ## Where to go next
 
 - If you want the “hashing and mining” story: **01-Hash-Functions** then **Chain (PoW)**.
@@ -371,8 +383,6 @@ In this section, we provide credible references you can use to validate the conc
 
 ---
 
----
-
 <div align="center">
 
 **[← Utilities](../util/README.md)** | **Chapter 8: Cryptography** | **[Start Reading: Hash Functions →](01-Hash-Functions.md)** 
@@ -381,6 +391,27 @@ In this section, we provide credible references you can use to validate the conc
 ---
 
 The subsections that follow cover each component in detail: hash functions (01), digital signatures (02), key pair generation (03), address encoding (04), and security considerations (05).
+
+---
+
+## Exercises
+
+1. **Verify the Avalanche Effect** — Hash two messages that differ by a single character (e.g., "Hello" and "Hallo"). Convert both hashes to binary and count how many bits differ. For a good hash function, approximately 50% of bits should change. Does SHA-256 meet this expectation?
+
+2. **Sign, Tamper, Verify** — Generate a key pair, sign a message, then modify one byte of the signed message. Attempt to verify the signature against the tampered message. Confirm that verification fails, demonstrating how digital signatures detect tampering.
+
+3. **Address Derivation Walkthrough** — Starting from a randomly generated private key, manually trace each step of address derivation: compute the public key, hash it with SHA-256, apply RIPEMD-160 (or the project's equivalent), and encode with Base58Check. Verify your result matches the `generate_address` function output.
+
+---
+
+## What We Covered
+
+- We implemented SHA-256 hashing to produce the 32-byte digests used as both transaction IDs and block hashes.
+- We built ECDSA signing and verification on the secp256k1 curve, the same cryptographic foundation Bitcoin uses for transaction authorization.
+- We generated key pairs and derived human-readable addresses through Base58Check encoding.
+- We kept the crypto crate's surface area minimal — hash, sign, verify, and key generation — making the security boundary clear and auditable.
+
+With our cryptographic primitives in place, the next chapter connects all the pieces into the end-to-end chain pipeline — from domain model through consensus to the complete transaction-to-block flow.
 
 ---
 

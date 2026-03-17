@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -64,9 +64,13 @@ This chapter explains `bitcoin/src/store` as an implementer reads it: **how bloc
 
 > **Prerequisites**: This chapter builds on the block and transaction types from Chapter 6 (Primitives) and the validation logic from Chapters 9–10. You should be comfortable with Rust's `Result` type and basic async/await — the storage layer uses both extensively. No prior database experience is required; we introduce sled from scratch below.
 
-**What you will learn in this chapter:** How blocks and chain metadata are persisted to disk using an embedded key-value store, why atomicity matters when updating the tip, and how the storage API is designed so that higher layers (node orchestration, wallet) never deal with raw bytes directly.
-
 **Why storage matters for Bitcoin.** Without durable storage, a node would lose all blockchain history every time it restarts — it would have to re-download and re-validate the entire chain from peers. The storage layer also enforces a critical invariant: the tip hash and the blocks tree must always be consistent. If the node crashes halfway through writing a new block, the database must either contain both the block and the updated tip, or neither. This is why atomicity is the central design concern of this chapter.
+
+> **What you will learn in this chapter:**
+> - Use the Sled embedded database for persistent block and chain state storage
+> - Understand how the BlockchainFileSystem abstracts low-level storage operations
+> - Implement efficient persistence and retrieval of blocks, chain state, and UTXO data
+> - Explain the trade-offs in the storage design and why Sled was chosen
 
 ---
 
@@ -79,8 +83,10 @@ In this codebase, “storage” is not a separate service; it is an embedded key
 Our conventions on top of sled:
 
 - a **blocks tree** that maps `block_hash -> serialized Block bytes`
-- a stable **tip key** (`"tip_block_hash"`) that points at the canonical tip hash
+- a stable **tip key** (`”tip_block_hash”`) that points at the canonical tip hash
 - atomic updates for “insert block + move tip” (sled transactions)
+
+> **Tip:** When debugging storage issues, Sled's `Db::export()` and `Db::import()` methods can dump the entire database contents for inspection. This is invaluable during development.
 
 The key methods are `BlockchainFileSystem::create_blockchain` and `open_blockchain` (lifecycle), `get_tip_hash` and `get_last_block` (reads), and `update_blocks_tree` (the internal atomic write that inserts a block and advances the tip in a single sled transaction).
 
@@ -103,11 +109,27 @@ This chapter is about making those two invariants true:
 
 ---
 
+## Exercises
 
+1. **Storage Round-Trip Test** — Write a test that creates a block, stores it using BlockchainFileSystem, retrieves it, and verifies all fields match the original. Pay attention to serialization: does every field survive the round trip?
 
-<div align="center">
+2. **UTXO Retrieval Performance** — Examine how UTXO lookups work in the Sled storage layer. If the blockchain has 10,000 transactions with an average of 2 outputs each, how many entries are in the UTXO set? What data structure does Sled use internally that makes lookups efficient?
 
-**[← Chapter 10: Block Acceptance](../chain/10-Whitepaper-Step-5-Block-Acceptance.md)** | **Chapter 11: Storage Layer** | **[Next: Chapter 11.A: Storage Layer — Code Walkthrough →](01-Storage-Layer-Code-Walkthrough.md)** 
+---
+
+## What We Covered
+
+- We explored how the BlockchainFileSystem uses the Sled embedded database to persist blocks, chain state, and UTXO data to disk.
+- We implemented the storage operations that allow efficient insertion and retrieval of blockchain data.
+- We examined the storage abstraction that decouples chain logic from persistence details, making it possible to swap storage backends.
+
+In the next chapter, we build the networking layer that enables nodes to communicate, propagate blocks, and maintain consensus across a distributed network.
+
+---
+
+<div align=”center”>
+
+**[← Chapter 10: Block Acceptance](../chain/10-Whitepaper-Step-5-Block-Acceptance.md)** | **Chapter 11: Storage Layer** | **[Next: Chapter 11.A: Storage Layer — Code Walkthrough →](01-Storage-Layer-Code-Walkthrough.md)**
 </div>
 
 ---

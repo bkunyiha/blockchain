@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -259,8 +259,8 @@ Mining constructs a new block, persists it, advances the tip, and updates the UT
 // Source: bitcoin/src/chain/chainstate.rs
 pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
     // Validate candidate transactions before we persist anything.
-    for trasaction in transactions {
-        let is_valid = trasaction.verify(self).await?;
+    for transaction in transactions {
+        let is_valid = transaction.verify(self).await?;
         if !is_valid {
             return Err(BtcError::InvalidTransaction);
         }

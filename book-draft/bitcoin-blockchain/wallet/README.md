@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -68,7 +68,13 @@
 
 > **Prerequisites**: This chapter depends on the cryptographic primitives from Chapter 8 (key generation, hashing, signing) and the UTXO model from Chapter 9. You do not need to have read the network or node chapters — the wallet module is a standalone library that the node and UI layers consume.
 
-**What you will learn in this chapter:** How the wallet turns a private key into a Bitcoin address (the full derivation pipeline), how it scans the UTXO set to compute balances, and how wallet data is persisted to disk so it survives restarts.
+> **What you will learn in this chapter:**
+> - Generate cryptographic key pairs and create wallet addresses
+> - Sign transactions to authorize spending from a wallet
+> - Persist wallet data securely across application restarts
+> - Understand the key management lifecycle from creation through usage to storage
+
+> **Scope:** This chapter covers single-key wallets with basic send and receive functionality. We do not cover BIP-32 hierarchical deterministic (HD) wallets, multi-signature schemes, hardware wallet integration, or Lightning Network payment channels.
 
 ---
 
@@ -92,6 +98,8 @@ What we do **not** implement in this module:
 
 - **Transaction signing** is handled elsewhere (crypto and transaction logic). This wallet module focuses on keys, addresses, and persistence of wallet material.
 
+> **Warning:** Never reuse a private key across wallets. If a key is compromised in one wallet, all funds associated with that key are at risk regardless of which wallet holds them.
+
 ---
 
 ## Diagram: address payload structure used here
@@ -110,13 +118,29 @@ The address pipeline flows through `Wallet::get_address` (constructs the payload
 
 ---
 
+## Exercises
+
+1. **Multi-Wallet Transfer** — Generate two wallets, fund the first with a coinbase transaction, then send coins from the first wallet to the second. Verify the UTXO set reflects the transfer. Attempt to spend more than the first wallet's balance and confirm the transaction is rejected.
+
+2. **Key Persistence Verification** — Create a wallet, generate an address, and save the wallet. Restart the application, reload the wallet, and verify the same key pair and address are available. This confirms the persistence layer correctly serializes and deserializes cryptographic keys.
+
+---
+
+## What We Covered
+
+- We built the wallet system that generates key pairs, creates addresses, and signs transactions to authorize spending.
+- We implemented wallet persistence so keys and addresses survive across application restarts.
+- We traced the key management lifecycle from generation through address derivation, transaction signing, and secure storage.
+
+In the next chapter, we expose the blockchain's capabilities through a REST API, creating the interface that desktop and web frontends will consume.
+
+---
+
 Chapter 14.A: Code Walkthrough
 <div align="center">
 
-**[← Chapter 13: Node Orchestration](../node/README.md)** | **[Chapter 14: Wallet System](README.md)** | **[Chapter 14.A: Wallet System — Code Walkthrough →](01-Wallet-System-Code-Walkthrough.md)** 
+**[← Chapter 13: Node Orchestration](../node/README.md)** | **[Chapter 14: Wallet System](README.md)** | **[Chapter 14.A: Wallet System — Code Walkthrough →](01-Wallet-System-Code-Walkthrough.md)**
 </div>
-
----
 
 ---
 

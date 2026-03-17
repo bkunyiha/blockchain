@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. **Chapter 3: Bitcoin Whitepaper** ← *You are here*
 4. <a href="00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -61,7 +61,7 @@
 
 <div align="center">
 
-**[← Introduction to Bitcoin & Blockchain](../README.md)** | **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** | **[Blockchain Rust Project →](../Rust-Project-Index.md)** 
+**[← Introduction to Blockchain](../README.md)** | **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** | **[Blockchain Rust Project →](../Rust-Project-Index.md)** 
 
 </div>
 
@@ -94,6 +94,12 @@ In order to implement Bitcoin, we first need to understand what Bitcoin is and b
 In this section, we provide a **technical summary** of Satoshi Nakamoto’s Bitcoin whitepaper. We are reading it to answer one practical question: **what does Bitcoin actually do, end-to-end, and why does it work?** This matters for our project: we need to understand these foundations to implement Bitcoin correctly and know which rules are consensus-critical. Once we can explain that clearly, we can implement Bitcoin with fewer surprises—because we’ll know which properties must hold (and which details are simply engineering choices).
 
 This section presents a comprehensive technical analysis of Satoshi Nakamoto's foundational paper: **[Bitcoin: A Peer-to-Peer Electronic Cash System](https://bitcoin.org/bitcoin.pdf)** (2008). The paper introduced blockchain technology as a cryptographic solution to the double-spending problem in digital currency systems, enabling trustless peer-to-peer electronic transactions without requiring a central authority or trusted third party.
+
+> **What you will learn in this chapter:**
+> - Summarize each of the twelve sections of Satoshi Nakamoto's Bitcoin whitepaper
+> - Explain how proof-of-work prevents double spending without a trusted third party
+> - Describe the role of the timestamp server in establishing chronological order
+> - Understand how the incentive mechanism aligns miner behavior with network security
 
 ### 1.1 Historical Context and Significance
 
@@ -398,6 +404,8 @@ The whitepaper specifies: "The proof-of-work involves scanning for a value that 
 The whitepaper states: "For our timestamp network, we implement the proof-of-work by incrementing a nonce in the block until a value is found that gives the block's hash the required zero bits" ([Bitcoin Whitepaper, Section 4](https://bitcoin.org/bitcoin.pdf)).
 
 **Theorem 7.1** (Immutability): Once a block satisfies the proof-of-work requirement, modifying the block requires recomputing the proof-of-work. As stated: "Once the CPU effort has been expended to make it satisfy the proof-of-work, the block cannot be changed without redoing the work. As later blocks are chained after it, the work to change the block would include redoing all the blocks after it" ([Bitcoin Whitepaper, Section 4](https://bitcoin.org/bitcoin.pdf)).
+
+> **Note:** Our implementation uses a simplified fixed difficulty target rather than Bitcoin's dynamic difficulty adjustment every 2,016 blocks. This keeps the teaching code clear while preserving the core proof-of-work mechanism.
 
 ### 7.2 Security Properties
 
@@ -952,8 +960,26 @@ All section numbers correspond to the original whitepaper structure:
 
 ---
 
+## What We Covered
+
+- We walked through all twelve sections of Satoshi Nakamoto's Bitcoin whitepaper, from the introduction of electronic cash to the probabilistic analysis of attacker success.
+- We explained how proof-of-work creates an immutable chain by making block production computationally expensive while verification remains cheap.
+- We described the timestamp server, incentive mechanism, and simplified payment verification that together enable a trustless peer-to-peer payment system.
+
+In the next chapter, we translate these whitepaper concepts into concrete Rust data structures, bridging the gap between theory and implementation.
+
+---
+
+## Further Reading
+
+- **[Bitcoin: A Peer-to-Peer Electronic Cash System](https://bitcoin.org/bitcoin.pdf)** — The original whitepaper by Satoshi Nakamoto (2008). Read this alongside the chapter for full context.
+- **[Mastering Bitcoin, Chapters 1–4](https://github.com/bitcoinbook/bitcoinbook)** — Andreas Antonopoulos's deep dive into Bitcoin internals, complementing the whitepaper with implementation detail.
+- **[Princeton Bitcoin and Cryptocurrency Technologies](https://bitcoinbook.cs.princeton.edu/)** — Academic textbook providing formal treatment of the concepts introduced in the whitepaper.
+
+---
+
 <div align="center">
 
-**[← Introduction to Bitcoin & Blockchain](../README.md)** | **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** | **[Rust Project →](../Rust-Project-Index.md)** 
+**[← Introduction to Blockchain](../README.md)** | **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** | **[Rust Project →](../Rust-Project-Index.md)**
 
 </div>

@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -69,6 +69,14 @@
 
 In this section, we provide an **implementation guide** for how the project turns transactions into blocks, blocks into chain state, and chain state into spendability (the UTXO set). We proceed linearly through the `chain/` implementation: we introduce an idea, then we show the corresponding Rust code as a short code listing.
 
+> **What you will learn in this chapter:**
+> - Trace the end-to-end chain pipeline from domain model through state management, storage, and UTXO tracking
+> - Understand how transactions move from creation through the mempool to block inclusion
+> - Explain how mining, consensus rules, and node orchestration work together
+> - Follow the complete transaction-to-block flow from start to finish
+
+> **Scope:** This chapter covers the chain pipeline for a single-node blockchain with simplified consensus. We do not cover chain reorganization (reorgs), orphan block handling, or the full Bitcoin difficulty adjustment algorithm.
+
 In this section, we walk through the implementation across these primary modules:
 - `bitcoin/src/primitives/` (Block, Transaction structs)
 - `bitcoin/src/chain/` (chain facade + UTXO set)
@@ -91,12 +99,46 @@ In this section, we follow a single execution trace from “a wallet constructs 
 
 1. We build a transaction from UTXOs (selection + change).
 2. We sign it using the project’s trimmed-copy approach.
-15. We admit it to mempool and broadcast it.
+3. We admit it to mempool and broadcast it.
 4. We assemble a candidate block, run proof-of-work, and persist the result.
 5. We update the UTXO set so “what is spendable?” changes deterministically.
 6. We accept blocks from peers by enforcing the whitepaper’s safety gate: **valid and not already spent**.
 
 When we quote code, we label it as **Code Listing 9-x.y** so it can be referenced consistently throughout the section (and later in print).
+
+**Figure 9-1: Transaction Lifecycle**
+
+```text
+ ┌──────────┐     ┌──────────┐     ┌──────────┐
+ │  Wallet  │     │  Crypto  │     │   Node   │
+ │ (Create) │────▶│  (Sign)  │────▶│ (Submit) │
+ └──────────┘     └──────────┘     └────┬─────┘
+                                        │
+                                        ▼
+                                  ┌──────────┐
+                                  │  Mempool  │
+                                  │ (Pending) │
+                                  └────┬─────┘
+                                       │
+                          ┌────────────┘
+                          ▼
+                    ┌──────────┐     ┌──────────┐
+                    │  Mining  │────▶│ Validate │
+                    │ (PoW)    │     │ (Rules)  │
+                    └──────────┘     └────┬─────┘
+                                          │
+                                          ▼
+                    ┌──────────┐     ┌──────────┐
+                    │  Chain   │◀────│  Block   │
+                    │ (Append) │     │ (Accept) │
+                    └────┬─────┘     └──────────┘
+                         │
+                         ▼
+                    ┌──────────┐
+                    │   UTXO   │
+                    │ (Update) │
+                    └──────────┘
+```
 
 ## 9.1 End-to-end execution trace: transaction → mempool → block → acceptance
 
@@ -273,6 +315,8 @@ Mining is implemented as `Block::new_block(...)` → `ProofOfWork::run(...)` (Se
 
 See Section 9.4 (UTXO Set). The primary entry point is `UTXOSet::update(...)`. This is the point where history (blocks) becomes state (spendability), which is what prevents double spends.
 
+> **Warning:** The UTXO set must be updated atomically with block acceptance. If a block is accepted but the UTXO update fails partway through, the system could enter an inconsistent state where spent outputs appear unspent or vice versa.
+
 ### Step 8: Accept the block from the network (validate → connect)
 
 The acceptance boundary is `BlockchainFileSystem::add_block(...)`. The capstone in Section 10 (Block Acceptance, Whitepaper §5 Step 5) maps the whitepaper’s Step 5 gate to concrete code boundaries: accept only if all transactions are valid **and not already spent**.
@@ -304,6 +348,27 @@ Peer receives block
        └─> connect (update tip + UTXO set)
 ```
 
+---
+
+## What We Covered
+
+- We traced the complete chain pipeline from domain model through mempool, mining, and consensus to persistent chain state.
+- We explained how transactions are created, signed, verified, and admitted to the mempool before block inclusion.
+- We examined the UTXO set as the definitive record of spendability and how it updates on each block.
+- We walked through the mining process, block assembly, and the two acceptance paths (local mining vs network propagation).
+
+In the next chapter, we focus on the single most important safety rule: the whitepaper's Step 5 gate that accepts blocks only if all transactions are valid and not already spent.
+
+---
+
+## Exercises
+
+1. **Trace a Transaction End-to-End** — Starting with a wallet that holds 50 coins, create a transaction that sends 30 coins to another address. Trace the transaction through each stage: creation, signing, mempool insertion, block mining, and UTXO set update. Draw the UTXO set state before and after the transaction is confirmed.
+
+2. **State Diagram Exercise** — Draw a state machine diagram showing the lifecycle of a transaction from creation to confirmation. Label each transition with the function or module responsible. Include the error states (invalid signature, insufficient funds, double spend attempt).
+
+---
+
 ## Recommended reading order (within module `chain/`)
 
 We read this section in the following order (each item is a deep-dive into a segment of the execution trace above):
@@ -323,8 +388,6 @@ After you complete Chapter 9, continue in book order with:
 
 - **Chapter 10: Block Acceptance (Whitepaper §5, Step 5)** — the capstone “validate → connect” contract
 - **Chapter 11: Storage Layer** — persistence and storage primitives
-
----
 
 ---
 

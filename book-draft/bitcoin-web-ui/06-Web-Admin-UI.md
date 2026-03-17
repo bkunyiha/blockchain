@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -76,7 +76,15 @@
 
 > **Prerequisites**: This chapter is written in React/TypeScript rather than Rust. You should be comfortable reading JSX and TypeScript type annotations. Familiarity with the REST API from Chapter 15 is helpful — this UI is a client to that API — but we recap the relevant endpoints as they appear.
 
-**What you will learn in this chapter:** How the React SPA is structured (routing, context providers, API client), how it consumes the Rust node’s admin endpoints, and how React Query manages server state so the UI stays in sync with the blockchain without manual refresh logic.
+> **What you will learn in this chapter:**
+> - Build a React/TypeScript web admin interface with modern component architecture
+> - Implement state management with React Query and authentication patterns
+> - Structure the frontend build process and deployment pipeline
+> - Apply TypeScript type safety to API integration and response handling
+
+> **If you have read Chapters 17 or 19** (the Tauri admin and wallet UIs), you will recognize the same React Query patterns and component architecture used here. The key difference is transport: this chapter uses HTTP REST calls via Axios rather than Tauri’s IPC bridge. Everything on the React side — hooks, cache management, component structure — transfers directly.
+
+> **Three ways to build the admin UI.** This book implements the same admin functionality three ways: Chapter 16 (Iced) uses pure Rust with the Model-View-Update pattern. Chapter 17 (Tauri) uses a Rust backend with a React frontend connected by IPC. This chapter uses a standalone React frontend calling the REST API over HTTP. All three consume the same `bitcoin-api` crate. The differences are purely in transport (IPC vs. HTTP) and runtime (desktop vs. browser).
 
 ## Overview
 
@@ -215,6 +223,8 @@ Everything above it (hooks/components) is *business/UI logic*; everything below 
 
 Full listing: [Listing 7.4](06A-Web-Admin-UI-Code-Listings.md#listing-74-srcservicesapits).
 
+> **Warning:** The default web admin configuration does not include rate limiting or CSRF protection. Before deploying to a production environment, add these middleware layers to the API gateway. See Chapter 15 (Web API Architecture) for details on the middleware stack.
+
 ---
 
 ## The data-access surface: React Query hooks (`src/hooks/useApi.ts`)
@@ -317,6 +327,25 @@ Full listings: [Listings 7.19 and 7.29](06A-Web-Admin-UI-Code-Listings.md).
 
 ---
 
+## What We Covered
+
+- We built a React/TypeScript web admin interface with modern component architecture.
+- We implemented state management with React Query and authentication patterns.
+- We structured the frontend build process and deployment pipeline.
+- We applied TypeScript type safety to API integration and response handling.
+
+> **Companion Chapter:** Complete React component source code is available in [21A: Code Listings](06A-Web-Admin-UI-Code-Listings.md). In the print edition, these listings appear in the Appendix: Source Reference.
+
+---
+
+## Exercises
+
+1. **Add a Dashboard Widget** — Create a new React component that displays the current block height, pending transaction count, and connected peer count. Use React Query to fetch the data and implement auto-refresh every 10 seconds.
+
+2. **Authentication Flow Analysis** — Trace the authentication flow from login form submission through API call, token storage, and authenticated request headers. Identify what happens when a token expires mid-session and how the UI handles the 401 response.
+
+---
+
 ## Summary
 
 The Web Admin UI follows a clean layering approach:
@@ -328,6 +357,13 @@ The Web Admin UI follows a clean layering approach:
 - **Components** remain thin and predictable: render based on `data/isLoading/error`.
 
 Continue to the complete listings in Chapter 21A to read any module in full.
+
+
+## Further Reading
+
+- **[React Documentation](https://react.dev/)** — Official React guides and API reference.
+- **[TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/)** — TypeScript language features and best practices.
+- **[TanStack Query (React Query)](https://tanstack.com/query/)** — Data fetching and caching for the web UI.
 
 ---
 

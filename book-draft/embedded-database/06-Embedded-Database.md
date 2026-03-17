@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../bitcoin-blockchain/README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -76,7 +76,13 @@
 
 > **Prerequisites**: This chapter references wallet concepts from Chapter 14 and the Iced/Tauri UI architectures from Chapters 16–19, but can be read independently. No prior SQLite experience is required — we explain the database layer from first principles.
 
-**What you will learn in this chapter:** How both wallet applications share a single encrypted database layer, why encryption-at-rest matters for a Bitcoin wallet, and how the Rust code generates keys, initializes schemas, and performs CRUD operations through rusqlite.
+> **What you will learn in this chapter:**
+> - Integrate SQLCipher for encrypted wallet storage across both Iced and Tauri frontends
+> - Design database schemas and implement migrations using the table-recreation technique
+> - Handle thread safety with `OnceLock<Mutex<Connection>>` and the singleton table pattern
+> - Implement deterministic password generation so both wallet UIs share one encrypted database file
+
+> **Scope:** This chapter covers SQLCipher integration for wallet persistence. We do not cover database replication, remote database synchronization, or cloud-based backup strategies.
 
 **What is SQLCipher?** SQLCipher is a fork of SQLite that adds transparent 256-bit AES encryption to the entire database file. From Rust, we interact with it through the `rusqlite` crate (with the `bundled-sqlcipher` feature flag), which compiles SQLCipher from source and links it statically — no system library installation required. The API is identical to regular SQLite; the only difference is that you supply an encryption key via `PRAGMA key` before any other operation. This gives us encrypted-at-rest storage with zero additional infrastructure.
 
@@ -88,6 +94,10 @@ We focus on two reader-facing goals:
 
 - **Security**: sensitive values (like API keys) are stored encrypted at rest, without requiring the user to type a passphrase.
 - **Continuity**: wallet addresses and settings survive process restarts, so the wallet list is stable and the node connection is remembered.
+
+> **Warning:** SQLCipher encryption is only as strong as the password. The deterministic password generation scheme used here trades perfect forward secrecy for the convenience of sharing one database between both wallet UIs. In a production system, evaluate whether this trade-off is acceptable for your threat model.
+
+> **Note:** Both the Iced and Tauri wallets share the same encrypted database file. Changes made in one wallet are immediately visible in the other — there is no synchronization delay because they operate on the same SQLite file.
 
 The database code in both apps is **nearly identical**. The Iced wallet stores it in a single file (`src/database.rs`), while the Tauri wallet organizes it into a module directory (`src-tauri/src/database/mod.rs` + `tests.rs`). The schema, key derivation, initialization sequence, and CRUD operations are the same. We will note the few differences as they arise.
 
@@ -103,6 +113,41 @@ We keep this persistence layer intentionally small and pragmatic. We store four 
 - **`wallet_addresses`**: `address`, optional `label`, `created_at` — required so the wallet list is stable and selectable after restart.
 - **`schema_version`**: `version` — required so the database can evolve safely over time via migrations.
 - **`users`**: `first_name`, `last_name`, `profile_picture` (BLOB) — present to support future UI work; in the current code the persistence primitives exist (schema + migrations), even if UI integration is minimal.
+
+**Figure 20-1: Database Schema**
+
+```text
+ ┌────────────────────────────────────────┐
+ │         SQLCipher Encrypted DB         │
+ │  (shared by Iced and Tauri wallets)    │
+ ├────────────────────────────────────────┤
+ │                                        │
+ │  ┌─────────────┐  ┌─────────────────┐  │
+ │  │  settings   │  │   addresses     │  │
+ │  ├─────────────┤  ├─────────────────┤  │
+ │  │ key (TEXT)  │  │ id (INTEGER PK) │  │
+ │  │ value (TEXT)│  │ address (TEXT)   │  │
+ │  └─────────────┘  │ public_key (BLB)│  │
+ │                    │ private_key(BLB)│  │
+ │  ┌─────────────┐  └─────────────────┘  │
+ │  │   profile   │                       │
+ │  ├─────────────┤  ┌─────────────────┐  │
+ │  │ key (TEXT)  │  │  transactions   │  │
+ │  │ value (TEXT)│  ├─────────────────┤  │
+ │  │ (singleton) │  │ id (INTEGER PK) │  │
+ │  └─────────────┘  │ tx_hash (TEXT)  │  │
+ │                    │ amount (REAL)   │  │
+ │                    │ timestamp (INT) │  │
+ │                    └─────────────────┘  │
+ └────────────────────────────────────────┘
+         ▲                    ▲
+         │                    │
+    ┌────┴────┐         ┌────┴────┐
+    │  Iced   │         │  Tauri  │
+    │ Wallet  │         │ Wallet  │
+    └─────────┘         └─────────┘
+    Same password = same encryption key
+```
 
 ---
 
@@ -782,6 +827,27 @@ The Tauri integration is more fine-grained because each command handler is an in
 
 ---
 
+## What We Covered
+
+- We integrated SQLCipher for encrypted wallet storage across both Iced and Tauri frontends.
+- We designed database schemas and implemented migrations using the table-recreation technique.
+- We handled thread safety with `OnceLock<Mutex<Connection>>` and the singleton table pattern.
+- We implemented deterministic password generation so both wallet UIs share one encrypted database file.
+
+In the next chapter, we build the web admin interface — a React/TypeScript application that provides browser-based access to the blockchain.
+
+> **Companion Chapter:** Complete source code including both Iced and Tauri implementations, tests, and the shared password generation function is available in [20A: Code Listings](06A-Embedded-Database-Code-Listings.md). In the print edition, these listings appear in the Appendix: Source Reference.
+
+---
+
+## Exercises
+
+1. **Add a New Table** — Create a new `transaction_memos` table in the SQLCipher database for storing user-provided notes on transactions. Write the migration using the table-recreation technique, implement insert and query functions, and write a test that stores and retrieves a memo.
+
+2. **Thread Safety Verification** — Write a test that spawns two threads, each attempting to write to the database simultaneously through the `OnceLock<Mutex<Connection>>` singleton. Verify that both writes succeed without data corruption and that the mutex correctly serializes access.
+
+---
+
 ## Summary
 
 We provide a minimal but production-appropriate foundation via the SQLCipher persistence layer, shared by both wallet frontends:
@@ -804,6 +870,13 @@ For how this database layer is used within each wallet's full architecture:
 
 **[← Previous: Wallet UI (Tauri)](../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md)** | **Chapter 20: Embedded Database & Persistence** | **[Next: Web Admin Interface →](../bitcoin-web-ui/06-Web-Admin-UI.md)**
 </div>
+
+
+## Further Reading
+
+- **[SQLCipher Documentation](https://www.zetetic.net/sqlcipher/)** — Complete documentation for the encrypted database.
+- **[rusqlite Crate Documentation](https://docs.rs/rusqlite/)** — The Rust SQLite bindings used in the implementation.
+- **[SQLite Documentation](https://www.sqlite.org/docs.html)** — Reference for SQL syntax and SQLite internals.
 
 ---
 

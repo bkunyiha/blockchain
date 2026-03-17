@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -82,6 +82,12 @@ This capstone is about the *boundary* where those pieces must be composed correc
 
 > **Validate first. Connect only if valid.**
 
+> **What you will learn in this chapter:**
+> - Explain the whitepaper's Step 5 gate: "Nodes accept the block only if all transactions in it are valid and not already spent"
+> - Map this safety rule to concrete code boundaries in the implementation
+> - Identify the exact point where ownership and scarcity are enforced
+> - Understand the validate-first, connect-only-if-valid pattern that prevents double spending
+
 ---
 
 ## Scope (where Step 5 appears in our codebase)
@@ -137,20 +143,41 @@ connect(block, state) -> Ok(()) or Err(...)
 
 And it gives you a diagram you can keep in your head while reading code:
 
+**Figure 10-1: Block Validation Pipeline**
+
 ```text
-Incoming block bytes
-   |
-   v
-Validate (read-only)
-  - all txs valid (signatures, structure)
-  - inputs reference unspent outpoints (UTXO view)
-  - no intra-block double-spends
-   |
-   v   only if VALID
-Connect (mutating)
-  - write canonical tip
-  - update UTXO set (spend inputs, add outputs)
-  - (reorg path: rollback/apply in order)
+ Incoming Block
+      │
+      ▼
+ ┌─────────────┐    FAIL
+ │ Parse Block │──────────▶ Reject
+ │   Header    │
+ └──────┬──────┘
+        │ OK
+        ▼
+ ┌─────────────┐    FAIL
+ │ Check PoW   │──────────▶ Reject
+ │ (hash < tgt)│
+ └──────┬──────┘
+        │ OK
+        ▼
+ ┌─────────────┐    FAIL
+ │ Validate    │──────────▶ Reject
+ │ Each Tx Sig │
+ └──────┬──────┘
+        │ OK
+        ▼
+ ┌─────────────┐    FAIL
+ │ Check UTXO  │──────────▶ Reject
+ │(not spent?) │       (double spend!)
+ └──────┬──────┘
+        │ OK
+        ▼
+ ┌─────────────┐
+ │   Accept    │
+ │ Connect to  │
+ │   Chain     │
+ └─────────────┘
 ```
 
 If your code discovers invalidity “mid-update”, you have already violated the contract: you let invalid data partially become state.
@@ -170,6 +197,8 @@ At minimum:
 - **Proof-of-work**: if your chain is PoW-secured, the header hash must satisfy the target (some paths in this repo intentionally simplify/todo this).
 
 ### 2) Transaction-level validity (authorization)
+
+> **Important:** The UTXO check in block validation is the single gate that prevents double spending. Without it, an attacker could include two transactions in the same block that both spend the same output, effectively creating money from nothing.
 
 For each non-coinbase transaction, “valid” includes:
 
@@ -379,6 +408,33 @@ That’s the moment where consensus becomes state.
 ---
 
 > **Checkpoint:** At this point, the chain validation logic is complete. You can verify it works by running `cargo test -p bitcoin --lib` — the chain and consensus tests should pass, confirming that block acceptance, UTXO updates, and fork-choice all behave correctly. If any test fails, re-read the validation rules in this chapter and trace the failing assertion back to the relevant method.
+
+---
+
+## Exercises
+
+1. **Construct a Double-Spend Block** — Create a block containing two transactions that both attempt to spend the same UTXO. Predict at which validation step the block will be rejected. Trace through the code to verify your prediction.
+
+2. **Validation Order Analysis** — The validate-first pattern checks transactions before connecting the block to the chain. Describe what could go wrong if the order were reversed (connect first, validate second). What specific attack would this enable?
+
+---
+
+## Further Reading
+
+- **[Bitcoin Whitepaper, Section 5](https://bitcoin.org/bitcoin.pdf)** — The original description of the network operation and block acceptance rules.
+- **[Bitcoin Developer Guide: Block Validation](https://developer.bitcoin.org/devguide/block_chain.html)** — Bitcoin.org's detailed validation rules.
+- **[UTXO Model Explained](https://en.bitcoin.it/wiki/Transaction#Verification)** — How transaction verification prevents double spending.
+
+---
+
+## What We Covered
+
+- We examined the whitepaper's Step 5 gate — "Nodes accept the block only if all transactions in it are valid and not already spent" — and mapped it to concrete code boundaries.
+- We traced the validate-first, connect-only-if-valid pattern that prevents double spending at the consensus layer.
+- We identified the exact boundary where ownership and scarcity are enforced: the UTXO check that ensures every input references an unspent output.
+- We connected this capstone validation rule back to the transaction lifecycle, consensus rules, and chain state management covered in previous chapters.
+
+In the next chapter, we move from validation to persistence — how all of this data is stored on disk using the Sled embedded database.
 
 ---
 

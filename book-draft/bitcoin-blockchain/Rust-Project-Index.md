@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. **Chapter 5: Rust Blockchain Project** ← *You are here*
@@ -55,11 +55,17 @@
 </div>
 
 ---
-## Rust Project Index (Chapter 2 — Walking through Rust Bitcoin implementation)
+## Rust Project Index (Chapter 5 — Walking through Rust Bitcoin implementation)
 
 In Chapter 1, we used the Bitcoin whitepaper to build a minimal mental model and a “Bitcoin-shaped” implementation. In this chapter, we switch from concepts to code and read the Rust project as a working system. We learn how the pieces connect in practice.
 
 Chapter 4 closed with a five-step implementation roadmap: **Bytes → Identity → Authorization → State → Consensus**. The chapters ahead follow that same arc. Chapters 6–7 (Primitives and Utilities) cover *Bytes*—the canonical encodings every node must agree on. Chapter 8 (Cryptography) covers *Identity* (hashes as IDs) and *Authorization* (signatures that prove ownership). Chapter 9 (Blockchain Core) and 10 (Block Acceptance) cover *State* and *Consensus*—UTXO transitions, proof-of-work validation, and chain selection. From there, Chapters 11–14 build the surrounding infrastructure: storage, networking, node orchestration, and wallet. By the time we reach Chapter 15 (Web API), the full Bitcoin pipeline is implemented and we are exposing it to the outside world.
+
+> **What you will learn in this chapter:**
+> - Navigate the Cargo workspace and understand its crate organization
+> - Explain the dependency graph between crates and why it is structured this way
+> - Identify which crate owns each responsibility in the system
+> - Understand the build configuration and feature flags used across the project
 
 ### Before we start: clone the repository
 
@@ -88,6 +94,8 @@ Each step below points to:
 
 - the **book chapter** (documentation) that explains the subsystem
 - the **code location** in the Rust project that implements it
+
+> **Note:** The crate names in this workspace (`bitcoin-blockchain`, `bitcoin-api`, etc.) are internal identifiers. They do not correspond to crates published on crates.io. All dependencies are local path dependencies within the workspace.
 
 1. **Business objects and encoding (block, header, transaction)**
    - Chapter section: Section 6: Primitives
@@ -133,6 +141,22 @@ To turn reading into understanding, pick one end-to-end flow and trace it throug
 
 If we narrate that flow from memory and point to the relevant modules, we are ready for the deeper chapters that follow.
 
+---
+
+## Further Reading
+
+- **[Cargo Workspaces](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html)** — The Rust Book's guide to multi-crate projects.
+- **[Cargo Reference: Features](https://doc.rust-lang.org/cargo/reference/features.html)** — How conditional compilation and feature flags work in Cargo.
+
+---
+
+## What We Covered
+
+- We navigated the Cargo workspace structure, identifying each crate and its responsibility within the blockchain system.
+- We traced the dependency graph between crates, understanding why the architecture separates primitives, crypto, chain logic, and application layers.
+- We examined the build configuration, feature flags, and workspace-level settings that coordinate compilation across the project.
+
+In the next chapter, we dive into the primitives crate — the Block, Transaction, and Blockchain structures that form the foundation everything else builds on.
 
 ---
 

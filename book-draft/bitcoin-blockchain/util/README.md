@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -81,6 +81,11 @@ The code for this section lives in `bitcoin/src/util/`:
 - `functional_operations.rs`: optional functional-style helpers (map/filter/reduce patterns)
 
 Because `bitcoin/src/lib.rs` re-exports the util module (`pub use util::*;`), utilities are typically called from within the crate as `crate::...`.
+
+> **What you will learn in this chapter:**
+> - Use the timestamp generation utility for consistent time handling across the system
+> - Apply functional programming helpers that simplify operations throughout the codebase
+> - Understand cross-cutting concerns that serve multiple modules without belonging to any single domain
 
 ## Why utilities matter in a Bitcoin implementation
 
@@ -164,11 +169,30 @@ If we decide not to use them, the right move is to delete them. Utilities should
 - **Blockchain State Management**: Where block headers and validation rules begin to matter
 - **Transaction ID Format**: How transaction identifiers are derived and represented
 
+---
+
 ## Exercises
 
-1. **Make the mempool pipeline explicit**: pick one place where we filter transactions and rewrite it using `functional_transaction::process_transactions`.
-2. **Introduce a “time source” for tests**: refactor code so tests can inject a fixed timestamp, while production uses `current_timestamp()`.
-3. **Prune utilities**: identify any utility that is unused and remove it, then rerun the test suite.
+1. **Timestamp Consistency Check** — Call the timestamp utility in a loop 1,000 times. Verify that the returned values are monotonically non-decreasing. What guarantees does the implementation provide, and what edge cases could cause issues (e.g., system clock adjustments)?
+
+2. **Functional Helper Exploration** — Identify three places in the codebase where the functional programming helpers from the util module are used. For each, explain what the helper does and what the equivalent imperative code would look like.
+
+---
+
+## Further Reading
+
+- **[Rust by Example: Functional Programming](https://doc.rust-lang.org/rust-by-example/fn.html)** — Closures, higher-order functions, and iterators in Rust.
+- **[chrono Crate Documentation](https://docs.rs/chrono/)** — Time handling in Rust, relevant to timestamp generation.
+
+---
+
+## What We Covered
+
+- We explored the utility functions that provide cross-cutting functionality used by every module in the blockchain system.
+- We implemented timestamp generation for consistent time handling across blocks and transactions.
+- We built functional programming helpers that simplify common operations throughout the codebase.
+
+In the next chapter, we add the cryptographic layer — hashing, signing, and key generation — that secures every transaction and block in the system.
 
 ---
 

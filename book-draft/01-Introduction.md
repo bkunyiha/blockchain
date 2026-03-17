@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. **Chapter 1: Introduction & Overview** ← *You are here*
-2. <a href="bitcoin-blockchain/README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="bitcoin-blockchain/README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="bitcoin-blockchain/whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="bitcoin-blockchain/Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -55,9 +55,9 @@
 </div>
 
 ---
-<div align="middle">
+<div align="center">
 
-**[← Back to Main Book](README.md)** | **[Next: Introduction to Bitcoin & Blockchain →](bitcoin-blockchain/README.md)**
+**[← Back to Main Book](README.md)** | **[Next: Introduction to Blockchain →](bitcoin-blockchain/README.md)**
 
 </div>
 
@@ -65,11 +65,9 @@
 
 <div align="center">
 
-# Building a Full-Stack Bitcoin Blockchain With Rust
+# Rust Blockchain: A Full-Stack Implementation Guide
 
-## Chapter 1: Introduction & Overview
-
-**[← Back to Main Book](README.md)** | **Introduction & Overview** | **[Next: Introduction to Bitcoin & Blockchain →](bitcoin-blockchain/README.md)**
+**[← Back to Main Book](README.md)** | **Chapter 1: Introduction & Overview** | **[Next: Introduction to Blockchain →](bitcoin-blockchain/README.md)**
 
 </div>
 
@@ -77,9 +75,17 @@
 
 ## Chapter 1: Introduction & Overview
 
-This book is a complete, self-contained guide to building a full-stack Bitcoin blockchain system in Rust. By the time you finish, you will have walked through every module, every function, and every design decision in a working implementation — from raw byte serialization and cryptographic primitives all the way up to desktop wallet UIs and containerized deployment. You will not need to clone the repository or read external documentation to understand the system; the book *is* the documentation.
+This book is a complete, self-contained guide to building a full-stack blockchain system in Rust, following the architecture defined by Bitcoin. By the time you finish, you will have walked through every module, every function, and every design decision in a working implementation — from raw byte serialization and cryptographic primitives all the way up to desktop wallet UIs and containerized deployment. You will not need to clone the repository or read external documentation to understand the system; the book *is* the documentation.
 
-The target audience is **intermediate to advanced Rust developers** who want to understand how Bitcoin works at the implementation level. We assume you are comfortable with ownership, traits, generics, and async/await. If you need a refresher on any Rust concept, **Chapter 24: Rust Language Guide** at the end of the book serves as a standalone reference — read it before diving into the implementation chapters, or refer to it whenever you encounter unfamiliar syntax.
+The target audience is **intermediate to advanced Rust developers** who want to understand how blockchain works at the implementation level. We assume you are comfortable with ownership, traits, generics, and async/await. If you need a refresher on any Rust concept, **Chapter 24: Rust Language Guide** at the end of the book serves as a standalone reference — read it before diving into the implementation chapters, or refer to it whenever you encounter unfamiliar syntax.
+
+> **Note:** This project runs entirely on **Tokio**, the async runtime that powers most production Rust systems. You will use `async`/`await` throughout: spawning mining tasks, managing peer-to-peer TCP connections, orchestrating node subsystems with channels and `select!`, serving REST endpoints with Axum, and handling IPC commands in Tauri. If you want to learn async Rust through real code rather than toy examples, this book provides that from Chapter 9 onward.
+
+> **What you will learn in this chapter:**
+> - Understand the project architecture and how every crate in the workspace fits together
+> - Identify the role of each system layer, from primitives through networking to user interfaces
+> - Trace the data flow from a user action through the REST API, node context, and blockchain state
+> - Set up the development environment and run the project for the first time
 
 ### How the book is organized
 
@@ -97,53 +103,53 @@ The diagram below shows how every module in the system connects. Data flows upwa
 
 ```text
 ┌──────────────────────────────────────────────────────┐
-│                   DEPLOYMENT (Part II)                │
+│                   DEPLOYMENT (Part II)               │
 │  ┌────────────────────┐  ┌─────────────────────────┐ │
-│  │ Ch 22: Docker       │  │ Ch 23: Kubernetes       │ │
-│  │ Compose             │  │ Deployment              │ │
+│  │ Ch 22: Docker      │  │ Ch 23: Kubernetes       │ │
+│  │ Compose            │  │ Deployment              │ │
 │  └────────────────────┘  └─────────────────────────┘ │
 ├──────────────────────────────────────────────────────┤
-│                  USER INTERFACES                      │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐             │
-│  │ Ch 16    │ │ Ch 17    │ │ Ch 21    │             │
-│  │ Iced     │ │ Tauri    │ │ React    │             │
-│  │ Desktop  │ │ Desktop  │ │ Web UI   │             │
-│  └─────┬────┘ └────┬─────┘ └────┬─────┘             │
-│        └───────────┬┘            │                   │
-│                    ▼             ▼                    │
-│  ┌────────────────────────────────────────────┐      │
-│  │    Ch 15: Web API (Axum REST)              │      │
-│  └──────────────────┬─────────────────────────┘      │
-│                     │                                 │
-│  ┌──────────────────▼─────────────────────────┐      │
-│  │    Ch 13: Node Orchestration               │      │
-│  │    (message dispatch, coordination)        │      │
-│  └──┬──────────┬──────────┬──────────────┬────┘      │
-│     │          │          │              │            │
-│     ▼          ▼          ▼              ▼            │
-│  ┌───────┐ ┌────────┐ ┌────────┐ ┌───────────┐      │
-│  │ Ch 14 │ │ Ch 12  │ │ Ch 11  │ │ Ch 9–10   │      │
-│  │Wallet │ │Network │ │Storage │ │ Chain +   │      │
-│  │       │ │ (TCP)  │ │ (sled) │ │ Consensus │      │
-│  └──┬────┘ └────────┘ └────────┘ └─────┬─────┘      │
-│     │                                   │             │
-│     └────────────────┬──────────────────┘             │
-│                      ▼                                │
-│  ┌────────────────────────────────────────────┐      │
-│  │    Ch 8: Cryptography                      │      │
-│  │    (SHA-256, ECDSA, key derivation)        │      │
-│  └──────────────────┬─────────────────────────┘      │
-│                     ▼                                 │
-│  ┌────────────────────────────────────────────┐      │
-│  │    Ch 6–7: Primitives + Utilities          │      │
-│  │    (Block, Transaction, UTXO, helpers)     │      │
-│  └────────────────────────────────────────────┘      │
+│                  USER INTERFACES                     │
+│    ┌──────────┐ ┌──────────┐ ┌──────────┐            │
+│    │ Ch 16    │ │ Ch 17    │ │ Ch 21    │            │
+│    │ Iced     │ │ Tauri    │ │ React    │            │
+│    │ Desktop  │ │ Desktop  │ │ Web UI   │            │
+│    └─────┬────┘ └────┬─────┘ └────┬─────┘            │
+│          └─────┬─────┘            │                  │
+│                ▼                  ▼                  │
+│    ┌────────────────────────────────────────────┐    │
+│    │    Ch 15: Web API (Axum REST)              │    │
+│    └──────────────────┬─────────────────────────┘    │
+│                       │                              │
+│    ┌──────────────────▼─────────────────────────┐    │
+│    │    Ch 13: Node Orchestration               │    │
+│    │    (message dispatch, coordination)        │    │
+│    └──┬──────────┬──────────┬──────────────┬────┘    │
+│       │          │          │              │         │
+│       ▼          ▼          ▼              ▼         │
+│    ┌───────┐ ┌────────┐ ┌────────┐ ┌───────────┐     │
+│    │ Ch 14 │ │ Ch 12  │ │ Ch 11  │ │ Ch 9–10   │     │
+│    │Wallet │ │Network │ │Storage │ │ Chain +   │     │
+│    │       │ │ (TCP)  │ │ (sled) │ │ Consensus │     │
+│    └──┬────┘ └────────┘ └────────┘ └─────┬─────┘     │
+│       │                                  │           │
+│       └────────────────┬─────────────────┘           │
+│                        ▼                             │
+│    ┌────────────────────────────────────────────┐    │
+│    │    Ch 8: Cryptography                      │    │
+│    │    (SHA-256, ECDSA, key derivation)        │    │
+│    └──────────────────┬─────────────────────────┘    │
+│                       ▼                              │
+│    ┌────────────────────────────────────────────┐    │
+│    │    Ch 6–7: Primitives + Utilities          │    │
+│    │    (Block, Transaction, UTXO, helpers)     │    │
+│    └────────────────────────────────────────────┘    │
 ├──────────────────────────────────────────────────────┤
 │  Ch 20: Embedded DB (SQLCipher) — used by wallet UIs │
 ├──────────────────────────────────────────────────────┤
-│  Ch 1–4: Concepts  │  Ch 24: Rust Language Guide     │
-│  (Whitepaper,      │  (Reference — read anytime)     │
-│   Bitcoin Intro)   │                                 │
+│  Ch 1–4: Concepts   │  Ch 24: Rust Language Guide    │
+│  (Whitepaper,       │  (Reference — read anytime)    │
+│   Bitcoin Intro)    │                                │
 └──────────────────────────────────────────────────────┘
 ```
 
@@ -180,6 +186,8 @@ blockchain/
 └── book-draft/                 # This documentation
 ```
 
+> **Tip:** If you want to see the system running before reading further, jump to Chapter 0: Quick Start. You can return here afterward for the full architectural picture.
+
 ### Technical Stack
 
 #### Backend (Rust)
@@ -209,15 +217,34 @@ blockchain/
 
 ## What to read next
 
-If you are reading the book front-to-back, continue to **[Chapter 2: Introduction to Bitcoin & Blockchain](bitcoin-blockchain/README.md)** — it builds the conceptual vocabulary (transactions, blocks, consensus, UTXO) that every implementation chapter depends on.
+If you are reading the book front-to-back, continue to **[Chapter 2: Introduction to Blockchain](bitcoin-blockchain/README.md)** — it builds the conceptual vocabulary (transactions, blocks, consensus, UTXO) that every implementation chapter depends on.
 
 If you want to brush up on Rust first, jump to **[Chapter 24: Rust Language Guide](rust/README.md)** and return here when you are ready. The **[Tokio Runtime Guide](bitcoin-blockchain/Tokio.md)** is also useful preparation for the async code that appears from Chapter 12 onward.
 
 ---
 
+## Further Reading
+
+- **[The Rust Programming Language](https://doc.rust-lang.org/book/)** — The official Rust book, covering everything from installation to advanced features.
+- **[Cargo Reference](https://doc.rust-lang.org/cargo/)** — Comprehensive guide to Rust's package manager and build system.
+- **[Bitcoin Developer Guide](https://developer.bitcoin.org/devguide/)** — Bitcoin.org's technical documentation for developers.
+
+---
+
+## What We Covered
+
+- We surveyed the full project architecture: a Cargo workspace of specialized crates spanning primitives, cryptography, chain logic, networking, storage, wallet, web API, and multiple UI frontends.
+- We identified the four system layers — core blockchain, API/services, desktop UIs, and deployment — and how data flows between them.
+- We outlined the technical stack: Rust for the backend, Iced and Tauri for desktop UIs, React/TypeScript for the web UI, and Docker Compose and Kubernetes for deployment.
+- We established the learning paths that guide different readers — first-timers, experienced developers, and operations teams — through the material.
+
+In the next chapter, we explore the fundamental concepts of Bitcoin and blockchain technology — what they are, why they matter, and the cryptographic building blocks that make them work.
+
+---
+
 <div align="center">
 
-**[← Back to Main Book](README.md)** | **Introduction & Overview** | **[Next: Introduction to Bitcoin & Blockchain →](bitcoin-blockchain/README.md)**
+**[← Back to Main Book](README.md)** | **Introduction & Overview** | **[Next: Introduction to Blockchain →](bitcoin-blockchain/README.md)**
 
 </div>
 

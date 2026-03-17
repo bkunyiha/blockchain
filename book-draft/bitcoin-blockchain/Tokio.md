@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="README.md">Chapter 2: Introduction to Bitcoin & Blockchain</a>
+2. <a href="README.md">Chapter 2: Introduction to Blockchain</a>
 3. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -549,7 +549,8 @@ In `bitcoin-desktop-ui-iced/src/runtime.rs` and `bitcoin-wallet-ui-iced/src/runt
 
 ```rust
 pub fn init_runtime() {
-    let rt = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
+    let rt = tokio::runtime::Runtime::new()
+        .expect("Failed to create Tokio runtime");
     TOKIO_HANDLE.set(rt.handle().clone()).expect("Failed to set Tokio handle");
 
     std::thread::spawn(move || {
@@ -559,10 +560,15 @@ pub fn init_runtime() {
     });
 }
 
-pub fn spawn_on_tokio<F>(fut: F) -> impl std::future::Future<Output = F::Output> + Send
+pub fn spawn_on_tokio<F>(
+    fut: F,
+) -> impl std::future::Future<Output = F::Output> + Send
 where F: std::future::Future + Send + 'static, F::Output: Send + 'static,
 {
-    let handle = TOKIO_HANDLE.get().expect("Tokio runtime not initialized").clone();
+    let handle = TOKIO_HANDLE
+        .get()
+        .expect("Tokio runtime not initialized")
+        .clone();
     async move { handle.spawn(fut).await.unwrap() }
 }
 ```

@@ -6,7 +6,7 @@
 ### Part I: Foundations & Core Implementation
 
 1. <a href="../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. **Chapter 2: Introduction to Bitcoin & Blockchain** ← *You are here*
+2. **Chapter 2: Introduction to Blockchain** ← *You are here*
 3. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
 4. <a href="whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
 5. <a href="Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
@@ -57,11 +57,11 @@
 ---
 <div align="center">
 
-## Chapter 2: Introduction to Bitcoin & Blockchain
+## Chapter 2: Introduction to Blockchain
 
 **Part I: Overview**
 
-**[← Back to Main Book](../README.md)** | **Introduction to Bitcoin & Blockchain** | **[Bitcoin Whitepaper Summary →](whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md)**
+**[← Back to Main Book](../README.md)** | **Introduction to Blockchain** | **[Bitcoin Whitepaper Summary →](whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md)**
 
 </div>
 
@@ -85,6 +85,12 @@
 ## Introduction
 
 To implement Bitcoin, we first need a clear technical foundation for what Bitcoin is and how blockchain systems work. This chapter defines the core vocabulary — transactions, blocks, consensus, UTXO, proof-of-work — that every subsequent implementation chapter depends on. We ground these concepts in the problems they solve, then connect them to the whitepaper in Chapters 3 and 4 before translating them into Rust.
+
+> **What you will learn in this chapter:**
+> - Explain what blockchain technology is and why decentralization matters
+> - Describe Bitcoin's key innovations: proof-of-work, the UTXO model, and trustless consensus
+> - Identify real-world blockchain applications across finance, governance, and supply chain
+> - Understand the cryptographic building blocks that secure every transaction
 
 ## What Is Bitcoin?
 
@@ -191,6 +197,8 @@ Traditional examples include enterprise resource planning (ERP) systems, custome
 Decentralized systems distribute control and processing power across multiple independent nodes without a single central authority. Each node operates autonomously while collaborating with others to achieve common system goals. This architecture eliminates single points of failure and distributes control, creating a more resilient and fault-tolerant system.
 
 Decentralized systems have key characteristics: distributed control where no single node has authority over others, enhanced fault tolerance where individual node failures don't compromise the entire system, and improved scalability through independent node addition without overwhelming a central point. However, this architecture introduces complexity: nodes must coordinate and communicate to maintain system integrity and consistency, often requiring sophisticated consensus algorithms and protocols.
+
+> **Note:** This chapter covers Bitcoin as a technology and protocol. We do not cover cryptocurrency trading, investment, or regulatory considerations — our focus is purely on the engineering.
 
 Decentralized systems manifest in two primary categories: blockchain-based systems that leverage distributed ledger technology and consensus mechanisms, and non-blockchain systems that achieve decentralization through alternative architectural patterns.
 
@@ -544,14 +552,33 @@ The concepts in this chapter — hashing, signatures, UTXO, consensus — reappe
 
 ---
 
+## Further Reading
+
+- **[Bitcoin Whitepaper](https://bitcoin.org/bitcoin.pdf)** — The original paper by Satoshi Nakamoto that started it all.
+- **[Mastering Bitcoin](https://github.com/bitcoinbook/bitcoinbook)** — Andreas Antonopoulos's comprehensive guide to Bitcoin internals.
+- **[But How Does Bitcoin Actually Work? (3Blue1Brown)](https://www.youtube.com/watch?v=bBC-nXj3Ng4)** — An excellent visual explanation of blockchain mechanics.
+
+---
+
 ## Related Implementation Chapters
 
 The implementation chapters that follow map directly to the concepts introduced here. Cryptography (Chapter 8) implements hashing and signatures. Primitives (Chapter 6) defines the `Block` and `Transaction` structs. Chain and consensus (Chapters 9–10) enforce the longest-chain rule. Storage (Chapter 11) persists blocks to disk. Networking (Chapter 12) propagates them between peers. The node orchestrator (Chapter 13) coordinates all subsystems, and the wallet (Chapter 14) manages keys and constructs transactions.
 
 ---
 
+## What We Covered
+
+- We explored what blockchain technology is: a distributed, append-only ledger secured by cryptographic hashing and consensus mechanisms.
+- We traced Bitcoin's origins and the key innovations — proof-of-work, the UTXO model, and decentralized consensus — that solved the double-spending problem.
+- We examined real-world blockchain applications across finance, voting, governance, supply chain, and social media.
+- We introduced the cryptographic building blocks — hash functions, digital signatures, and Merkle trees — that secure every transaction in the system.
+
+In the next chapter, we go directly to the source: Satoshi Nakamoto's Bitcoin whitepaper, the nine-page document that defined the entire system.
+
+---
+
 <div align="center">
 
-**[← Back to Main Book](../README.md)** | **Chapter 2: Introduction to Bitcoin & Blockchain** | **[Bitcoin Whitepaper Summary →](whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)**
+**[← Back to Main Book](../README.md)** | **Chapter 2: Introduction to Blockchain** | **[Bitcoin Whitepaper Summary →](whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)**
 
 </div>
