@@ -62,7 +62,7 @@
 
 Bitcoin’s whitepaper compresses the most important safety rule in the entire system into one sentence:
 
-> **“Nodes accept the block only if all transactions in it are valid and not already spent.”**  
+> **“Nodes accept the block only if all transactions in it are valid and not already spent.”**
 > — [Bitcoin Whitepaper, Section 5](https://bitcoin.org/bitcoin.pdf)
 
 This is the moment where your node decides whether incoming data becomes **durable state**. Get this wrong and the chain can still “look like a blockchain” while quietly violating the two rules that make Bitcoin Bitcoin:
@@ -214,7 +214,7 @@ The key phrase is **“not already spent”**, which is *not* a signature proper
 
 This is outpoint-level logic:
 
-- **Outpoint**: \((txid, vout)\)
+- **Outpoint**: $(txid, vout)$
 - **Rule**: every input must reference an outpoint that is currently unspent in the UTXO view.
 
 Two pitfalls that Step 5 must guard against:
@@ -427,7 +427,7 @@ That’s the moment where consensus becomes state.
 
 ---
 
-## What We Covered
+## Summary
 
 - We examined the whitepaper's Step 5 gate — "Nodes accept the block only if all transactions in it are valid and not already spent" — and mapped it to concrete code boundaries.
 - We traced the validate-first, connect-only-if-valid pattern that prevents double spending at the consensus layer.

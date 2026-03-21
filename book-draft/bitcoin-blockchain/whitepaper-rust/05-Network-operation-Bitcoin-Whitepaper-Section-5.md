@@ -57,12 +57,12 @@
 ---
 ## 5. Network operation (Bitcoin Whitepaper Section 5)
 
-The paper’s([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf)) network loop is explicit and short (6 steps): 
-- broadcast txs, 
-- collect into blocks, 
-- PoW, 
-- broadcast blocks, 
-- validate, 
+The paper’s([Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf)) network loop is explicit and short (6 steps):
+- broadcast txs,
+- collect into blocks,
+- PoW,
+- broadcast blocks,
+- validate,
 - extend on accepted blocks.
 
 In practice, Section 5 becomes two core pipelines in our node:

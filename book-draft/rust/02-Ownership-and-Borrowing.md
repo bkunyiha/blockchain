@@ -70,6 +70,7 @@ For comprehensive treatment, see [The Rust Book: Ownership](https://doc.rust-lan
 In our blockchain (`bitcoin/src/primitives/transaction.rs`):
 
 ```rust
+// From bitcoin/src/primitives/transaction.rs
 impl TXInput {
     pub fn new(txid: &[u8], vout: usize) -> TXInput {
         TXInput {
@@ -140,7 +141,7 @@ Ownership and borrowing enable memory safety without garbage collection overhead
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Ownership and Borrowing** | **[← Previous: Introduction](01-Introduction.md)** | **[Next: Data Structures →](03-Data-Structures.md)** 
+**[← Rust Guide Index](README.md)** | **Ownership and Borrowing** | **[← Previous: Introduction](01-Introduction.md)** | **[Next: Data Structures →](03-Data-Structures.md)**
 
 </div>
 

@@ -60,7 +60,7 @@
 
 In the previous sections, we've explored how transactions are constructed and signed (Section 9.5), how blocks are mined and persisted (Section 9.6), and how the UTXO set tracks spendable outputs (Section 9.4). But how does all of this come together at runtime? How does a node coordinate between incoming network messages, the mempool, mining operations, and blockchain state updates?
 
-**What is a node?** A blockchain node is a running instance of the blockchain software that maintains its own local copy of the blockchain, validates transactions and blocks, participates in the peer-to-peer network, and (optionally) mines new blocks. 
+**What is a node?** A blockchain node is a running instance of the blockchain software that maintains its own local copy of the blockchain, validates transactions and blocks, participates in the peer-to-peer network, and (optionally) mines new blocks.
 
 This is a crucial distributed systems concept: **each node stores its own complete copy of the blockchain** (as we saw in Section 9.3, where `BlockchainFileSystem` persists blocks to a local sled database). Nodes synchronize with each other by exchanging blocks and transactions over the network, but each node's storage is independent—there's no central database that all nodes share. This decentralization is what makes blockchains resilient: even if some nodes go offline, others continue operating with their own copies.
 
@@ -139,7 +139,7 @@ Background Tasks (spawned by orchestration)
 
 - **Receives events from multiple sources**: Web API requests (HTTP handlers) and network messages (P2P peers) arrive concurrently and need routing to the right handlers.
 
-- **Routes events to appropriate subsystems**: 
+- **Routes events to appropriate subsystems**:
   - Transaction events → mempool admission (`add_to_memory_pool`) → background broadcast/mining
   - Block events → blockchain validation (`add_block`) → mempool cleanup → chain state update
   - Query events → blockchain reads (`get_balance`, `get_blockchain_height`) → UTXO set queries
@@ -189,7 +189,7 @@ This section uses several Rust-specific patterns that are essential for async ne
 
 ## Overview: Node architecture at a glance
 
-Before diving into the code, let's understand the big picture. A blockchain node is fundamentally a **coordinator** that manages multiple subsystems: blockchain state, transaction mempool, network communication, and mining operations. Understanding how these pieces fit together will make our detailed code walkthrough much easier to follow.
+Before diving into the code, we first lay out the big picture. A blockchain node is fundamentally a **coordinator** that manages multiple subsystems: blockchain state, transaction mempool, network communication, and mining operations. Understanding how these pieces fit together will make our detailed code walkthrough much easier to follow.
 
 ### Diagram — high-level architecture (subsystems and coordination)
 
@@ -229,8 +229,8 @@ This diagram shows the overall architecture: external interfaces communicate wit
    │ - Update│               │
    └────┬────┘               │
         │                    │
-        └──────────┬─────────┘                 
-                   │  
+        └──────────┬─────────┘
+                   │
             ┌──────▼────────┐
             │ Storage Layer │
             │   (sled DB)   │
@@ -364,7 +364,7 @@ Wallet UI (desktop/web)
 
 ## Step-by-step code walkthrough
 
-Now that we understand the architecture, let's walk through the code that implements it. We'll start with global state management, then examine the coordination API, and finally trace the runtime paths for transactions, blocks, and mining.
+Now that we understand the architecture, we walk through the code that implements it. We'll start with global state management, then examine the coordination API, and finally trace the runtime paths for transactions, blocks, and mining.
 
 **Our goal**: Understand the runtime wiring—where global state lives, which entry points receive network messages, and how those messages route into chainstate/mempool/mining.
 
@@ -405,7 +405,7 @@ The node uses several process-wide singletons that are shared across all subsyst
 - **`static`**: Process-wide storage that lives for the entire program lifetime. All threads can access it.
 - **`const`**: Compile-time constants that are inlined wherever used.
 
-**Code Listing 9-7.1**: Process-wide globals (node identity, peer set, mempool, blocks-in-transit)
+### Listing 9-7.1: Process-wide globals (node identity, peer set, mempool, blocks-in-transit)
 
 > **Source:** `server.rs` — Source
 
@@ -437,7 +437,7 @@ pub static GLOBAL_BLOCKS_IN_TRANSIT: Lazy<BlockInTransit> =
     Lazy::new(BlockInTransit::new);
 ```
 
-**Listing 9-7.1 explanation**:
+### Listing 9-7.1 explanation:
 
 - **`NODE_VERSION`**: Protocol version used in the
   version handshake when nodes first connect.
@@ -497,7 +497,7 @@ CENTERAL_NODE
 
 `NodeContext` is the primary entry point for all node operations. It provides a clean, unified API that abstracts the complexity of coordinating multiple subsystems. Following Bitcoin Core's architecture, it serves a similar role to Bitcoin's validation context and node state manager.
 
-**Code Listing 9-7.2**: NodeContext structure and initialization
+### Listing 9-7.2: NodeContext structure and initialization
 
 > **Source:** `context.rs` — Source
 
@@ -523,7 +523,7 @@ impl NodeContext {
 }
 ```
 
-**Listing 9-7.2 explanation**:
+### Listing 9-7.2 explanation:
 
 - **`NodeContext` struct**: A thin wrapper around `BlockchainService`. The coordination happens through methods on `NodeContext` that delegate to subsystems (mempool, miner, network) rather than storing all subsystems as fields.
 
@@ -556,7 +556,7 @@ impl NodeContext {
 
 When a transaction arrives (either from the network or via the web API), it flows through `NodeContext::process_transaction`, which handles mempool admission, network broadcast, and mining triggers.
 
-**Code Listing 9-7.3**: Transaction processing (`process_transaction` and `submit_transaction_for_mining`)
+### Listing 9-7.3: Transaction processing (`process_transaction` and `submit_transaction_for_mining`)
 
 > **Source:** `context.rs` — Source
 
@@ -601,6 +601,7 @@ async fn submit_transaction_for_mining(
 
 After broadcasting the transaction to peers, we check if we should trigger mining. If the mempool now has enough transactions, we prepare them and start mining a new block.
 
+```rust
     if should_trigger_mining() {
         if let Some(mining_address) = GLOBAL_CONFIG.get_mining_addr() {
             if let Ok(txs) = prepare_mining_utxo(&mining_address) {
@@ -614,8 +615,9 @@ After broadcasting the transaction to peers, we check if we should trigger minin
     }
     Ok(())
 }
+```
 
-**Listing 9-7.3 explanation**:
+### Listing 9-7.3 explanation:
 
 - **`process_transaction`**: The main entry point for transaction processing. It performs duplicate checking, adds the transaction to the mempool, and spawns background work for broadcast and mining. Returns immediately with the transaction ID, following Bitcoin's pattern of immediate acceptance.
 
@@ -669,6 +671,8 @@ pub enum Package {
     // ... other variants omitted ...
 }
 ```
+
+The server dispatches each incoming `Package` by pattern-matching its variant. The `process_stream` function deserializes the TCP byte stream into a `Package` and routes it to the appropriate handler:
 
 ```rust
 // Source: bitcoin/src/net/net_processing.rs (excerpt)
@@ -763,7 +767,7 @@ Transaction arrives (network or API)
 
 When a block arrives from the network, it flows through `NodeContext::add_block`, which validates and adds it to the chain, then cleans up the mempool.
 
-**Code Listing 9-7.4**: Block processing (`add_block` and network routing)
+### Listing 9-7.4: Block processing (`add_block` and network routing)
 
 > **Source:** `context.rs` — Source
 
@@ -838,7 +842,7 @@ Package::Block { addr_from, block } => {
 }
 ```
 
-**Listing 9-7.4 explanation**:
+### Listing 9-7.4 explanation:
 
 - **`add_block`**: Delegates to `BlockchainService::add_block`, which handles block validation, chain reorganization, persistence, and UTXO set updates. This is a thin wrapper that provides a clean API.
 
@@ -902,7 +906,7 @@ Block arrives (network)
 
 The network layer receives serialized messages from peers over **TCP sockets** and routes them to the appropriate handlers. This is the "message dispatcher" that connects P2P network events to node operations. It also handles **outbound P2P propagation**: when we broadcast transactions/blocks to other nodes (INV/GETDATA/TX/BLOCK), that happens via `net_processing::send_inv`, `net_processing::send_get_data`, `net_processing::send_tx`, and `net_processing::send_block` — **not** through the web (HTTP) layer.
 
-**Code Listing 9-7.5**: Network message routing (`process_stream`)
+### Listing 9-7.5: Network message routing (`process_stream`)
 
 > **Source:** `net_processing.rs` — Source
 
@@ -931,27 +935,27 @@ Now we enter the main message processing loop. The following sections handle dif
                 // Network sends serialized bytes, we need the Block struct
                 let block = Block::deserialize(block.as_slice())
                     .expect("Block deserialization error");
-                
+
                 // Step 2: Add block to blockchain
                 node_context
                     .add_block(&block)
                     .await
                     .expect("Blockchain write error");
-                
+
                 // Step 3: Clean up mempool
                 // Transactions in this block are now confirmed - remove from
                 // pending set
                 for tx in block.get_transactions().await? {
                     node_context.remove_from_memory_pool(tx.clone()).await;
                 }
-                
+
                 // Step 4: Update download queue
                 // Remove this block from blocks-in-transit (we've received it)
                 let added_block_hash = block.get_hash_bytes();
                 GLOBAL_BLOCKS_IN_TRANSIT
                     .remove(added_block_hash.as_ref())
                     .expect("Block removal error");
-                
+
                 // Step 5: Continue sequential download
                 if GLOBAL_BLOCKS_IN_TRANSIT
                     .is_not_empty()
@@ -1030,7 +1034,7 @@ After processing a full transaction, we add it to our mempool or log if it's a d
                         // Add all block hashes to queue
                         .add_blocks(items.as_slice())
                         .expect("Blocks in transit add error");
-                    
+
                     // Step 2: Request the first block
                     let block_hash = items
                         .first()
@@ -1041,7 +1045,7 @@ After processing a full transaction, we add it to our mempool or log if it's a d
                         block_hash
                     ).await;
                 }
-                
+
                 // Peer announced transactions they have - check if we need them
                 OpType::Tx => {
                     // Get the first transaction ID
@@ -1052,7 +1056,7 @@ After processing a full transaction, we add it to our mempool or log if it's a d
                     // Convert transaction ID from bytes to hex
                     // GLOBAL_MEMORY_POOL uses hex strings as keys
                     let txid_hex = HEXLOWER.encode(txid);
-                    
+
                     // Step: Only request if we don't already have it
                     // Check GLOBAL_MEMORY_POOL - if we have it, no need to
                     // request
@@ -1098,14 +1102,14 @@ After handling inventory announcements, we request the full data for items we ne
                     }
                     // we don't have)
                 }
-                
+
                 // GetData Type: Transaction
                 // Peer wants a specific transaction - look it up in our mempool
                 OpType::Tx => {
                     // Convert transaction ID from bytes to hex string
                     // GLOBAL_MEMORY_POOL uses hex strings as keys
                     let txid_hex = HEXLOWER.encode(id.as_slice());
-                    
+
                     // Look up transaction in mempool
                     // Returns Option<Transaction> - Some if found, None if not
                     if let Some(tx) = GLOBAL_MEMORY_POOL
@@ -1140,7 +1144,7 @@ After responding to data requests, we handle peers requesting a list of all our 
                     .get_block_hashes()
                     .await
                     .expect("Blockchain read error");
-                
+
                 // Step 2: Send inventory message with all block hashes
                 send_inv(&addr_from, OpType::Block, &blocks).await;
             }
@@ -1173,7 +1177,7 @@ Finally, we handle the remaining protocol messages: version negotiation and peer
 }
 ```
 
-**Listing 9-7.5 explanation**:
+### Listing 9-7.5 explanation:
 
 - **`process_stream`**: The main network message dispatcher. It reads messages from a TCP stream, deserializes them, and routes them to appropriate handlers based on message type.
 
@@ -1234,7 +1238,7 @@ TCP Stream (peer connection)
 
 The server binds a TCP listener and spawns a task per incoming connection. Each connection is handled by `process_stream`, which processes messages until the connection closes.
 
-**Code Listing 9-7.6**: Server runtime loop (`run_with_shutdown`)
+### Listing 9-7.6: Server runtime loop (`run_with_shutdown`)
 
 > **Source:** `server.rs` — Source
 
@@ -1268,7 +1272,7 @@ pub async fn run_with_shutdown(
     let listener = TcpListener::bind(addrs)
         .await
         .expect("TcpListener bind error");
-    
+
         "Server listening on {:?}",
         listener.local_addr().expect("TcpListener local_addr error")
     );
@@ -1287,11 +1291,11 @@ With the TCP listener bound, we now perform bootstrap connectivity. Non-central 
             .get_blockchain_height()
             .await
             .expect("Blockchain read error");
-        
+
         // Send version message to central node
         send_version(&CENTERAL_NODE, best_height).await;
     } else {
-        
+
         // Filter to only remote nodes (exclude "local")
         // Rust iterator chain: iter → filter → map → collect
         // - `iter()`: Create iterator over HashSet
@@ -1340,7 +1344,7 @@ With the TCP listener bound and bootstrap handshakes complete, we enter the main
             _ = shutdown.recv() => {
                 break;  // Exit the loop
             }
-            
+
             // `listener.accept()` returns a Future that completes when a
             // connection arrives
             // `accept_res` receives the Result<(TcpStream, SocketAddr), Error>
@@ -1351,12 +1355,12 @@ With the TCP listener bound and bootstrap handshakes complete, we enter the main
                         // the Result
                         // `stream` is the TcpStream, `_peer` is the peer
                         // address (we ignore it)
-                        
+
                         // Clone node context for the handler task
                         // NodeContext is Clone + Send + Sync, so this is safe
                         // task
                         let blockchain = self.node_context.clone();
-                        
+
                         // Spawn Connection Handler Task
                         // concurrently
                         // simultaneously
@@ -1370,7 +1374,7 @@ With the TCP listener bound and bootstrap handshakes complete, we enter the main
                             // task)
                             // - `stream`: TcpStream (moved into task)
                             // from the accept loop
-                            
+
                             // std::net::TcpStream (not tokio)
                             // code predates tokio
                             // `into_std()` consumes the tokio stream and
@@ -1439,7 +1443,7 @@ With the stream converted to a standard TCP stream in blocking mode, we now pass
 }
 ```
 
-**Listing 9-7.6 explanation**:
+### Listing 9-7.6 explanation:
 
 - **TCP listener binding**: The server binds a TCP listener on the specified address. This starts listening for incoming connections.
 
@@ -1509,7 +1513,7 @@ Server Startup
 
 ## Summary: how it all fits together
 
-Now that we've walked through the code, let's summarize how the node orchestration layer coordinates all the subsystems:
+Now that we've walked through the code, we summarize how the node orchestration layer coordinates all the subsystems:
 
 1. **Global state**: Process-wide singletons (`GLOBAL_MEMORY_POOL`, `GLOBAL_NODES`, `GLOBAL_BLOCKS_IN_TRANSIT`) provide shared state accessible to all subsystems.
 
@@ -1534,6 +1538,6 @@ Now that we've walked through the code, let's summarize how the node orchestrati
 
 <div align="center">
 
-**[← Previous: Consensus and Validation](07-Consensus-and-Validation.md)** | **Node Orchestration** | **[Next: Transaction to Block (End-to-End) →](09-Transaction-To-Block.md)** 
+**[← Previous: Consensus and Validation](07-Consensus-and-Validation.md)** | **Node Orchestration** | **[Next: Transaction to Block (End-to-End) →](09-Transaction-To-Block.md)**
 
 </div>

@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 15: Web API Architecture](README.md)** | **Tower Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
+**[← Chapter 15: Web API Architecture](README.md)** | **Tower Framework Guide** | **[Next: Chapter 16: Desktop Admin (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 
 </div>
 
@@ -81,7 +81,7 @@ This guide provides detailed explanations of the Tower middleware framework and 
 
 Tower's design philosophy centers around composability and reusability. Middleware components can be combined in various ways to create powerful request processing pipelines. In our blockchain API, we use Tower (via `tower_http`) for CORS, compression, logging, and static file serving.
 
-> **See the full implementation**: This guide explains Tower concepts. To see how these features are used together in our complete web API architecture, see the Web API Architecture chapter and the Middleware Layer chapter.
+> **See the full implementation:**: This guide explains Tower concepts. To see how these features are used together in our complete web API architecture, see the Web API Architecture chapter and the Middleware Layer chapter.
 
 ---
 
@@ -234,7 +234,7 @@ pub fn create_cors_layer_with_origins(origins: Vec<String>) -> CorsLayer {
 
 CORS layers automatically handle preflight OPTIONS requests from browsers.
 
-> **See it in action**: Check out the [CORS Middleware section](05-Middleware.md#cors-middleware) in the Middleware Layer chapter for more details on how CORS is configured and used.
+> **See it in action:**: Check out the [CORS Middleware section](05-Middleware.md#cors-middleware) in the Middleware Layer chapter for more details on how CORS is configured and used.
 
 ---
 
@@ -276,7 +276,7 @@ pub fn create_app(
 
 Compression benefits: reduced bandwidth, faster transfers, automatic, content-aware. Supports gzip, brotli, deflate with automatic negotiation via `Accept-Encoding` header.
 
-> **See it in action**: Check out the [Server Setup](02-Server-Setup.md#creating-the-application-router) chapter to see how compression is configured alongside other middleware.
+> **See it in action:**: Check out the [Server Setup](02-Server-Setup.md#creating-the-application-router) chapter to see how compression is configured alongside other middleware.
 
 ---
 
@@ -318,7 +318,7 @@ TraceLayer::new_for_http()
 
 TraceLayer respects logging levels: ERROR, WARN, INFO, DEBUG, TRACE
 
-> **See it in action**: Check out the Middleware Layer chapter for more details on logging middleware.
+> **See it in action:**: Check out the Middleware Layer chapter for more details on logging middleware.
 
 ---
 
@@ -335,10 +335,10 @@ use tower_http::services::ServeDir;
 
 pub fn create_web_routes() -> Router<Arc<NodeContext>> {
     let react_app_path = /* ... find React app path ... */;
-    
+
     if let Some(path) = react_app_path {
         let assets_path = format!("{}/assets", path);
-        
+
         Router::new()
             .nest_service("/assets", ServeDir::new(&assets_path))
             // ... other routes
@@ -484,7 +484,7 @@ Tower's modular design allows us to build a robust middleware stack that handles
 
 <div align="center">
 
-**[← Web API Index](README.md)** | **Tower Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Serde** | **Utoipa** | **Tracing** | **Tokio** 
+**[← Web API Index](README.md)** | **Tower Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Serde** | **Utoipa** | **Tracing** | **Tokio**
 
 </div>
 

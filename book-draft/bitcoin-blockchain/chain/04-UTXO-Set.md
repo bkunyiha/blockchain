@@ -60,7 +60,7 @@
 
 In Bitcoin, a **UTXO** (Unspent Transaction Output) is a *specific coin* you can spend: an output created by some earlier transaction that has not yet been referenced as an input by any later transaction. Your “balance” is therefore not a single stored number; it is the sum of the values of all UTXOs you can unlock with your keys.
 
-The **UTXO set** is the node’s *current index of spendability*: the collection of all UTXOs that exist **right now** (often keyed by \(txid, vout\) → output details). It is updated when blocks are connected (remove spent outputs, add newly created outputs), and it’s what wallets and validators consult to answer “is this input spendable?” efficiently.
+The **UTXO set** is the node’s *current index of spendability*: the collection of all UTXOs that exist **right now** (often keyed by $txid, vout$ → output details). It is updated when blocks are connected (remove spent outputs, add newly created outputs), and it’s what wallets and validators consult to answer “is this input spendable?” efficiently.
 
 This is different from the **blockchain**, which is an append-only history of blocks and transactions. The chain records *what happened*; the UTXO set represents the *resulting state* (what remains spendable after applying that history). Nodes do **not** store the full UTXO set “in the blockchain” because it would be redundant and expensive: it can be deterministically derived by replaying the chain from genesis, it changes with every block, and different nodes may store it in different internal formats for performance. Instead, each node maintains it locally as derived state (and can always rebuild it from the chain if needed).
 
@@ -79,7 +79,7 @@ In this subsection, we define “what is spendable?” by walking the UTXO code 
 
 - **txid**: transaction identifier (hash bytes; often displayed as hex for readability)
 - **vout**: output index within a transaction’s outputs (0-based)
-- **outpoint**: \((txid, vout)\) — a pointer to a specific previous output
+- **outpoint**: $(txid, vout)$ — a pointer to a specific previous output
 - **pub_key_hash**: the “lock” on an output (who can spend it)
 - **UTXO tree entry**: `txid_bytes -> Vec<TXOutput>` (serialized)
 
@@ -200,7 +200,7 @@ UTXO_TREE ("chainstate")
 
 ### The on-disk schema in one sentence
 
-We persist **derived state** as: `txid_bytes -> bincode(Vec<TXOutput>)`, and interpret the *outpoint* \((txid, vout)\) as “the output at index `vout` inside that stored `Vec<TXOutput>`”.
+We persist **derived state** as: `txid_bytes -> bincode(Vec<TXOutput>)`, and interpret the *outpoint* $(txid, vout)$ as “the output at index `vout` inside that stored `Vec<TXOutput>`”.
 
 `txid_bytes` means the **raw transaction ID bytes** (the 32-byte hash) rather than a human-friendly string. We use bytes as the database key because it is the **canonical representation**, more **space/time efficient**, and avoids repeated hex encoding/decoding. When you see a “transaction id” displayed as hex in logs/UI/APIs, that’s the same value, just rendered for humans.
 
@@ -216,10 +216,10 @@ If the DB contains:
 
 Then:
 
-- Outpoint \((aa..ff, 0)\) means “the first element in the stored Vec”
-- Outpoint \((aa..ff, 2)\) means “the third element in the stored Vec”
+- Outpoint $(aa..ff, 0)$ means “the first element in the stored Vec”
+- Outpoint $(aa..ff, 2)$ means “the third element in the stored Vec”
 
-### Code Listing 9-4.0 — The tree name and UTXO handle
+### Listing 9-4.0 — The tree name and UTXO handle
 
 > **Source:** `utxo_set.rs` — Source
 
@@ -239,7 +239,7 @@ pub struct UTXOSet {
 
 Before we can understand the UTXO set, we need to understand what a transaction *points at* and what an output *contains* in our codebase.
 
-### Code Listing 9-16 — `TXInput` and how it references an outpoint
+### Listing 9-16 — `TXInput` and how it references an outpoint
 
 > **Source:** `transaction.rs` — Source
 
@@ -274,10 +274,10 @@ impl TXInput {
 
 **What this means**
 
-- **Outpoint**: An input doesn’t store “which address” it is spending. It stores **which previous output** it is spending: \((txid, vout)\).
+- **Outpoint**: An input doesn’t store “which address” it is spending. It stores **which previous output** it is spending: $(txid, vout)$.
 - **Authorization**: `signature` and `pub_key` prove the spender can unlock the referenced output (see `Transaction::sign` and `Transaction::verify`).
 
-### Code Listing 9-17 — `TXOutput` and the “in mempool” flag
+### Listing 9-17 — `TXOutput` and the “in mempool” flag
 
 > **Source:** `transaction.rs` — Source
 
@@ -320,7 +320,7 @@ impl TXOutput {
 
 **Checkpoint (you should be able to answer)**
 
-- What exact data identifies “a coin” in this project? (Answer: \((txid, vout)\).)
+- What exact data identifies “a coin” in this project? (Answer: $(txid, vout)$.)
 - Where is “ownership” stored? (Answer: `TXOutput.pub_key_hash`.)
 
 ---
@@ -329,7 +329,7 @@ impl TXOutput {
 
 When creating a transaction, the wallet needs to answer:
 
-> “Which outpoints locked to me can cover \(amount\), while avoiding outputs we already used in the mempool?”
+> “Which outpoints locked to me can cover $amount$, while avoiding outputs we already used in the mempool?”
 
 ### Diagram — what coin selection reads
 
@@ -350,9 +350,9 @@ return (the selected outpoints, grouped by txid):
   txid_hex -> [vout0, vout1, ...]
 ```
 
-This diagram is the mental model for `find_spendable_outputs`: we **scan the persisted UTXO set**, and for each transaction’s output list we select the indices (vout) that match our ownership predicate and are not locally reserved. The result is a set of concrete outpoints \((txid, vout)\) the wallet can turn into transaction inputs.
+This diagram is the mental model for `find_spendable_outputs`: we **scan the persisted UTXO set**, and for each transaction’s output list we select the indices (vout) that match our ownership predicate and are not locally reserved. The result is a set of concrete outpoints $(txid, vout)$ the wallet can turn into transaction inputs.
 
-### Code Listing 9-4.3 — `UTXOSet::find_spendable_outputs`
+### Listing 9-4.3 — `UTXOSet::find_spendable_outputs`
 
 > **Source:** `utxo_set.rs` — Source
 
@@ -402,7 +402,7 @@ pub async fn find_spendable_outputs(
     - `bincode::serde::decode_from_slice(...)` (deserialize `Vec<TXOutput>`)
     - `TXOutput::{is_locked_with_key, not_in_global_mem_pool, get_value}` (selection predicate)
 
-- Opens `UTXO_TREE` and iterates the entire keyspace (this is \(O(N)\) over all stored outputs).
+- Opens `UTXO_TREE` and iterates the entire keyspace (this is $O(N)$ over all stored outputs).
 - Deserializes each `Vec<TXOutput>` and checks each output:
   - **Ownership**: `out.is_locked_with_key(from_pub_key_hash)`
   - **Not reserved**: `out.not_in_global_mem_pool()`
@@ -443,7 +443,7 @@ new_utxo_transaction(from, to, amount):
 
 This diagram shows the **mechanical steps** of building a UTXO transaction: selected outpoints become `TXInput`s, value is re-expressed as one or two `TXOutput`s (payment + optional change), then we compute a txid and sign. The key “why” is that spending consumes entire outputs, so any leftover value must be recreated as a new change output.
 
-### Code Listing 9-4.4 — `Transaction::new_utxo_transaction`
+### Listing 9-4.4 — `Transaction::new_utxo_transaction`
 
 > **Source:** `transaction.rs` — Source
 
@@ -495,7 +495,7 @@ pub async fn new_utxo_transaction(
 
 **What to notice**
 
-- Inputs reference previous outputs by \((txid, vout)\) and carry the sender’s `pub_key`.
+- Inputs reference previous outputs by $(txid, vout)$ and carry the sender’s `pub_key`.
 - Outputs are just “value + lock(pub_key_hash)”.
 - Change is explicitly created by returning `available_funds - tx_amount` back to `from`.
 
@@ -524,7 +524,7 @@ tx arrives -> add_to_memory_pool(tx)
 
 This diagram explains our simplified mempool integration: when a transaction is pending, we **mark the exact referenced outpoints as “reserved”** by flipping `in_global_mem_pool` on the corresponding `TXOutput`. The “why” is to reduce local races where two concurrent transaction builders pick the same coin; confirmation still happens only when a block is connected.
 
-### Code Listing 9-4.5 — `UTXOSet::set_global_mem_pool_flag`
+### Listing 9-4.5 — `UTXOSet::set_global_mem_pool_flag`
 
 > **Source:** `utxo_set.rs` — Source
 
@@ -562,7 +562,7 @@ pub async fn set_global_mem_pool_flag(
 }
 ```
 
-### Code Listing 9-4.6 — Mempool call sites (`add_to_memory_pool` / `remove_from_memory_pool`)
+### Listing 9-4.6 — Mempool call sites (`add_to_memory_pool` / `remove_from_memory_pool`)
 
 > **Source:** `txmempool.rs` — Source
 
@@ -587,7 +587,7 @@ pub async fn remove_from_memory_pool(
 }
 ```
 
-### Code Listing 9-4.6b — Mempool existence check (`transaction_exists_in_pool`)
+### Listing 9-4.6b — Mempool existence check (`transaction_exists_in_pool`)
 
 > **Source:** `txmempool.rs` — Source
 
@@ -631,7 +631,7 @@ for each tx in block:
 
 This diagram is the core state transition: connecting a block **spends** previously-unspent outputs (remove referenced outpoints) and **creates** new unspent outputs (insert each tx’s outputs under its txid). This is why the UTXO set is a “current state” database: it’s updated incrementally as blocks are accepted.
 
-### Code Listing 9-4.7 — `UTXOSet::update`
+### Listing 9-4.7 — `UTXOSet::update`
 
 > **Source:** `utxo_set.rs` — Source
 
@@ -706,7 +706,7 @@ You typically run `reindex()` in these situations:
 2. Scan the chain and re-derive all unspent outputs (`blockchain.find_utxo()`).
 3. Insert them into the UTXO tree.
 
-### Code Listing 9-4.8 — `UTXOSet::reindex`
+### Listing 9-4.8 — `UTXOSet::reindex`
 
 > **Source:** `utxo_set.rs` — Source
 
@@ -743,9 +743,9 @@ When we “disconnect” a block (e.g., during a chain reorganization), we need 
 1. Remove outputs created by the block’s transactions.
 2. Restore outputs that were spent by those transactions (by looking them up from the referenced previous transactions).
 
-**Note about transaction order**: the method’s internal comment says “reverse order”, but the actual order depends on what `block.get_transactions()` returns. The important takeaway is *what it removes/restores*, not the precise iteration order in this learning implementation.
+**Important: Transaction processing order** — Transactions are now processed in **reverse order** (newest first). This correctly handles intra-block dependencies where a later transaction spends an output created by an earlier transaction in the same block. Without reverse order, the earlier transaction’s outputs would be removed before the later transaction’s inputs could be restored.
 
-### Code Listing 9-4.9 — `UTXOSet::rollback_block`
+### Listing 9-4.9 — `UTXOSet::rollback_block`
 
 > **Source:** `utxo_set.rs` — Source
 
@@ -754,39 +754,54 @@ pub async fn rollback_block(&self, block: &Block) -> Result<()> {
     let db = self.blockchain.get_db().await?;
     let utxo_tree = db.open_tree(UTXO_TREE)?;
 
-    for tx in block.get_transactions().await? {
+    // Process transactions in REVERSE order (newest first) to correctly
+    // handle intra-block dependencies where a later tx spends an earlier
+    // transaction’s output
+    let transactions = block.get_transactions().await?;
+    let reversed: Vec<_> = transactions.into_iter().rev().collect();
+
+    for tx in reversed {
+        // Step 1: Remove this transaction’s outputs from UTXO set
         utxo_tree.remove(tx.get_id())?;
+
+        // Step 2: Restore spent inputs (skip for coinbase — it has no inputs)
         if !tx.is_coinbase() {
             for input in tx.get_vin() {
-                let txid = input.get_txid();
                 if let Some(input_tx) =
-                    self.blockchain.find_transaction(txid).await?
+                    self.blockchain.find_transaction(input.get_txid()).await?
                 {
                     if let Some(output) =
                         input_tx.get_vout().get(input.get_vout())
                     {
-                        let mut outs = vec![output.clone()];
-                        if let Some(existing_bytes) =
-                            utxo_tree.get(txid)?
+                        // Load existing outputs OR start fresh if fully spent.
+                        // The else branch fixes the primary consensus bug.
+                        let mut outs = if let Some(existing_bytes) =
+                            utxo_tree.get(input.get_txid())?
                         {
-                            let mut existing: Vec<TXOutput> =
-                                bincode::serde::decode_from_slice(
-                                    existing_bytes.as_ref(),
-                                    bincode::config::standard(),
-                                )?
-                                .0;
-                            existing.insert(
-                                input.get_vout(),
-                                output.clone(),
-                            );
-                            outs = existing;
-                        }
-                        let bytes =
-                            bincode::serde::encode_to_vec(
-                                &outs,
+                            bincode::serde::decode_from_slice(
+                                existing_bytes.as_ref(),
                                 bincode::config::standard(),
-                            )?;
-                        utxo_tree.insert(txid, bytes)?;
+                            )?.0
+                        } else {
+                            // Transaction fully spent — start fresh
+                            vec![]
+                        };
+
+                        // Insert restored output at correct vout position
+                        let vout_idx = input.get_vout();
+                        if vout_idx <= outs.len() {
+                            outs.insert(vout_idx, output.clone());
+                        } else {
+                            while outs.len() < vout_idx {
+                                outs.push(output.clone());
+                            }
+                            outs.push(output.clone());
+                        }
+
+                        let bytes = bincode::serde::encode_to_vec(
+                            &outs, bincode::config::standard(),
+                        )?;
+                        utxo_tree.insert(input.get_txid(), bytes)?;
                     }
                 }
             }
@@ -796,10 +811,13 @@ pub async fn rollback_block(&self, block: &Block) -> Result<()> {
 }
 ```
 
+> **Why this code matters**: This is the function that caused the original consensus bug. When a chain reorganization rolled back a block, any transaction that had spent the LAST output of a previous transaction would fail to restore that output — because the UTXO entry had been fully removed from the tree. The `else` branch (creating a fresh `vec![]`) fixes this by always restoring the output regardless of whether the UTXO entry still exists. This matches Bitcoin Core’s `DisconnectBlock` which uses stored "undo data" (`rev*.dat` files) to reliably reverse UTXO changes.
+
 **Checkpoint**
 
 - What rollback removes (outputs created by the block).
-- What rollback tries to restore (the previously-spent outputs referenced by the block’s inputs).
+- What rollback restores (the previously-spent outputs referenced by the block’s inputs).
+- The `else` branch handles the case where ALL outputs of a transaction were spent (entry fully removed from UTXO tree). This was the primary cause of the consensus bug.
 
 ---
 
@@ -811,7 +829,7 @@ It’s worth pausing on *why* we read balance from the **UTXO set** rather than 
 
 The UTXO set exists so the node can keep a **ready-to-use view of current spendability**: it is updated once per connected block, and then used to answer balance and input-selection queries cheaply. And because it is derived from the chain, it can always be rebuilt when needed.
 
-### Code Listing 9-4.10 — `UTXOSet::find_utxo` (fetch all spendable outputs for a key-hash)
+### Listing 9-4.10 — `UTXOSet::find_utxo` (fetch all spendable outputs for a key-hash)
 
 > **Source:** `utxo_set.rs` — Source
 
@@ -843,7 +861,7 @@ pub async fn find_utxo(
 }
 ```
 
-### Code Listing 9-4.11 — `UTXOSet::get_balance` and `UTXOSet::utxo_count`
+### Listing 9-4.11 — `UTXOSet::get_balance` and `UTXOSet::utxo_count`
 
 > **Source:** `utxo_set.rs` — Source
 
@@ -870,7 +888,7 @@ pub async fn utxo_count(
 **Checkpoint**
 
 - How “balance” is computed (sum of values of outputs locked to your pubkey-hash).
-- Why this implementation is \(O(N)\) over the UTXO DB (full scan), and what an optimization would look like (secondary indexes).
+- Why this implementation is $O(N)$ over the UTXO DB (full scan), and what an optimization would look like (secondary indexes).
 
 ---
 
@@ -887,9 +905,10 @@ This section intentionally explains the code **as written**, but a few details a
    - `in_global_mem_pool` is a local boolean on `TXOutput` and is not part of Bitcoin’s consensus.
    - It is useful here to reduce obvious “pick the same coin twice” behavior during concurrent transaction construction.
 
-3. **Rollback edge cases**
+3. **Rollback for fully-spent transactions**
    - `rollback_block()` restores spent outputs by fetching the *previous transaction* from the chain and reinserting the referenced output.
-   - As currently written, if there is **no existing `Vec<TXOutput>` for that `txid`** in the UTXO tree, the function does not populate `outs_to_restore` before writing it back. In other words: it’s a helpful learning scaffold, but not a full reorg-safe implementation yet.
+   - When **no existing `Vec<TXOutput>` for that `txid`** remains in the UTXO tree (because all outputs were spent), the `else` branch creates a fresh `vec![]` and inserts the restored output at the correct `vout` position. This ensures outputs are never silently lost during reorganization — the fix for the primary consensus bug discovered during multi-node testing.
+   - Transactions are processed in **reverse order** (newest first) to correctly handle intra-block dependencies.
 
 4. **Performance characteristics**
    - `find_spendable_outputs()` and `find_utxo()` scan the entire UTXO tree. This is fine for a learning project, but real wallets/indexers maintain additional indexes for efficient lookup.
@@ -905,7 +924,7 @@ This section intentionally explains the code **as written**, but a few details a
 
 <div align="center">
 
-**[← Previous: Chain State and Storage](03-Chain-State-and-Storage.md)** | **UTXO Set** | **[Next: Transaction Lifecycle →](05-Transaction-Lifecycle.md)** 
+**[← Previous: Chain State and Storage](03-Chain-State-and-Storage.md)** | **UTXO Set** | **[Next: Transaction Lifecycle →](05-Transaction-Lifecycle.md)**
 
 </div>
 

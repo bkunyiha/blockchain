@@ -74,7 +74,7 @@
 
 ---
 
-> **Prerequisites**: This chapter assumes you have read Chapter 22 (Docker Compose) and have basic familiarity with Kubernetes concepts (pods, services, deployments). If Kubernetes is new to you, the chapter defines each resource type as it appears — but having `kubectl` installed and a cluster available (even Minikube or Docker Desktop's built-in Kubernetes) will help you follow along.
+> **Prerequisites:**: This chapter assumes you have read Chapter 22 (Docker Compose) and have basic familiarity with Kubernetes concepts (pods, services, deployments). If Kubernetes is new to you, the chapter defines each resource type as it appears — but having `kubectl` installed and a cluster available (even Minikube or Docker Desktop's built-in Kubernetes) will help you follow along.
 
 **Why Kubernetes after Docker Compose?** Docker Compose is excellent for local development, but it runs on a single machine and has no built-in answer for node failures, rolling updates, or scaling beyond one host. Kubernetes solves these problems: if a blockchain node crashes, Kubernetes restarts it automatically; if you need more nodes, you change a replica count; if you push a new image, Kubernetes rolls it out without downtime. This chapter shows how the same Docker images from Chapter 22 are deployed into a system that can run in production.
 
@@ -263,7 +263,7 @@ minikube addons list
 
 Common useful addons include:
 
-- **`metrics-server`**: enables `kubectl top ...` and provides CPU/memory metrics.
+- **`metrics-server`**: enables `kubectl top ...` and provides the Metrics API that powers CPU/memory-based autoscaling (see Section 6: Autoscaling). Without this, HPA (Horizontal Pod Autoscaler) cannot measure resource usage and will not scale pods automatically.
 - **`ingress`**: enables an Ingress controller for HTTP routing without port-forward.
 - **`dashboard`**: enables the Kubernetes Dashboard UI for visual cluster inspection.
 - **`registry`**: runs a local container registry for push/pull operations.
@@ -785,7 +785,7 @@ See [Section 7: Production & Advanced Topics](07-Production.md) for detailed inf
 
 ---
 
-## What We Covered
+## Summary
 
 - We deployed the blockchain network on Kubernetes for production-grade orchestration.
 - We configured horizontal pod autoscaling and high availability.

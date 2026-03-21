@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Security](10-Security.md)** | **Chapter 15.11: Best Practices and Patterns** | **[Web API Index](README.md)** 
+**[← Security](10-Security.md)** | **Chapter 15.11: Best Practices and Patterns** | **[Web API Index](README.md)**
 
 </div>
 
@@ -219,7 +219,7 @@ As we continue building blockchain applications, these patterns will serve as a 
 
 <div align="center">
 
-**[← Previous: Security](10-Security.md)** | **Chapter 15.11: Best Practices and Patterns** | **[Web API Index](README.md)** 
+**[← Previous: Security](10-Security.md)** | **Chapter 15.11: Best Practices and Patterns** | **[Web API Index](README.md)**
 
 **[← Web API Architecture Index](README.md)** | **[Axum Framework Guide](Axum.md)** | **[Tracing Framework Guide](Tracing.md)**
 

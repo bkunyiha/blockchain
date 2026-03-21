@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.7: Error Handling** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
+**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.7: Error Handling** | **[Next: Chapter 16: Desktop Admin (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 
 </div>
 
@@ -154,7 +154,7 @@ For more details on error handling middleware, see the [Middleware Layer](05-Mid
 
 <div align="center">
 
-**[← Previous: Data Models](06-Data-Models.md)** | **[Chapter 15.7: Error Handling](07-Error-Handling.md)** | **[Next: Rate Limiting →](08-Rate-Limiting.md)** 
+**[← Previous: Data Models](06-Data-Models.md)** | **[Chapter 15.7: Error Handling](07-Error-Handling.md)** | **[Next: Rate Limiting →](08-Rate-Limiting.md)**
 
 **[← Web API Index](README.md)** | **Introduction & Architecture Overview**
 

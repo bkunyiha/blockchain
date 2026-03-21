@@ -92,7 +92,7 @@ Inbound block path (network):
             -> maybe set tip / reorganize
 ```
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `BlockchainFileSystem::{create_blockchain, open_blockchain, open_blockchain_empty}`
 > - `BlockchainFileSystem::{get_tip_hash, set_tip_hash}`
@@ -118,13 +118,13 @@ TREE_DIR="data1"      BLOCKS_TREE="blocks1"
 ./data1/  (sled database)  Tree("blocks1")
 ```
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `BlockchainFileSystem::create_blockchain(...)`
 > - `BlockchainFileSystem::open_blockchain(...)`
 > - `BlockchainFileSystem::open_blockchain_empty(...)`
 
-### Code Listing 10A-1.1 — Type definition and blockchain creation (part 1) (`bitcoin/src/store/file_system_db_chain.rs`)
+### Listing 11-1.1 — Type definition and blockchain creation (part 1) (`bitcoin/src/store/file_system_db_chain.rs`)
 
 ```rust
 use crate::error::{BtcError, Result};
@@ -187,7 +187,7 @@ impl BlockchainFileSystem {
 
 The creation path for genesis is followed by methods to open an existing blockchain or open a handle without loading state:
 
-### Code Listing 10A-2 — Open existing or empty blockchain (part 2)
+### Listing 11-2 — Open existing or empty blockchain (part 2)
 
 ```rust
     pub async fn open_blockchain() -> Result<Self> {
@@ -243,11 +243,11 @@ The creation path for genesis is followed by methods to open an existing blockch
 
 When we create genesis or mine locally, we want “block insert” and “tip pointer update” to happen as a single atomic unit.
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `BlockchainFileSystem::update_blocks_tree(...)`
 
-### Code Listing 10A-6 — Atomic insert + tip update (`bitcoin/src/store/file_system_db_chain.rs`)
+### Listing 11-6 — Atomic insert + tip update (`bitcoin/src/store/file_system_db_chain.rs`)
 
 ```rust
 async fn update_blocks_tree(blocks_tree: &Tree, block: &Block) -> Result<()> {
@@ -278,12 +278,12 @@ async fn update_blocks_tree(blocks_tree: &Tree, block: &Block) -> Result<()> {
 
 The tip is also cached in memory (an async `RwLock<String>`) for fast access during runtime.
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `BlockchainFileSystem::get_tip_hash(...)`
 > - `BlockchainFileSystem::set_tip_hash(...)` (internal)
 
-### Code Listing 10A-3.1 — Tip pointer helpers (`bitcoin/src/store/file_system_db_chain.rs`)
+### Listing 11-3.1 — Tip pointer helpers (`bitcoin/src/store/file_system_db_chain.rs`)
 
 ```rust
 pub async fn get_tip_hash(&self) -> Result<String> {
@@ -311,13 +311,13 @@ The network layer and UI need:
 - fetch-by-hash (`get_block`)
 - list hashes (`get_block_hashes`) for sync inventory
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `BlockchainFileSystem::get_best_height(...)`
 > - `BlockchainFileSystem::get_block(...)`
 > - `BlockchainFileSystem::get_block_hashes(...)`
 
-### Code Listing 10A-16 — Read path (`bitcoin/src/store/file_system_db_chain.rs`)
+### Listing 11-16 — Read path (`bitcoin/src/store/file_system_db_chain.rs`)
 
 ```rust
 pub async fn get_best_height(&self) -> Result<usize> {
@@ -385,22 +385,22 @@ pub async fn get_block_hashes(&self) -> Result<Vec<Vec<u8>>> {
 
 ## 5. Mining write path: `mine_block` (persist + move tip + update UTXO)
 
-Local mining creates a new `Block`, writes it into sled, updates the in-memory tip, then updates derived state.
+Local mining creates a new `Block`, writes it into sled, updates the in-memory tip, then updates derived state. This is the "fast path" for locally-mined blocks — it bypasses the full consensus mechanism in `add_block` because we know the block is at `best_height + 1` (strictly higher than the current tip).
 
-> **Methods involved**
+Remote blocks go through `add_block()` instead, which runs the full three-level consensus hierarchy.
+
+> **Methods involved:**
 >
 > - `BlockchainFileSystem::mine_block(...)`
 > - `BlockchainFileSystem::update_blocks_tree(...)` (defined earlier)
 > - `BlockchainFileSystem::set_tip_hash(...)` (defined earlier)
+> - `BlockchainService::mine_block(...)` (chainstate wrapper with stale-mining protection)
 
-### Code Listing 10A-18 — Mining write path (`bitcoin/src/store/file_system_db_chain.rs`)
+### Listing 11-18 — Mining write path (`bitcoin/src/store/file_system_db_chain.rs`)
 
 ```rust
 pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
-    // Height is derived from the current tip.
     let best_height = self.get_best_height().await?;
-
-    // Construct a new Block that points to the current tip as its parent.
     let block = Block::new_block(
         self.get_tip_hash().await?,
         transactions,
@@ -408,24 +408,20 @@ pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
     );
     let block_hash = block.get_hash();
 
-    // Open the blocks tree for writing.
     let blocks_tree = self
         .blockchain
         .db
         .open_tree(self.get_blocks_tree_path())
         .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
-    // Atomically insert the block and update the DB-side tip key.
     Self::update_blocks_tree(&blocks_tree, &block).await?;
-    // Update the in-memory cached tip pointer to match the DB.
     self.set_tip_hash(block_hash).await?;
-
-    // Update derived state (UTXO set) so spending rules and balance queries
-    // stay correct.
     self.update_utxo_set(&block).await?;
 
     Ok(block)
 }
 ```
+
+> **Stale mining protection (chainstate.rs wrapper):** The `BlockchainService::mine_block()` wrapper re-validates transaction inputs under the write lock before calling this method. Between `prepare_mining_utxo` (which validates with a read lock) and the actual mining (which requires the write lock), a competing block may have been accepted, spending the same inputs. The wrapper catches this race condition and aborts mining with a "stale mining" error rather than creating a block with already-spent inputs. This prevents duplicate mining subsidies when multiple miners compete for the same transactions.
 
 ---
 
@@ -435,11 +431,11 @@ Inbound blocks are first persisted, then the node runs consensus decisions to de
 
 This method is intentionally printed in full so the reader can trace storage + consensus boundaries without the repo open.
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `BlockchainFileSystem::add_block(...)`
 
-### Code Listing 10A-6.1 — Inbound block persistence and dedup (part 1) (`bitcoin/src/store/file_system_db_chain.rs`)
+### Listing 11-6.1 — Inbound block persistence and dedup (part 1) (`bitcoin/src/store/file_system_db_chain.rs`)
 
 ```rust
 pub async fn add_block(&mut self, new_block: &Block) -> Result<()> {
@@ -476,7 +472,7 @@ pub async fn add_block(&mut self, new_block: &Block) -> Result<()> {
 
 After persisting the block, we run consensus rules to decide whether to update the tip or reorganize:
 
-### Code Listing 10A-6.2 — Fork choice and reorg decision (part 2)
+### Listing 11-6.2 — Fork choice and reorg decision (part 2)
 
 ```rust
     // Fork choice: compare height, work, then tie-break
@@ -485,13 +481,19 @@ After persisting the block, we run consensus rules to decide whether to update t
 
     match new_block.get_height().cmp(&current_height) {
         Ordering::Greater => {
-            // Longest chain rule: higher always wins
-            self.set_tip_hash(new_block.get_hash()).await?;
-            self.update_utxo_set(new_block).await?;
+            // Check if block extends our chain or is on a different branch
+            if new_block.get_pre_block_hash() == current_tip {
+                // Normal case: extends our current chain
+                self.set_tip_hash(new_block.get_hash()).await?;
+                self.update_utxo_set(new_block).await?;
+            } else {
+                // FORK: block is on a different branch at a higher height.
+                // Must reorganize to properly rollback old branch's UTXO.
+                self.reorganize_chain(new_block.get_hash()).await?;
+            }
         }
         Ordering::Equal => {
             if new_block.get_pre_block_hash() == current_tip {
-                // Extends our tip: accept naturally
                 return Ok(());
             }
             // Competing tips: compare cumulative work
@@ -499,10 +501,9 @@ After persisting the block, we run consensus rules to decide whether to update t
             let new_work = self.get_chain_work(new_block.get_hash()).await?;
             match new_work.cmp(&current_work) {
                 Ordering::Greater => {
-            self.reorganize_chain(new_block.get_hash()).await?
-        }
+                    self.reorganize_chain(new_block.get_hash()).await?
+                }
                 Ordering::Equal => {
-                    // Deterministic tie-break for consensus
                     if self
                         .accept_new_block_tie_break(new_block, &current_tip)
                         .await?
@@ -513,11 +514,23 @@ After persisting the block, we run consensus rules to decide whether to update t
                 Ordering::Less => {}
             }
         }
-        Ordering::Less => {}
+        Ordering::Less => {
+            // Block stored in DB but not accepted as tip.
+            // Available for future reorganizations when higher
+            // blocks on this branch arrive.
+        }
     }
     Ok(())
 }
 ```
+
+> **Note:**
+>
+> 1. **`Ordering::Greater` fork detection:** The original code assumed higher-height blocks always extended the current chain. With block relay across multi-hop networks, a higher-height block on a *different branch* can arrive. Without checking `get_pre_block_hash() == current_tip`, the old branch's UTXO (including coinbase subsidies) would never be rolled back, creating money from nothing. The fix calls `reorganize_chain()` to properly rollback and apply.
+>
+> 2. **`Ordering::Less` block retention:** Blocks at lower heights are now kept in the database (they were already inserted by the Sled transaction above). They are NOT deleted. This is critical because `find_common_ancestor()` needs to walk both chain branches during reorganization. If rolled-back blocks were deleted, future reorganizations would fail with “No common ancestor found.” This matches Bitcoin Core's behavior where all received blocks are kept in `blk*.dat` files.
+>
+> 3. **`rollback_to_block` no longer deletes blocks:** During chain reorganization, only the UTXO set is rolled back and the tip pointer is moved. Blocks remain in the database as non-canonical entries. This ensures `find_common_ancestor()` and `apply_chain_from_ancestor()` can always find the necessary blocks.
 
 ---
 
@@ -525,14 +538,16 @@ After persisting the block, we run consensus rules to decide whether to update t
 
 - sled is the persistence engine; the “schema” is just key conventions in code.
 - `update_blocks_tree` is the atomic primitive used when we can deterministically move tip.
-- `mine_block` is “local write path”: create block → persist → move tip → update derived state.
-- `add_block` is “inbound path”: persist → consensus decision → maybe reorg.
+- `mine_block` is “local write path”: create block → persist → move tip → update derived state. Protected by stale-mining validation in the chainstate wrapper.
+- `add_block` is “inbound path”: persist → consensus decision → maybe reorg. Now handles forks at all three height levels (Greater, Equal, Less).
+- Blocks are NEVER deleted from the database during rollback — they must remain for future ancestor lookups during chain reorganizations.
+- Block relay in `net_processing.rs` forwards new blocks to all peers, enabling multi-hop propagation across the network.
 
 ---
 
 <div align="center">
 
-**[← Chapter 11: Storage Layer](README.md)** | **Chapter 11.A: Code Walkthrough** | **[Next: Chapter 12 (Network Layer) →](../net/README.md)** 
+**[← Chapter 11: Storage Layer](README.md)** | **Chapter 11.A: Code Walkthrough** | **[Next: Chapter 12 (Network Layer) →](../net/README.md)**
 
 </div>
 

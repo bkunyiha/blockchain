@@ -69,12 +69,12 @@
 
 <div align="center">
 
-**[← Chapter 18: Wallet UI (Iced)](../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md)** | **Chapter 20: Embedded Database** | **[Chapter 21: Web Admin UI →](../bitcoin-web-ui/06-Web-Admin-UI.md)** 
+**[← Chapter 18: Wallet UI (Iced)](../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md)** | **Chapter 20: Embedded Database** | **[Chapter 21: Web Admin UI →](../bitcoin-web-ui/06-Web-Admin-UI.md)**
 </div>
 
 ---
 
-> **Prerequisites**: This chapter references wallet concepts from Chapter 14 and the Iced/Tauri UI architectures from Chapters 16–19, but can be read independently. No prior SQLite experience is required — we explain the database layer from first principles.
+> **Prerequisites:**: This chapter references wallet concepts from Chapter 14 and the Iced/Tauri UI architectures from Chapters 16–19, but can be read independently. No prior SQLite experience is required — we explain the database layer from first principles.
 
 > **What you will learn in this chapter:**
 > - Integrate SQLCipher for encrypted wallet storage across both Iced and Tauri frontends
@@ -117,36 +117,39 @@ We keep this persistence layer intentionally small and pragmatic. We store four 
 **Figure 20-1: Database Schema**
 
 ```text
- ┌────────────────────────────────────────┐
- │         SQLCipher Encrypted DB         │
- │  (shared by Iced and Tauri wallets)    │
- ├────────────────────────────────────────┤
- │                                        │
- │  ┌─────────────┐  ┌─────────────────┐  │
- │  │  settings   │  │   addresses     │  │
- │  ├─────────────┤  ├─────────────────┤  │
- │  │ key (TEXT)  │  │ id (INTEGER PK) │  │
- │  │ value (TEXT)│  │ address (TEXT)   │  │
- │  └─────────────┘  │ public_key (BLB)│  │
- │                    │ private_key(BLB)│  │
- │  ┌─────────────┐  └─────────────────┘  │
- │  │   profile   │                       │
- │  ├─────────────┤  ┌─────────────────┐  │
- │  │ key (TEXT)  │  │  transactions   │  │
- │  │ value (TEXT)│  ├─────────────────┤  │
- │  │ (singleton) │  │ id (INTEGER PK) │  │
- │  └─────────────┘  │ tx_hash (TEXT)  │  │
- │                    │ amount (REAL)   │  │
- │                    │ timestamp (INT) │  │
- │                    └─────────────────┘  │
- └────────────────────────────────────────┘
-         ▲                    ▲
-         │                    │
-    ┌────┴────┐         ┌────┴────┐
-    │  Iced   │         │  Tauri  │
-    │ Wallet  │         │ Wallet  │
-    └─────────┘         └─────────┘
-    Same password = same encryption key
+ ┌──────────────────────────────────────────┐
+ │          SQLCipher Encrypted DB          │
+ │   (shared by Iced and Tauri wallets)     │
+ ├──────────────────────────────────────────┤
+ │                                          │
+ │  ┌──────────────────┐  ┌──────────────┐ │
+ │  │    settings       │  │    users     │ │
+ │  │  (singleton)      │  │ (singleton)  │ │
+ │  ├──────────────────┤  ├──────────────┤ │
+ │  │ id (PK, CHECK=1) │  │ id (PK)     │ │
+ │  │ base_url (TEXT)   │  │ first_name  │ │
+ │  │ api_key (TEXT)    │  │ last_name   │ │
+ │  │ created_at (TEXT) │  │ profile_pic │ │
+ │  │ updated_at (TEXT) │  │  (BLOB)     │ │
+ │  └──────────────────┘  └──────────────┘ │
+ │                                          │
+ │  ┌──────────────────┐  ┌──────────────┐ │
+ │  │ wallet_addresses  │  │schema_version│ │
+ │  ├──────────────────┤  ├──────────────┤ │
+ │  │ id (PK AUTO)     │  │ version (PK) │ │
+ │  │ address (UNIQUE)  │  └──────────────┘ │
+ │  │ label (TEXT)      │                   │
+ │  │ created_at (TEXT) │                   │
+ │  │ updated_at (TEXT) │                   │
+ │  └──────────────────┘                    │
+ └──────────────────────────────────────────┘
+          ▲                    ▲
+          │                    │
+     ┌────┴────┐         ┌────┴────┐
+     │  Iced   │         │  Tauri  │
+     │ Wallet  │         │ Wallet  │
+     └─────────┘         └─────────┘
+     Same password = same encryption key
 ```
 
 ---
@@ -230,7 +233,7 @@ We use three inputs for the hash:
 
 We use `DefaultHasher` to produce a 64-bit hash, which we convert to a hex string. This is not cryptographically strong key derivation (we don't use PBKDF2 or Argon2), but it is sufficient for a local development/learning tool: the encryption prevents casual file inspection, and the determinism avoids lockout.
 
-> **Design note**: Because the application name `"bitcoin-wallet-ui"` is the same in both Iced and Tauri wallets, and because both store the file at the same path (`<data_dir>/bitcoin-wallet-ui/bitcoin-wallet.db`), the two wallet apps share the same database. This is intentional — a user who switches between the two frontends sees the same wallets and settings.
+> **Note:**: Because the application name `"bitcoin-wallet-ui"` is the same in both Iced and Tauri wallets, and because both store the file at the same path (`<data_dir>/bitcoin-wallet-ui/bitcoin-wallet.db`), the two wallet apps share the same database. This is intentional — a user who switches between the two frontends sees the same wallets and settings.
 
 ---
 
@@ -827,7 +830,7 @@ The Tauri integration is more fine-grained because each command handler is an in
 
 ---
 
-## What We Covered
+## Summary
 
 - We integrated SQLCipher for encrypted wallet storage across both Iced and Tauri frontends.
 - We designed database schemas and implemented migrations using the table-recreation technique.

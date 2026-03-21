@@ -152,7 +152,7 @@ Concrete example (gap limit = 3):
 - We find that index 0 and 1 have been used (they received coins), but index 2, 3, 4 are unused.
 - After seeing **3 unused in a row** (2, 3, 4), we stop scanning at 4.
 
-- **Why stop at 3?** The number 3 here is just the example gap limit \(N\). The rule is: stop after \(N\) consecutive unused derived scripts so scanning is bounded. Real wallets typically choose a larger \(N\); the exact value is a wallet policy/implementation detail.
+- **Why stop at 3?** The number 3 here is just the example gap limit $N$. The rule is: stop after $N$ consecutive unused derived scripts so scanning is bounded. Real wallets typically choose a larger $N$; the exact value is a wallet policy/implementation detail.
 
 This is one reason an `AddressBook` needs persistent indexes/state: if we “hand out” index 50 but later only scan until we see “3 unused in a row,” we might stop early and fail to notice a payment sent to that far-ahead script.
 

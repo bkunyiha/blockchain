@@ -57,7 +57,7 @@
 ---
 # Introduction to Rust
 
-Before we dive into Rust's language features, let's understand what makes Rust unique and why it's particularly well-suited for building blockchain systems. This chapter sets the foundation for everything that follows.
+Before we dive into Rust's language features, we review what makes Rust unique and why it is particularly well-suited for building blockchain systems. This chapter sets the foundation for everything that follows.
 
 ## What is Rust?
 
@@ -159,7 +159,7 @@ Start with **[Ownership and Borrowing](02-Ownership-and-Borrowing.md)**.
 
 <div align="center">
 
-**[← Rust Installation & Setup](00-Rust-Installation-Setup.md)** | **Introduction** | **[Next: Ownership and Borrowing →](02-Ownership-and-Borrowing.md)** 
+**[← Rust Installation & Setup](00-Rust-Installation-Setup.md)** | **Introduction** | **[Next: Ownership and Borrowing →](02-Ownership-and-Borrowing.md)**
 
 </div>
 

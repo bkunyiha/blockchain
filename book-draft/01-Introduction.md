@@ -55,13 +55,6 @@
 </div>
 
 ---
-<div align="center">
-
-**[← Back to Main Book](README.md)** | **[Next: Introduction to Blockchain →](bitcoin-blockchain/README.md)**
-
-</div>
-
----
 
 <div align="center">
 
@@ -231,7 +224,7 @@ If you want to brush up on Rust first, jump to **[Chapter 24: Rust Language Guid
 
 ---
 
-## What We Covered
+## Summary
 
 - We surveyed the full project architecture: a Cargo workspace of specialized crates spanning primitives, cryptography, chain logic, networking, storage, wallet, web API, and multiple UI frontends.
 - We identified the four system layers — core blockchain, API/services, desktop UIs, and deployment — and how data flows between them.

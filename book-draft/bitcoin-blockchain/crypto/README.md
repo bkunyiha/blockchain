@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Utilities](../util/README.md)** | **Cryptography** | **[Blockchain (Technical Foundations) →](../chain/README.md)** 
+**[← Utilities](../util/README.md)** | **Cryptography** | **[Blockchain (Technical Foundations) →](../chain/README.md)**
 </div>
 
 ---
@@ -172,9 +172,9 @@ This section provides the “why” behind each primitive, at the level you need
 When we say “SHA-256,” we are relying on specific properties:
 
 - **Determinism**: same bytes in, same bytes out. That is what allows every node to agree on identifiers.
-- **Preimage resistance**: given \(h = \text{SHA256}(m)\), it is computationally infeasible to recover \(m\).
-- **Second-preimage resistance**: given \(m\), it is infeasible to find \(m' \ne m\) where \(\text{SHA256}(m) = \text{SHA256}(m')\).
-- **Collision resistance**: it is infeasible to find *any* \(m_1 \ne m_2\) with the same hash.
+- **Preimage resistance**: given $h = \text{SHA256}(m)$, it is computationally infeasible to recover $m$.
+- **Second-preimage resistance**: given $m$, it is infeasible to find $m' \ne m$ where $\text{SHA256}(m) = \text{SHA256}(m')$.
+- **Collision resistance**: it is infeasible to find *any* $m_1 \ne m_2$ with the same hash.
 - **Avalanche effect**: flipping 1 bit of input tends to flip ~50% of output bits, which makes tampering obvious.
 
 **What the whitepaper uses hashing for**:
@@ -190,7 +190,7 @@ When we say “SHA-256,” we are relying on specific properties:
 
 #### Important implementation note: “Bitcoin-style” double hashing vs our current code
 
-In Bitcoin Core, many identifiers are computed using **double SHA-256** (often written as \(\text{SHA256}(\text{SHA256}(\cdot))\)). In this project, some places currently use a **single** SHA-256 for simplicity.
+In Bitcoin Core, many identifiers are computed using **double SHA-256** (often written as $\text{SHA256}(\text{SHA256}(\cdot))$). In this project, some places currently use a **single** SHA-256 for simplicity.
 
 This is not a moral failing; it is a deliberate scope choice. But it is consensus-relevant: if you want byte-for-byte compatibility with Bitcoin’s formats, you will need to align those hashing rules.
 
@@ -385,7 +385,7 @@ In this section, we provide credible references you can use to validate the conc
 
 <div align="center">
 
-**[← Utilities](../util/README.md)** | **Chapter 8: Cryptography** | **[Start Reading: Hash Functions →](01-Hash-Functions.md)** 
+**[← Utilities](../util/README.md)** | **Chapter 8: Cryptography** | **[Start Reading: Hash Functions →](01-Hash-Functions.md)**
 </div>
 
 ---
@@ -404,7 +404,7 @@ The subsections that follow cover each component in detail: hash functions (01),
 
 ---
 
-## What We Covered
+## Summary
 
 - We implemented SHA-256 hashing to produce the 32-byte digests used as both transaction IDs and block hashes.
 - We built ECDSA signing and verification on the secp256k1 curve, the same cryptographic foundation Bitcoin uses for transaction authorization.
@@ -419,11 +419,11 @@ With our cryptographic primitives in place, the next chapter connects all the pi
 
 > **Troubleshooting: Cryptography**
 >
-> **Signature verification fails on a valid transaction** — The most common cause is signing the transaction bytes in a different order than the verifier expects. Ensure both sides serialize the transaction identically (same field order, same Serde configuration) before hashing.
+> **Troubleshooting:** **Signature verification fails on a valid transaction** — The most common cause is signing the transaction bytes in a different order than the verifier expects. Ensure both sides serialize the transaction identically (same field order, same Serde configuration) before hashing.
 >
 > **”invalid key length” when parsing a public key** — ECDSA public keys are 33 bytes (compressed) or 65 bytes (uncompressed). If you are passing a hex string, make sure you are decoding it to bytes first, not passing the raw hex characters.
 >
-> **Hash output does not match expected value** — Check whether you are double-hashing (SHA-256d, as Bitcoin does for block hashes) or single-hashing. Our `hash_transaction` uses a single SHA-256 pass; block hashes may differ from Bitcoin Core’s convention.
+> **Troubleshooting:** **Hash output does not match expected value** — Check whether you are double-hashing (SHA-256d, as Bitcoin does for block hashes) or single-hashing. Our `hash_transaction` uses a single SHA-256 pass; block hashes may differ from Bitcoin Core’s convention.
 
 ---
 

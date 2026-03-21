@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← OpenAPI](09-OpenAPI.md)** | **[Chapter 15.10: Security Architecture](10-Security.md)** | **[Best Practices →](11-Best-Practices.md)** 
+**[← OpenAPI](09-OpenAPI.md)** | **[Chapter 15.10: Security Architecture](10-Security.md)** | **[Best Practices →](11-Best-Practices.md)**
 
 </div>
 
@@ -77,7 +77,7 @@
 
 ## Security Architecture
 
-Security is built into the web layer from the ground up. Let's explore the security measures.
+Security is built into the web layer from the ground up. We explore the security measures below.
 
 ### Authentication
 
@@ -149,7 +149,7 @@ For current implementation status, see [Rate Limiting Middleware](05-Middleware.
 
 <div align="center">
 
-**[← Previous: OpenAPI](09-OpenAPI.md)** | **[Chapter 15.10: Security Architecture](10-Security.md)** | **[Next: Best Practices →](11-Best-Practices.md)** 
+**[← Previous: OpenAPI](09-OpenAPI.md)** | **[Chapter 15.10: Security Architecture](10-Security.md)** | **[Next: Best Practices →](11-Best-Practices.md)**
 
 **[← Web API Index](README.md)** | **Introduction & Architecture Overview**
 

@@ -91,7 +91,7 @@ To get the most out of this section, follow this approach:
 - **Start with the overview diagrams** to understand the big picture before diving into code details
 - **Read each step in order** — each step builds on the previous one, creating a complete picture
 - **Follow the flow**: diagram → method overview → code listing → explanation → checkpoint
-- **Keep the mental model simple**: A UTXO transaction is just a structured statement: "I am consuming these specific outpoints \((txid, vout)\), and I am creating these new outputs."
+- **Keep the mental model simple**: A UTXO transaction is just a structured statement: "I am consuming these specific outpoints $(txid, vout)$, and I am creating these new outputs."
 
 **Code listings** are copied from the project and annotated with inline comments to explain *what* each line does and *why* it matters.
 
@@ -99,13 +99,13 @@ To get the most out of this section, follow this approach:
 
 - **txid**: transaction identifier (32-byte hash; often displayed as hex for humans)
 - **vout**: output index (0-based) inside a transaction’s output vector
-- **outpoint**: \((txid, vout)\) pointer to a specific previous output
+- **outpoint**: $(txid, vout)$ pointer to a specific previous output
 - **mempool**: local “pending set” of unconfirmed transactions (`GLOBAL_MEMORY_POOL`)
 - **UTXO set**: derived state that answers “what outputs are spendable right now?”
 
 ## Overview: the transaction lifecycle at a glance
 
-Before diving into the code, let's understand the big picture. A transaction goes through several distinct stages, each handled by different parts of the system. Understanding this flow will make the detailed code walkthrough much easier to follow.
+Before diving into the code, we first lay out the big picture. A transaction goes through several distinct stages, each handled by different parts of the system. Understanding this flow will make the detailed code walkthrough much easier to follow.
 
 ### Diagram — high-level lifecycle (stages: wallet → node → mempool → mining boundary)
 
@@ -177,7 +177,7 @@ After reading this section, you'll understand exactly what happens at each stage
 
 ## Step-by-step code walkthrough
 
-Now that you understand the high-level flow, let's dive into the code. We'll trace a transaction end-to-end through each stage: **build → sign → submit → mempool → broadcast/mining trigger → verify at mining boundary**.
+Now that you understand the high-level flow, we dive into the code. We'll trace a transaction end-to-end through each stage: **build → sign → submit → mempool → broadcast/mining trigger → verify at mining boundary**.
 
 Each step builds on the previous one, so reading them in order will give you a complete picture of how transactions work in this implementation.
 
@@ -223,7 +223,7 @@ This is the highest-level orchestration method: it creates a transaction (wallet
   - submits the transaction into the node’s mempool/network pipeline (via `process_transaction`)
 - **Why this method exists**: it is the book’s “one call” entry point that turns a user intent (“send coins”) into a constructed UTXO transaction and then hands it to the node for distribution/confirmation.
 
-**Code Listing 9-18 (annotated)**: `NodeContext::btc_transaction`
+### Listing 9-18 (annotated): `NodeContext::btc_transaction`
 
 > **Source:** `context.rs` — Source
 
@@ -253,7 +253,7 @@ pub async fn btc_transaction(
     self.process_transaction(&addr_from, utxo).await
 }
 ```
-**Listing 9-18 explanation**:
+### Listing 9-18 explanation:
 
 - It creates a `UTXOSet` handle so the constructor can perform coin selection and later resolve previous transactions during signing.
 - It constructs and signs a new spending transaction by calling `Transaction::new_utxo_transaction(...)`.
@@ -266,7 +266,7 @@ pub async fn btc_transaction(
 
 ### Step 2 — Construct a spending transaction (`Transaction::new_utxo_transaction`)
 
-Now that we have the entry point, let's see how the transaction is actually built. This step is where the magic happens: the system selects which coins to spend, creates the payment and change outputs, computes the transaction ID, and signs everything to prove ownership.
+Now that we have the entry point, we see how the transaction is actually built. This step is where the magic happens: the system selects which coins to spend, creates the payment and change outputs, computes the transaction ID, and signs everything to prove ownership.
 
 **What happens here**: This is the core UTXO spend constructor that transforms a payment intent into a fully-formed transaction ready for the network.
 
@@ -300,7 +300,7 @@ Outputs (vout): new coins created
 
 This diagram is the key UTXO mental model: **inputs consume specific previous outputs**; outputs **create new spendable coins**, including change when the selected inputs exceed the payment amount.
 
-**Code Listing 9-19 (annotated)**: `Transaction::new_utxo_transaction`
+### Listing 9-19 (annotated): `Transaction::new_utxo_transaction`
 
 > **Source:** `transaction.rs` — Source
 
@@ -340,10 +340,10 @@ pub async fn new_utxo_transaction(
     Ok(tx)
 }
 ```
-**Listing 9-19 explanation**:
+### Listing 9-19 explanation:
 
 - It loads the sender’s keys and derives the sender’s `pub_key_hash`, which is the “lock identity” used by outputs in this implementation.
-- It performs coin selection via `UTXOSet::find_spendable_outputs(...)`, producing concrete outpoints \((txid, vout)\) that cover the requested amount (or errors if funds are insufficient).
+- It performs coin selection via `UTXOSet::find_spendable_outputs(...)`, producing concrete outpoints $(txid, vout)$ that cover the requested amount (or errors if funds are insufficient).
 - It turns those outpoints into `TXInput`s (with empty `signature`s for now) and builds the `TXOutput`s: the payment output plus an optional change output.
 - It finalizes the transaction by computing its `txid` (`tx.hash()`) and signing every input (`tx.sign(...)`) so each referenced outpoint is authorized for spending.
 
@@ -354,9 +354,9 @@ pub async fn new_utxo_transaction(
 
 ### Step 3 — Sign and verify (the trimmed-copy pattern)
 
-Once the transaction is constructed, it needs to be authorized. This step shows how signatures are created to prove that you own the coins you're trying to spend. We'll also see how those signatures are verified to ensure the transaction is valid.
+Once the transaction is constructed, it needs to be authorized. This step shows how signatures are created to prove that the sender owns the coins being spent, and how those signatures are verified to ensure the transaction is valid.
 
-**What happens here**: Each input in the transaction is signed using a special "trimmed copy" technique that ensures signatures can't be reused, and we'll see how verification works to check those signatures.
+**What happens here**: Each input in the transaction is signed using a special "trimmed copy" technique that ensures signatures cannot be reused, and we trace how verification works to check those signatures.
 
 This project uses a common Bitcoin-like trick: signatures do not “sign themselves”. Instead, we construct a copy with signatures cleared, inject the referenced output’s locking data (`pub_key_hash`) to bind the signature to the correct spend, hash the copy, and sign that digest.
 
@@ -378,7 +378,7 @@ This project uses a common Bitcoin-like trick: signatures do not “sign themsel
   - reads previous transactions from chainstate (to bind signatures to referenced output locks)
 - **Why this pattern exists**: it avoids circular signing (“the signature cannot sign itself”) while still committing the signature to the exact outpoint and locking data being spent.
 
-**Code Listing 9-5.3 (annotated)**: `trimmed_copy`, `sign`, `verify`
+### Listing 9-5.3 (annotated): `trimmed_copy`, `sign`, `verify`
 
 > **Source:** `transaction.rs` — Source
 
@@ -429,9 +429,9 @@ pub async fn verify(&self, blockchain: &BlockchainService) -> Result<bool> {
     Ok(true)
 }
 ```
-**Listing 9-5.3 explanation**:
+### Listing 9-5.3 explanation:
 
-- `trimmed_copy()` creates a “trimmed copy” of the transaction for signing/verification: it keeps the outputs, but rewrites each input to contain only its outpoint \((txid, vout)\), with signing-related fields (like `signature`, and later the temporary `pub_key`/lock binding) cleared. This gives us a stable payload to hash: the signature is computed over the transaction *shape* and referenced outpoints, not over the signature bytes themselves.
+- `trimmed_copy()` creates a “trimmed copy” of the transaction for signing/verification: it keeps the outputs, but rewrites each input to contain only its outpoint $(txid, vout)$, with signing-related fields (like `signature`, and later the temporary `pub_key`/lock binding) cleared. This gives us a stable payload to hash: the signature is computed over the transaction *shape* and referenced outpoints, not over the signature bytes themselves.
 - `sign(...)` signs each input separately: it looks up the previous transaction, temporarily injects the referenced output’s `pub_key_hash` into the copy, hashes that copy, and signs the digest; the resulting signature is written into the real input.
 - `verify(...)` recomputes that same digest for each input (again using the referenced output’s `pub_key_hash`) and verifies the signature; coinbase is treated as always valid in this simplified model.
 
@@ -458,7 +458,7 @@ This is the node’s acceptance boundary: reject duplicates, add to the mempool,
   - spawns an async task for propagation/mining trigger
 - **Why this method exists**: it centralizes the node’s “mempool gate” so API and network submissions follow the same path.
 
-**Code Listing 9-5.4 (annotated)**: `NodeContext::process_transaction`
+### Listing 9-5.4 (annotated): `NodeContext::process_transaction`
 
 > **Source:** `context.rs` — Source
 
@@ -483,7 +483,7 @@ pub async fn process_transaction(
     Ok(utxo.get_tx_id_hex())
 }
 ```
-**Listing 9-5.4 explanation**:
+### Listing 9-5.4 explanation:
 
 - It first checks whether this transaction is **already in the mempool** (a duplicate by `txid`) so the node doesn’t store, relay, or attempt to mine the same pending transaction twice.
 - It writes the transaction into the mempool via `add_to_memory_pool(...)` and applies local UTXO “reservation” so the node is less likely to build conflicting pending spends concurrently.
@@ -521,7 +521,7 @@ In our implementation, mempool admission “reserves” the inputs by marking th
   - mutates persisted UTXO flags (`set_global_mem_pool_flag`)
 - **Why this exists**: the mempool is the node’s holding area for unconfirmed txs, and the “reservation flag” reduces obvious local coin-selection races while a tx is pending.
 
-**Code Listing 9-5.5 (annotated)**: `transaction_exists_in_pool`, `add_to_memory_pool`, `remove_from_memory_pool`
+### Listing 9-5.5 (annotated): `transaction_exists_in_pool`, `add_to_memory_pool`, `remove_from_memory_pool`
 
 > **Source:** `txmempool.rs` — Source
 
@@ -549,7 +549,7 @@ pub fn transaction_exists_in_pool(tx: &Transaction) -> bool {
     GLOBAL_MEMORY_POOL.contains_transaction(tx).unwrap_or(false)
 }
 ```
-**Listing 9-5.5 explanation**:
+### Listing 9-5.5 explanation:
 
 - `add_to_memory_pool(...)` adds the tx to the in-memory pending set, then marks its referenced outpoints as “in mempool” in the UTXO store to reduce obvious local double-selection.
 - `remove_from_memory_pool(...)` removes the tx and clears those reservation flags, making those outpoints available for selection again.
@@ -579,7 +579,7 @@ After mempool admission, the node may broadcast the transaction to peers and may
   - may trigger mining and block broadcast if threshold is met
 - **Why this method exists**: it keeps mempool admission fast while moving propagation and mining triggers into background work.
 
-**Code Listing 9-5.6 (annotated)**: broadcast + mining trigger helpers
+### Listing 9-5.6 (annotated): broadcast + mining trigger helpers
 
 > **Source:** `context.rs` — Source
 
@@ -627,7 +627,7 @@ async fn broadcast_transaction_to_nodes(&self, nodes: &[Node], txid: Vec<u8>) {
     }
 }
 ```
-**Listing 9-5.6 explanation**:
+### Listing 9-5.6 explanation:
 
 - It optionally broadcasts an INV message (tx inventory) to peers, sending only the `txid` so peers can request the full transaction later if needed.
 - It checks whether mining should trigger, and if so prepares a mempool snapshot for mining and hands it to the mining pipeline; errors may lead to cleanup of invalid pending transactions.
@@ -656,7 +656,7 @@ This is where the implementation enforces transaction signature correctness befo
   - then calls into the underlying block-mining implementation
 - **Why this exists**: it establishes a hard correctness boundary: the node must not mine a block containing invalid signatures.
 
-**Code Listing 9-5.7 (annotated)**: `BlockchainService::mine_block`
+### Listing 9-5.7 (annotated): `BlockchainService::mine_block`
 
 > **Source:** `chainstate.rs` — Source
 
@@ -672,7 +672,7 @@ pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
     blockchain_guard.mine_block(transactions).await
 }
 ```
-**Listing 9-5.7 explanation**:
+### Listing 9-5.7 explanation:
 
 - It treats block production as a hard correctness boundary: every candidate transaction must pass `Transaction::verify(...)` before any proof-of-work effort is spent.
 - Only after validation does it delegate to the underlying mining implementation to build and mine a block from the provided transaction list.
@@ -706,7 +706,7 @@ This section’s goal is the transaction lifecycle, but it’s useful to see the
   - broadcasts new block inventory to peers
 - **Why this is shown here**: it demonstrates the immediate “next step” after mempool admission and clarifies where transactions transition from “pending” to “confirmed”.
 
-**Code Listing 9-5.8 (annotated)**: mining trigger and pipeline
+### Listing 9-5.8 (annotated): mining trigger and pipeline
 
 > **Source:** `miner.rs` — Source
 
@@ -754,7 +754,7 @@ pub async fn broadcast_new_block(block: &Block) -> Result<()> {
     Ok(())
 }
 ```
-**Listing 9-5.8 explanation**:
+### Listing 9-5.8 explanation:
 
 - `should_trigger_mining()` gates mining on “am I a miner?” and “is the mempool large enough?”.
 - `prepare_mining_utxo(...)` snapshots the mempool and appends a coinbase transaction so the mined block includes a reward.
@@ -782,7 +782,7 @@ pub async fn broadcast_new_block(block: &Block) -> Result<()> {
 
 <div align="center">
 
-**[← Previous: UTXO Set](04-UTXO-Set.md)** | **Transaction Lifecycle** | **[Next: Block Lifecycle & Mining →](06-Block-Lifecycle-and-Mining.md)** 
+**[← Previous: UTXO Set](04-UTXO-Set.md)** | **Transaction Lifecycle** | **[Next: Block Lifecycle & Mining →](06-Block-Lifecycle-and-Mining.md)**
 
 </div>
 

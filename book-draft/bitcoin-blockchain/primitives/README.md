@@ -61,7 +61,7 @@
 
 <div align="center">
 
-**[← Chapter 5: Rust Project](../Rust-Project-Index.md)** | **Chapter 6: Primitives** | **[Chapter 7: Utilities →](../util/README.md)** 
+**[← Chapter 5: Rust Project](../Rust-Project-Index.md)** | **Chapter 6: Primitives** | **[Chapter 7: Utilities →](../util/README.md)**
 </div>
 
 ---
@@ -253,7 +253,7 @@ let block = blockchain_service.get_block_by_hash(&hash).await?;
 
 ---
 
-## What We Covered
+## Summary
 
 - We defined the Block, Transaction, and Blockchain structs that serve as the atomic building blocks for every operation in the system.
 - We explained the Transaction ID format and the deliberate choice to store IDs as `Vec<u8>` rather than hex strings, optimizing for programmatic use.

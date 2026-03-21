@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Section 3: Deployment Topology](03-Deployment-Topology.md)** | **Section 4: Deployment Scenarios & Operations** | **[Section 5: Accessing Webserver →](05-Accessing-Webserver.md)** 
+**[← Section 3: Deployment Topology](03-Deployment-Topology.md)** | **Section 4: Deployment Scenarios & Operations** | **[Section 5: Accessing Webserver →](05-Accessing-Webserver.md)**
 
 </div>
 
@@ -95,13 +95,13 @@ After reading this section, you will understand:
 
 This section combines practical deployment scenarios, operational procedures, and detailed execution walkthroughs to give you complete understanding of how to deploy and operate the blockchain network.
 
-> **Methods involved**
-> - Compose topology: `docker-compose.yml` ([Listing 8.1](01A-Docker-Compose-Code-Listings.md#listing-81-cidocker-composeconfigsdocker-composeyml))
-> - Instance wiring + port math + connect-node resolution: `docker-entrypoint.sh` ([Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
+> **Methods involved:**
+> - Compose topology: `docker-compose.yml` ([Listing 22A.1](01A-Docker-Compose-Code-Listings.md#listing-22a1-cidocker-composeconfigsdocker-composeyml))
+> - Instance wiring + port math + connect-node resolution: `docker-entrypoint.sh` ([Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh))
 > - Scaling helpers (override generation): [Listings 8.4–8.7](01A-Docker-Compose-Code-Listings.md)
-> - `docker-entrypoint.sh` orchestration logic ([Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
-> - `wait-for-node.sh` readiness gating ([Listing 8.3](01A-Docker-Compose-Code-Listings.md#listing-83-cidocker-composeconfigswait-for-nodesh))
-> - Docker image build: `Dockerfile` ([Listing 8.11](01A-Docker-Compose-Code-Listings.md#listing-811-cidocker-composeconfigsdockerfile))
+> - `docker-entrypoint.sh` orchestration logic ([Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh))
+> - `wait-for-node.sh` readiness gating ([Listing 22A.3](01A-Docker-Compose-Code-Listings.md#listing-22a3-cidocker-composeconfigswait-for-nodesh))
+> - Docker image build: `Dockerfile` ([Listing 22A.11](01A-Docker-Compose-Code-Listings.md#listing-22a11-cidocker-composeconfigsdockerfile))
 
 ---
 
@@ -677,7 +677,7 @@ If containers fail to start:
 
 If script changes aren't being applied:
 
-1. **Ensure you're using `--no-cache`:**
+1. **Ensure you are using `--no-cache`:**
    ```bash
    docker compose build --no-cache
    ```

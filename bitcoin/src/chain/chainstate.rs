@@ -138,7 +138,22 @@ impl BlockchainService {
         .await
     }
 
-    /// Mine a block with the transactions in the memory pool
+    /// Mine a block with the transactions in the memory pool.
+    ///
+    /// This method verifies all transactions, acquires the write lock, then
+    /// re-validates transaction inputs against the UTXO set before calling the
+    /// inner `mine_block` on `BlockchainFileSystem`.
+    ///
+    /// The re-validation under the write lock is critical: between
+    /// `prepare_mining_utxo` (which validates with a read lock) and here,
+    /// a competing block may have been accepted via `add_block`, spending
+    /// the same transaction inputs. Without this double-check, `mine_block`
+    /// would create a block with already-spent inputs, and `update_utxo_set`
+    /// would silently add the coinbase — creating money from nothing.
+    ///
+    /// This two-phase validation (read lock + write lock) is analogous to
+    /// Bitcoin Core's `TestBlockValidity` which validates the block template
+    /// before committing to mining.
     pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
         for trasaction in transactions {
             let is_valid = trasaction.verify(self).await?;
@@ -147,6 +162,46 @@ impl BlockchainService {
             }
         }
         let blockchain_guard = self.0.write().await;
+
+        // Re-validate transaction inputs under the write lock.
+        // Between prepare_mining_utxo (read lock) and here (write lock),
+        // a competing block may have been accepted, spending the same inputs.
+        // Without this check, mine_block creates a block with already-spent inputs,
+        // and update_utxo_set silently adds the coinbase — creating money from nothing.
+        let db = blockchain_guard.get_db();
+        let utxo_tree = db
+            .open_tree("chainstate")
+            .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
+
+        for tx in transactions {
+            if tx.is_coinbase() {
+                continue;
+            }
+            for input in tx.get_vin() {
+                match utxo_tree.get(input.get_txid()) {
+                    Ok(Some(outs_bytes)) => {
+                        let outputs: Vec<crate::primitives::TXOutput> =
+                            bincode::serde::decode_from_slice(
+                                outs_bytes.as_ref(),
+                                bincode::config::standard(),
+                            )
+                            .map(|(v, _)| v)
+                            .unwrap_or_default();
+                        if input.get_vout() >= outputs.len() {
+                            return Err(BtcError::InvalidValueForMiner(
+                                "Transaction input already spent (stale mining)".to_string(),
+                            ));
+                        }
+                    }
+                    _ => {
+                        return Err(BtcError::InvalidValueForMiner(
+                            "Transaction input UTXO not found (stale mining)".to_string(),
+                        ));
+                    }
+                }
+            }
+        }
+
         blockchain_guard.mine_block(transactions).await
     }
 

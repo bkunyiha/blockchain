@@ -61,7 +61,7 @@
 
 <div align="center">
 
-**[← Chapter 6: Primitives](../primitives/README.md)** | **Chapter 7: Utilities** | **[Chapter 8: Cryptography →](../crypto/README.md)** 
+**[← Chapter 6: Primitives](../primitives/README.md)** | **Chapter 7: Utilities** | **[Chapter 8: Cryptography →](../crypto/README.md)**
 </div>
 
 ---
@@ -175,7 +175,7 @@ If we decide not to use them, the right move is to delete them. Utilities should
 
 1. **Timestamp Consistency Check** — Call the timestamp utility in a loop 1,000 times. Verify that the returned values are monotonically non-decreasing. What guarantees does the implementation provide, and what edge cases could cause issues (e.g., system clock adjustments)?
 
-2. **Functional Helper Exploration** — Identify three places in the codebase where the functional programming helpers from the util module are used. For each, explain what the helper does and what the equivalent imperative code would look like.
+2. **Functional Helper Exploration** — The functional helpers in this module are currently used in unit tests (not production code). Either (a) find three test cases that use them and explain the transformation, or (b) identify three places in mempool/chain logic where they *could* be refactored in for clarity.
 
 ---
 
@@ -186,7 +186,7 @@ If we decide not to use them, the right move is to delete them. Utilities should
 
 ---
 
-## What We Covered
+## Summary
 
 - We explored the utility functions that provide cross-cutting functionality used by every module in the blockchain system.
 - We implemented timestamp generation for consistent time handling across blocks and transactions.

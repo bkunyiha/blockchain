@@ -61,7 +61,7 @@
 
 <div align="center">
 
-**[← Chapter 14: Wallet](../wallet/README.md)** | **Chapter 15: Web API Architecture** | **[Chapter 16: Desktop Admin UI (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
+**[← Chapter 14: Wallet System](../wallet/README.md)** | **Chapter 15: Web API Architecture** | **[Chapter 16: Desktop Admin UI (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 </div>
 
 ---
@@ -185,7 +185,7 @@ All code examples in this section are taken from the actual implementation:
 
 ---
 
-## What We Covered
+## Summary
 
 - We structured a REST API using Axum with typed handlers, extractors, and shared state for blockchain operations.
 - We implemented middleware layers for authentication, CORS, logging, and comprehensive error handling.

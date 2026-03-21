@@ -61,12 +61,12 @@
 
 <div align="center">
 
-**[← Chapter 13: Node Orchestration](../node/README.md)** | **[Chapter 14: Wallet System](README.md)** | **[Chapter 15: Web API Architecture →](../web/README.md)** 
+**[← Chapter 13: Node Orchestration](../node/README.md)** | **[Chapter 14: Wallet System](README.md)** | **[Chapter 15: Web API Architecture →](../web/README.md)**
 </div>
 
 ---
 
-> **Prerequisites**: This chapter depends on the cryptographic primitives from Chapter 8 (key generation, hashing, signing) and the UTXO model from Chapter 9. You do not need to have read the network or node chapters — the wallet module is a standalone library that the node and UI layers consume.
+> **Prerequisites:**: This chapter depends on the cryptographic primitives from Chapter 8 (key generation, hashing, signing) and the UTXO model from Chapter 9. You do not need to have read the network or node chapters — the wallet module is a standalone library that the node and UI layers consume.
 
 > **What you will learn in this chapter:**
 > - Generate cryptographic key pairs and create wallet addresses
@@ -104,7 +104,7 @@ What we do **not** implement in this module:
 
 ## Diagram: address payload structure used here
 
-This wallet implementation uses a payload that matches the “classic” Base58Check idea (version + data + checksum), but note the version byte and hashing choices are specific to our implementation.
+This wallet implementation uses a payload that matches the “classic” Base58Check idea (version + data + checksum), but note the version byte and hashing choices are specific to our implementation. This is intentional for teaching purposes; Bitcoin's actual address format is slightly different.
 
 ```text
 payload bytes:
@@ -126,7 +126,7 @@ The address pipeline flows through `Wallet::get_address` (constructs the payload
 
 ---
 
-## What We Covered
+## Summary
 
 - We built the wallet system that generates key pairs, creates addresses, and signs transactions to authorize spending.
 - We implemented wallet persistence so keys and addresses survive across application restarts.

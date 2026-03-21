@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Section 1: Introduction](01-Introduction.md)** | **Section 2: Architecture & Execution Flow** | **[Section 3: Deployment Topology →](03-Deployment-Topology.md)** 
+**[← Section 1: Introduction](01-Introduction.md)** | **Section 2: Architecture & Execution Flow** | **[Section 3: Deployment Topology →](03-Deployment-Topology.md)**
 
 </div>
 
@@ -95,17 +95,17 @@ After reading this section, you will understand:
 
 This section explains the container architecture, naming conventions, instance identification, and the complete execution flow when starting containers.
 
-> **Methods involved**
-> - `docker-entrypoint.sh` (`ci/docker-compose/configs/docker-entrypoint.sh`, [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
-> - `docker-compose.yml` (`ci/docker-compose/configs/docker-compose.yml`, [Listing 8.1](01A-Docker-Compose-Code-Listings.md#listing-81-cidocker-composeconfigsdocker-composeyml))
-> - Docker image build: `Dockerfile` (`ci/docker-compose/configs/Dockerfile`, [Listing 8.11](01A-Docker-Compose-Code-Listings.md#listing-811-cidocker-composeconfigsdockerfile))
-> - `wait-for-node.sh` (`ci/docker-compose/configs/wait-for-node.sh`, [Listing 8.3](01A-Docker-Compose-Code-Listings.md#listing-83-cidocker-composeconfigswait-for-nodesh))
+> **Methods involved:**
+> - `docker-entrypoint.sh` (`ci/docker-compose/configs/docker-entrypoint.sh`, [Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh))
+> - `docker-compose.yml` (`ci/docker-compose/configs/docker-compose.yml`, [Listing 22A.1](01A-Docker-Compose-Code-Listings.md#listing-22a1-cidocker-composeconfigsdocker-composeyml))
+> - Docker image build: `Dockerfile` (`ci/docker-compose/configs/Dockerfile`, [Listing 22A.11](01A-Docker-Compose-Code-Listings.md#listing-22a11-cidocker-composeconfigsdockerfile))
+> - `wait-for-node.sh` (`ci/docker-compose/configs/wait-for-node.sh`, [Listing 22A.3](01A-Docker-Compose-Code-Listings.md#listing-22a3-cidocker-composeconfigswait-for-nodesh))
 
 ## Container Architecture and Naming
 
 ### Container Naming System
 
-The entrypoint derives container identity from Docker's `HOSTNAME` value and normalizes it into `CONTAINER_NAME`. The complete implementation (including fallbacks and Kubernetes StatefulSet compatibility) is in [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh).
+The entrypoint derives container identity from Docker's `HOSTNAME` value and normalizes it into `CONTAINER_NAME`. The complete implementation (including fallbacks and Kubernetes StatefulSet compatibility) is in [Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh).
 
 #### The Chain of Events
 
@@ -135,7 +135,7 @@ When using Docker Compose, containers are named using this pattern:
 
 The entrypoint script reads `HOSTNAME` into `CONTAINER_NAME`:
 
-See the exact code path in [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh).
+See the exact code path in [Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh).
 
 If `HOSTNAME` is not set (shouldn't happen in Docker), it defaults to an empty string.
 
@@ -143,7 +143,7 @@ If `HOSTNAME` is not set (shouldn't happen in Docker), it defaults to an empty s
 
 The script then extracts the instance number from `CONTAINER_NAME`:
 
-The full instance-number extraction logic (Compose `_N` suffix, Kubernetes `-ordinal` suffix, and a safe default) is in [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh).
+The full instance-number extraction logic (Compose `_N` suffix, Kubernetes `-ordinal` suffix, and a safe default) is in [Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh).
 
 **How it works:**
 - The regex pattern `_([0-23]+)$` matches an underscore followed by one or more digits at the end of the string
@@ -154,7 +154,7 @@ The full instance-number extraction logic (Compose `_N` suffix, Kubernetes `-ord
 
 The script also detects the service type from the container name:
 
-See the complete service-type detection and port selection logic in [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh).
+See the complete service-type detection and port selection logic in [Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh).
 
 **How it works:**
 - Checks if the container name contains the string "miner" or "webserver"
@@ -429,7 +429,7 @@ Docker Compose creates containers:
 
 The entrypoint script executes and configures the miner instance. It performs container identification, instance number extraction, port calculation, and data directory setup before finally executing the blockchain binary.
 
-See the exact execution logic in [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh).
+See the exact execution logic in [Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh).
 
 **Key configuration steps:**
 - Get container name from HOSTNAME
@@ -469,7 +469,7 @@ Similar to the miner startup, the entrypoint script performs all initialization 
 
 The system resolves hostnames to IP addresses (where needed) before calling the Rust binary. This is operationally important because the Rust CLI expects `IP:port` socket addresses.
 
-See the exact resolution and the final `exec` in [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh).
+See the exact resolution and the final `exec` in [Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh).
 
 ### Phase 4: Health Checks (Background)
 
@@ -478,14 +478,14 @@ Docker Compose starts health checks after containers start:
 **Note**: The miner health check must pass before the webserver container starts (due to `depends_on: condition: service_healthy`).
 
 #### Miner Health Check
-Defined in `docker-compose.yml` ([Listing 8.1](01A-Docker-Compose-Code-Listings.md#listing-81-cidocker-composeconfigsdocker-composeyml)):
+Defined in `docker-compose.yml` ([Listing 22A.1](01A-Docker-Compose-Code-Listings.md#listing-22a1-cidocker-composeconfigsdocker-composeyml)):
 ```bash
 # Every 10 seconds, check if port 2001 is listening
 timeout 1 bash -c 'echo > /dev/tcp/localhost/2001'
 ```
 
 #### Webserver Health Check
-Defined in `docker-compose.yml` ([Listing 8.1](01A-Docker-Compose-Code-Listings.md#listing-81-cidocker-composeconfigsdocker-composeyml)):
+Defined in `docker-compose.yml` ([Listing 22A.1](01A-Docker-Compose-Code-Listings.md#listing-22a1-cidocker-composeconfigsdocker-composeyml)):
 ```bash
 # Every 10 seconds, check HTTP health endpoint
 curl -f http://localhost:8080/api/health/ready
@@ -497,12 +497,12 @@ Scaling does not introduce new execution phases; it changes **parameterization**
 
 - **Instance identity**: derived from container name → `INSTANCE_NUMBER`
 - **Per-instance ports**:
-  - miners: \(2001 + (INSTANCE\_NUMBER - 1)\)
-  - webservers: HTTP \(8080 + (INSTANCE\_NUMBER - 1)\), P2P mapping \(2101 + (INSTANCE\_NUMBER - 1)\)
+  - miners: $2001 + (INSTANCE\_NUMBER - 1)$
+  - webservers: HTTP $8080 + (INSTANCE\_NUMBER - 1)$, P2P mapping $2101 + (INSTANCE\_NUMBER - 1)$
 - **Per-instance storage**: the entrypoint chooses `dataN` / `blocksN` so each instance gets an isolated view of chain state
 - **Sequential startup decision**: miners wait only if `INSTANCE_NUMBER > 1`, while webservers wait for miners when enabled
 
-All of this logic is in [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh) and [Listing 8.3](01A-Docker-Compose-Code-Listings.md#listing-83-cidocker-composeconfigswait-for-nodesh).
+All of this logic is in [Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh) and [Listing 22A.3](01A-Docker-Compose-Code-Listings.md#listing-22a3-cidocker-composeconfigswait-for-nodesh).
 
 ## Summary
 

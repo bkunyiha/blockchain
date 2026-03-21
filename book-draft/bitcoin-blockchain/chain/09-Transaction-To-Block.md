@@ -148,7 +148,7 @@ Throughout, we omit unrelated class/struct definitions and focus only on the met
 
 The first executed instructions in the node runtime are in `main`. From there, we parse the CLI and route into `start_node(...)`.
 
-### Code Listing 9-9.1 — Process entrypoint (`main`)
+### Listing 9-9.1 — Process entrypoint (`main`)
 
 > **Source:** `main.rs` — Source
 
@@ -171,7 +171,7 @@ async fn main() {
 }
 ```
 
-### Code Listing 9-9.2 — CLI dispatch (`process_command`)
+### Listing 9-9.2 — CLI dispatch (`process_command`)
 
 > **Source:** `main.rs` — Source
 
@@ -203,7 +203,7 @@ async fn process_command(command: Command) -> Result<()> {
 }
 ```
 
-### Code Listing 9-9.3 — Wiring the node runtime (`start_node`)
+### Listing 9-9.3 — Wiring the node runtime (`start_node`)
 
 This method constructs `NodeContext` and spawns the network server (and optionally the web server).
 
@@ -293,7 +293,7 @@ and begins accepting TCP connections. Each accepted
 stream is handed to the P2P message dispatcher
 `net_processing::process_stream`.
 
-### Code Listing 9-9.4 — P2P accept loop (`Server::run_with_shutdown`)
+### Listing 9-9.4 — P2P accept loop (`Server::run_with_shutdown`)
 
 > **Source:** `server.rs` — Source
 
@@ -379,7 +379,7 @@ nodes. Its purpose is to provide a client-friendly
 HTTP API for creating wallets, querying balances,
 and creating transactions.
 
-### Code Listing 9-9.5 — Web server startup (`WebServer::start_with_shutdown`)
+### Listing 9-9.5 — Web server startup (`WebServer::start_with_shutdown`)
 
 > **Source:** `server.rs` — Source
 
@@ -409,7 +409,7 @@ pub async fn start_with_shutdown(
 }
 ```
 
-### Code Listing 9-9.6 — Route mapping: POST `/api/v1/transactions`
+### Listing 9-9.6 — Route mapping: POST `/api/v1/transactions`
 
 > **Source:** `api.rs` — Source
 
@@ -422,7 +422,7 @@ pub fn create_api_routes() -> Router<Arc<NodeContext>> {
 }
 ```
 
-### Code Listing 9-9.7 — HTTP handler: `send_transaction`
+### Listing 9-9.7 — HTTP handler: `send_transaction`
 
 > **Source:** `transaction.rs` — Source
 
@@ -453,7 +453,7 @@ pub async fn send_transaction(
 
 Now we enter the core node orchestration API.
 
-### Code Listing 9-9.8 — Create and submit a signed UTXO transaction (`NodeContext::btc_transaction`)
+### Listing 9-9.8 — Create and submit a signed UTXO transaction (`NodeContext::btc_transaction`)
 
 > **Source:** `context.rs` — Source
 
@@ -485,7 +485,7 @@ pub async fn btc_transaction(
 }
 ```
 
-### Code Listing 9-9.9 — Mempool acceptance entrypoint (`NodeContext::process_transaction`)
+### Listing 9-9.9 — Mempool acceptance entrypoint (`NodeContext::process_transaction`)
 
 > **Source:** `context.rs` — Source
 
@@ -525,7 +525,7 @@ pub async fn process_transaction(
 }
 ```
 
-### Code Listing 9-9.10 — Mempool insert (`txmempool::add_to_memory_pool`)
+### Listing 9-9.10 — Mempool insert (`txmempool::add_to_memory_pool`)
 
 > **Source:** `txmempool.rs` — Source
 
@@ -554,7 +554,7 @@ pub async fn add_to_memory_pool(
 
 Transactions propagate over the P2P layer, not the HTTP layer. The web layer exists only for local clients (UIs/admin tooling).
 
-### Code Listing 9-9.11 — Broadcast tx inventory to peers (`NodeContext::broadcast_transaction_to_nodes`)
+### Listing 9-9.11 — Broadcast tx inventory to peers (`NodeContext::broadcast_transaction_to_nodes`)
 
 > **Source:** `context.rs` — Source
 
@@ -573,7 +573,7 @@ async fn broadcast_transaction_to_nodes(&self, nodes: &[Node], txid: Vec<u8>) {
 }
 ```
 
-### Code Listing 9-9.12 — The background “after accept” hook (`submit_transaction_for_mining`)
+### Listing 9-9.12 — The background “after accept” hook (`submit_transaction_for_mining`)
 
 > **Source:** `context.rs` — Source
 
@@ -602,7 +602,7 @@ async fn submit_transaction_for_mining(
 }
 ```
 
-### Code Listing 9-9.13 — P2P send primitives (`send_inv`, `send_get_data`, `send_tx`, `send_block`)
+### Listing 9-9.13 — P2P send primitives (`send_inv`, `send_get_data`, `send_tx`, `send_block`)
 
 > **Source:** `net_processing.rs` — Source
 
@@ -642,7 +642,7 @@ pub async fn send_block(addr_to: &SocketAddr, block: &Block) {
 }
 ```
 
-### Code Listing 9-9.14 — P2P receive: how a miner gets the full tx (`process_stream`, tx-related arms)
+### Listing 9-9.14 — P2P receive: how a miner gets the full tx (`process_stream`, tx-related arms)
 
 This is the key moment where Node B (miner) learns about a transaction:
 
@@ -696,7 +696,7 @@ match pkg {
 
 The mining module is the last step in the pipeline. It is only active when the process is started as a miner (`GLOBAL_CONFIG.is_miner()`).
 
-### Code Listing 9-9.15 — Mining trigger and block assembly (`miner::*`)
+### Listing 9-9.15 — Mining trigger and block assembly (`miner::*`)
 
 > **Source:** `miner.rs` — Source
 
@@ -752,7 +752,7 @@ You have already studied these methods in detail in **Section 9.7 (Consensus and
 
 <div align="center">
 
-**[← Previous: Section 9.8 (Node Orchestration)](08-Node-Orchestration.md)** | **Section 9.9: Transaction to Block (End-to-End)** | **[Next: Chapter 10 (Block Acceptance) →](10-Whitepaper-Step-5-Block-Acceptance.md)** 
+**[← Previous: Section 9.8 (Node Orchestration)](08-Node-Orchestration.md)** | **Section 9.9: Transaction to Block (End-to-End)** | **[Next: Chapter 10 (Block Acceptance) →](10-Whitepaper-Step-5-Block-Acceptance.md)**
 
 </div>
 

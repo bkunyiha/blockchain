@@ -250,7 +250,7 @@ Rust's error handling is explicit and type-safe. `Result` and `Option` force exp
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Error Handling** | **[← Previous](04-Traits.md)** | **[Next →](06-Generics.md)** 
+**[← Rust Guide Index](README.md)** | **Error Handling** | **[← Previous](04-Traits.md)** | **[Next →](06-Generics.md)**
 
 </div>
 

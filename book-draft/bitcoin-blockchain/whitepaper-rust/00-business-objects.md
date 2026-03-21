@@ -55,7 +55,7 @@
 </div>
 
 ---
-# Business objects (Rust implementation map)
+# Business Objects: Core Types & Relationships
 
 **Note**: For the complete Rust implementation of these types, including code walkthroughs and detailed struct field-by-field analysis, see **[Chapter 9: Domain Model](../chain/01-Domain-Model.md)**. This chapter presents the whitepaper business perspective; the domain model chapter covers the actual Rust code.
 

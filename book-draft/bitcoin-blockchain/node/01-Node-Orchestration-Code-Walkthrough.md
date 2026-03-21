@@ -98,7 +98,7 @@ Chain / storage (Chapters 9–11)
   - maintains UTXO
 ```
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `NodeContext::process_transaction(...)`
 > - `NodeContext::add_block(...)`
@@ -136,7 +136,7 @@ Inbound tx bytes
              -> (if mining threshold) miner::process_mine_block
 ```
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `NodeContext::{new, process_transaction}`
 > - `NodeContext::submit_transaction_for_mining` (internal)
@@ -144,7 +144,7 @@ Inbound tx bytes
 > - `txmempool::{add_to_memory_pool, transaction_exists_in_pool}`
 > - `send_inv(...)` (**defined earlier** in **[Chapter 12.A: Network Layer — Code Walkthrough](../net/01-Network-Operation-Code-Walkthrough.md)**)
 
-### Code Listing 2.22A-1.1 — `NodeContext` initialization and transaction acceptance (part 1) (`bitcoin/src/node/context.rs`)
+### Listing 13-1.1 — `NodeContext` initialization and transaction acceptance (part 1) (`bitcoin/src/node/context.rs`)
 
 ```rust
 use crate::chain::{BlockchainService, UTXOSet};
@@ -209,7 +209,7 @@ impl NodeContext {
 
 After accepting a transaction into the mempool, the node spawns background tasks for relay and mining decisions:
 
-### Code Listing 2.22A-2 — Background relay and mining submission (part 2)
+### Listing 13-2 — Background relay and mining submission (part 2)
 
 ```rust
     async fn submit_transaction_for_mining(
@@ -276,16 +276,16 @@ This is the subset of `NodeContext` that the network layer and UI/API use for:
 - answering sync queries (height, hashes, block lookup)
 - basic peer introspection (who are we connected to?)
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `NodeContext::{get_blockchain, blockchain}` (chain handle access)
 > - `NodeContext::{add_block, get_blockchain_height, get_block_hashes, get_block}`
 > - `NodeContext::{get_peers, get_peer_count}`
 > - `NodeContext::mine_empty_block(...)` (admin/testing convenience)
 >
-> The transaction pipeline methods are defined earlier in **Code Listing 2.22A-1.1**.
+> The transaction pipeline methods are defined earlier in **Listing 13-1.1**.
 
-### Code Listing 2.22A-3 — `NodeContext` (block and chain queries) (`bitcoin/src/node/context.rs`)
+### Listing 13-3 — `NodeContext` (block and chain queries) (`bitcoin/src/node/context.rs`)
 
 ```rust
 use crate::chain::BlockchainService;
@@ -353,13 +353,13 @@ Additional methods on `NodeContext` provide mining and peer discovery functional
 
 The mempool module is deliberately small: it is a thin wrapper around `GLOBAL_MEMORY_POOL` plus a UTXO-side flag update so outputs can be marked “in mempool”.
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `add_to_memory_pool(...)`
 > - `remove_from_memory_pool(...)`
 > - `transaction_exists_in_pool(...)`
 
-### Code Listing 2.22A-6 — Mempool helpers (`bitcoin/src/node/txmempool.rs`)
+### Listing 13-6 — Mempool helpers (`bitcoin/src/node/txmempool.rs`)
 
 ```rust
 use crate::error::Result;
@@ -417,7 +417,7 @@ process_mine_block -> blockchain.mine_block(txs)
 broadcast_new_block -> send_inv(op=Block, items=[block_hash])
 ```
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `should_trigger_mining()`
 > - `prepare_mining_utxo(...)`
@@ -426,7 +426,7 @@ broadcast_new_block -> send_inv(op=Block, items=[block_hash])
 > - `mine_empty_block(...)`
 > - `cleanup_invalid_transactions(...)`
 
-### Code Listing 2.22A-3.1 — Mining trigger and block construction (part 1) (`bitcoin/src/node/miner.rs`)
+### Listing 13-3.1 — Mining trigger and block construction (part 1) (`bitcoin/src/node/miner.rs`)
 
 ```rust
 use super::txmempool::remove_from_memory_pool;
@@ -446,30 +446,65 @@ pub fn should_trigger_mining() -> bool {
         && GLOBAL_CONFIG.is_miner()
 }
 
-pub fn prepare_mining_utxo(
+pub async fn prepare_mining_utxo(
     mining_address: &WalletAddress,
+    blockchain: &BlockchainService,   // validates inputs against UTXO set
 ) -> Result<Vec<Transaction>> {
-    // Snapshot mempool + add coinbase as block reward
-    let mut txs = GLOBAL_MEMORY_POOL.get_all()?;
-    txs.push(Transaction::new_coinbase_tx(mining_address)?);
-    Ok(txs)
+    // Snapshot mempool and validate each tx's inputs are still unspent.
+    // This prevents mining blocks with already-spent inputs when a
+    // competing block has been accepted during the race between miners.
+    let txs = GLOBAL_MEMORY_POOL.get_all()?;
+    let db = blockchain.get_db().await?;
+    let utxo_tree = db.open_tree("chainstate")?;
+    let mut valid_txs = Vec::new();
+    for tx in txs {
+        if tx.is_coinbase() { continue; }
+        // ... (validate each input exists in UTXO tree)
+        // Stale transactions are removed from mempool
+    }
+    valid_txs.push(Transaction::new_coinbase_tx(mining_address)?);
+    Ok(valid_txs)
 }
+```
 
+Once we have a validated transaction set, `process_mine_block` performs the actual proof-of-work, clears the mempool, and announces the result to peers:
+
+### Listing 13-3.1b — Mining execution and broadcast (`bitcoin/src/node/miner.rs`)
+
+```rust
 pub async fn process_mine_block(
     txs: Vec<Transaction>,
     blockchain: &BlockchainService,
 ) -> Result<Block> {
-    // 1) Mine: PoW + chainstate integration
-    let new_block = blockchain.mine_block(&txs).await?;
-
-    // 2) Remove confirmed txs from mempool
-    for tx in &txs {
-        remove_from_memory_pool(tx.clone(), blockchain).await;
+    // Prevent concurrent mining
+    if MINING_IN_PROGRESS.compare_exchange(false, true, ...).is_err() {
+        return Err("Mining already in progress");
     }
+    reset_mining_cancellation();
 
-    // 3) Announce block hash to peers (inventory-first)
-    broadcast_new_block(&new_block).await?;
-    Ok(new_block)
+    let result = async {
+        // Check cancellation before mining (competing block may have arrived)
+        if is_mining_cancelled() { return Err("Mining cancelled"); }
+
+        // 1) Mine: PoW + chainstate integration (with stale-mining protection)
+        let new_block = blockchain.mine_block(&txs).await?;
+
+        // CRITICAL: Do NOT cancel after block creation —
+        // the block is in our chain and MUST be broadcast,
+        // or we create a permanent minority fork.
+
+        // 2) Remove confirmed txs from mempool
+        for tx in &txs {
+            remove_from_memory_pool(tx.clone(), blockchain).await;
+        }
+
+        // 3) Announce block hash to peers (inventory-first)
+        broadcast_new_block(&new_block).await?;
+        Ok(new_block)
+    }.await;
+
+    MINING_IN_PROGRESS.store(false, Ordering::SeqCst); // Always release lock
+    result
 }
 
 pub async fn broadcast_new_block(block: &Block) -> Result<()> {
@@ -490,7 +525,7 @@ pub async fn broadcast_new_block(block: &Block) -> Result<()> {
 
 Empty block mining and transaction cleanup follow the main mining pipeline:
 
-### Code Listing 2.22A-3.2 — Empty block mining and cleanup (part 2)
+### Listing 13-3.2 — Empty block mining and cleanup (part 2)
 
 ```rust
 pub async fn mine_empty_block(
@@ -520,12 +555,12 @@ pub async fn cleanup_invalid_transactions() -> Result<()> {
 
 The peer set is a thread-safe wrapper around a `HashSet<Node>` guarded by an `RwLock`.
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `Node::get_addr()`
 > - `Nodes::{add_node, add_nodes, evict_node, get_nodes, node_is_known}`
 
-### Code Listing 2.22A-16 — Peer data structures (`bitcoin/src/node/peers.rs`)
+### Listing 13-16 — Peer data structures (`bitcoin/src/node/peers.rs`)
 
 ```rust
 use crate::error::Result;
@@ -587,7 +622,7 @@ impl Default for Nodes {
 
 The network router is responsible for **decoding** and **dispatching**, and then calling into `NodeContext` for stateful operations.
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `process_stream(...)` (**defined earlier** in **[Chapter 12.A: Network Layer — Code Walkthrough](../net/01-Network-Operation-Code-Walkthrough.md)**)
 > - `NodeContext::process_transaction(...)` (printed above)
@@ -613,7 +648,7 @@ This is the “runtime wiring” that makes the node feel like a single system r
 
 <div align="center">
 
-**[← Chapter 13: Node Orchestration](README.md)** | **Chapter 13.A: Code Walkthrough** | **[Chapter 14: Wallet System →](../wallet/README.md)** 
+**[← Chapter 13: Node Orchestration](README.md)** | **Chapter 13.A: Code Walkthrough** | **[Chapter 14: Wallet System →](../wallet/README.md)**
 
 </div>
 

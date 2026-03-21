@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.2: Server Setup** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
+**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.2: Server Setup** | **[Next: Chapter 16: Desktop Admin (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 
 </div>
 
@@ -77,7 +77,7 @@
 
 ## Server Setup and Configuration
 
-The web server is the entry point for all HTTP requests. Let's explore how we structure and configure it.
+The web server is the entry point for all HTTP requests. We explore how it is structured and configured below.
 
 ### WebServer Structure
 
@@ -242,7 +242,7 @@ This is crucial for production deployments where we need to update the server wi
 
 <div align="center">
 
-**[← Previous: Introduction](01-Introduction.md)** | **[Chapter 15.2: Server Setup](02-Server-Setup.md)** | **[Next: Routing →](03-Routing.md)** 
+**[← Previous: Introduction](01-Introduction.md)** | **[Chapter 15.2: Server Setup](02-Server-Setup.md)** | **[Next: Routing →](03-Routing.md)**
 
 **[← Web API Index](README.md)** | **Introduction & Architecture Overview**
 

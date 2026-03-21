@@ -134,7 +134,7 @@ Continue to **[Introduction →](01-Introduction.md)**.
 
 <div align=”center”>
 
-**[← Rust Guide Index](README.md)** | **Rust Installation and Setup** | **[Introduction →](01-Introduction.md)** 
+**[← Rust Guide Index](README.md)** | **Rust Installation and Setup** | **[Introduction →](01-Introduction.md)**
 
 </div>
 

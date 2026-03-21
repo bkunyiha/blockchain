@@ -289,7 +289,7 @@ In this step, we do two things:
 
 In this section, “surface area” simply means: **the set of fields exposed by the `Transaction`, `TXInput`, and `TXOutput` types**. Those fields are the contract the rest of the system relies on.
 
-They also reveal the project’s UTXO worldview: a transaction spends prior outputs by referencing an outpoint \((txid, vout)\) in `TXInput`, and it creates new spendable outputs in `TXOutput`.
+They also reveal the project’s UTXO worldview: a transaction spends prior outputs by referencing an outpoint $(txid, vout)$ in `TXInput`, and it creates new spendable outputs in `TXOutput`.
 
 These structs define what a transaction *is* in this codebase.
 
@@ -318,7 +318,7 @@ pub struct Transaction {
 ```
 
 - **What to notice**
-  - A spend is identified by an outpoint \((txid, vout)\): `TXInput.{txid, vout}`.
+  - A spend is identified by an outpoint $(txid, vout)$: `TXInput.{txid, vout}`.
   - Authorization is per-input: `TXInput.signature` + `TXInput.pub_key`.
   - Outputs are locked by a pubkey-hash: `TXOutput.pub_key_hash` (no script engine here).
 - **Whitepaper mapping**
@@ -327,14 +327,14 @@ pub struct Transaction {
 **How a spending transaction is constructed in this codebase (high-level)**:
 
 1. **Select spendable outputs**: query the UTXO set for outpoints locked to the sender and accumulate value until we cover the target amount.
-2. **Create inputs**: for each selected outpoint \((txid, vout)\), create `TXInput { txid, vout, signature: [], pub_key: sender_pub_key }`.
+2. **Create inputs**: for each selected outpoint $(txid, vout)$, create `TXInput { txid, vout, signature: [], pub_key: sender_pub_key }`.
 3. **Create outputs**: create a payment output to the recipient, and (if needed) a **change** output back to the sender.
 4. **Compute the txid**: hash a serialized copy with `id = []` (so the definition is not circular), then store the digest into `Transaction.id`.
 5. **Sign**: produce per-input signatures over a trimmed copy and store them into `TXInput.signature`.
 
 In the project, the concrete entry point for this flow is `Transaction::new_utxo_transaction(...)` (we read the full implementation in Section 9.5: Transaction Lifecycle).
 
-**Code Listing 9-2: Constructing a UTXO spending transaction (selection → change → txid → sign)**
+### Listing 9-2: Constructing a UTXO spending transaction (selection → change → txid → sign)
 Source: `bitcoin/src/primitives/transaction.rs`
 
 ```rust
@@ -415,7 +415,7 @@ After creating inputs and outputs, the transaction is finalized by computing its
 }
 ```
 
-**Code Listing 9-3: Computing the txid (hash a copy with `id = []`)**
+### Listing 9-3: Computing the txid (hash a copy with `id = []`)
 Source: `bitcoin/src/primitives/transaction.rs`
 
 ```rust
@@ -434,7 +434,7 @@ fn hash(&mut self) -> Result<Vec<u8>> {
 
 ### Step 3 — Separate “history” (blocks) from “derived state” (UTXO set)
 
-**UTXO (Unspent Transaction Output)**: a UTXO is a specific transaction output that is currently spendable. In other words, it is an output identified by an outpoint \((txid, vout)\) that has **not** been consumed by any later transaction input.
+**UTXO (Unspent Transaction Output)**: a UTXO is a specific transaction output that is currently spendable. In other words, it is an output identified by an outpoint $(txid, vout)$ that has **not** been consumed by any later transaction input.
 
 **How this differs from the blockchain (and why it is separate)**:
 
@@ -567,7 +567,7 @@ The iteration through outputs evaluates each candidate against four spendability
 
 In this implementation, a transaction’s “ID” is
 computed by hashing a serialized copy where `id` is
-empty (see **Code Listing 9-3** above). The
+empty (see **Listing 9-3** above). The
 important rule is: **txid commits to `vin` and
 `vout`, not to the already-stored `id` field**, so
 the definition is not circular.
@@ -655,7 +655,7 @@ pub fn new_coinbase_tx(to: &WalletAddress) -> Result<Transaction> {
 
 <div align="center">
 
-**[← Previous: Technical Foundations](README.md)** | **Domain Model** | **[Next: Blockchain State Management →](02-Blockchain-State-Management.md)** 
+**[← Previous: Technical Foundations](README.md)** | **Domain Model** | **[Next: Blockchain State Management →](02-Blockchain-State-Management.md)**
 
 </div>
 

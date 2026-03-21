@@ -85,7 +85,7 @@ Why **80 bytes** (and why we hash the header):
   - `timestamp` (4)
   - `difficulty_bits`(nBits) (4)
   - `nonce` (4)
-  - Total: \(4 + 32 + 32 + 4 + 4 + 4 = 80\) bytes.
+  - Total: $4 + 32 + 32 + 4 + 4 + 4 = 80$ bytes.
 - Mining/proof-of-work needs a value we can hash **over and over** while we vary the nonce. A fixed 80-byte header is ideal: it is small, deterministic, and cheap to re-hash millions/billions of times.
 - We don’t need to hash the entire block body every time, because the header already commits to the transaction list via `merkle_root`. If any transaction changes, the Merkle root changes, and therefore the 80-byte header changes.
 

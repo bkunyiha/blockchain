@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.5: Middleware Layer** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
+**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.5: Middleware Layer** | **[Next: Chapter 16: Desktop Admin (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 
 </div>
 
@@ -77,7 +77,7 @@
 
 ## Middleware Layer
 
-Middleware provides cross-cutting concerns like authentication, CORS, logging, and error handling. Let's explore each middleware component we implement.
+Middleware provides cross-cutting concerns like authentication, CORS, logging, and error handling. We explore each middleware component below.
 
 ### Authentication Middleware
 
@@ -101,9 +101,9 @@ pub async fn require_role(
     };
 
     // Admin can access wallet routes too
-    let allowed = caller_role == required 
+    let allowed = caller_role == required
         || (caller_role == Role::Admin && required == Role::Wallet);
-    
+
     if !allowed {
         return Err(StatusCode::FORBIDDEN);
     }
@@ -271,7 +271,7 @@ async fn handle_errors(
             .await
             .unwrap_or_default();
         let body_str = String::from_utf8_lossy(&body_bytes);
-        
+
         tracing::error!(
             "[handle_errors]: Error response ({}): {}",
             parts.status,
@@ -283,7 +283,7 @@ async fn handle_errors(
             parts,
             axum::body::Body::from(body_bytes)
         );
-        
+
         if response.status() == StatusCode::INTERNAL_SERVER_ERROR {
             let error_response = ErrorResponse {
                 error: "Internal Server Error".to_string(),
@@ -330,7 +330,7 @@ See [Error Handling in Axum](Axum.md#error-handling) for detailed technical info
 
 <div align="center">
 
-**[← Previous: Handlers](04-Handlers.md)** | **[Chapter 15.5: Middleware Layer](05-Middleware.md)** | **[Next: Data Models →](06-Data-Models.md)** 
+**[← Previous: Handlers](04-Handlers.md)** | **[Chapter 15.5: Middleware Layer](05-Middleware.md)** | **[Next: Data Models →](06-Data-Models.md)**
 
 **[← Web API Index](README.md)** | **Introduction & Architecture Overview**
 

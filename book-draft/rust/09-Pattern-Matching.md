@@ -127,7 +127,7 @@ Pattern matching ensures exhaustive case handling via compiler-enforced `match` 
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Pattern Matching** | **[← Previous](08-Smart-Pointers.md)** | **[Next →](10-Derive-Macros.md)** 
+**[← Rust Guide Index](README.md)** | **Pattern Matching** | **[← Previous](08-Smart-Pointers.md)** | **[Next →](10-Derive-Macros.md)**
 
 </div>
 

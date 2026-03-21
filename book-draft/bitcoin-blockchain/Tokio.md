@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Back to Web API Index](web/README.md)** | **[Tokio Runtime Guide](Tokio.md)** | **[Web API Architecture Index →](web/README.md)** 
+**[← Back to Web API Index](web/README.md)** | **[Tokio Runtime Guide](Tokio.md)** | **[Web API Architecture Index →](web/README.md)**
 
 </div>
 
@@ -87,7 +87,7 @@ In our blockchain project, Tokio powers:
 - **Signal Handling**: Graceful shutdown on Ctrl+C
 - **Task Coordination**: Task spawning, synchronization, cancellation
 
-> **See the full implementation**: This guide explains Tokio concepts with examples from our codebase. To see how Tokio integrates with our web API, see the Server Setup chapter. For network operations, see the blockchain node implementation.
+> **See the full implementation:**: This guide explains Tokio concepts with examples from our codebase. To see how Tokio integrates with our web API, see the Server Setup chapter. For network operations, see the blockchain node implementation.
 
 ---
 
@@ -622,7 +622,7 @@ Tokio's design allows our blockchain to handle thousands of concurrent connectio
 
 <div align="center">
 
-**[← Back to Web API Index](web/README.md)** | **[Tokio Runtime Guide](Tokio.md)** | **[Web API Architecture Index →](web/README.md)** | **Tower** | **Serde** | **Utoipa** 
+**[← Back to Web API Index](web/README.md)** | **[Tokio Runtime Guide](Tokio.md)** | **[Web API Architecture Index →](web/README.md)** | **Tower** | **Serde** | **Utoipa**
 
 </div>
 

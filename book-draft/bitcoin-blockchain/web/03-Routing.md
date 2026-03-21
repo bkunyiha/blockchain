@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.3: Routing System** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
+**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.3: Routing System** | **[Next: Chapter 16: Desktop Admin (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 
 </div>
 
@@ -77,7 +77,7 @@
 
 ## Routing System
 
-The routing system organizes endpoints into logical groups and applies appropriate middleware. Let's explore how we structure routes.
+The routing system organizes endpoints into logical groups and applies appropriate middleware. We explore how routes are structured below.
 
 ### Route Organization
 
@@ -100,13 +100,13 @@ pub fn create_api_routes() -> Router<Arc<NodeContext>> {
         .route("/blockchain/blocks", get(blockchain::get_blocks))
         .route("/blockchain/blocks/latest", get(blockchain::get_latest_blocks))
         .route("/blockchain/blocks/{hash}", get(blockchain::get_block_by_hash))
-        
+
         // Wallet endpoints
         .route("/wallet", post(wallet::create_wallet))
         .route("/wallet/addresses", get(wallet::get_addresses))
         .route("/wallet/{address}", get(wallet::get_wallet_info))
         .route("/wallet/{address}/balance", get(wallet::get_balance))
-        
+
         // Transaction endpoints
         .route("/transactions", post(transaction::send_transaction))
         .route("/transactions", get(transaction::get_transactions))
@@ -119,7 +119,7 @@ pub fn create_api_routes() -> Router<Arc<NodeContext>> {
             "/transactions/address/{address}",
             get(transaction::get_address_transactions)
         )
-        
+
         // Mining endpoints
         .route("/mining/info", get(mining::get_mining_info))
         .route("/mining/generatetoaddress", post(mining::generate_to_address))
@@ -213,7 +213,7 @@ These endpoints are essential for:
 
 <div align="center">
 
-**[← Previous: Server Setup](02-Server-Setup.md)** | **[Chapter 15.3: Routing System](03-Routing.md)** | **[Next: Handlers →](04-Handlers.md)** 
+**[← Previous: Server Setup](02-Server-Setup.md)** | **[Chapter 15.3: Routing System](03-Routing.md)** | **[Next: Handlers →](04-Handlers.md)**
 
 **[← Web API Index](README.md)** | **Introduction & Architecture Overview**
 

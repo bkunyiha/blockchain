@@ -76,7 +76,7 @@
 
 ## Introduction
 
-> **When to read this chapter**: This chapter is designed as a reference you can read before starting Part I or consult as needed while working through the implementation chapters. If you are already comfortable with Rust ownership, traits, generics, error handling, and async/await, you can safely skip ahead and return here when you encounter unfamiliar syntax.
+> **Prerequisites:**: This chapter is designed as a reference you can read before starting Part I or consult as needed while working through the implementation chapters. If you are already comfortable with Rust ownership, traits, generics, error handling, and async/await, you can safely skip ahead and return here when you encounter unfamiliar syntax.
 
 In this section, we teach Rust as a working tool for a real systems project: we explain the language features we rely on, then we show how those features appear in our blockchain implementation. Our goal is not to memorize Rust syntax; our goal is to build the mental model that lets us implement correct, performant systems code.
 
@@ -112,7 +112,7 @@ Each chapter builds on previous concepts, so reading sequentially will provide t
 
 > **Tip:** If any Rust concept in the main chapters is unclear, use this guide as a reference. Each section includes examples drawn directly from the blockchain codebase, so you will see how these language features work in practice.
 
-> **Implementation Context**: This guide explains Rust language features with examples from our blockchain implementation. To see these features applied in specific contexts, see the [Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) chapter for ownership and data structures, the [Web API Architecture](../bitcoin-blockchain/web/README.md) for async patterns and error handling, and the [Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md) for asynchronous programming details.
+> **Note:**: This guide explains Rust language features with examples from our blockchain implementation. To see these features applied in specific contexts, see the [Transaction ID Format](../bitcoin-blockchain/primitives/02-Transaction-ID-Format.md) chapter for ownership and data structures, the [Web API Architecture](../bitcoin-blockchain/web/README.md) for async patterns and error handling, and the [Tokio Runtime Guide](../bitcoin-blockchain/Tokio.md) for asynchronous programming details.
 
 ---
 
@@ -269,7 +269,7 @@ This guide teaches Rust through a real blockchain implementation. Each concept s
 
 ## Getting Started
 
-Ready to begin your journey through Rust? Start with **[Rust Installation & Setup](00-Rust-Installation-Setup.md)** to get your local toolchain and editor ready. Then continue to the **[Introduction](01-Introduction.md)** to understand Rust’s design philosophy, and proceed to **[Ownership and Borrowing](02-Ownership-and-Borrowing.md)**—the foundation of Rust's memory safety guarantees. Conclude with **[Testing](16-Testing.md)** and **[Best Practices](17-Best-Practices.md)** to learn how to write reliable, production-ready code.
+Start with **[Rust Installation & Setup](00-Rust-Installation-Setup.md)** to get your local toolchain and editor ready. Then continue to the **[Introduction](01-Introduction.md)** to understand Rust’s design philosophy, and proceed to **[Ownership and Borrowing](02-Ownership-and-Borrowing.md)** — the foundation of Rust’s memory safety guarantees. Conclude with **[Testing](16-Testing.md)** and **[Best Practices](17-Best-Practices.md)** to learn how to write reliable, production-ready code.
 
 For cryptographic primitives and libraries used in blockchain, see the **[Cryptography Guide](../bitcoin-blockchain/crypto/README.md)**.
 
@@ -280,7 +280,7 @@ Each chapter includes:
 - **Summary sections** that reinforce key concepts
 - **Navigation links** to related chapters
 
-Whether you're new to Rust or looking to deepen your understanding, this guide provides the technical depth and practical examples you need to write effective Rust code.
+Whether you are new to Rust or looking to deepen your understanding, this guide provides the technical depth and practical examples you need to write effective Rust code.
 
 ---
 

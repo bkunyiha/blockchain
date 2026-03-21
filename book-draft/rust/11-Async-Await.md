@@ -75,7 +75,7 @@ pub async fn get_blockchain_info(
         .get_blockchain_height()
         .await  // ← Yields control, resumes when ready
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+
     // ... rest of handler
 }
 ```
@@ -214,7 +214,7 @@ In the next chapter, we'll explore concurrency primitives that ensure thread saf
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Async/Await** | **[← Previous](10-Derive-Macros.md)** | **[Next →](12-Concurrency.md)** 
+**[← Rust Guide Index](README.md)** | **Async/Await** | **[← Previous](10-Derive-Macros.md)** | **[Next →](12-Concurrency.md)**
 
 </div>
 

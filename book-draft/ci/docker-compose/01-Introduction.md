@@ -74,7 +74,7 @@
 
 ---
 
-> **Prerequisites**: This chapter assumes basic familiarity with Docker (images, containers, volumes) and command-line usage. No prior Docker Compose experience is required — we explain the compose file format as we go. You should have completed the core implementation chapters (Part I) to understand what the services in each container are doing.
+> **Prerequisites:**: This chapter assumes basic familiarity with Docker (images, containers, volumes) and command-line usage. No prior Docker Compose experience is required — we explain the compose file format as we go. You should have completed the core implementation chapters (Part I) to understand what the services in each container are doing.
 
 **Why deploy with containers?** Up to this point in the book, we have been running a single node from `cargo run`. But Bitcoin is a distributed system — you need multiple nodes to test peer discovery, block propagation, and chain synchronization. Docker Compose lets you spin up a configurable number of interconnected nodes with a single command, each with its own storage volume, while sharing a common network. This chapter bridges the gap between "the code compiles" and "the system actually works as a network."
 
@@ -194,7 +194,7 @@ We'll explore wallet address distribution in more detail in the [Wallet Address 
 
 #### Scaling to Multiple Instances
 
-Once you're comfortable with the basic setup, you'll likely want to scale to multiple instances. Before scaling, we need to set up wallet addresses. We'll use `WALLET_ADDRESS_POOL` with enough addresses for all our nodes:
+Once you are comfortable with the basic setup, you will likely want to scale to multiple instances. Before scaling, we need to set up wallet addresses. We use `WALLET_ADDRESS_POOL` with enough addresses for all our nodes:
 
 ```bash
 cd ci/docker-compose/configs
@@ -206,7 +206,7 @@ export WALLET_ADDRESS_POOL="addr1,addr2,addr3,addr4,addr5"
 # webserver_1 → addr4, webserver_2 → addr5
 ```
 
-**<span style="color:red;">Important</span>**: When using `--scale` directly with `docker compose up -d --scale`, only the first instance gets ports mapped. To ensure **ALL instances have ports accessible externally**, always use the helper script `./docker-compose.scale.sh`.
+**Important:** When using `--scale` directly with `docker compose up -d --scale`, only the first instance gets ports mapped. To ensure **ALL instances have ports accessible externally**, always use the helper script `./docker-compose.scale.sh`.
 
 The helper script:
 - ✅ Automatically generates `docker-compose.override.yml` with port mappings for all instances
@@ -233,8 +233,8 @@ There are also standalone alternative compose files that can be used instead:
 
 Full listings:
 
-- `docker-compose.miner.yml`: [Listing 8.8](01A-Docker-Compose-Code-Listings.md#listing-88-cidocker-composeconfigsdocker-composemineryml)
-- `docker-compose.webserver.yml`: [Listing 8.9](01A-Docker-Compose-Code-Listings.md#listing-89-cidocker-composeconfigsdocker-composewebserveryml)
+- `docker-compose.miner.yml`: [Listing 22A.8](01A-Docker-Compose-Code-Listings.md#listing-22a8-cidocker-composeconfigsdocker-composemineryml)
+- `docker-compose.webserver.yml`: [Listing 22A.9](01A-Docker-Compose-Code-Listings.md#listing-22a9-cidocker-composeconfigsdocker-composewebserveryml)
 
 ### Port Assignments
 
@@ -494,6 +494,8 @@ services:
       - WALLET_ADDRESS_POOL=${WEBSERVER_ADDRESS_POOL}
 ```
 
+We export the pool variables and pass them to `docker compose`:
+
 ```bash
 export MINER_ADDRESS_POOL="miner-addr1,miner-addr2,miner-addr3"
 export WEBSERVER_ADDRESS_POOL="webserver-addr1,webserver-addr2"
@@ -527,10 +529,6 @@ docker compose up -d
 export NODE_MINING_ADDRESS=3npBNyKSEwhCQWTXHFjwR8Rb66kjq6khfZSdmLPm8Gde9XoTwW
 
 cd ci/docker-compose/configs
-docker compose up -d
-```
-
-```bash
 docker compose up -d
 ```
 
@@ -652,13 +650,13 @@ See [Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-O
 
 ## Additional Resources
 
-- Docker Compose documentation: https://docs.docker.com/compose/
-- Docker networking: https://docs.docker.com/network/
-- Volume management: https://docs.docker.com/storage/volumes/
+- [Docker Compose documentation](https://docs.docker.com/compose/)
+- [Docker networking](https://docs.docker.com/network/)
+- [Volume management](https://docs.docker.com/storage/volumes/)
 
 ---
 
-## What We Covered
+## Summary
 
 - We deployed a multi-node blockchain network using Docker Compose.
 - We configured container networking, port mapping, and volume management.

@@ -67,7 +67,7 @@ cd rust-blockchain
 
 ```bash
 cd ci/docker-compose/configs
-docker-compose up --build
+docker compose up --build
 ```
 
 This builds the Rust node from source (first run takes a few minutes while Cargo compiles), then starts two containers: a **miner** node and a **webserver** node.
@@ -92,7 +92,7 @@ Blocks are being mined, hashed, and propagated across the network in real time.
 
 While the network is running, open your browser to:
 
-```
+```text
 http://localhost:8080
 ```
 
@@ -131,7 +131,7 @@ The rest of this book explains how every piece of that system works, line by lin
 ## Clean up
 
 ```bash
-docker-compose down -v    # Stop containers and remove volumes
+docker compose down -v    # Stop containers and remove volumes
 ```
 
 ---

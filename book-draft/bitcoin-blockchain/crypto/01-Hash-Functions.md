@@ -295,7 +295,7 @@ pub fn hash_transactions(&self) -> Vec<u8> {
 ### Usage in Merkle Tree Construction
 
 **What a Merkle tree is (succinctly):**
-A **Merkle tree** is a binary hash tree: **leaves** are hashes of items (e.g., transaction IDs or transaction hashes), and each **internal node** is the hash of its two child hashes. The **Merkle root** is the final hash at the top and serves as a compact *commitment* to the entire set and ordering of leaves. Given a leaf and its **Merkle proof** (the sibling hashes along the path), any node can verify inclusion by recomputing hashes up to the root in \(O(\log n)\) time.
+A **Merkle tree** is a binary hash tree: **leaves** are hashes of items (e.g., transaction IDs or transaction hashes), and each **internal node** is the hash of its two child hashes. The **Merkle root** is the final hash at the top and serves as a compact *commitment* to the entire set and ordering of leaves. Given a leaf and its **Merkle proof** (the sibling hashes along the path), any node can verify inclusion by recomputing hashes up to the root in $O(\log n)$ time.
 
 If you are implementing this yourself, the important thing to remember is: you do *pairwise hashing bottom-up* until you get one hash, and that one hash is what you commit to in the block header.
 Merkle trees enable efficient verification of transaction inclusion in blocks. The root hash represents all transactions in the block.
@@ -367,7 +367,7 @@ In practical terms: **for Taproot (P2TR) spends, Bitcoin uses Schnorr instead of
 #### What an output type is
 
 An **output type** is a standard pattern for the *locking condition* of a transaction output—i.e., the rule that says what data must be provided later to spend the output. In implementation terms, an output contains a **locking script** (`scriptPubKey`). Different standard `scriptPubKey` patterns are what developers call output types.
-For example: 
+For example:
     - **P2PKH** (Pay-to-PubKey-Hash): locks to a public-key hash; typically spent with an ECDSA signature + public key.
     - **P2SH** (Pay-to-Script-Hash): locks to a script hash; spending reveals the redeem script plus required data (often signatures).
     - **P2WPKH** (Pay-to-Witness-PubKey-Hash, SegWit v0): P2PKH-style lock, but signatures move to witness (fixes malleability for these spends).
@@ -543,19 +543,19 @@ Proof-of-work mining uses hash functions to find valid block hashes. Miners repe
 pub fn run(&self) -> (i64, String) {
     let mut nonce = 0;
     let mut hash = Vec::new();
-    
+
     while nonce < MAX_NONCE {
         let data = self.prepare_data(nonce);
         hash = crate::sha256_digest(data.as_slice());
         let hash_int = BigInt::from_bytes_be(Sign::Plus, hash.as_slice());
-        
+
         if hash_int.lt(self.target.borrow()) {
             break; // Found valid hash!
         } else {
             nonce += 1; // Try next nonce
         }
     }
-    
+
     (nonce, HEXLOWER.encode(hash.as_slice()))
 }
 ```
@@ -583,7 +583,7 @@ fn prepare_data(&self, nonce: i64) -> Vec<u8> {
     let pre_block_hash = self.block.get_pre_block_hash();
     let transactions_hash = self.block.hash_transactions();
     let timestamp = self.block.get_timestamp();
-    
+
     let mut data_bytes = vec![];
     data_bytes.extend(pre_block_hash.as_bytes());
     data_bytes.extend(transactions_hash);
@@ -790,7 +790,7 @@ In this section, we provide references that describe the standards and Bitcoin c
 
 <div align="center">
 
-**[← Cryptography Index](README.md)** | **[Hash Functions](01-Hash-Functions.md)** | **[Next section: Digital Signatures →](02-Digital-Signatures.md)** 
+**[← Cryptography Index](README.md)** | **[Hash Functions](01-Hash-Functions.md)** | **[Next section: Digital Signatures →](02-Digital-Signatures.md)**
 
 </div>
 

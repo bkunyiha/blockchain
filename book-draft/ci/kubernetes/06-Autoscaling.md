@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](#)** 
+**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](#)**
 
 </div>
 
@@ -83,9 +83,9 @@ Autoscaling is Kubernetes’ way of adjusting capacity to match demand. In pract
 
 This project uses **HPA** (CPU + memory) to scale **miners** and **webservers**.
 
-> **Methods involved**
-> - Webserver HPA: `10-hpa-webserver.yaml` ([Listing 9.17](01A-Kubernetes-Code-Listings.md#listing-917-cikubernetesmanifests10-hpa-webserveryaml))
-> - Miner HPA: `11-hpa-miner.yaml` ([Listing 9.18](01A-Kubernetes-Code-Listings.md#listing-918-cikubernetesmanifests11-hpa-mineryaml))
+> **Methods involved:**
+> - Webserver HPA: `10-hpa-webserver.yaml` ([Listing 23A.17](01A-Kubernetes-Code-Listings.md#listing-23a17-cikubernetesmanifests10-hpa-webserveryaml))
+> - Miner HPA: `11-hpa-miner.yaml` ([Listing 23A.18](01A-Kubernetes-Code-Listings.md#listing-23a18-cikubernetesmanifests11-hpa-mineryaml))
 
 ## How to Read This Section
 

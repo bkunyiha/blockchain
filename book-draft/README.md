@@ -92,7 +92,7 @@
 
 # Rust Blockchain
 
-### A Full-Stack Implementation Guide With Tokio/Async Rust, Axum, Iced, Tauri 2, Docker, and Kubernetes
+### A Full-Stack Implementation Guide Featuring Tokio, Axum, Iced, Tauri 2, Docker, and Kubernetes
 
 **Bill Kunyiha**
 
@@ -372,7 +372,7 @@ If your focus is on deploying and operating the system:
 
 ## Cleanup (Stopping and Undeploying)
 
-When you're done experimenting, you can tear down resources cleanly. This is especially important on laptops, where local clusters can consume CPU/RAM/disk in the background.
+When you are done experimenting, you can tear down resources cleanly. This is especially important on laptops, where local clusters can consume CPU/RAM/disk in the background.
 
 ### Docker Compose Cleanup
 
@@ -442,4 +442,3 @@ eval $(minikube docker-env -u)
 
 ---
 
-*This documentation is continuously updated as the book writing process progresses. For the most current information, please refer to the latest version of each chapter.*

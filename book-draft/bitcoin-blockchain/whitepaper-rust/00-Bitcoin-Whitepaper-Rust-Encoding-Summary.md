@@ -203,7 +203,7 @@ That’s fine for learning: the whitepaper is the conceptual contract, and imple
 
 ---
 
-## What We Covered
+## Summary
 
 - We mapped every Bitcoin whitepaper concept to a concrete Rust data structure, showing how theory translates into working code.
 - We defined the core business objects — Block, Transaction, BlockHeader, and their supporting types — that form the implementation's foundation.

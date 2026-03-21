@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Section 2: Architecture & Execution](02-Architecture-and-Execution.md)** | **Section 3: Deployment Topology** | **[Section 4: Deployment Scenarios & Operations →](04-Deployment-Scenarios-and-Operations.md)** 
+**[← Section 2: Architecture & Execution](02-Architecture-and-Execution.md)** | **Section 3: Deployment Topology** | **[Section 4: Deployment Scenarios & Operations →](04-Deployment-Scenarios-and-Operations.md)**
 
 </div>
 
@@ -95,11 +95,11 @@ After reading this section, you will understand:
 
 This section explains network configuration, node connections, port management, scaling strategies, and sequential startup mechanisms in a coherent narrative. All these topics work together to provide a complete deployment topology.
 
-> **Methods involved**
-> - `docker-entrypoint.sh` connection normalization + resolution ([Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
-> - `wait-for-node.sh` (sequential startup address selection, [Listing 8.3](01A-Docker-Compose-Code-Listings.md#listing-83-cidocker-composeconfigswait-for-nodesh))
-> - `docker-compose.scale.sh` (override generation + scaling, [Listing 8.4](01A-Docker-Compose-Code-Listings.md#listing-84-cidocker-composeconfigsdocker-composescalesh))
-> - `generate-compose-ports.sh` (override generation only, [Listing 8.5](01A-Docker-Compose-Code-Listings.md#listing-85-cidocker-composeconfigsgenerate-compose-portssh))
+> **Methods involved:**
+> - `docker-entrypoint.sh` connection normalization + resolution ([Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh))
+> - `wait-for-node.sh` (sequential startup address selection, [Listing 22A.3](01A-Docker-Compose-Code-Listings.md#listing-22a3-cidocker-composeconfigswait-for-nodesh))
+> - `docker-compose.scale.sh` (override generation + scaling, [Listing 22A.4](01A-Docker-Compose-Code-Listings.md#listing-22a4-cidocker-composeconfigsdocker-composescalesh))
+> - `generate-compose-ports.sh` (override generation only, [Listing 22A.5](01A-Docker-Compose-Code-Listings.md#listing-22a5-cidocker-composeconfigsgenerate-compose-portssh))
 
 ## Network Overview
 
@@ -153,7 +153,7 @@ Configuration:
 - `INSTANCE_NUMBER > 1`
 - Sequential startup enabled
 
-When sequential startup is enabled, the entrypoint calls the wait script to discover and connect to the previous miner instance. The exact logic is in [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh).
+When sequential startup is enabled, the entrypoint calls the wait script to discover and connect to the previous miner instance. The exact logic is in [Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh).
 
 Result: Miner N connects to Miner N-1, Miner N+1 connects to Miner N, etc.
 
@@ -314,7 +314,7 @@ The `docker compose.scale.sh` script **automatically generates port mappings** f
 ```bash
 cd configs
 # Automatically generates port mappings and scales services
-./docker compose.scale.sh 2 1  # 2 miners, 1 webserver
+./docker-compose.scale.sh 2 1  # 2 miners, 1 webserver
 ```
 
 This script:
@@ -385,7 +385,7 @@ Sequential startup is enabled by default. No configuration needed:
 
 ```bash
 cd configs
-./docker compose.scale.sh 3 2
+./docker-compose.scale.sh 3 2
 ```
 
 #### Disable Sequential Startup
@@ -393,7 +393,7 @@ cd configs
 To disable sequential startup and start all nodes simultaneously:
 
 ```bash
-SEQUENTIAL_STARTUP=no ./docker compose.scale.sh 3 2
+SEQUENTIAL_STARTUP=no ./docker-compose.scale.sh 3 2
 ```
 
 Or:

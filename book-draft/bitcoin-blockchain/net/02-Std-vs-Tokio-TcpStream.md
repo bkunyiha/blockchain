@@ -85,7 +85,7 @@ The intended audience is a Rust developer who wants to:
 
 ## The current design in this repo
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `NetworkServer::serve(...)` (accept loop; currently converts Tokio stream into `std::net::TcpStream`)
 > - `net_processing::process_stream(...)` (deserialization + dispatch; takes `std::net::TcpStream`)
@@ -235,7 +235,7 @@ This is not a “Tokio good, std bad” situation; it is a compatibility vs scal
 
 ## Would migrating affect blockchain synchronization?
 
-> **Short answer**: migrating transport types does **not inherently** change the chain sync logic, but it can change **concurrency and timing**, which may expose existing race conditions or increase contention.
+> **Note:**: migrating transport types does **not inherently** change the chain sync logic, but it can change **concurrency and timing**, which may expose existing race conditions or increase contention.
 
 ### What migration does *not* change
 
@@ -356,7 +356,7 @@ For full code examples and step-by-step walkthroughs, see **[Chapter 12.A: Netwo
 
 <div align="center">
 
-**[← Chapter 12.A: Network Layer — Code Walkthrough](01-Network-Operation-Code-Walkthrough.md)** | **Appendix: std vs Tokio TCP** | **[Back to Network Layer README →](README.md)** 
+**[← Chapter 12.A: Network Layer — Code Walkthrough](01-Network-Operation-Code-Walkthrough.md)** | **Appendix: std vs Tokio TCP** | **[Back to Network Layer README →](README.md)**
 
 </div>
 

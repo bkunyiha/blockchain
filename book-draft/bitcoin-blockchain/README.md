@@ -92,6 +92,8 @@ To implement Bitcoin, we first need a clear technical foundation for what Bitcoi
 > - Identify real-world blockchain applications across finance, governance, and supply chain
 > - Understand the cryptographic building blocks that secure every transaction
 
+> **Note:** This chapter covers Bitcoin as a technology and protocol. We do not cover cryptocurrency trading, investment, or regulatory considerations — our focus is purely on the engineering.
+
 ## What Is Bitcoin?
 
 Bitcoin is a decentralized digital currency and payment system that operates without a central authority or intermediary. It was introduced in 2008 through a whitepaper published by an individual or group using the pseudonym Satoshi Nakamoto. Bitcoin enables peer-to-peer transactions over the internet, allowing users to send and receive value directly without relying on traditional financial institutions.
@@ -197,8 +199,6 @@ Traditional examples include enterprise resource planning (ERP) systems, custome
 Decentralized systems distribute control and processing power across multiple independent nodes without a single central authority. Each node operates autonomously while collaborating with others to achieve common system goals. This architecture eliminates single points of failure and distributes control, creating a more resilient and fault-tolerant system.
 
 Decentralized systems have key characteristics: distributed control where no single node has authority over others, enhanced fault tolerance where individual node failures don't compromise the entire system, and improved scalability through independent node addition without overwhelming a central point. However, this architecture introduces complexity: nodes must coordinate and communicate to maintain system integrity and consistency, often requiring sophisticated consensus algorithms and protocols.
-
-> **Note:** This chapter covers Bitcoin as a technology and protocol. We do not cover cryptocurrency trading, investment, or regulatory considerations — our focus is purely on the engineering.
 
 Decentralized systems manifest in two primary categories: blockchain-based systems that leverage distributed ledger technology and consensus mechanisms, and non-blockchain systems that achieve decentralization through alternative architectural patterns.
 
@@ -360,121 +360,17 @@ The protocol is designed to be:
 - **Efficient**: Minimizes bandwidth usage
 - **Secure**: Validates all received data
 
-## Applications and Advantages
+## Applications Beyond Cryptocurrency
 
-Blockchain has moved beyond cryptocurrency to enable innovative solutions across industries. The advantages of decentralization manifest differently across various domains, demonstrating blockchain's practical value and transformative potential.
+Blockchain technology extends well beyond digital currency. The core properties — immutability, decentralization, and cryptographic verification — solve real problems in multiple domains.
 
-### Financial Systems
+**Finance**: Cross-border payments settle in minutes instead of days, bypassing correspondent banking fees. Decentralized Finance (DeFi) platforms recreate lending, borrowing, and exchange services using smart contracts, removing intermediaries entirely. Stablecoins provide programmable money pegged to fiat currencies.
 
-**Traditional Banking Limitations**:
-- Single points of failure (bank outages affect all customers)
-- Geographic restrictions and limited access
-- High transaction fees, especially for cross-border transfers
-- Slow settlement times (often days for international transfers)
-- Exclusion of unbanked populations
-- Censorship and account freezes
+**Supply Chain**: Immutable ledgers enable end-to-end traceability from raw material to consumer. Walmart uses blockchain for food safety tracking; De Beers uses it for diamond provenance verification. Counterfeit detection and recall efficiency both improve when every handoff is recorded on-chain.
 
-**Blockchain Advantages**:
-- **24/7 Availability**: No bank holidays or maintenance windows
-- **Global Access**: Anyone with internet access can participate
-- **Lower Fees**: Direct peer-to-peer transfers reduce intermediary costs
-- **Faster Settlement**: Transactions can be confirmed in minutes rather than days
-- **Financial Inclusion**: Enables participation without traditional banking infrastructure
-- **Censorship Resistance**: No single entity can freeze accounts or prevent transactions
-- **Programmable Money**: Smart contracts enable automated, conditional payments
+**Digital Identity**: Self-sovereign identity systems let users control their own credentials and selectively disclose information using zero-knowledge proofs, reducing both identity theft and dependence on centralized identity providers.
 
-**Real-World Applications**:
-- **Cross-Border Payments**: Cryptocurrencies enable near-instant transfers with minimal fees. Ripple (XRP) is used by financial institutions for cross-border payments, reducing settlement time from days to seconds. Stellar focuses on financial inclusion, enabling low-cost remittances.
-- **Remittances**: Direct peer-to-peer transfers eliminate intermediaries, reducing costs and increasing speed. Billions are saved annually in fees, with faster access to funds for recipients and financial inclusion for unbanked populations.
-- **Decentralized Finance (DeFi)**: Platforms recreate traditional financial services using blockchain and smart contracts—including peer-to-peer lending/borrowing, decentralized exchanges (DEXs), stablecoins, yield farming, and decentralized insurance protocols.
-
-### Governance and Voting
-
-**Current Voting Challenges**:
-- Voter fraud and ballot tampering
-- Low voter turnout due to inconvenience
-- Lack of transparency in vote counting
-- Difficulty verifying individual votes were counted correctly
-- Expensive and time-consuming processes
-
-**Blockchain Voting Benefits**:
-- **Transparency**: All votes are recorded on a public ledger, verifiable by anyone.
-- **Immutability**: Votes cannot be altered once recorded.
-- **Verifiability**: Voters can verify their vote was counted without revealing their choice.
-- **Accessibility**: Remote voting becomes more secure and feasible.
-- **Auditability**: Complete audit trail of all voting activity.
-- **Reduced Costs**: Automation reduces administrative overhead.
-
-**Decentralized Autonomous Organizations (DAOs)** represent a new form of organizational structure enabled by blockchain technology. DAOs offer democratic participation through token-weighted voting, transparent treasuries with publicly visible financial transactions, automated execution through smart contracts, global participation regardless of location, reduced corruption through transparent decision-making, and rapid iteration compared to traditional organizations.
-
-**Real-World Examples**:
-- Estonia's e-Residency program uses blockchain for secure digital identity
-- Several U.S. states have piloted blockchain voting systems
-- Various organizations use blockchain for transparent governance voting
-- Investment funds where members vote on investments
-- Open-source project governance
-- Community-owned platforms and services
-
-### Supply Chain Management
-
-**Traditional Supply Chain Challenges**:
-- Lack of transparency in product origins
-- Difficulty tracking products through complex supply chains
-- Counterfeit products
-- Inefficient recall processes
-- Limited traceability of raw materials
-
-**Blockchain Supply Chain Benefits**:
-- **End-to-End Traceability**: Track products from origin to consumer
-- **Provenance Verification**: Verify authenticity and origin of products
-- **Automated Compliance**: Smart contracts enforce regulatory requirements
-- **Reduced Fraud**: Immutable records prevent tampering
-- **Efficient Recalls**: Quickly identify affected products
-- **Consumer Trust**: Transparent information builds confidence
-
-**Real-World Applications**:
-- Food safety tracking (e.g., Walmart's food traceability system)
-- Diamond and luxury goods authentication (e.g., De Beers' Tracr system)
-- Pharmaceutical supply chain verification
-- Fair trade and ethical sourcing verification
-
-### Digital Identity
-
-**Current Identity System Problems**:
-- Fragmented identity across multiple services
-- Privacy concerns with centralized identity providers
-- Identity theft and fraud
-- Limited control over personal data
-- Difficulty proving identity without physical documents
-
-**Blockchain Identity Benefits**:
-- **Self-Sovereign Identity**: Users control their own identity data
-- **Selective Disclosure**: Share only necessary information
-- **Cross-Platform Portability**: Use identity across multiple services
-- **Reduced Fraud**: Cryptographic verification prevents identity theft
-- **Privacy-Preserving**: Zero-knowledge proofs enable verification without revealing data
-- **Global Access**: Digital identity accessible from anywhere
-
-**Real-World Applications**:
-- Identity verification platforms like Civic enable cryptographic identity verification without sharing sensitive personal information
-- Self-sovereign identity systems for cross-platform portability
-- Digital credentials and certificates stored on blockchain
-
-### Additional Applications
-
-**Smart Contracts**: Self-executing programs stored on blockchain that automatically execute when predetermined conditions are met. Use cases include automated insurance claims processing, escrow services with automatic fund release, derivatives settlement, and supply chain milestone payments. Platforms include Ethereum (first general-purpose smart contracts), Cardano (formal verification focus), and Solana (high-performance platform).
-
-**Non-Fungible Tokens (NFTs)**: Represent unique digital assets on blockchain, enabling digital art sales with proven ownership, collectibles like trading cards and virtual items, identity documents like certificates and diplomas, and real estate ownership records with fractional ownership. Advantages include proven ownership and authenticity, royalty mechanisms for creators, interoperability across platforms, and reduced fraud and counterfeiting.
-
-**Tokenization of Assets**: Blockchain enables representing real-world assets as digital tokens, including real estate (fractional ownership), commodities (gold, oil, agricultural products), securities (stocks, bonds as tokens), art (high-value artwork ownership shares), and intellectual property (royalties and licensing). Benefits include increased liquidity for illiquid assets, fractional ownership enabling smaller investments, 24/7 trading markets, reduced transaction costs, and automated compliance and reporting.
-
-**Healthcare**: Applications include secure, interoperable medical records, drug traceability through supply chains, transparent and auditable clinical trial data, automated insurance claims processing with fraud prevention, and secure sharing of anonymized medical data for research. Advantages include patient data ownership and control, interoperability between healthcare providers, reduced fraud and errors, and improved research capabilities.
-
-**Energy Trading**: Applications include peer-to-peer energy trading between producers and consumers, renewable energy credits tracking and trading, decentralized energy grid coordination, and microgrids with blockchain coordination. Benefits include reduced energy costs through direct trading, increased renewable energy adoption, more efficient grid utilization, and transparent energy source tracking.
-
-**Intellectual Property and Royalties**: Applications include automatic music royalty distribution to artists and rights holders, transparent patent ownership and licensing, automated licensing and payment for digital content, and immutable trademark records. Advantages include fair compensation for creators, reduced disputes through transparent records, automated royalty distribution, and global protection and enforcement.
-
-**Social Media and Content Platforms**: Decentralized platforms address issues of centralized content moderation, data ownership by platforms rather than users, algorithmic manipulation, censorship, limited monetization options, and privacy concerns. Benefits include user ownership of data and content, censorship resistance, direct monetization for creators, transparent algorithms, data portability, and community governance.
+**Governance**: Token-weighted voting in Decentralized Autonomous Organizations (DAOs) provides transparent, auditable decision-making without hierarchical management structures. Several governments have piloted blockchain-based voting systems for elections and referendums.
 
 ## Challenges and Limitations
 
@@ -566,7 +462,7 @@ The implementation chapters that follow map directly to the concepts introduced 
 
 ---
 
-## What We Covered
+## Summary
 
 - We explored what blockchain technology is: a distributed, append-only ledger secured by cryptographic hashing and consensus mechanisms.
 - We traced Bitcoin's origins and the key innovations — proof-of-work, the UTXO model, and decentralized consensus — that solved the double-spending problem.

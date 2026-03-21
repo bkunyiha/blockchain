@@ -61,7 +61,7 @@
 
 <div align="center">
 
-**[← Web Index](README.md)** | **Axum Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
+**[← Web Index](README.md)** | **Axum Framework Guide** | **[Next: Chapter 16: Desktop Admin (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 
 </div>
 
@@ -73,7 +73,7 @@ This guide provides detailed explanations of Axum framework features used in our
 
 Throughout this guide, we'll explore the specific Axum features used in our implementation, with code examples from our blockchain API to illustrate each concept.
 
-> **See the full implementation**: This guide explains the Axum concepts. To see how these features are used together in our complete web API architecture, see the Web API Architecture chapter, which covers server setup, routing, handlers, middleware, and more.
+> **See the full implementation:**: This guide explains the Axum concepts. To see how these features are used together in our complete web API architecture, see the Web API Architecture chapter, which covers server setup, routing, handlers, middleware, and more.
 
 ---
 
@@ -91,7 +91,7 @@ Throughout this guide, we'll explore the specific Axum features used in our impl
 9. [Response Types](#response-types) - Return various response formats
    - [Understanding IntoResponse](#understanding-intoresponse) - The trait that enables flexible handler return types
 
-> **Tip**: Throughout this guide, you'll find links to specific sections in the Web API Architecture chapter where these Axum features are actually implemented. Use these links to see real-world examples and understand how theory translates to practice.
+> **Tip:**: Throughout this guide, you'll find links to specific sections in the Web API Architecture chapter where these Axum features are actually implemented. Use these links to see real-world examples and understand how theory translates to practice.
 
 ---
 
@@ -118,7 +118,7 @@ pub async fn get_blockchain_info(
 }
 ```
 
-> **See it in action**: Check out the [Blockchain Handlers section](01-Introduction.md#blockchain-handlers) in the Web API Architecture chapter to see how state extraction is used in real handlers like `get_blockchain_info()` and `get_block_by_hash()`.
+> **See it in action:**: Check out the [Blockchain Handlers section](04-Handlers.md#blockchain-handlers) in the Web API Architecture chapter to see how state extraction is used in real handlers like `get_blockchain_info()` and `get_block_by_hash()`.
 
 **Key Concepts:**
 1. Type must match between `.with_state()` and `State()` extractor
@@ -127,7 +127,7 @@ pub async fn get_blockchain_info(
 
 **Benefits:** No globals, compile-time type safety, easy testing, explicit architecture
 
-> **Implementation example**: See how we inject `NodeContext` as state in the [Server Setup and Configuration section](01-Introduction.md#server-setup-and-configuration), and how handlers extract it in the [Request Handlers section](01-Introduction.md#request-handlers).
+> **Implementation example:**: See how we inject `NodeContext` as state in the [Server Setup and Configuration section](02-Server-Setup.md#server-setup-and-configuration), and how handlers extract it in the [Request Handlers section](04-Handlers.md#request-handlers).
 
 State type must implement `Clone` (use `Arc<T>` for shared ownership).
 
@@ -156,7 +156,7 @@ app = app.layer(axum::middleware::from_fn(handle_errors));
 
 Request flow: CORS → Compression → Error Handler → Route Handler → Response
 
-> **See the implementation**: The exact middleware order used in our blockchain API is shown in the [Creating the Application Router section](01-Introduction.md#creating-the-application-router) of the Web API Architecture chapter.
+> **See the full implementation:**: The exact middleware order used in our blockchain API is shown in the [Creating the Application Router section](02-Server-Setup.md#creating-the-application-router) of the Web API Architecture chapter.
 
 ### Creating Custom Middleware
 
@@ -177,7 +177,7 @@ async fn my_middleware(
 .layer(axum::middleware::from_fn(my_middleware))
 ```
 
-> **Real implementation**: See the complete `handle_errors()` middleware implementation in the [Error Handling Middleware section](01-Introduction.md#error-handling-middleware), and authentication middleware in the [Authentication Middleware section](01-Introduction.md#authentication-middleware).
+> **Implementation example:**: See the complete `handle_errors()` middleware implementation in the [Error Handling Middleware section](05-Middleware.md#error-handling-middleware), and authentication middleware in the [Authentication Middleware section](05-Middleware.md#authentication-middleware).
 
 ### Tower Layers and Services
 
@@ -282,7 +282,7 @@ pub async fn get_block_by_hash(
 }
 ```
 
-> **See it in action**: The `get_block_by_hash()` handler is fully implemented in the [Blockchain Handlers section](01-Introduction.md#blockchain-handlers). Also see how we use type-safe path extraction with `WalletAddress` in the [Wallet Handlers section](01-Introduction.md#wallet-handlers).
+> **See it in action:**: The `get_block_by_hash()` handler is fully implemented in the [Blockchain Handlers section](04-Handlers.md#blockchain-handlers). Also see how we use type-safe path extraction with `WalletAddress` in the [Wallet Handlers section](04-Handlers.md#wallet-handlers).
 
 **Type-Safe Path Extraction:**
 
@@ -328,7 +328,7 @@ pub async fn create_wallet(
 }
 ```
 
-> **Implementation examples**: See `create_wallet()` in the [Wallet Handlers section](01-Introduction.md#wallet-handlers) and `send_transaction()` in the [Transaction Handlers section](01-Introduction.md#transaction-handlers) for real-world JSON extraction examples.
+> **Implementation example:**: See `create_wallet()` in the [Wallet Handlers section](04-Handlers.md#wallet-handlers) and `send_transaction()` in the [Transaction Handlers section](04-Handlers.md#transaction-handlers) for real-world JSON extraction examples.
 
 ### Multiple Extractors
 
@@ -345,7 +345,7 @@ pub async fn send_transaction(
 }
 ```
 
-> **Real example**: The `send_transaction()` handler uses both `State` and `Json` extractors. See the complete implementation in the [Transaction Handlers section](01-Introduction.md#transaction-handlers).
+> **Implementation example:**: The `send_transaction()` handler uses both `State` and `Json` extractors. See the complete implementation in the [Transaction Handlers section](04-Handlers.md#transaction-handlers).
 
 Extractors are processed in order; `State` listed first by convention. Failures (invalid JSON, etc.) automatically return appropriate error responses.
 
@@ -395,7 +395,7 @@ Router::new()
 
 Results in routes like `/api/admin/blockchain`, `/api/admin/health`
 
-> **See the routing structure**: Our complete routing organization, including nested admin routes and wallet routes, is explained in the [Routing System section](01-Introduction.md#routing-system) of the Web API Architecture chapter.
+> **See it in action:**: Our complete routing organization, including nested admin routes and wallet routes, is explained in the [Routing System section](03-Routing.md#routing-system) of the Web API Architecture chapter.
 
 ### Merging Routes
 
@@ -408,7 +408,7 @@ Router::new()
     .merge(create_web_routes())
 ```
 
-> **Complete routing example**: See how we merge multiple route groups in the [Creating the Application Router section](01-Introduction.md#creating-the-application-router), and explore the full route structure in the [API Route Structure section](01-Introduction.md#api-route-structure).
+> **Implementation example:**: See how we merge multiple route groups in the [Creating the Application Router section](02-Server-Setup.md#creating-the-application-router), and explore the full route structure in the [API Route Structure section](03-Routing.md#api-route-structure).
 
 ### Route-Specific Middleware
 
@@ -450,7 +450,7 @@ pub async fn handler_name(
 }
 ```
 
-> **Handler examples**: All our handlers follow this async pattern. See the [Handler Pattern section](01-Introduction.md#handler-pattern) and explore specific implementations in [Blockchain Handlers](01-Introduction.md#blockchain-handlers), [Wallet Handlers](01-Introduction.md#wallet-handlers), and [Transaction Handlers](01-Introduction.md#transaction-handlers).
+> **Implementation example:**: All our handlers follow this async pattern. See the [Handler Pattern section](04-Handlers.md#handler-pattern) and explore specific implementations in [Blockchain Handlers](04-Handlers.md#blockchain-handlers), [Wallet Handlers](04-Handlers.md#wallet-handlers), and [Transaction Handlers](04-Handlers.md#transaction-handlers).
 
 **Why Async:**
 - Handle many requests simultaneously without blocking
@@ -512,7 +512,7 @@ pub async fn get_blockchain_info(
 ) -> Result<Json<ApiResponse<BlockchainInfoResponse>>, StatusCode> {
     let height = node.get_blockchain_height().await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;  // Convert error
-    
+
     // ...
 }
 ```
@@ -535,7 +535,7 @@ async fn handle_errors(
     if is_error {
         // Log error
         tracing::error!("Error: {}", response.status());
-        
+
         // Format internal server errors
         if response.status() == StatusCode::INTERNAL_SERVER_ERROR {
             let error_response = ErrorResponse {
@@ -544,18 +544,18 @@ async fn handle_errors(
                 status_code: 500,
                 timestamp: chrono::Utc::now(),
             };
-            
+
             return Ok(Json(ApiResponse::<()>::error(
                 serde_json::to_string(&error_response).unwrap()
             )).into_response());
         }
     }
-    
+
     Ok(response)
 }
 ```
 
-> **Complete error handling**: See the full `handle_errors()` implementation and error handling patterns in the [Error Handling Middleware section](01-Introduction.md#error-handling-middleware) and [Error Handling section](01-Introduction.md#error-handling) of the Web API Architecture chapter.
+> **Implementation example:**: See the full `handle_errors()` implementation and error handling patterns in the [Error Handling Middleware section](05-Middleware.md#error-handling-middleware) and [Error Handling section](07-Error-Handling.md#error-handling) of the Web API Architecture chapter.
 
 ### Common Error Patterns
 
@@ -586,7 +586,7 @@ let result = operation().await
     })?;
 ```
 
-> **Error handling examples**: These patterns are used throughout our handlers. See the [Common Error Patterns section](01-Introduction.md#common-error-patterns) for more examples and the [Error Flow section](01-Introduction.md#error-flow) for understanding how errors propagate.
+> **Implementation example:**: These patterns are used throughout our handlers. See the [Common Error Patterns section](07-Error-Handling.md#common-error-patterns) for more examples and the [Error Flow section](07-Error-Handling.md#error-flow) for understanding how errors propagate.
 
 ---
 
@@ -621,19 +621,19 @@ pub fn create_cors_layer_with_origins(origins: Vec<String>) -> CorsLayer {
         .allow_headers(Any)
         .expose_headers(Any)
         .max_age(std::time::Duration::from_secs(86400));
-    
+
     // Add specific origins
     for origin in origins {
         if let Ok(parsed_origin) = origin.parse::<axum::http::HeaderValue>() {
             cors = cors.allow_origin(parsed_origin);
         }
     }
-    
+
     cors
 }
 ```
 
-> **CORS implementation**: See how we configure CORS for development and production in the [CORS Middleware section](01-Introduction.md#cors-middleware) of the Web API Architecture chapter.
+> **Implementation example:**: See how we configure CORS for development and production in the [CORS Middleware section](05-Middleware.md#cors-middleware) of the Web API Architecture chapter.
 
 **CORS Options:** `allow_origin`, `allow_methods`, `allow_headers`, `expose_headers`, `max_age`
 
@@ -654,7 +654,7 @@ use tower_http::compression::CompressionLayer;
 app = app.layer(CompressionLayer::new());
 ```
 
-> **Where it's used**: Compression is configured in our server setup. See the [Creating the Application Router section](01-Introduction.md#creating-the-application-router) to see how compression middleware is applied alongside other middleware layers.
+> **Where it's used**: Compression is configured in our server setup. See the [Creating the Application Router section](02-Server-Setup.md#creating-the-application-router) to see how compression middleware is applied alongside other middleware layers.
 
 Automatically compresses when client supports it (gzip, deflate, brotli). Transparent to handlers.
 
@@ -722,7 +722,7 @@ impl IntoResponse for CustomResponse {
 
 **Response with Headers:** Use tuples to combine status, headers, and body
 
-> **See it in action**: Our handlers use `IntoResponse` extensively. See the [Request Handlers section](01-Introduction.md#request-handlers) for examples of handlers returning `Json<ApiResponse<T>>` and `Result<Json<ApiResponse<T>>, StatusCode>`, both of which rely on `IntoResponse` for conversion.
+> **See it in action:**: Our handlers use `IntoResponse` extensively. See the [Request Handlers section](04-Handlers.md#request-handlers) for examples of handlers returning `Json<ApiResponse<T>>` and `Result<Json<ApiResponse<T>>, StatusCode>`, both of which rely on `IntoResponse` for conversion.
 
 ### Json Response
 
@@ -734,7 +734,7 @@ pub async fn handler() -> Result<Json<ApiResponse<T>>, StatusCode> {
 }
 ```
 
-> **Response examples**: See how we use `Json` responses throughout our handlers in the [Request Handlers section](01-Introduction.md#request-handlers), and explore our response models in the [Data Models section](01-Introduction.md#data-models).
+> **Implementation example:**: See how we use `Json` responses throughout our handlers in the [Request Handlers section](04-Handlers.md#request-handlers), and explore our response models in the [Data Models section](06-Data-Models.md#data-models).
 
 #### Example: Converting WalletResponse to HTTP Response
 
@@ -742,7 +742,7 @@ Conversion chain: `WalletResponse` → `ApiResponse<WalletResponse>` → `Json(A
 
 The conversion happens automatically without manual response construction. The type system ensures correctness at compile time.
 
-> **See the actual implementation**: The `create_wallet()` handler in [Wallet Handlers](04-Handlers.md#wallet-handlers) demonstrates this exact pattern. For more details on serialization, see the Serde Framework Guide.
+> **See the full implementation:**: The `create_wallet()` handler in [Wallet Handlers](04-Handlers.md#wallet-handlers) demonstrates this exact pattern. For more details on serialization, see the Serde Framework Guide.
 
 ### Status Code Only
 
@@ -773,14 +773,14 @@ Use `Body::from_stream()` for large responses.
 
 Axum provides a powerful, type-safe foundation for building web APIs:
 
-- **State Injection**: Share data across handlers safely - see [State Injection in our API](01-Introduction.md#creating-the-application-router)
-- **Middleware**: Handle cross-cutting concerns elegantly - see [Middleware Layer](01-Introduction.md#middleware-layer)
-- **Extractors**: Pull data from requests with type safety - see [Request Handlers](01-Introduction.md#request-handlers)
-- **Routing**: Organize endpoints logically - see [Routing System](01-Introduction.md#routing-system)
-- **Async/Await**: Handle concurrency efficiently - see [Handler Pattern](01-Introduction.md#handler-pattern)
-- **Error Handling**: Provide clear error responses - see [Error Handling](01-Introduction.md#error-handling)
-- **CORS**: Enable cross-origin requests securely - see [CORS Middleware](01-Introduction.md#cors-middleware)
-- **Compression**: Improve performance automatically - see [Creating the Application Router](01-Introduction.md#creating-the-application-router)
+- **State Injection**: Share data across handlers safely - see [State Injection in our API](02-Server-Setup.md#creating-the-application-router)
+- **Middleware**: Handle cross-cutting concerns elegantly - see [Middleware Layer](05-Middleware.md#middleware-layer)
+- **Extractors**: Pull data from requests with type safety - see [Request Handlers](04-Handlers.md#request-handlers)
+- **Routing**: Organize endpoints logically - see [Routing System](03-Routing.md#routing-system)
+- **Async/Await**: Handle concurrency efficiently - see [Handler Pattern](04-Handlers.md#handler-pattern)
+- **Error Handling**: Provide clear error responses - see [Error Handling](07-Error-Handling.md#error-handling)
+- **CORS**: Enable cross-origin requests securely - see [CORS Middleware](05-Middleware.md#cors-middleware)
+- **Compression**: Improve performance automatically - see [Creating the Application Router](02-Server-Setup.md#creating-the-application-router)
 
 These features work together to create a robust, maintainable web API. For more details on how we use these features in our blockchain API, see the Web API Architecture chapter, which provides:
 
@@ -815,6 +815,6 @@ These features work together to create a robust, maintainable web API. For more 
 
 <div align="center">
 
-**[← Web API Index](README.md)** | **Axum Framework Guide** (includes Tower) | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Serde** | **Utoipa** | **Tracing** | **Tokio** 
+**[← Web API Index](README.md)** | **Axum Framework Guide** (includes Tower) | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Serde** | **Utoipa** | **Tracing** | **Tokio**
 
 </div>

@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 15: Web API Architecture](README.md)** | **Utoipa Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
+**[← Chapter 15: Web API Architecture](README.md)** | **Utoipa Framework Guide** | **[Next: Chapter 16: Desktop Admin (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 
 </div>
 
@@ -86,7 +86,7 @@ In our blockchain API, Utoipa is used for:
 - **Path Documentation**: Documenting endpoints with request/response details
 - **Type Safety**: Ensuring documentation matches implementation
 
-> **See the full implementation**: This guide explains Utoipa concepts. To see how Utoipa is used in our complete web API architecture, see the OpenAPI Documentation chapter and the Data Models chapter.
+> **See the full implementation:**: This guide explains Utoipa concepts. To see how Utoipa is used in our complete web API architecture, see the OpenAPI Documentation chapter and the Data Models chapter.
 
 ---
 
@@ -503,7 +503,7 @@ Utoipa's integration with Axum and Serde creates a seamless documentation workfl
 
 <div align="center">
 
-**[← Web API Index](README.md)** | **Utoipa Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Tower** | **Serde** | **Tracing** | **Tokio** 
+**[← Web API Index](README.md)** | **Utoipa Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Tower** | **Serde** | **Tracing** | **Tokio**
 
 </div>
 

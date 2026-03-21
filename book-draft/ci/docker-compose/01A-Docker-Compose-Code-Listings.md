@@ -81,7 +81,7 @@ Each listing begins with a short guide explaining:
 
 ---
 
-## Listing 8.1: `ci/docker-compose/configs/docker-compose.yml`
+## Listing 22A.1: `ci/docker-compose/configs/docker-compose.yml`
 
 This is the **primary Compose file**. It defines the multi-service local network:
 
@@ -95,7 +95,7 @@ Important to understand:
 - **Sequential startup** and **port selection** are not implemented in YAML; they are implemented in `docker-entrypoint.sh` and helper scripts.
 - The “only the first scaled instance gets ports” limitation is why this repo provides override generators (`docker-compose.scale.sh`, `generate-compose-ports.sh`).
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: `docker-compose.yml` (service definitions and wiring)
 
 ```yaml
@@ -239,7 +239,7 @@ volumes:
 
 ---
 
-## Listing 8.2: `ci/docker-compose/configs/docker-entrypoint.sh`
+## Listing 22A.2: `ci/docker-compose/configs/docker-entrypoint.sh`
 
 This is the **heart** of the Docker Compose deployment:
 
@@ -255,7 +255,7 @@ Important to understand:
 - The algorithm has to work across both **Docker Compose** naming (`project_service_1`) and **Kubernetes StatefulSet** naming (`miner-0`), which is why this script contains both code paths.
 - “Complete method coverage” matters here: all helper functions (`resolve_hostname_to_ip`, `construct_prev_addr`, etc.) are what make the deployment deterministic and debuggable.
 
-> **Methods involved**
+> **Methods involved:**
 > - `debug_log`
 > - `resolve_hostname_to_ip`
 > - `validate_and_fix_miner_address`
@@ -305,45 +305,45 @@ resolve_hostname_to_ip() {
     local addr="${1}"
     local max_retries="${2:-5}"  # Default to 5 retries
     local retry_delay="${3:-2}"  # Default to 2 seconds between retries
-    
+
     # Validate input is not empty
     if [ -z "${addr}" ]; then
         echo "ERROR: resolve_hostname_to_ip called with empty address" >&2
         return 1
     fi
-    
+
     # Trim whitespace
     addr=$(echo "${addr}" | xargs)
-    
+
     # Validate again after trimming
     if [ -z "${addr}" ]; then
         echo "ERROR: resolve_hostname_to_ip called with empty address (after trimming whitespace)" >&2
         return 1
     fi
-    
+
     # If it's already an IP address or "local", return as-is
     if [[ "${addr}" == "local" ]] || [[ "${addr}" =~ ^[0-23]+\.[0-23]+\.[0-23]+\.[0-23]+:[0-23]+$ ]]; then
         echo "${addr}"
         return 0
     fi
-    
+
     # Extract hostname and port
     local hostname="${addr%%:*}"
     local port="${addr##*:}"
-    
+
     # Validate port is numeric
     if ! [[ "${port}" =~ ^[0-23]+$ ]]; then
         echo "ERROR: Invalid port '${port}' in address '${addr}'" >&2
         return 1
     fi
-    
+
     # Try multiple methods to resolve hostname to IP with retries
     local ip=""
     local attempt=0
-    
+
     while [ ${attempt} -lt ${max_retries} ]; do
         attempt=$((attempt + 1))
-        
+
         # Debug: Log resolution attempt
         if [ ${attempt} -gt 1 ]; then
             debug_log "Retry ${attempt}/${max_retries}: Resolving hostname '${hostname}' to IP address..."
@@ -351,14 +351,14 @@ resolve_hostname_to_ip() {
         else
             debug_log "Resolving hostname '${hostname}' to IP address (attempt ${attempt}/${max_retries})..."
         fi
-        
+
         # Method 1: Try getent hosts (preferred, works with Docker's internal DNS)
         if command -v getent >/dev/null 2>&1; then
             debug_log "Trying getent hosts ${hostname}..."
             local getent_output
             getent_output=$(getent hosts "${hostname}" 2>&1)
             local getent_exit=$?
-            
+
             if [ ${getent_exit} -eq 0 ]; then
                 ip=$(echo "${getent_output}" | awk '{print $1}' | head -n1)
                 debug_log "getent result: '${ip}'"
@@ -373,7 +373,7 @@ resolve_hostname_to_ip() {
         else
             debug_log "getent not available"
         fi
-        
+
         # Method 2: Try nslookup (if getent failed and nslookup is available)
         if [ -z "${ip}" ] && command -v nslookup >/dev/null 2>&1; then
             debug_log "Trying nslookup ${hostname}..."
@@ -384,7 +384,7 @@ resolve_hostname_to_ip() {
                 return 0
             fi
         fi
-        
+
         # Method 3: Try host command (if both above failed and host is available)
         if [ -z "${ip}" ] && command -v host >/dev/null 2>&1; then
             debug_log "Trying host ${hostname}..."
@@ -395,7 +395,7 @@ resolve_hostname_to_ip() {
                 return 0
             fi
         fi
-        
+
         # Method 4: Try ping with timeout (as last resort, works with Docker DNS)
         if [ -z "${ip}" ] && command -v ping >/dev/null 2>&1; then
             debug_log "Trying ping ${hostname}..."
@@ -409,7 +409,7 @@ resolve_hostname_to_ip() {
             fi
         fi
     done
-    
+
     # If all resolution methods failed after retries, fail with error
     echo "ERROR: Failed to resolve hostname '${hostname}' to IP address after ${max_retries} attempts." >&2
     echo "ERROR: Tried methods: getent, nslookup, host, ping" >&2
@@ -426,7 +426,7 @@ resolve_hostname_to_ip() {
 validate_and_fix_miner_address() {
     local addr="${1}"
     local is_webserver="${2:-no}"
-    
+
     # Check if address contains miner_0
     if [[ "${addr}" =~ miner_0 ]]; then
         if [ "${is_webserver}" = "yes" ]; then
@@ -439,7 +439,7 @@ validate_and_fix_miner_address() {
             return 1
         fi
     fi
-    
+
     # Extract hostname part to check for miner_0
     local hostname_only=$(echo "${addr}" | cut -d':' -f1)
     if [ "${hostname_only}" = "miner_0" ]; then
@@ -453,7 +453,7 @@ validate_and_fix_miner_address() {
             return 1
         fi
     fi
-    
+
     # Address is valid
     echo "${addr}"
     return 0
@@ -465,7 +465,7 @@ construct_prev_addr() {
     local is_webserver="${2:-no}"
     local is_miner="${3:-no}"
     local wait_service_name="${4:-miner}"
-    
+
     if [ "${is_webserver}" = "yes" ] && [ "${is_miner}" = "no" ]; then
         # Webservers always connect to miner_1
         echo "miner_1:2001"
@@ -642,7 +642,7 @@ if [ "${NODE_IS_MINER}" = "yes" ] && [ -n "${POD_NAME}" ]; then
     # Extract ordinal from pod name (e.g., miner-0 -> 0, miner-1 -> 1)
     if [[ "${POD_NAME}" =~ -([0-23]+)$ ]]; then
         ORDINAL="${BASH_REMATCH[1]}"
-        
+
         if [ "${ORDINAL}" = "0" ]; then
             # First miner (miner-0) starts as seed node
             if [ -z "${NODE_CONNECT_NODES}" ] || [ "${NODE_CONNECT_NODES}" = "local" ]; then
@@ -676,7 +676,7 @@ if [ "${SEQUENTIAL_STARTUP:-yes}" = "yes" ]; then
     else
         SHOULD_WAIT=false
     fi
-    
+
     if [ "${SHOULD_WAIT}" = "true" ]; then
         # Skip sequential startup logic if we're in Kubernetes StatefulSet mode
         # (StatefulSet handles ordered startup automatically)
@@ -686,12 +686,12 @@ if [ "${SEQUENTIAL_STARTUP:-yes}" = "yes" ]; then
             else
                 echo "Sequential startup enabled: Waiting for previous node..."
             fi
-        
+
         # Determine service name for wait script
         # Miners connect to previous miner
         # Webservers ALWAYS connect to miners (never to other webservers)
         WAIT_SERVICE_NAME="miner"
-        
+
         # Run wait script and capture output
         if [ -f "/app/wait-for-node.sh" ]; then
             # For webservers, we need to pass a higher instance number so the wait script
@@ -711,15 +711,15 @@ if [ "${SEQUENTIAL_STARTUP:-yes}" = "yes" ]; then
             WAIT_OUTPUT=$(/app/wait-for-node.sh "${WAIT_SERVICE_NAME}" "${WAIT_INSTANCE_NUMBER}" "${P2P_PORT}" "${NODE_IS_WEB_SERVER}" 2>&1)
             WAIT_EXIT_CODE=$?
             debug_log "Wait script exit code: ${WAIT_EXIT_CODE}"
-            
+
             # Display wait script output
             echo "${WAIT_OUTPUT}"
-            
+
             if [ ${WAIT_EXIT_CODE} -eq 0 ]; then
                 # Extract PREV_NODE_ADDRESS from output if present
                 PREV_ADDR=$(echo "${WAIT_OUTPUT}" | grep "PREV_NODE_ADDRESS=" | cut -d'=' -f2)
                 debug_log "Extracted PREV_ADDR from wait script: '${PREV_ADDR}'"
-                
+
                 # Construct previous node address if not provided
                 if [ -z "${PREV_ADDR}" ]; then
                     debug_log "PREV_ADDR not found in wait script output, constructing..."
@@ -735,9 +735,9 @@ if [ "${SEQUENTIAL_STARTUP:-yes}" = "yes" ]; then
                         exit 1
                     fi
                 fi
-                
+
                 debug_log "Final PREV_ADDR before resolution: '${PREV_ADDR}'"
-                
+
                 # Resolve Docker service name to IP address
                 # Docker service names with underscores (e.g., miner_1) need to be resolved to IP
                 # For Docker Compose, "miner_1" doesn't resolve, but "miner" does
@@ -750,12 +750,12 @@ if [ "${SEQUENTIAL_STARTUP:-yes}" = "yes" ]; then
                     RESOLVE_ADDR="miner:${PORT_PART}"
                     debug_log "Converting ${PREV_ADDR} to ${RESOLVE_ADDR} for Docker Compose DNS resolution"
                 fi
-                
+
                 if ! PREV_ADDR_RESOLVED=$(resolve_hostname_to_ip "${RESOLVE_ADDR}"); then
                     echo "ERROR: Failed to resolve previous node address '${RESOLVE_ADDR}' (from '${PREV_ADDR}')" >&2
                     exit 1
                 fi
-                
+
                 # Use the previous node address for NODE_CONNECT_NODES
                 # Miners: connect to previous miner
                 # Webservers: always connect to miners (first miner for all webservers)
@@ -788,7 +788,7 @@ if [ "${SEQUENTIAL_STARTUP:-yes}" = "yes" ]; then
                 # (in case it outputted the address before failing)
                 PREV_ADDR=$(echo "${WAIT_OUTPUT}" | grep "PREV_NODE_ADDRESS=" | cut -d'=' -f2)
                 debug_log "Extracted PREV_ADDR from failed wait script: '${PREV_ADDR}'"
-                
+
                 # If we didn't get an address from wait script, construct it
                 if [ -z "${PREV_ADDR}" ]; then
                     debug_log "Constructing PREV_ADDR after wait script failure..."
@@ -804,9 +804,9 @@ if [ "${SEQUENTIAL_STARTUP:-yes}" = "yes" ]; then
                         exit 1
                     fi
                 fi
-                
+
                 debug_log "PREV_ADDR after wait script failure handling: '${PREV_ADDR}'"
-                
+
                 # Resolve Docker service name to IP address
                 # For Docker Compose, "miner_1" doesn't resolve, but "miner" does
                 RESOLVE_ADDR="${PREV_ADDR}"
@@ -816,12 +816,12 @@ if [ "${SEQUENTIAL_STARTUP:-yes}" = "yes" ]; then
                     RESOLVE_ADDR="miner:${PORT_PART}"
                     debug_log "Converting ${PREV_ADDR} to ${RESOLVE_ADDR} for Docker Compose DNS resolution"
                 fi
-                
+
                 if ! PREV_ADDR_RESOLVED=$(resolve_hostname_to_ip "${RESOLVE_ADDR}"); then
                     echo "ERROR: Failed to resolve previous node address '${RESOLVE_ADDR}' (from '${PREV_ADDR}')" >&2
                     exit 1
                 fi
-                
+
                 # Use the previous node address for NODE_CONNECT_NODES
                 if [ "${NODE_IS_MINER}" = "yes" ]; then
                     if [ -z "${NODE_CONNECT_NODES}" ] || [ "${NODE_CONNECT_NODES}" = "local" ]; then
@@ -1024,20 +1024,20 @@ if [ "${NODE_CONNECT_NODES}" != "local" ]; then
         # Contains a hostname (not "local" and not an IP address), resolve it
         echo "Final resolution: Resolving NODE_CONNECT_NODES '${NODE_CONNECT_NODES}' to IP address..."
         echo "  WARNING: Hostname detected - must resolve to IP before passing to Rust binary" >&2
-        
+
         if ! NODE_CONNECT_NODES=$(resolve_hostname_to_ip "${NODE_CONNECT_NODES}"); then
             echo "ERROR: Final resolution failed for NODE_CONNECT_NODES '${NODE_CONNECT_NODES}'" >&2
             echo "ERROR: Cannot proceed - Rust binary requires IP address, not hostname" >&2
             exit 1
         fi
-        
+
         # Verify the result is actually an IP address
         if [[ ! "${NODE_CONNECT_NODES}" =~ ^[0-23]+\.[0-23]+\.[0-23]+\.[0-23]+:[0-23]+$ ]]; then
             echo "ERROR: Resolution returned invalid format: '${NODE_CONNECT_NODES}'" >&2
             echo "ERROR: Expected IP:port format (e.g., 172.18.0.2:2001)" >&2
             exit 1
         fi
-        
+
         echo "Final resolution result: ${NODE_CONNECT_NODES}"
     else
         echo "Final resolution: NODE_CONNECT_NODES is already an IP address: ${NODE_CONNECT_NODES}"
@@ -1088,7 +1088,7 @@ exec $CMD
 
 ---
 
-## Listing 8.3: `ci/docker-compose/configs/wait-for-node.sh`
+## Listing 22A.3: `ci/docker-compose/configs/wait-for-node.sh`
 
 This script implements the “**sequential startup**” wait step for Docker Compose:
 
@@ -1100,7 +1100,7 @@ Important to understand:
 - It never returns `miner_0`. This is enforced both by parameter validation and by loop bounds.
 - It outputs `PREV_NODE_ADDRESS=...` so the entrypoint can capture and act on it.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: `wait-for-node.sh` (sequential startup algorithm)
 
 ```bash
@@ -1170,14 +1170,14 @@ if [[ "${WAIT_SERVICE_NAME}" == *"miner"* ]]; then
     else
         echo "Instance ${INSTANCE_NUMBER}: Searching for available miner (miner connecting to previous miner)..."
     fi
-    
+
     CHECK_INSTANCE=${PREV_INSTANCE}
-    
+
     # Ensure we never check miner_0 (miners start at instance 1)
     if [ ${CHECK_INSTANCE} -lt 1 ]; then
         CHECK_INSTANCE=1
     fi
-    
+
     # Combined loop: iterate backwards through miner instances and wait for each one
     # Stop at miner_1 (never check miner_0)
     # Docker Compose uses service names for DNS, so we use "miner" as the hostname
@@ -1187,16 +1187,16 @@ if [[ "${WAIT_SERVICE_NAME}" == *"miner"* ]]; then
         # Docker Compose automatically resolves service names to the appropriate container
         CHECK_HOSTNAME="miner"
         CHECK_PORT=$((2001 + CHECK_INSTANCE - 1))
-        
+
         echo "  Checking miner instance ${CHECK_INSTANCE}: ${CHECK_HOSTNAME}:${CHECK_PORT}..."
-        
+
         PREV_HOSTNAME="${CHECK_HOSTNAME}"
         PREV_PORT="${CHECK_PORT}"
-        
+
         # Wait for this miner instance to be ready
         MAX_ATTEMPTS=60
         ATTEMPT=0
-        
+
         while [ ${ATTEMPT} -lt ${MAX_ATTEMPTS} ]; do
             # Check if port is listening and ready
             # Try multiple methods for port checking (for compatibility across different environments)
@@ -1219,7 +1219,7 @@ if [[ "${WAIT_SERVICE_NAME}" == *"miner"* ]]; then
                     break
                 fi
             fi
-            
+
             ATTEMPT=$((ATTEMPT + 1))
             # Log progress: first 5 attempts, then every 10th attempt
             if [ ${ATTEMPT} -le 5 ] || [ $((ATTEMPT % 10)) -eq 0 ]; then
@@ -1227,7 +1227,7 @@ if [[ "${WAIT_SERVICE_NAME}" == *"miner"* ]]; then
             fi
             sleep 2
         done
-        
+
         if [ "${READY}" = "true" ]; then
             echo "  Miner ${PREV_HOSTNAME}:${PREV_PORT} is ready!"
             echo "Instance ${INSTANCE_NUMBER}: Previous node is ready!"
@@ -1250,7 +1250,7 @@ if [[ "${WAIT_SERVICE_NAME}" == *"miner"* ]]; then
             fi
         fi
     done
-    
+
     # If we exit the loop without finding a ready miner, it's an error
     if [ "${READY}" != "true" ]; then
         echo "ERROR: No available miner found or ready (checked instances ${PREV_INSTANCE} down to 1)" >&2
@@ -1271,7 +1271,7 @@ fi
 
 ---
 
-## Listing 8.4: `ci/docker-compose/configs/docker-compose.scale.sh`
+## Listing 22A.4: `ci/docker-compose/configs/docker-compose.scale.sh`
 
 This helper script provides the repo’s recommended scaling interface:
 
@@ -1283,7 +1283,7 @@ Important to understand:
 - Compose itself cannot “assign unique host ports per replica” automatically.
 - This script makes scaling repeatable and keeps the “port math” in one place.
 
-> **Methods involved**
+> **Methods involved:**
 > - `compose` (wrapper for `docker compose` vs `docker-compose`)
 
 ```bash
@@ -1406,14 +1406,14 @@ echo "✓ All instances have ports mapped and accessible externally"
 
 ---
 
-## Listing 8.5: `ci/docker-compose/configs/generate-compose-ports.sh`
+## Listing 22A.5: `ci/docker-compose/configs/generate-compose-ports.sh`
 
 This script generates `docker-compose.override.yml` without actually scaling containers. It is used when you prefer a two-step process:
 
 1. generate the port mappings,
 2. run `docker compose up --scale ...`.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: `generate-compose-ports.sh` (override generation)
 
 ```bash
@@ -1485,11 +1485,11 @@ echo "  # (or, legacy): docker-compose up -d --scale miner=${NUM_MINERS} --scale
 
 ---
 
-## Listing 8.6: `ci/docker-compose/configs/scale-up.sh`
+## Listing 22A.6: `ci/docker-compose/configs/scale-up.sh`
 
 Incremental scaling helper: adds one instance at a time and regenerates the override file to keep host ports consistent.
 
-> **Methods involved**
+> **Methods involved:**
 > - `compose` (wrapper)
 
 ```bash
@@ -1602,11 +1602,11 @@ echo "  docker compose logs -f ${SERVICE}_${NEW_COUNT}"
 
 ---
 
-## Listing 8.7: `ci/docker-compose/configs/scale-down.sh`
+## Listing 22A.7: `ci/docker-compose/configs/scale-down.sh`
 
 Incremental scale-down helper: removes one instance and regenerates the override file to keep port mappings coherent for remaining instances.
 
-> **Methods involved**
+> **Methods involved:**
 > - `compose` (wrapper)
 
 ```bash
@@ -1712,11 +1712,11 @@ echo "✓ Port mappings updated - remaining instances have ports accessible exte
 
 ---
 
-## Listing 8.8: `ci/docker-compose/configs/docker-compose.miner.yml`
+## Listing 22A.8: `ci/docker-compose/configs/docker-compose.miner.yml`
 
 Standalone miner-only Compose file (no webserver, no Redis). Useful for experiments and for building networks where webservers run elsewhere.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: `docker-compose.miner.yml`
 
 ```yaml
@@ -1767,11 +1767,11 @@ volumes:
 
 ---
 
-## Listing 8.9: `ci/docker-compose/configs/docker-compose.webserver.yml`
+## Listing 22A.9: `ci/docker-compose/configs/docker-compose.webserver.yml`
 
 Standalone webserver-only Compose file. It includes Redis (rate limiting backend) but omits miners.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: `docker-compose.webserver.yml`
 
 ```yaml
@@ -1854,11 +1854,11 @@ volumes:
 
 ---
 
-## Listing 8.10: `ci/docker-compose/configs/Settings.toml`
+## Listing 22A.10: `ci/docker-compose/configs/Settings.toml`
 
 Rate limiter configuration consumed by the Rust webserver when `RL_SETTINGS_PATH=/app/Settings.toml` is set.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: `Settings.toml` (rate limiter configuration)
 
 ```toml
@@ -1880,11 +1880,11 @@ global_bucket = { tokens_count = 20, add_tokens_every = 6 }
 
 ---
 
-## Listing 8.11: `ci/docker-compose/configs/Dockerfile`
+## Listing 22A.11: `ci/docker-compose/configs/Dockerfile`
 
 This Dockerfile builds and packages the Rust node binary, React web UI, and runtime scripts used by Compose (entrypoint + wait script).
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: Multi-stage Dockerfile (Rust + Node.js builds)
 
 ```dockerfile

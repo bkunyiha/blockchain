@@ -150,7 +150,7 @@ If we narrate that flow from memory and point to the relevant modules, we are re
 
 ---
 
-## What We Covered
+## Summary
 
 - We navigated the Cargo workspace structure, identifying each crate and its responsibility within the blockchain system.
 - We traced the dependency graph between crates, understanding why the architecture separates primitives, crypto, chain logic, and application layers.
@@ -162,6 +162,6 @@ In the next chapter, we dive into the primitives crate — the Block, Transactio
 
 <div align="center">
 
-**[← Bitcoin Whitepaper In Rust](whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** | Walking through Rust Bitcoin implementation | **[Primitives(Business Objects) →](primitives/README.md)**
+**[← Bitcoin Whitepaper In Rust](whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** | Walking through Rust Bitcoin implementation | **[Primitives →](primitives/README.md)**
 
 </div>

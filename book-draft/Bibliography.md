@@ -59,11 +59,11 @@
 
 ## Deployment & Infrastructure
 
-- Docker Compose Specification (v3). https://docs.docker.com/compose/compose-file/
+- Docker Compose Specification (v3). [https://docs.docker.com/compose/compose-file/](https://docs.docker.com/compose/compose-file/)
 
-- Kubernetes Official Documentation. https://kubernetes.io/docs/
+- Kubernetes Official Documentation. [https://kubernetes.io/docs/](https://kubernetes.io/docs/)
 
-- Wiggins, A. (2017). *The Twelve-Factor App*. https://12factor.net/
+- Wiggins, A. (2017). *The Twelve-Factor App*. [https://12factor.net/](https://12factor.net/)
 
 ## Web & Frontend
 

@@ -149,21 +149,21 @@ pub fn schnorr_sign_digest(
     message: &[u8],
 ) -> Result<Vec<u8>> {
     let secp = Secp256k1::new();
-    
+
     // Parse private key (32 bytes)
     let secret_key_array: [u8; 32] = private_key.try_into()
         .map_err(|_| BtcError::TransactionSignatureError(
             "Invalid private key length".to_string()
         ))?;
     let secret_key = SecretKey::from_byte_array(secret_key_array)?;
-    
+
     // Hash the message
     let message_hash = sha256_digest(message);
     let message_hash_array: [u8; 32] = message_hash.try_into()
         .map_err(|_| BtcError::TransactionSignatureError(
             "Invalid message hash length".to_string()
         ))?;
-    
+
     // Create keypair and sign
     let keypair = Keypair::from_secret_key(&secp, &secret_key);
     let mut rng = rng();
@@ -172,7 +172,7 @@ pub fn schnorr_sign_digest(
         &keypair,
         &mut rng
     );
-    
+
     Ok(signature.as_ref().to_vec())
 }
 ```
@@ -198,7 +198,7 @@ pub fn schnorr_sign_verify(
     message: &[u8]
 ) -> bool {
     let secp = Secp256k1::new();
-    
+
     // Parse public key (33 bytes compressed)
     let public_key_array: [u8; 33] = match public_key.try_into() {
         Ok(arr) => arr,
@@ -221,21 +221,21 @@ pub fn schnorr_sign_verify(
         Ok(pk) => pk,
         Err(_) => return false,
     };
-    
+
     // Hash the message
     let message_hash = sha256_digest(message);
     let message_hash_array: [u8; 32] = match message_hash.try_into() {
         Ok(arr) => arr,
         Err(_) => return false,
     };
-    
+
     // Parse signature (64 bytes)
     let signature_array: [u8; 64] = match signature.try_into() {
         Ok(arr) => arr,
         Err(_) => return false,
     };
     let signature_obj = schnorr::Signature::from_byte_array(signature_array);
-    
+
     // Verify
     secp.verify_schnorr(&signature_obj, &message_hash, &xonly_public_key)
         .is_ok()
@@ -410,9 +410,9 @@ pub async fn verify(&self, blockchain: &BlockchainService) -> Result<bool> {
     if self.is_coinbase() {
         return Ok(true);
     }
-    
+
     let mut trimmed_self_copy = self.trimmed_copy();
-    
+
     for (idx, vin) in self.vin.iter().enumerate() {
         // 1. Find the previous transaction
         let txid = vin.get_txid();
@@ -446,7 +446,7 @@ pub async fn verify(&self, blockchain: &BlockchainService) -> Result<bool> {
             return Ok(false); // Invalid signature
         }
     }
-    
+
     Ok(true) // All signatures valid
 }
 ```
@@ -632,7 +632,7 @@ Digital signatures are essential for blockchain security:
 
 <div align="center">
 
-**[← Previous: Hash Functions](01-Hash-Functions.md)** | **[Digital Signatures](02-Digital-Signatures.md)** | **[Next section: Key Pair Generation →](03-Key-Pair-Generation.md)** 
+**[← Previous: Hash Functions](01-Hash-Functions.md)** | **[Digital Signatures](02-Digital-Signatures.md)** | **[Next section: Key Pair Generation →](03-Key-Pair-Generation.md)**
 
 </div>
 

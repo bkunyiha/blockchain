@@ -57,7 +57,7 @@
 ---
 # Best Practices: Rust Idioms and Patterns
 
-Throughout this guide, we've explored Rust's language features and seen how they're applied in our blockchain implementation. As we conclude, let's examine some best practices that help us write idiomatic, safe, and efficient Rust code. These patterns appear throughout our codebase and represent the Rust community's collective wisdom.
+Throughout this guide, we've explored Rust's language features and seen how they're applied in our blockchain implementation. As we conclude, we examine some best practices that help us write idiomatic, safe, and efficient Rust code. These patterns appear throughout our codebase and represent the Rust community's collective wisdom.
 
 This chapter synthesizes the concepts we've covered, providing practical guidance for writing production Rust code. We'll explore common patterns, anti-patterns to avoid, and how to make design decisions that leverage Rust's strengths. We'll also cover testing best practices that ensure our code is reliable and maintainable.
 
@@ -226,10 +226,10 @@ use thiserror::Error;
 pub enum BlockchainError {
     #[error("Invalid transaction: {0}")]
     InvalidTransaction(String),
-    
+
     #[error("Database error: {0}")]
     Database(#[from] sled::Error),
-    
+
     #[error("Network error: {0}")]
     Network(#[from] std::io::Error),
 }
@@ -356,10 +356,10 @@ fn test_block_mining() {
     // Arrange: Set up test data
     let blockchain = create_test_blockchain();
     let transactions = vec![create_test_transaction()];
-    
+
     // Act: Perform the operation
     let block = blockchain.mine_block(&transactions).await.unwrap();
-    
+
     // Assert: Verify the result
     assert_eq!(block.transactions.len(), 1);
     assert!(blockchain.add_block(&block).await.is_ok());
@@ -559,19 +559,19 @@ Group related tests together:
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     mod creation {
         use super::*;
         #[test] fn test_new_transaction() { }
         #[test] fn test_coinbase_transaction() { }
     }
-    
+
     mod validation {
         use super::*;
         #[test] fn test_valid_transaction() { }
         #[test] fn test_invalid_inputs() { }
     }
-    
+
     mod serialization {
         use super::*;
         #[test] fn test_serialize() { }
@@ -671,7 +671,7 @@ As you continue working with Rust, these concepts will become second nature. The
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Best Practices** | **[← Previous: Testing](16-Testing.md)** 
+**[← Rust Guide Index](README.md)** | **Best Practices** | **[← Previous: Testing](16-Testing.md)**
 
 </div>
 

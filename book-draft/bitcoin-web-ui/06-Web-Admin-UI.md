@@ -69,12 +69,12 @@
 
 <div align="center">
 
-**[← Chapter 20: Embedded Database](../embedded-database/06-Embedded-Database.md)** | **Chapter 21: Web Admin Interface** | **[Chapter 22: Docker Compose →](../ci/docker-compose/01-Introduction.md)** 
+**[← Chapter 20: Embedded Database](../embedded-database/06-Embedded-Database.md)** | **Chapter 21: Web Admin Interface** | **[Chapter 22: Docker Compose →](../ci/docker-compose/01-Introduction.md)**
 </div>
 
 ---
 
-> **Prerequisites**: This chapter is written in React/TypeScript rather than Rust. You should be comfortable reading JSX and TypeScript type annotations. Familiarity with the REST API from Chapter 15 is helpful — this UI is a client to that API — but we recap the relevant endpoints as they appear.
+> **Prerequisites:**: This chapter is written in React/TypeScript rather than Rust. You should be comfortable reading JSX and TypeScript type annotations. Familiarity with the REST API from Chapter 15 is helpful — this UI is a client to that API — but we recap the relevant endpoints as they appear.
 
 > **What you will learn in this chapter:**
 > - Build a React/TypeScript web admin interface with modern component architecture
@@ -100,11 +100,11 @@ This is a **code-centric book chapter**. Every referenced function is either pri
 
 To understand the entire application quickly, read the code in this order:
 
-1. **`src/main.tsx`**: bootstraps React into the DOM (Listing 7.1).
-2. **`src/App.tsx`**: composes providers + routes + layout (Listing 7.2).
-3. **`src/contexts/ApiConfigContext.tsx`**: the “global config” for base URL and API key (Listing 7.3).
-4. **`src/services/api.ts`**: the HTTP boundary (one method per endpoint) (Listing 7.4).
-5. **`src/hooks/useApi.ts`**: the “query/mutation surface” used by components (Listing 7.5).
+1. **`src/main.tsx`**: bootstraps React into the DOM (Listing 21.1).
+2. **`src/App.tsx`**: composes providers + routes + layout (Listing 21.2).
+3. **`src/contexts/ApiConfigContext.tsx`**: the “global config” for base URL and API key (Listing 21.3).
+4. **`src/services/api.ts`**: the HTTP boundary (one method per endpoint) (Listing 21.4).
+5. **`src/hooks/useApi.ts`**: the “query/mutation surface” used by components (Listing 21.5).
 6. **Feature components** (Dashboard, Blockchain screens, Wallet screens): each is a thin layer that calls hooks and renders results.
 
 ---
@@ -177,7 +177,7 @@ The key design decision is separation of concerns:
 
 `main.tsx` is intentionally minimal: it mounts the app and imports global CSS. We get a key architectural advantage: a single composition root (`App`) and a single place where all providers and routing are defined.
 
-Full listing: [Listing 7.1](06A-Web-Admin-UI-Code-Listings.md#listing-71-srcmaintsx).
+Full listing: [Listing 21.1](06A-Web-Admin-UI-Code-Listings.md#listing-211-srcmaintsx).
 
 ---
 
@@ -190,7 +190,7 @@ Full listing: [Listing 7.1](06A-Web-Admin-UI-Code-Listings.md#listing-71-srcmain
 - It creates the **routing table** for all screens.
 - It mounts the `Layout`, which provides the consistent navbar + sidebar.
 
-Full listing: [Listing 7.2](06A-Web-Admin-UI-Code-Listings.md#listing-72-srcapptsx).
+Full listing: [Listing 21.2](06A-Web-Admin-UI-Code-Listings.md#listing-212-srcapptsx).
 
 ---
 
@@ -207,7 +207,7 @@ This yields a simple rule for the rest of the codebase:
 - Components do **not** pass baseURL/apiKey around as props.
 - API calls always go through `getApiClient()` and therefore always use the latest config.
 
-Full listing: [Listing 7.3](06A-Web-Admin-UI-Code-Listings.md#listing-73-srccontextsapiconfigcontexttsx).
+Full listing: [Listing 21.3](06A-Web-Admin-UI-Code-Listings.md#listing-213-srccontextsapiconfigcontexttsx).
 
 ---
 
@@ -221,7 +221,7 @@ This module is the only place that “knows” about:
 
 Everything above it (hooks/components) is *business/UI logic*; everything below it is *HTTP transport*.
 
-Full listing: [Listing 7.4](06A-Web-Admin-UI-Code-Listings.md#listing-74-srcservicesapits).
+Full listing: [Listing 21.4](06A-Web-Admin-UI-Code-Listings.md#listing-214-srcservicesapits).
 
 > **Warning:** The default web admin configuration does not include rate limiting or CSRF protection. Before deploying to a production environment, add these middleware layers to the API gateway. See Chapter 15 (Web API Architecture) for details on the middleware stack.
 
@@ -244,7 +244,7 @@ The most important hooks to understand first are:
 - `useCreateWallet`, `useSendTransaction`, `useGenerateBlocks` for mutations.
 - `useAllBlocks` and `useAllTransactions` for on-demand “bulk” screens (`enabled: false`).
 
-Full listing: [Listing 7.5](06A-Web-Admin-UI-Code-Listings.md#listing-75-srchooksuseapits).
+Full listing: [Listing 21.5](06A-Web-Admin-UI-Code-Listings.md#listing-215-srchooksuseapits).
 
 ---
 
@@ -270,7 +270,7 @@ The dashboard is the simplest example of the project’s standard query flow:
    - “human-friendly” components (`StatCard`),
    - and exact values (formatted timestamps, hashes, etc.).
 
-Full listing: [Listing 7.10](06A-Web-Admin-UI-Code-Listings.md#listing-710-srccomponentsdashboarddashboardtsx).
+Full listing: [Listing 21.10](06A-Web-Admin-UI-Code-Listings.md#listing-2110-srccomponentsdashboarddashboardtsx).
 
 ---
 
@@ -283,7 +283,7 @@ The “create wallet” screen demonstrates the project’s mutation conventions
   - success toast,
   - cache invalidation (`wallet/addresses`).
 
-Full listing: [Listing 7.21](06A-Web-Admin-UI-Code-Listings.md#listing-721-srccomponentswalletcreatewallettsx).
+Full listing: [Listing 21.21](06A-Web-Admin-UI-Code-Listings.md#listing-2121-srccomponentswalletcreatewallettsx).
 
 ---
 
@@ -327,7 +327,7 @@ Full listings: [Listings 7.19 and 7.29](06A-Web-Admin-UI-Code-Listings.md).
 
 ---
 
-## What We Covered
+## Summary
 
 - We built a React/TypeScript web admin interface with modern component architecture.
 - We implemented state management with React Query and authentication patterns.

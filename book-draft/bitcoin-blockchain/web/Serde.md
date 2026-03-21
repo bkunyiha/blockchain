@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 15: Web API Architecture](README.md)** | **Serde Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
+**[← Chapter 15: Web API Architecture](README.md)** | **Serde Framework Guide** | **[Next: Chapter 16: Desktop Admin (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 
 </div>
 
@@ -85,7 +85,7 @@ In our blockchain API, Serde is used extensively for:
 - **Error Responses**: Formatting error information as JSON
 - **API Communication**: Converting data between Rust types and HTTP JSON
 
-> **See the full implementation**: This guide explains Serde concepts. To see how Serde is used in our complete web API architecture, see the Data Models chapter and the Request Handlers chapter.
+> **See the full implementation:**: This guide explains Serde concepts. To see how Serde is used in our complete web API architecture, see the Data Models chapter and the Request Handlers chapter.
 
 ---
 
@@ -240,7 +240,7 @@ Flow: HTTP request with JSON → Axum's `Json` extractor → Deserialize called 
 
 ## Request Deserialization
 
-Request deserialization happens automatically when using Axum's `Json` extractor. Let's see how it works in detail.
+Request deserialization happens automatically when using Axum's `Json` extractor. We explore how it works in detail below.
 
 ### JSON Extractor
 
@@ -284,7 +284,7 @@ Serde automatically deserializes custom types that implement `Deserialize`, like
 
 If JSON deserialization fails, Axum automatically returns `400 Bad Request` with error details.
 
-> **See it in action**: Check out the Request Handlers chapter to see how JSON deserialization is used in real handlers like `send_transaction()` and `create_wallet()`.
+> **See it in action:**: Check out the Request Handlers chapter to see how JSON deserialization is used in real handlers like `send_transaction()` and `create_wallet()`.
 
 ---
 
@@ -344,7 +344,7 @@ pub struct ApiResponse<T> {
 
 The generic `T` allows any serializable type, maintaining type safety with consistent format.
 
-> **See it in action**: Check out the Data Models chapter to see all our response models and how they're serialized.
+> **See it in action:**: Check out the Data Models chapter to see all our response models and how they're serialized.
 
 ---
 
@@ -379,7 +379,7 @@ You can skip fields during serialization:
 #[derive(Serialize, Deserialize)]
 pub struct Response {
     pub public_field: String,
-    
+
     #[serde(skip_serializing)]
     pub internal_field: String,  // Not serialized
 }
@@ -393,7 +393,7 @@ You can provide default values for missing fields:
 #[derive(Serialize, Deserialize)]
 pub struct Request {
     pub required_field: String,
-    
+
     #[serde(default)]
     pub optional_field: String,  // Defaults to "" if missing
 }
@@ -463,7 +463,7 @@ You can flatten nested structures:
 #[derive(Serialize, Deserialize)]
 pub struct Outer {
     pub field1: String,
-    
+
     #[serde(flatten)]
     pub inner: Inner,  // Fields appear at top level
 }
@@ -634,7 +634,7 @@ Error serialization converts errors to JSON. The process involves:
 
 The two-step process allows structured error details while maintaining consistent API response format.
 
-> **See it in action**: Check out the Error Handling chapter to see how errors are handled and serialized in the middleware. For middleware implementation details, see the [Middleware Layer](05-Middleware.md#error-handling-middleware) chapter.
+> **See it in action:**: Check out the Error Handling chapter to see how errors are handled and serialized in the middleware. For middleware implementation details, see the [Middleware Layer](05-Middleware.md#error-handling-middleware) chapter.
 
 ---
 
@@ -863,7 +863,7 @@ Serde and Utoipa's design allows us to focus on our data models while they handl
 
 <div align="center">
 
-**[← Web API Index](README.md)** | **Serde & Utoipa Guide** (Serialization and Schemas) | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Tracing** | **Tokio** 
+**[← Web API Index](README.md)** | **Serde & Utoipa Guide** (Serialization and Schemas) | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Tracing** | **Tokio**
 
 </div>
 

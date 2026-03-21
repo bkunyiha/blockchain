@@ -43,6 +43,7 @@ impl BlockchainFileSystem {
         let data = blocks_tree
             .get(DEFAULT_TIP_BLOCK_HASH_KEY)
             .map_err(|e| BtcError::GetBlockchainError(e.to_string()))?;
+        let mut genesis_block_to_index: Option<Block> = None;
         let tip_hash = if let Some(data) = data {
             String::from_utf8(data.to_vec())
                 .map_err(|e| BtcError::BlockChainTipHashError(e.to_string()))?
@@ -50,17 +51,25 @@ impl BlockchainFileSystem {
             let coinbase_tx = Transaction::new_coinbase_tx(genesis_address)?;
             let block = Block::generate_genesis_block(&coinbase_tx);
             Self::update_blocks_tree(&blocks_tree, &block).await?;
+            genesis_block_to_index = Some(block.clone());
             String::from(block.get_hash())
         };
 
-        Ok(BlockchainFileSystem {
+        let blockchain_fs = BlockchainFileSystem {
             blockchain: Blockchain {
                 tip_hash: Arc::new(TokioRwLock::new(tip_hash)),
                 db,
                 is_empty: false,
             },
             file_system_tree_dir,
-        })
+        };
+
+        // Ensure the UTXO set includes the genesis block when a new chain is created.
+        if let Some(genesis_block) = genesis_block_to_index {
+            blockchain_fs.update_utxo_set(&genesis_block).await?;
+        }
+
+        Ok(blockchain_fs)
     }
 
     async fn update_blocks_tree(blocks_tree: &Tree, block: &Block) -> Result<()> {
@@ -166,9 +175,22 @@ impl BlockchainFileSystem {
         self.blockchain.is_empty = true;
     }
 
-    // The `mine_block` function mines a new block with the transactions in the memory pool.
-    // It uses the `blockchain` instance to mine the block which also adds the new block to the blockchain.
-    // It returns the new block.
+    /// Mine a new block: create block with PoW, persist to DB, update tip, update UTXO.
+    ///
+    /// This is the "local write path" for mining — it directly sets the tip and updates
+    /// the UTXO set without going through the full consensus mechanism in `add_block()`.
+    /// This is correct because locally-mined blocks are always at `best_height + 1`
+    /// (strictly higher than the current tip).
+    ///
+    /// Remote blocks received from the network go through `add_block()` instead, which
+    /// runs the full three-level consensus hierarchy (height → work → tie-break).
+    ///
+    /// The race condition where two nodes mine simultaneously is handled by:
+    /// - **Fix 1**: UTXO rollback correctly restores fully-spent outputs during reorg
+    /// - **Fix 2**: `prepare_mining_utxo` validates tx inputs against UTXO set before mining
+    /// - **Fix 3**: Mining is cancelled when a competing block arrives from the network
+    /// - **Stale mining check**: `chainstate.rs::mine_block` re-validates inputs under
+    ///   the write lock before calling this method
     pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
         let best_height = self.get_best_height().await?;
 
@@ -180,10 +202,6 @@ impl BlockchainFileSystem {
             .db
             .open_tree(self.get_blocks_tree_path())
             .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
-        // The `update_blocks_tree` function updates the blocks tree with the new block.
-        // It uses the `blocks_tree` instance to update the blocks tree.
-        // It uses the `block` instance to update the blocks tree.
-        // It returns the new block.
         Self::update_blocks_tree(&blocks_tree, &block).await?;
         self.set_tip_hash(block_hash).await?;
 
@@ -545,20 +563,37 @@ impl BlockchainFileSystem {
                 // effort invested, making it the most secure and authoritative chain.
                 match new_block.get_height().cmp(&current_height) {
                     Ordering::Greater => {
-                        // HIGHER HEIGHT: Always accept (longest chain rule)
-                        // Blocks with higher height represent more cumulative proof-of-work
-                        // and are automatically accepted as the new canonical chain
-                        self.set_tip_hash(new_block.get_hash()).await?;
+                        // HIGHER HEIGHT: Accept block (longest chain rule)
+                        // Check if the new block extends our current chain directly,
+                        // or if it's on a different branch (requires reorganization).
+                        if new_block.get_pre_block_hash() == current_tip {
+                            // Normal case: block extends our current chain
+                            self.set_tip_hash(new_block.get_hash()).await?;
+                            self.update_utxo_set(new_block).await?;
 
-                        // Update UTXO set when accepting block with higher height
-                        self.update_utxo_set(new_block).await?;
-
-                        info!(
-                            "Block {} accepted: higher height ({} > {}) - longest chain rule",
-                            new_block.get_hash(),
-                            new_block.get_height(),
-                            current_height
-                        );
+                            info!(
+                                "Block {} accepted: higher height ({} > {}) - extends current chain",
+                                new_block.get_hash(),
+                                new_block.get_height(),
+                                current_height
+                            );
+                        } else {
+                            // FORK: Block is at a higher height but on a DIFFERENT branch.
+                            // This happens when block relay delivers blocks out of order,
+                            // or when a longer competing chain is discovered.
+                            // Must reorganize: rollback our current branch and apply the new one.
+                            // Without this, the old branch's UTXO (including coinbase subsidies)
+                            // would remain, creating money out of thin air.
+                            info!(
+                                "Block {} at higher height ({} > {}) is on a different branch (parent {} != tip {}), reorganizing",
+                                new_block.get_hash(),
+                                new_block.get_height(),
+                                current_height,
+                                new_block.get_pre_block_hash(),
+                                current_tip
+                            );
+                            self.reorganize_chain(new_block.get_hash()).await?;
+                        }
                     }
                     Ordering::Equal => {
                         // SAME HEIGHT: Competing blocks at identical height require deeper analysis
@@ -673,9 +708,11 @@ impl BlockchainFileSystem {
                         }
                     }
                     Ordering::Less => {
-                        // LOWER HEIGHT: Always reject
-                        // Blocks with lower height represent less cumulative work
-                        // and are always rejected (they're on a shorter/weaker chain)
+                        // LOWER HEIGHT: Block is on a shorter chain.
+                        // The block is already stored in the DB (inserted by the Sled
+                        // transaction above) so it's available for future reorganizations.
+                        // When a later block on this branch arrives at our height or higher,
+                        // the Equal/Greater cases will handle the reorganization.
                         info!(
                             "Block {} rejected: height {} < current height {} - shorter chain",
                             new_block.get_hash(),
@@ -1030,23 +1067,27 @@ impl BlockchainFileSystem {
                     break;
                 }
 
-                // Rollback UTXO set BEFORE removing block from database
+                // Rollback UTXO set for this block
                 // This ensures that:
                 // 1. Coinbase transactions are removed from UTXO set (fixes balance issues)
                 // 2. Spent inputs are restored as available UTXOs
                 // 3. UTXO state stays synchronized with blockchain state
                 self.rollback_utxo_set(&block).await?;
 
-                // Remove block from blockchain database
-                let block_tree = self
+                // IMPORTANT: Do NOT delete the block from the database.
+                // Rolled-back blocks must remain in the DB so that find_common_ancestor()
+                // can still walk the chain when a future reorganization references them.
+                // Without this, a later block on the rolled-back branch triggers
+                // "No common ancestor found" because the intermediate blocks were deleted.
+                // This matches Bitcoin Core behavior: non-canonical blocks stay in the DB.
+                let _block_tree = self
                     .blockchain
                     .db
                     .open_tree(self.get_blocks_tree_path())
                     .map_err(|e| BtcError::OpenBlockchainTreeError(e.to_string()))?;
 
-                block_tree
-                    .remove(current_tip.as_bytes())
-                    .map_err(|e| BtcError::BlockchainDBconnection(e.to_string()))?;
+                // Block is kept in DB (not deleted) — see comment above
+                // block_tree.remove(current_tip.as_bytes())?;  // REMOVED
 
                 // Move to previous block in chain
                 current_tip = block.get_pre_block_hash();
@@ -1429,6 +1470,78 @@ mod tests {
         let blockchain = BlockchainFileSystem::create_blockchain(&genesis_address)
             .await
             .expect("Failed to create test blockchain");
+        (blockchain, test_db_path)
+    }
+
+    async fn create_test_blockchain_with_genesis(
+        genesis_address: &WalletAddress,
+    ) -> (BlockchainFileSystem, String) {
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+
+        // Use process ID and random number for better isolation
+        let process_id = std::process::id();
+        let random_num = rand::random::<u32>();
+        let test_db_path = format!(
+            "test_blockchain_db_{}_{}_{}_{}",
+            timestamp,
+            process_id,
+            random_num,
+            uuid::Uuid::new_v4()
+        );
+
+        // Clean up any existing test database with retry logic
+        let _ = cleanup_test_blockchain_with_retry(&test_db_path);
+
+        // Set environment variable for unique database path
+        unsafe {
+            std::env::set_var("TREE_DIR", &test_db_path);
+        }
+        unsafe {
+            std::env::set_var("BLOCKS_TREE", &test_db_path);
+        }
+
+        let blockchain = BlockchainFileSystem::create_blockchain(genesis_address)
+            .await
+            .expect("Failed to create test blockchain");
+        (blockchain, test_db_path)
+    }
+
+    async fn create_empty_test_blockchain() -> (BlockchainFileSystem, String) {
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+
+        // Use process ID and random number for better isolation
+        let process_id = std::process::id();
+        let random_num = rand::random::<u32>();
+        let test_db_path = format!(
+            "test_blockchain_db_{}_{}_{}_{}",
+            timestamp,
+            process_id,
+            random_num,
+            uuid::Uuid::new_v4()
+        );
+
+        // Clean up any existing test database with retry logic
+        let _ = cleanup_test_blockchain_with_retry(&test_db_path);
+
+        // Set environment variable for unique database path
+        unsafe {
+            std::env::set_var("TREE_DIR", &test_db_path);
+        }
+        unsafe {
+            std::env::set_var("BLOCKS_TREE", &test_db_path);
+        }
+
+        let blockchain = BlockchainFileSystem::open_blockchain_empty()
+            .await
+            .expect("Failed to create empty test blockchain");
         (blockchain, test_db_path)
     }
 
@@ -2905,16 +3018,8 @@ mod tests {
     /// Test realistic multi-node scenario with same height competing blocks
     #[tokio::test]
     async fn test_realistic_multi_node_competition() {
-        let (mut blockchain, db_path) = create_test_blockchain().await;
         let genesis_address = generate_test_genesis_address();
-
-        // Step 1: Create initial blockchain with genesis block
-        let coinbase_tx_genesis = Transaction::new_coinbase_tx(&genesis_address)
-            .expect("Failed to create genesis coinbase tx");
-        let _genesis_block = blockchain
-            .mine_block(&[coinbase_tx_genesis])
-            .await
-            .expect("Failed to mine genesis block");
+        let (mut blockchain, db_path) = create_test_blockchain_with_genesis(&genesis_address).await;
 
         // Check initial balance
         let service = BlockchainService::from_blockchain_file_system(blockchain.clone());
@@ -3002,16 +3107,15 @@ mod tests {
     /// Test competing blocks scenario (simulates real network behavior)
     #[tokio::test]
     async fn test_competing_blocks_scenario() {
-        let (mut blockchain, db_path) = create_test_blockchain().await;
         let genesis_address = generate_test_genesis_address();
+        let (mut blockchain, db_path) = create_test_blockchain_with_genesis(&genesis_address).await;
 
-        // Step 1: Create initial blockchain with genesis block
-        let coinbase_tx_genesis = Transaction::new_coinbase_tx(&genesis_address)
-            .expect("Failed to create genesis coinbase tx");
+        // The chain already contains the genesis block (created in create_test_blockchain_with_genesis).
         let genesis_block = blockchain
-            .mine_block(&[coinbase_tx_genesis])
+            .get_last_block()
             .await
-            .expect("Failed to mine genesis block");
+            .expect("Failed to get genesis block")
+            .expect("Genesis block missing");
 
         // Check initial balance
         let service = BlockchainService::from_blockchain_file_system(blockchain.clone());
@@ -3095,8 +3199,8 @@ mod tests {
         );
         assert_eq!(
             final_utxo_count,
-            1, // Only genesis block in UTXO set
-            "UTXO count should be 1 (only genesis), got {}. UTXO update mechanism issue.",
+            2, // Genesis coinbase + winning tip block coinbase
+            "UTXO count should be 2 (genesis + winning tip block), got {}.",
             final_utxo_count
         );
         assert_eq!(
@@ -3111,16 +3215,8 @@ mod tests {
     /// Test the real multi-node scenario with proper transaction threshold
     #[tokio::test]
     async fn test_real_multi_node_with_threshold() {
-        let (blockchain, db_path) = create_test_blockchain().await;
         let genesis_address = generate_test_genesis_address();
-
-        // Step 1: Create initial blockchain with genesis block
-        let coinbase_tx_genesis = Transaction::new_coinbase_tx(&genesis_address)
-            .expect("Failed to create genesis coinbase tx");
-        let _genesis_block = blockchain
-            .mine_block(&[coinbase_tx_genesis])
-            .await
-            .expect("Failed to mine genesis block");
+        let (blockchain, db_path) = create_test_blockchain_with_genesis(&genesis_address).await;
 
         // Check initial balance
         let service = BlockchainService::from_blockchain_file_system(blockchain.clone());
@@ -3471,11 +3567,6 @@ mod tests {
     }
 
     async fn test_three_node_scenario() {
-        // Create 3 blockchain instances (simulating 3 nodes)
-        let (blockchain1, db_path1) = create_test_blockchain().await;
-        let (blockchain2, db_path2) = create_test_blockchain().await;
-        let (blockchain3, db_path3) = create_test_blockchain().await;
-
         // Create wallets using the wallet service consistently
         let mut wallet_service =
             crate::wallet::WalletService::new().expect("Failed to create wallet service");
@@ -3490,28 +3581,31 @@ mod tests {
             .create_wallet()
             .expect("Failed to create node3 wallet");
 
-        // Step 1: Node 1 mines genesis block
-        let coinbase_tx1 = Transaction::new_coinbase_tx(&node1_address)
-            .expect("Failed to create node1 coinbase tx");
-        let genesis_block1 = blockchain1
-            .mine_block(&[coinbase_tx1])
+        // Create node 1 with a genesis paying to node1_address, then sync that exact genesis
+        // to the other nodes (which start empty). This avoids relying on locally-generated
+        // genesis blocks matching across nodes.
+        let (blockchain1, db_path1) = create_test_blockchain_with_genesis(&node1_address).await;
+        let genesis_block = blockchain1
+            .get_last_block()
             .await
-            .expect("Failed to mine genesis block");
+            .expect("Failed to get genesis block")
+            .expect("Genesis block missing");
 
-        // Step 2: Synchronize blockchain across all nodes
+        let (mut blockchain2, db_path2) = create_empty_test_blockchain().await;
+        let (mut blockchain3, db_path3) = create_empty_test_blockchain().await;
+
+        blockchain2
+            .add_block(&genesis_block)
+            .await
+            .expect("Node 2 failed to add genesis block");
+        blockchain3
+            .add_block(&genesis_block)
+            .await
+            .expect("Node 3 failed to add genesis block");
+
         let service1 = BlockchainService::from_blockchain_file_system(blockchain1.clone());
         let service2 = BlockchainService::from_blockchain_file_system(blockchain2.clone());
         let service3 = BlockchainService::from_blockchain_file_system(blockchain3.clone());
-
-        // Node 2 and 3 receive the genesis block
-        service2
-            .add_block(&genesis_block1)
-            .await
-            .expect("Node 2 failed to add genesis block");
-        service3
-            .add_block(&genesis_block1)
-            .await
-            .expect("Node 3 failed to add genesis block");
 
         // Step 3: Check initial balances
         let utxo_set1 = UTXOSet::new(service1.clone());
@@ -3601,12 +3695,6 @@ mod tests {
     }
 
     async fn test_four_node_scenario() {
-        // Create 4 blockchain instances (simulating 4 nodes)
-        let (blockchain1, db_path1) = create_test_blockchain().await;
-        let (blockchain2, db_path2) = create_test_blockchain().await;
-        let (blockchain3, db_path3) = create_test_blockchain().await;
-        let (blockchain4, db_path4) = create_test_blockchain().await;
-
         // Create wallets using the wallet service consistently
         let mut wallet_service =
             crate::wallet::WalletService::new().expect("Failed to create wallet service");
@@ -3624,33 +3712,36 @@ mod tests {
             .create_wallet()
             .expect("Failed to create node4 wallet");
 
-        // Step 1: Node 1 mines genesis block
-        let coinbase_tx1 = Transaction::new_coinbase_tx(&node1_address)
-            .expect("Failed to create node1 coinbase tx");
-        let genesis_block1 = blockchain1
-            .mine_block(&[coinbase_tx1])
+        // Create node 1 with a genesis paying to node1_address, then sync that exact genesis
+        // to the other nodes (which start empty) so all nodes share a common ancestor.
+        let (blockchain1, db_path1) = create_test_blockchain_with_genesis(&node1_address).await;
+        let genesis_block = blockchain1
+            .get_last_block()
             .await
-            .expect("Failed to mine genesis block");
+            .expect("Failed to get genesis block")
+            .expect("Genesis block missing");
 
-        // Step 2: Synchronize blockchain across all nodes
+        let (mut blockchain2, db_path2) = create_empty_test_blockchain().await;
+        let (mut blockchain3, db_path3) = create_empty_test_blockchain().await;
+        let (mut blockchain4, db_path4) = create_empty_test_blockchain().await;
+
+        blockchain2
+            .add_block(&genesis_block)
+            .await
+            .expect("Node 2 failed to add genesis block");
+        blockchain3
+            .add_block(&genesis_block)
+            .await
+            .expect("Node 3 failed to add genesis block");
+        blockchain4
+            .add_block(&genesis_block)
+            .await
+            .expect("Node 4 failed to add genesis block");
+
         let service1 = BlockchainService::from_blockchain_file_system(blockchain1.clone());
         let service2 = BlockchainService::from_blockchain_file_system(blockchain2.clone());
         let service3 = BlockchainService::from_blockchain_file_system(blockchain3.clone());
         let service4 = BlockchainService::from_blockchain_file_system(blockchain4.clone());
-
-        // All nodes receive the genesis block
-        service2
-            .add_block(&genesis_block1)
-            .await
-            .expect("Node 2 failed to add genesis block");
-        service3
-            .add_block(&genesis_block1)
-            .await
-            .expect("Node 3 failed to add genesis block");
-        service4
-            .add_block(&genesis_block1)
-            .await
-            .expect("Node 4 failed to add genesis block");
 
         // Step 3: Check initial balances
         let utxo_set1 = UTXOSet::new(service1.clone());
@@ -3835,12 +3926,6 @@ mod tests {
         // Test with 4 separate nodes running on different servers
         // This test simulates real network synchronization between independent nodes
 
-        // Create 4 completely independent blockchain instances (simulating 4 different servers)
-        let (blockchain1, db_path1) = create_test_blockchain().await;
-        let (mut blockchain2, db_path2) = create_test_blockchain().await;
-        let (mut blockchain3, db_path3) = create_test_blockchain().await;
-        let (mut blockchain4, db_path4) = create_test_blockchain().await;
-
         // Create wallet service for consistent wallet management across all nodes
         let mut wallet_service =
             crate::wallet::WalletService::new().expect("Failed to create wallet service");
@@ -3858,14 +3943,31 @@ mod tests {
             .create_wallet()
             .expect("Failed to create node4 wallet");
 
-        // Step 1: Node 1 starts mining and creates the initial blockchain
-        // Other nodes start empty and will sync through network communication
-        let coinbase_tx_genesis = Transaction::new_coinbase_tx(&node1_address)
-            .expect("Failed to create genesis coinbase tx");
+        // Create node 1 with a genesis paying to node1_address, then sync that exact genesis
+        // to the other nodes (which start empty) so all nodes share a common ancestor.
+        let (blockchain1, db_path1) = create_test_blockchain_with_genesis(&node1_address).await;
         let genesis_block = blockchain1
-            .mine_block(&[coinbase_tx_genesis])
+            .get_last_block()
             .await
-            .expect("Failed to mine genesis block");
+            .expect("Failed to get genesis block")
+            .expect("Genesis block missing");
+
+        let (mut blockchain2, db_path2) = create_empty_test_blockchain().await;
+        let (mut blockchain3, db_path3) = create_empty_test_blockchain().await;
+        let (mut blockchain4, db_path4) = create_empty_test_blockchain().await;
+
+        blockchain2
+            .add_block(&genesis_block)
+            .await
+            .expect("Node 2 failed to sync genesis block");
+        blockchain3
+            .add_block(&genesis_block)
+            .await
+            .expect("Node 3 failed to sync genesis block");
+        blockchain4
+            .add_block(&genesis_block)
+            .await
+            .expect("Node 4 failed to sync genesis block");
 
         // Add 2 more blocks to Node 1 to get to 30 balance (10 + 10 + 10)
         for _ in 0..2 {
@@ -3881,50 +3983,32 @@ mod tests {
         // Node 1 broadcasts its blockchain to other nodes through network protocol
         // This simulates the real network communication that happens between servers
 
-        // First, sync genesis block to all nodes
-        blockchain2
-            .add_block(&genesis_block)
+        // Then sync all blocks from Node 1 to other nodes (genesis -> tip order)
+        let mut block_hashes = blockchain1
+            .get_block_hashes()
             .await
-            .expect("Node 2 failed to sync genesis block");
-        blockchain3
-            .add_block(&genesis_block)
-            .await
-            .expect("Node 3 failed to sync genesis block");
-        blockchain4
-            .add_block(&genesis_block)
-            .await
-            .expect("Node 4 failed to sync genesis block");
+            .expect("Failed to get block hashes");
+        block_hashes.reverse();
 
-        // Then sync all additional blocks from Node 1 to other nodes
-        let height = blockchain1
-            .get_best_height()
-            .await
-            .expect("Failed to get height");
-        for i in 1..height {
-            let block_hashes = blockchain1
-                .get_block_hashes()
+        for block_hash in block_hashes {
+            if let Some(block) = blockchain1
+                .get_block(&block_hash)
                 .await
-                .expect("Failed to get block hashes");
-            if let Some(block_hash) = block_hashes.get(i - 1) {
-                let block_result = blockchain1
-                    .get_block(block_hash)
+                .expect("Failed to get block")
+            {
+                // Simulate network propagation - each node receives and validates the block
+                blockchain2
+                    .add_block(&block)
                     .await
-                    .expect("Failed to get block");
-                if let Some(block) = block_result {
-                    // Simulate network propagation - each node receives and validates the block
-                    blockchain2
-                        .add_block(&block)
-                        .await
-                        .expect("Node 2 failed to sync block");
-                    blockchain3
-                        .add_block(&block)
-                        .await
-                        .expect("Node 3 failed to sync block");
-                    blockchain4
-                        .add_block(&block)
-                        .await
-                        .expect("Node 4 failed to sync block");
-                }
+                    .expect("Node 2 failed to sync block");
+                blockchain3
+                    .add_block(&block)
+                    .await
+                    .expect("Node 3 failed to sync block");
+                blockchain4
+                    .add_block(&block)
+                    .await
+                    .expect("Node 4 failed to sync block");
             }
         }
 
@@ -4283,28 +4367,26 @@ mod tests {
     #[tokio::test]
     async fn test_block_processing_order_issue() {
         // Create two separate blockchain instances (simulating two nodes)
-        let (blockchain1_fs, db_path1) = create_test_blockchain().await;
-        let (blockchain2_fs, db_path2) = create_test_blockchain().await;
+        let genesis_address = generate_test_genesis_address();
+        let (blockchain1_fs, db_path1) =
+            create_test_blockchain_with_genesis(&genesis_address).await;
+
+        // Sync the exact genesis block from node 1 to node 2.
+        let genesis_block = blockchain1_fs
+            .get_last_block()
+            .await
+            .expect("Failed to get genesis block")
+            .expect("Genesis block missing");
+
+        let (mut blockchain2_fs, db_path2) = create_empty_test_blockchain().await;
+        blockchain2_fs
+            .add_block(&genesis_block)
+            .await
+            .expect("Failed to sync genesis block to node 2");
 
         // Create BlockchainService instances (this is what the network code uses)
         let service1 = BlockchainService::from_blockchain_file_system(blockchain1_fs);
         let service2 = BlockchainService::from_blockchain_file_system(blockchain2_fs);
-
-        let genesis_address = generate_test_genesis_address();
-
-        // Both nodes start with same genesis block
-        let coinbase_tx_genesis = Transaction::new_coinbase_tx(&genesis_address)
-            .expect("Failed to create genesis coinbase tx");
-        let genesis_block = service1
-            .mine_block(&[coinbase_tx_genesis])
-            .await
-            .expect("Failed to mine genesis block");
-
-        // Synchronize genesis block to both nodes
-        service2
-            .add_block(&genesis_block)
-            .await
-            .expect("Failed to sync genesis block to node 2");
 
         // Verify both nodes have the same tip
         let tip1 = service1.get_tip_hash().await.expect("Failed to get tip 1");

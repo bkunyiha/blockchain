@@ -61,7 +61,7 @@
 
 <div align="center">
 
-**[← Previous: Domain Model](01-Domain-Model.md)** | **Section 9.2 Blockchain State Management** | **[Next: Chain State and Storage →](03-Chain-State-and-Storage.md)** 
+**[← Previous: Domain Model](01-Domain-Model.md)** | **Section 9.2 Blockchain State Management** | **[Next: Chain State and Storage →](03-Chain-State-and-Storage.md)**
 
 </div>
 
@@ -146,7 +146,7 @@ UTXOSet (derived state)   BlockchainFileSystem (sled-backed storage)
 
 The types we import (`BlockchainService`, `UTXOSet`) are re-exported here:
 
-**Code Listing 9-6**: `chain/` module exports (public boundary)  
+### Listing 9-6: `chain/` module exports (public boundary)
 ```rust
 // Source: bitcoin/src/chain/mod.rs
 pub mod chainstate;
@@ -166,7 +166,7 @@ pub use utxo_set::UTXOSet;
 
 **Chain façade (BlockchainService) code**: `bitcoin/src/chain/chainstate.rs`
 
-**Code Listing 9-7**: The façade type (`BlockchainService`)  
+### Listing 9-7: The façade type (`BlockchainService`)
 ```rust
 // Source: bitcoin/src/chain/chainstate.rs
 #[derive(Debug)]
@@ -210,7 +210,7 @@ impl BlockchainService {
 
 The easiest way to understand the locking model is to find the helper used for reads, and then compare it to write paths.
 
-**Code Listing 9-8**: Read helper (read lock + delegation)
+### Listing 9-8: Read helper (read lock + delegation)
 ```rust
 // Source: bitcoin/src/chain/chainstate.rs
 async fn read<F, Fut, T>(&self, f: F) -> Result<T>
@@ -235,7 +235,7 @@ where
 
 **Write-lock boundary (`add_block`) code**: `bitcoin/src/chain/chainstate.rs`
 
-**Code Listing 9-9**: Write-lock boundary example (`BlockchainService::add_block`)  
+### Listing 9-9: Write-lock boundary example (`BlockchainService::add_block`)
 ```rust
 // Source: bitcoin/src/chain/chainstate.rs
 pub async fn add_block(&self, block: &Block) -> Result<()> {
@@ -254,7 +254,7 @@ pub async fn add_block(&self, block: &Block) -> Result<()> {
 
 Mining constructs a new block, persists it, advances the tip, and updates the UTXO set. That is why `mine_block` is also guarded by the write lock.
 
-**Code Listing 9-10**: Mining boundary (`BlockchainService::mine_block`)  
+### Listing 9-10: Mining boundary (`BlockchainService::mine_block`)
 ```rust
 // Source: bitcoin/src/chain/chainstate.rs
 pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
@@ -266,21 +266,51 @@ pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
         }
     }
 
-    // Mining + persistence happens inside the storage layer.
+    // Acquire write lock
     let blockchain_guard = self.0.write().await;
+
+    // Re-validate transaction inputs under the write lock.
+    // Between prepare_mining_utxo (read lock) and here (write lock),
+    // a competing block may have been accepted, spending the same inputs.
+    // Without this check, mine_block creates a block with already-spent
+    // inputs, and update_utxo_set silently adds the coinbase —
+    // creating money from nothing.
+    let db = blockchain_guard.get_db();
+    let utxo_tree = db.open_tree("chainstate")?;
+    for tx in transactions {
+        if tx.is_coinbase() { continue; }
+        for input in tx.get_vin() {
+            // Verify each input's UTXO still exists...
+        }
+    }
+
+    // Mining + persistence happens inside the storage layer.
     blockchain_guard.mine_block(transactions).await
 }
 ```
 
+> **Why validation happens twice (stale mining protection)**:
+>
+> When multiple miners compete for the same transactions, there's a race condition between transaction validation and block creation:
+>
+> 1. **First validation** (`prepare_mining_utxo`, read lock): Checks each transaction's inputs are unspent. This runs before the write lock is acquired. *(See Section 9.6, Listing 9-6.2 for full implementation.)*
+>
+> 2. Between steps 1 and 3, a **competing block** may arrive from the network and be processed via `add_block` (which takes the write lock). This competing block spends the same transaction inputs.
+>
+> 3. **Second validation** (here, under write lock): Re-checks inputs just before mining. If any inputs were spent by the competing block in step 2, mining is aborted with a "stale mining" error.
+>
+> Without this double-check, the node would create a block with already-spent inputs. The `update_utxo_set` function silently skips missing inputs while still adding the coinbase transaction — effectively creating money from nothing.
+
 - **What to notice**
   - Verification happens first; persistence happens only after verification passes.
   - We use a write lock even though `BlockchainFileSystem::mine_block` takes `&self`: internally it mutates durable state (DB + tip) and updates derived state.
+  - The full implementation of `prepare_mining_utxo` is shown in Section 9.6 (Block Lifecycle and Mining), Listing 9-6.2.
 
 ### Step 6 — See how derived state is updated (UTXO update + rollback)
 
 **Derived-state delegation (UTXO update/rollback) code**: `bitcoin/src/chain/chainstate.rs`
 
-**Code Listing 9-11**: Derived-state delegation (UTXO update + rollback)  
+### Listing 9-11: Derived-state delegation (UTXO update + rollback)
 ```rust
 // Source: bitcoin/src/chain/chainstate.rs
 pub async fn update_utxo_set(&self, block: &Block) -> Result<()> {
@@ -316,7 +346,7 @@ Next, in Section 9.3 (Chain State and Storage), we trace the storage layer’s w
 
 <div align="center">
 
-**[← Previous: Domain Model](01-Domain-Model.md)** | **Blockchain State Management** | **[Next: Chain State and Storage →](03-Chain-State-and-Storage.md)** 
+**[← Previous: Domain Model](01-Domain-Model.md)** | **Blockchain State Management** | **[Next: Chain State and Storage →](03-Chain-State-and-Storage.md)**
 
 </div>
 

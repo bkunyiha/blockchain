@@ -125,7 +125,7 @@ impl TryFrom<Block> for IVec {
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Type Conversions** | **[← Previous](14-Iterators-Closures.md)** | **[Next: Testing →](16-Testing.md)** 
+**[← Rust Guide Index](README.md)** | **Type Conversions** | **[← Previous](14-Iterators-Closures.md)** | **[Next: Testing →](16-Testing.md)**
 
 </div>
 

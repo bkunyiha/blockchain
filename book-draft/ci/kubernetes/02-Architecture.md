@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](#)** 
+**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](#)**
 
 </div>
 
@@ -77,8 +77,8 @@
 
 This section explains Kubernetes architecture, core concepts, and how they differ from Docker Compose.
 
-> **Methods involved**
-> - Resource set (kustomize): `kustomization.yaml` ([Listing 9.3](01A-Kubernetes-Code-Listings.md#listing-93-cikubernetesmanifestskustomizationyaml))
+> **Methods involved:**
+> - Resource set (kustomize): `kustomization.yaml` ([Listing 23A.3](01A-Kubernetes-Code-Listings.md#listing-23a3-cikubernetesmanifestskustomizationyaml))
 > - Core manifests (Namespace/Config/Workloads/Services): [Listings 9.4–9.20](01A-Kubernetes-Code-Listings.md)
 
 ## How to Read This Section
@@ -272,10 +272,10 @@ This section describes the primitives Kubernetes gives you. The key is understan
 - **HPA** can scale workloads (including StatefulSets) based on metrics.
 - **PVCs + StorageClasses** provide persistence; for StatefulSets we use per-pod PVCs to avoid shared-disk locking.
 
-**If you ever feel lost, ask yourself:** 
+**If you ever feel lost, ask yourself:**
 - What creates pods (controller eg StatefulSet and Deployment)? controller chain is (Deployment → ReplicaSet → Pods)
-- What config do pods read (ConfigMap/Secret)? 
-- How do other things reach those pods (Service)? 
+- What config do pods read (ConfigMap/Secret)?
+- How do other things reach those pods (Service)?
 - Where is state stored (PVC)?
 
 ### Namespace

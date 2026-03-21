@@ -62,7 +62,7 @@
 
 This chapter explains the `bitcoin/src/node` module as a Rust implementer reads it: **a coordination layer** that turns “network messages and API calls” into “chainstate updates, mempool updates, mining, and peer relay”.
 
-> **Prerequisites**: This chapter ties together every module built so far — primitives (6), crypto (8), chain state (9–10), storage (11), and networking (12). You should be comfortable with Tokio's `spawn`, `mpsc` channels, and `Arc<Mutex<T>>` patterns. If any of those are unfamiliar, the async primer in Chapter 12's opening or Chapter 24 (Rust Language Guide) covers them.
+> **Prerequisites:**: This chapter ties together every module built so far — primitives (6), crypto (8), chain state (9–10), storage (11), and networking (12). You should be comfortable with Tokio's `spawn`, `mpsc` channels, and `Arc<Mutex<T>>` patterns. If any of those are unfamiliar, the async primer in Chapter 12's opening or Chapter 24 (Rust Language Guide) covers them.
 
 > **What you will learn in this chapter:**
 > - Coordinate blockchain state, mempool, network, mining, and validation through the NodeContext API
@@ -123,7 +123,7 @@ It includes full method bodies for:
 
 ---
 
-## What We Covered
+## Summary
 
 - We built the NodeContext that serves as the central coordination point for all blockchain node operations.
 - We unified interactions between blockchain state, transaction mempool, network operations, mining, and validation behind a single API.

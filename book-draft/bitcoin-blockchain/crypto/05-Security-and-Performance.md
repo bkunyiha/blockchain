@@ -502,7 +502,7 @@ Security and performance are critical for blockchain systems:
 
 <div align="center">
 
-**[Cryptography Home Index ←](README.md)**  |  **[Previous: Address Encoding ←](04-Address-Encoding.md)** | **[Security and Performance](05-Security-and-Performance.md)** 
+**[Cryptography Home Index ←](README.md)**  |  **[Previous: Address Encoding ←](04-Address-Encoding.md)** | **[Security and Performance](05-Security-and-Performance.md)**
 
 </div>
 

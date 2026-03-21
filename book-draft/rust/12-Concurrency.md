@@ -258,7 +258,7 @@ In the next chapter, we'll explore modules, which help us organize code and cont
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Concurrency Primitives** | **[← Previous](11-Async-Await.md)** | **[Next →](13-Modules.md)** 
+**[← Rust Guide Index](README.md)** | **Concurrency Primitives** | **[← Previous](11-Async-Await.md)** | **[Next →](13-Modules.md)**
 
 </div>
 

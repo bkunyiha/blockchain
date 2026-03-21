@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.1: Introduction** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
+**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.1: Introduction** | **[Next: Chapter 15.2: Server Setup →](02-Server-Setup.md)**
 
 </div>
 
@@ -81,7 +81,7 @@ The web API layer serves as the primary interface between clients and our blockc
 
 This chapter provides a comprehensive overview of the web API architecture, exploring its structure, design principles, and the technical foundations that make it production-ready. We'll examine how components are organized, how requests flow through the system, and the architectural decisions that enable security, scalability, and maintainability.
 
-> **Prerequisites**: This chapter assumes familiarity with Bitcoin and blockchain fundamentals (Chapters 1–2) and with **async Rust**. The web API is built entirely on `async`/`await` using the Tokio runtime, and every handler, middleware, and server component is an `async fn`. If async Rust is new to you, read the **Tokio Runtime Guide** (linked at the end of this chapter) before continuing; for a broader Rust refresher, see **Chapter 24: Rust Language Guide**.
+> **Prerequisites:**: This chapter assumes familiarity with Bitcoin and blockchain fundamentals (Chapters 1–2) and with **async Rust**. The web API is built entirely on `async`/`await` using the Tokio runtime, and every handler, middleware, and server component is an `async fn`. If async Rust is new to you, read the **Tokio Runtime Guide** (linked at the end of this chapter) before continuing; for a broader Rust refresher, see **Chapter 24: Rust Language Guide**.
 
 ---
 
@@ -222,7 +222,7 @@ Understanding how requests flow through the system is crucial for debugging and 
 9. HTTP Response sent to client
 ```
 
-> **Note**: Compression middleware wraps the handler stack and processes both directions: it may decompress incoming request bodies if the client sent compressed data (via `Content-Encoding` header), and it compresses outgoing response bodies if the client supports compression (via `Accept-Encoding` header). The actual compression of the response happens after the handler executes, during response processing.
+> **Note:**: Compression middleware wraps the handler stack and processes both directions: it may decompress incoming request bodies if the client sent compressed data (via `Content-Encoding` header), and it compresses outgoing response bodies if the client supports compression (via `Accept-Encoding` header). The actual compression of the response happens after the handler executes, during response processing.
 
 This flow demonstrates the layered architecture: each middleware wraps the next layer, creating a processing pipeline. For detailed middleware information, see [Middleware Layers in Axum](Axum.md#middleware-layers).
 
@@ -331,7 +331,7 @@ For framework-specific technical details:
 
 <div align="center">
 
-**[← Web API Index](README.md)** | **Chapter 15.1: Introduction** | **[Next: Server Setup →](02-Server-Setup.md)** 
+**[← Web API Index](README.md)** | **Chapter 15.1: Introduction** | **[Next: Server Setup →](02-Server-Setup.md)**
 
 **Axum Framework Guide** | **Tower Framework Guide** | **Serde Framework Guide** | **Utoipa Framework Guide** | **Tracing Framework Guide**
 

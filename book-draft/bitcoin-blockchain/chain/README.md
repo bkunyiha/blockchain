@@ -62,7 +62,7 @@
 
 <div align="center">
 
-**[← Cryptography](../crypto/README.md)** | **Section 9 Blockchain (Technical Foundations)** | **[Block Acceptance →](10-Whitepaper-Step-5-Block-Acceptance.md)** 
+**[← Cryptography](../crypto/README.md)** | **Chapter 9: Blockchain (Technical Foundations)** | **[Block Acceptance →](10-Whitepaper-Step-5-Block-Acceptance.md)**
 </div>
 
 ---
@@ -90,7 +90,7 @@ In this section, we walk through the implementation across these primary modules
 
 ### A short vocabulary primer (UTXO, transaction, mempool)
 
-- **UTXO (Unspent Transaction Output)**: a spendable “coin” in Bitcoin. Conceptually, it is a specific output in a previous transaction, identified by an **outpoint** \((txid, vout)\). The UTXO set is the node’s current database of “what is unspent right now?”
+- **UTXO (Unspent Transaction Output)**: a spendable “coin” in Bitcoin. Conceptually, it is a specific output in a previous transaction, identified by an **outpoint** $(txid, vout)$. The UTXO set is the node’s current database of “what is unspent right now?”
 - **Transaction**: a signed data structure that consumes one or more UTXOs as inputs and creates new outputs (new potential UTXOs). In Bitcoin’s model, spending is not “update an account balance”; spending is “prove you can unlock a previous output, then create new outputs.”
 - **Trimmed copy**: a temporary copy of a transaction constructed for signing and verification where signature fields are cleared (and, per-input, the referenced output’s locking data is injected) so we can compute a deterministic message digest to sign. This prevents circularity (“a signature cannot sign itself”) and ensures verifiers rebuild the same bytes before calling signature verification.
 - **Mempool**: the node’s in-memory (or local) holding area for valid, unconfirmed transactions that have been received but are not yet in a block. Miners select transactions from the mempool when assembling candidate blocks.
@@ -104,7 +104,7 @@ In this section, we follow a single execution trace from “a wallet constructs 
 5. We update the UTXO set so “what is spendable?” changes deterministically.
 6. We accept blocks from peers by enforcing the whitepaper’s safety gate: **valid and not already spent**.
 
-When we quote code, we label it as **Code Listing 9-x.y** so it can be referenced consistently throughout the section (and later in print).
+When we quote code, we label it as **Listing 9-x.y** so it can be referenced consistently throughout the section (and later in print).
 
 **Figure 9-1: Transaction Lifecycle**
 
@@ -156,7 +156,7 @@ The organizing idea is to recognize where the system transitions from:
 
 - “build data structures” → “validate” → “persist” → “update derived state”.
 
-#### Code Listing 9-0.1: Create a spend + submit it to the node (exact project signatures)
+### Listing 9-0.1: Create a spend + submit it to the node (exact project signatures)
 
 ```rust
 // 1) Wallet/client constructs a spend
@@ -178,7 +178,7 @@ let txid_hex = node
     .await?;
 ```
 
-#### Code Listing 9-0.2: Persistence happens on two paths (local mining vs peer acceptance)
+### Listing 9-0.2: Persistence happens on two paths (local mining vs peer acceptance)
 
 ```rust
 // 3a) Local mining path: validate txs,
@@ -195,7 +195,7 @@ let block = blockchain_service
 blockchain_service.add_block(&peer_block).await?;
 ```
 
-#### Code Listing 9-0.3: Mempool admission boundary (what `process_transaction` actually does)
+### Listing 9-0.3: Mempool admission boundary (what `process_transaction` actually does)
 
 ```rust
 // Source: bitcoin/src/node/context.rs
@@ -224,7 +224,7 @@ pub async fn process_transaction(
 }
 ```
 
-#### Code Listing 9-0.4: Mining boundary (verify first, then persist)
+### Listing 9-0.4: Mining boundary (verify first, then persist)
 
 ```rust
 // Source: bitcoin/src/chain/chainstate.rs
@@ -245,7 +245,7 @@ pub async fn mine_block(
 }
 ```
 
-#### Code Listing 9-0.5: Persistence + UTXO update on the mining path
+### Listing 9-0.5: Persistence + UTXO update on the mining path
 
 ```rust
 // Source: bitcoin/src/store/file_system_db_chain.rs
@@ -281,7 +281,7 @@ pub async fn mine_block(
 
 ### Step 0: Establish the prerequisites (data model + crypto meaning)
 
-- A transaction input references an **outpoint** \((txid, vout)\) and proves authorization with a **signature**.
+- A transaction input references an **outpoint** $(txid, vout)$ and proves authorization with a **signature**.
 - The UTXO set answers the state question: “is this outpoint spendable right now?”
 - For the supporting definitions and data layout, we rely on:
   - Section 6 (Primitives): `Transaction`, `TXInput`, `TXOutput`, `Block`
@@ -350,7 +350,7 @@ Peer receives block
 
 ---
 
-## What We Covered
+## Summary
 
 - We traced the complete chain pipeline from domain model through mempool, mining, and consensus to persistent chain state.
 - We explained how transactions are created, signed, verified, and admitted to the mempool before block inclusion.
@@ -399,5 +399,5 @@ After you complete Chapter 9, continue in book order with:
 
 <div align="center">
 
-**[← Cryptography](../crypto/README.md)** | **Blockchain (Technical Foundations)** | **[Next: Domain Model →](01-Domain-Model.md)** 
+**[← Cryptography](../crypto/README.md)** | **Blockchain (Technical Foundations)** | **[Next: Domain Model →](01-Domain-Model.md)**
 </div>

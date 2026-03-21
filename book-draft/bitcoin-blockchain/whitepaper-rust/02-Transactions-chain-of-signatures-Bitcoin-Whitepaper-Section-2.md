@@ -62,8 +62,8 @@ The paper defines an electronic coin as “a chain of digital signatures” and 
 We can model that directly, but we have to be precise about *what is being hashed* and *what is being verified*.
 
 In practice, implementing transactions means building three consensus-critical layers that must all line up:
-- the **bytes** we produce, 
-- the **hashes** we compute from them, and 
+- the **bytes** we produce,
+- the **hashes** we compute from them, and
 - the **authorization checks** we run against prior outputs.
 If any of these layers differ between nodes, we don’t just disagree on “formatting” — we disagree on txids, Merkle roots, signature validity, and ultimately which blocks are valid.
 
@@ -94,6 +94,9 @@ Why we need this layer (and why it’s worth understanding):
 ```rust
 use sha2::{Digest, Sha256};
 
+/// Compute double-SHA256: SHA256(SHA256(data))
+/// Returns a 32-byte hash suitable for consensus identifiers
+/// (txid, block hash).
 pub fn sha256d(data: &[u8]) -> [u8; 32] {
     let first = Sha256::digest(data);
     let second = Sha256::digest(&first);

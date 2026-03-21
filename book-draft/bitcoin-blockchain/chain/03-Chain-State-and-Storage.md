@@ -302,7 +302,7 @@ pub struct Blockchain<T> {
           → BlockchainService::mine_block(txs) → write lock [exclusive]
             → BlockchainFileSystem::mine_block(txs)
             → update_blocks_tree(new_block) + cache tip_hash + update_utxo_set
-```          
+```
 
 ##### Write entry point: `node.mine_block(&transactions)`
 ```text
@@ -1057,7 +1057,7 @@ pub async fn add_block(&mut self, new_block: &Block) -> Result<()> {
 
 <div align="center">
 
-**[← Previous: Blockchain State Management](02-Blockchain-State-Management.md)** | **Chain State and Storage** | **[Next: UTXO Set →](04-UTXO-Set.md)** 
+**[← Previous: Blockchain State Management](02-Blockchain-State-Management.md)** | **Chain State and Storage** | **[Next: UTXO Set →](04-UTXO-Set.md)**
 
 </div>
 

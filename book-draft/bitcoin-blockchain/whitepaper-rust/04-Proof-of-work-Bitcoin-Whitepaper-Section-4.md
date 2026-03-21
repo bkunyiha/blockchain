@@ -69,12 +69,15 @@ For more on `nBits`, see: **nBits → target: why exponent is byte-length**.
 - **Why it’s “hard to find, easy to verify”**:
   - mining: vary the header (usually just `nonce`) and hash repeatedly until `meets_target(...)` is true
   - verification: compute one hash and do one comparison
-- **Probability intuition**: if SHA-256 outputs are uniform, then \(P[\text{hash} \le \text{target}] \approx \text{target}/2^{256}\). Halving the target roughly doubles the expected work.
+- **Probability intuition**: if SHA-256 outputs are uniform, then $P[\text{hash} \le \text{target}] \approx \text{target}/2^{256}$. Halving the target roughly doubles the expected work.
 
 ```rust
+/// Expand nBits (4-byte compact difficulty) to target (32-byte big-endian).
 pub fn bits_to_target(difficulty_bits: u32) -> [u8; 32] {
     let exp = (difficulty_bits >> 24) as u8;
+    // Exponent: bytes to shift
     let mant = difficulty_bits & 0x00FF_FFFF;
+    // Mantissa: 3-byte value
     let mut target = [0u8; 32];
 
     if mant == 0 {

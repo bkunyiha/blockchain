@@ -106,6 +106,8 @@ NET -> TYPES -> BYTES -> HASHES -> VALIDATE -> STATE -> COMMIT
    - the header commits to them via merkle_root
 ```
 
+Expressed as a processing pipeline, the end-to-end flow looks like this:
+
 ```text
 net (messages) -> decode -> validate -> mempool/chainstate -> persist -> relay
 ```

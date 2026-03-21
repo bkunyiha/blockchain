@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-Operations.md)** | **Section 12: DNS Resolution Mechanism** | **[Chapter 23: Kubernetes →](../kubernetes/README.md)** 
+**[← Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-Operations.md)** | **Section 12: DNS Resolution Mechanism** | **[Chapter 23: Kubernetes →](../kubernetes/README.md)**
 
 </div>
 
@@ -79,9 +79,9 @@
 
 This section provides a detailed, line-by-line explanation of the DNS resolution mechanism used in the deployment system. Specifically, it covers how the system converts instance names like `miner_1:2001` to service names like `miner:2001` for DNS resolution within Docker Compose networks. Understanding this mechanism is essential for troubleshooting network connectivity issues and for developers who need to extend or modify the deployment system.
 
-> **Methods involved**
-> - `resolve_hostname_to_ip` (`ci/docker-compose/configs/docker-entrypoint.sh`, [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
-> - Conversion of `miner_N` → `miner` for Docker DNS (`ci/docker-compose/configs/docker-entrypoint.sh`, [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh))
+> **Methods involved:**
+> - `resolve_hostname_to_ip` (`ci/docker-compose/configs/docker-entrypoint.sh`, [Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh))
+> - Conversion of `miner_N` → `miner` for Docker DNS (`ci/docker-compose/configs/docker-entrypoint.sh`, [Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh))
 
 **Prerequisites:**
 - Understanding of [Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-Operations.md), especially Scenario 1, Step 9
@@ -172,7 +172,7 @@ SUCCESS: 172.19.0.2 ✅
 
 ### Code Location
 
-**File:** `ci/docker-compose/configs/docker-entrypoint.sh`  
+**File:** `ci/docker-compose/configs/docker-entrypoint.sh`
 **Lines:** 460-475
 
 ### Context: Preceding Steps
@@ -405,7 +405,7 @@ if ! PREV_ADDR_RESOLVED=$(resolve_hostname_to_ip "${RESOLVE_ADDR}"); then
 
 **Inside `resolve_hostname_to_ip()`:**
 
-The authoritative implementation is printed in full in [Listing 8.2](01A-Docker-Compose-Code-Listings.md#listing-82-cidocker-composeconfigsdocker-entrypointsh). Conceptually, the function does three things:
+The authoritative implementation is printed in full in [Listing 22A.2](01A-Docker-Compose-Code-Listings.md#listing-22a2-cidocker-composeconfigsdocker-entrypointsh). Conceptually, the function does three things:
 
 1. **Parse** `hostname:port` into parts (with input validation and trimming).
 2. **Resolve** `hostname` using multiple strategies (preferring `getent hosts`, with retry/backoff).
@@ -636,7 +636,7 @@ This mechanism is essential for the deployment system to function correctly, ena
 
 <div align="center">
 
-**[← Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-Operations.md)** | **Section 12: DNS Resolution Mechanism** | **[Chapter 23: Kubernetes →](../kubernetes/README.md)** 
+**[← Section 4: Deployment Scenarios & Operations](04-Deployment-Scenarios-and-Operations.md)** | **Section 12: DNS Resolution Mechanism** | **[Chapter 23: Kubernetes →](../kubernetes/README.md)**
 
 </div>
 

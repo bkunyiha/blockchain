@@ -133,7 +133,7 @@ Modules organize code by domain (wallet, transaction, blockchain). Default priva
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Modules and Visibility** | **[← Previous](12-Concurrency.md)** | **[Next →](14-Iterators-Closures.md)** 
+**[← Rust Guide Index](README.md)** | **Modules and Visibility** | **[← Previous](12-Concurrency.md)** | **[Next →](14-Iterators-Closures.md)**
 
 </div>
 

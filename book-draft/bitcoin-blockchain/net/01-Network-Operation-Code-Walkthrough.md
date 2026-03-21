@@ -88,7 +88,7 @@ The Bitcoin Whitepaper §5 describes a six-step loop:
 
 In our Rust Bitcoin implementation, those steps manifest as **message boundaries** and **method boundaries** in the P2P protocol implementation:
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `process_stream(...)` (the inbound router)
 > - `send_inv(...)` + `send_get_data(...)` (announce + request)
@@ -111,7 +111,7 @@ announce by id (INV) → request bytes (GETDATA) → deliver bytes (TX/BLOCK)
 
 The network layer should be “dumb” in the right way: it is responsible for **routing**, not for “being the blockchain”.
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `Server::run_with_shutdown(...)` (accept + spawn per connection)
 > - `process_stream(...)` (decode + dispatch)
@@ -178,7 +178,7 @@ All code listings are copied from the repository paths shown in each listing hea
 
 Before reading any runtime flow, we need to understand the **wire-level vocabulary**: what messages exist, and what fields they carry.
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `ConnectNode::is_remote`
 > - `ConnectNode::get_addr`
@@ -188,7 +188,7 @@ Before reading any runtime flow, we need to understand the **wire-level vocabula
 > - `enum AdminNodeQueryType`
 > - `enum Package`
 
-### Code Listing 2.21A-0.1 — Network globals + message model (part 1) (`bitcoin/src/node/server.rs`)
+### Listing 12-0.1 — Network globals + message model (part 1) (`bitcoin/src/node/server.rs`)
 
 ```rust
 use crate::{BlockInTransit, MemoryPool, Nodes};
@@ -253,7 +253,7 @@ pub enum MessageType { Error, Success, Info, Warning, Ack }
 
 The message type enums define the wire-level vocabulary for discriminating between objects and status categories. Next we define the envelope types themselves:
 
-### Code Listing 2.21A-0.2 — Message variants and admin queries (part 2)
+### Listing 12-0.2 — Message variants and admin queries (part 2)
 
 ```rust
 // Admin operations (not part of P2P protocol)
@@ -297,14 +297,14 @@ pub enum Package {
 
 This is the runtime entry point for inbound peer connections. It binds a TCP listener, does initial bootstrap, and then spawns one task per accepted connection.
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `Server::run_with_shutdown(...)`
 > - `net_processing::process_stream(...)` (printed in the next section)
 > - `send_version(...)` (printed later)
 > - `send_known_nodes(...)` (printed later)
 
-### Code Listing 2.21A-1.1 — TCP server setup (part 1) (`bitcoin/src/node/server.rs`)
+### Listing 12-1.1 — TCP server setup (part 1) (`bitcoin/src/node/server.rs`)
 
 ```rust
 #[derive(Debug, Clone)]
@@ -364,7 +364,7 @@ impl Server {
 
 After bootstrap, the server enters an event loop that accepts inbound connections and spawns one task per peer:
 
-### Code Listing 2.21A-2 — Accept loop and per-peer spawn (part 2)
+### Listing 12-2 — Accept loop and per-peer spawn (part 2)
 
 ```rust
         // Serve incoming connections with graceful shutdown.
@@ -442,9 +442,9 @@ GetData(Tx)    -> mempool lookup -> send_tx
 Tx             -> process_transaction (mempool + relay + maybe mine)
 ```
 
-> **Methods involved**
+> **Methods involved:**
 >
-> **Defined in this chapter (full listings below)**
+> **Source:**
 > - `process_stream(...)`
 > - `send_get_data(...)`
 > - `send_inv(...)`
@@ -456,12 +456,12 @@ Tx             -> process_transaction (mempool + relay + maybe mine)
 > - `send_message(...)`
 > - `process_known_nodes(...)`
 >
-> **Defined earlier**
+> **Source:**
 > - `NodeContext::process_transaction(...)` (defined in **[Chapter 13: Node Orchestration](../node/README.md)**)
 > - `NodeContext::add_block(...)` (acceptance contract: **[Chapter 10: Block Acceptance](../chain/10-Whitepaper-Step-5-Block-Acceptance.md)**)
 > - `NodeContext::get_block_hashes(...)`, `NodeContext::get_block(...)` (defined in **[Chapter 13: Node Orchestration](../node/README.md)** and chain chapters)
 
-### Code Listing 2.21A-6 — Dispatcher initialization (part 1) (`bitcoin/src/net/net_processing.rs`)
+### Listing 12-6 — Dispatcher initialization (part 1) (`bitcoin/src/net/net_processing.rs`)
 
 ```rust
 #[instrument(skip(node_context, stream))]
@@ -481,11 +481,21 @@ pub async fn process_stream(
 
 The dispatcher enters a match statement to handle each Package variant. Block handling comes first:
 
-### Code Listing 2.21A-6b — Block and inventory cases (part 1b)
+### Listing 12-6b — Block and inventory cases (part 1b)
 
 ```rust
             Package::Block { addr_from, block } => {
+                // Cancel in-progress mining before processing
+                // the received block
+                crate::node::miner::cancel_current_mining();
+
                 let block = Block::deserialize(block.as_slice())?;
+
+                // Check if block is NEW (prevents infinite relay loops)
+                let block_is_new = node_context
+                    .get_block(block.get_hash_bytes().as_slice())
+                    .await?.is_none();
+
                 // Ownership boundary: network hands block to chain logic
                 // for validation, reorg, and state update.
                 node_context.add_block(&block).await?;
@@ -496,7 +506,27 @@ The dispatcher enters a match statement to handle each Package variant. Block ha
                     node_context.remove_from_memory_pool(tx.clone()).await;
                 }
 
-                // UTXO updates, blocks-in-transit management
+                // BLOCK RELAY: Forward NEW blocks to all peers except sender.
+                // Without relay, blocks only travel one hop from the miner.
+                // In a linear topology (1→2→3→4→5→6→7), a block mined by
+                // Node 4 would only reach Nodes 3 and 5 without relay.
+                if block_is_new {
+                    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
+                    let nodes = GLOBAL_NODES.get_nodes()?;
+                    for node in nodes.iter() {
+                        let node_addr = node.get_addr();
+                        if node_addr != addr_from && node_addr != my_node_addr {
+                            let hash = block.get_hash_bytes();
+                            tokio::spawn(async move {
+                                send_inv(
+                                    &node_addr, OpType::Block, &[hash],
+                                ).await;
+                            });
+                        }
+                    }
+                }
+
+                // Blocks-in-transit management
                 if GLOBAL_BLOCKS_IN_TRANSIT.is_not_empty()? {
                     let block_hash = GLOBAL_BLOCKS_IN_TRANSIT.first()?;
                     send_get_data(&addr_from, OpType::Block, &block_hash).await;
@@ -510,7 +540,7 @@ The dispatcher enters a match statement to handle each Package variant. Block ha
 
 GetData routing branches on whether the request is for a block or transaction:
 
-### Code Listing 2.21A-6c — GetData branching (part 1c)
+### Listing 12-6c — GetData branching (part 1c)
 
 ```rust
             Package::GetData { addr_from, op_type, id } => match op_type {
@@ -534,7 +564,7 @@ GetData routing branches on whether the request is for a block or transaction:
 
 Block and transaction inventory handling follows the data routing:
 
-### Code Listing 2.21A-7 — Dispatcher inventory and transaction cases (part 2)
+### Listing 12-7 — Dispatcher inventory and transaction cases (part 2)
 
 ```rust
             Package::Inv { addr_from, op_type, items } => match op_type {
@@ -597,7 +627,7 @@ Block and transaction inventory handling follows the data routing:
 
 Version and peer discovery messages follow wallet operations:
 
-### Code Listing 2.21A-8 — Dispatcher protocol and peer cases (part 3)
+### Listing 12-8 — Dispatcher protocol and peer cases (part 3)
 
 ```rust
             Package::Version { addr_from, version, best_height } => {
@@ -635,7 +665,7 @@ Version and peer discovery messages follow wallet operations:
 
 The network layer uses one core primitive (`send_data`) and a family of typed helpers that construct the correct `Package` variant.
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `send_get_data(...)`
 > - `send_inv(...)`
@@ -647,7 +677,7 @@ The network layer uses one core primitive (`send_data`) and a family of typed he
 > - `send_message(...)`
 > - `send_data(...)`
 
-### Code Listing 2.21A-3.1 — Inventory and data request sends (part 1) (`bitcoin/src/net/net_processing.rs`)
+### Listing 12-3.1 — Inventory and data request sends (part 1) (`bitcoin/src/net/net_processing.rs`)
 
 ```rust
 pub async fn send_get_data(addr_to: &SocketAddr, op_type: OpType, id: &[u8]) {
@@ -713,7 +743,7 @@ pub async fn send_tx(addr_to: &SocketAddr, tx: &Transaction) {
 
 Block and transaction delivery is followed by peer discovery and protocol handshake messages:
 
-### Code Listing 2.21A-3.2 — Peer discovery sends (part 2) (`bitcoin/src/net/net_processing.rs`)
+### Listing 12-3.2 — Peer discovery sends (part 2) (`bitcoin/src/net/net_processing.rs`)
 
 ```rust
 pub async fn send_known_nodes(
@@ -761,7 +791,7 @@ pub async fn send_get_blocks(addr_to: &SocketAddr) {
 
 Messages are sent separately for errors and informational communication:
 
-### Code Listing 2.21A-3.2b — Message send helper (part 2b)
+### Listing 12-3.2b — Message send helper (part 2b)
 
 ```rust
 pub async fn send_message(
@@ -785,7 +815,7 @@ pub async fn send_message(
 
 The core send primitive handles all connection and serialization logic:
 
-### Code Listing 2.21A-3.3 — Core send logic with health checking (part 3)
+### Listing 12-3.3 — Core send logic with health checking (part 3)
 
 ```rust
 async fn send_data(addr_to: &SocketAddr, pkg: Package) {
@@ -839,13 +869,13 @@ Non-central learns peer set
 Network converges to a shared peer list (best-effort)
 ```
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `process_known_nodes(...)`
-> - `send_known_nodes(...)` (defined earlier in Listing 2.21A-3.1)
-> - `send_version(...)` (defined earlier in Listing 2.21A-3.1)
+> - `send_known_nodes(...)` (defined earlier in Listing 12-3.1)
+> - `send_version(...)` (defined earlier in Listing 12-3.1)
 
-### Code Listing 2.21A-16 — Peer merge and discovery fanout (part 1) (`bitcoin/src/net/net_processing.rs`)
+### Listing 12-16 — Peer merge and discovery fanout (part 1) (`bitcoin/src/net/net_processing.rs`)
 
 ```rust
 pub async fn process_known_nodes(
@@ -901,7 +931,7 @@ pub async fn process_known_nodes(
 
 After merging new nodes into the peer set, we fanout version messages to converge height knowledge:
 
-### Code Listing 2.21A-17 — Version fanout to newly discovered peers (part 2)
+### Listing 12-17 — Version fanout to newly discovered peers (part 2)
 
 ```rust
     // Send height hint to new nodes and sender.
@@ -936,7 +966,7 @@ Whitepaper Step 5 (“valid and not already spent”) is **not** a networking ru
 - networking can fetch and relay blocks
 - chainstate must validate *before* mutating tip + UTXO
 
-> **Methods involved**
+> **Methods involved:**
 >
 > - `process_stream(...)` (hands the inbound `Package::Block` to `NodeContext::add_block(...)`)
 > - `NodeContext::add_block(...)` (**defined earlier**; see **[Chapter 10: Block Acceptance](../chain/10-Whitepaper-Step-5-Block-Acceptance.md)**)
@@ -965,7 +995,7 @@ In this network chapter, we focus on:
 
 <div align="center">
 
-**[← Chapter 12: Network Layer](README.md)** | **Chapter 12.A: Network Layer — Code Walkthrough** | **[Chapter 13: Node Orchestration →](../node/README.md)** 
+**[← Chapter 12: Network Layer](README.md)** | **Chapter 12.A: Network Layer — Code Walkthrough** | **[Chapter 13: Node Orchestration →](../node/README.md)**
 
 </div>
 

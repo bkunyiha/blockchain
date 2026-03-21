@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Rate Limiting](08-Rate-Limiting.md)** | **[Chapter 15.9: OpenAPI Documentation](09-OpenAPI.md)** | **[Security →](10-Security.md)** 
+**[← Rate Limiting](08-Rate-Limiting.md)** | **[Chapter 15.9: OpenAPI Documentation](09-OpenAPI.md)** | **[Security →](10-Security.md)**
 
 </div>
 
@@ -167,12 +167,12 @@ use utoipa_swagger_ui::SwaggerUi;
             crate::web::models::responses::WalletResponse,
             crate::web::models::responses::BalanceResponse,
             // ... other response models
-            
+
             // Request models - referenced by ToSchema derive
             crate::web::models::requests::CreateWalletRequest,
             crate::web::models::requests::SendTransactionRequest,
             // ... other request models
-            
+
             // Error models - referenced by ToSchema derive
             crate::web::models::errors::ErrorResponse,
         )
@@ -325,7 +325,7 @@ Once the server is running, the OpenAPI documentation is available at:
 - **Swagger UI**: `http://localhost:8080/swagger-ui` - Interactive API documentation
 - **OpenAPI JSON**: `http://localhost:8080/api-docs/openapi.json` - Raw OpenAPI specification
 
-> **See the complete implementation**: For details on how data models are structured, see the Data Models chapter. For Utoipa framework details, see the Utoipa Framework Guide.
+> **See the full implementation:**: For details on how data models are structured, see the Data Models chapter. For Utoipa framework details, see the Utoipa Framework Guide.
 
 ---
 
@@ -341,7 +341,7 @@ Once the server is running, the OpenAPI documentation is available at:
 
 <div align="center">
 
-**[← Previous: Rate Limiting](08-Rate-Limiting.md)** | **[Chapter 15.9: OpenAPI Documentation](09-OpenAPI.md)** | **[Next: Security →](10-Security.md)** 
+**[← Previous: Rate Limiting](08-Rate-Limiting.md)** | **[Chapter 15.9: OpenAPI Documentation](09-OpenAPI.md)** | **[Next: Security →](10-Security.md)**
 
 **[← Web API Index](README.md)** | **Introduction & Architecture Overview**
 

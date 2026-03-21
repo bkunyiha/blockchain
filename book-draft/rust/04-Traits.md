@@ -132,7 +132,7 @@ Traits enable shared behavior across types. Trait bounds constrain generics. Gen
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Traits** | **[← Previous: Data Structures](03-Data-Structures.md)** | **[Next: Error Handling →](05-Error-Handling.md)** 
+**[← Rust Guide Index](README.md)** | **Traits** | **[← Previous: Data Structures](03-Data-Structures.md)** | **[Next: Error Handling →](05-Error-Handling.md)**
 
 </div>
 

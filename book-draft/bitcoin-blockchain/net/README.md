@@ -60,9 +60,9 @@
 
 **Part I: Foundations & Core Implementation** | **Chapter 12: Network Layer**
 
-This chapter explains the network layer as an implementer reads it in Rust: **as a pipeline of concrete methods** that transform bytes on a TCP stream into node actions (mempool admission, block download, block connection).
+This chapter explains the network layer as an implementer reads it in Rust: **as a pipeline of concrete methods** that transform bytes on a TCP stream into node actions (mempool admission, block download, block connection). The pipeline is simple: convert byte sequences from the TCP stream into JSON, deserialize JSON into typed Rust messages (the `Package` enum), then dispatch each message to the appropriate handler (mempool, chainstate, relay, etc.).
 
-> **Prerequisites**: This chapter relies heavily on async Rust — Tokio tasks, `TcpStream`, `async fn`, and channels. If you are not yet comfortable with `tokio::spawn` and `mpsc`, read the async primer in Chapter 24 (Rust Language Guide) first. You should also be familiar with the `Block` and `Transaction` types from Chapter 6.
+> **Prerequisites:**: This chapter relies heavily on async Rust — Tokio tasks, `TcpStream`, `async fn`, and channels. If you are not yet comfortable with `tokio::spawn` and `mpsc`, read the async primer in Chapter 24 (Rust Language Guide) first. You should also be familiar with the `Block` and `Transaction` types from Chapter 6.
 
 **Why networking matters for Bitcoin.** A blockchain that cannot communicate with peers is just a local database. The network layer is what turns isolated nodes into a consensus system: it propagates new transactions so miners can include them in blocks, relays newly mined blocks so all nodes converge on the same chain, and synchronizes new nodes that need to catch up with the canonical history. Every guarantee Bitcoin makes — immutability, double-spend prevention, censorship resistance — depends on this protocol layer working correctly.
 
@@ -120,6 +120,8 @@ INV(op_type, [id]) -----> Peer B
 
 This loop is the core of the “gossip + fetch” strategy used throughout Bitcoin-like systems.
 
+Bitcoin uses a **gossip and fetch** strategy to minimize bandwidth: peers announce what they have by sharing only the hash (the gossip phase), peers request the full object by hash (the fetch phase), and peers deliver the full object. This three-message pattern—announce, request, deliver—is the heartbeat of blockchain peer-to-peer communication.
+
 The key functions are `process_stream` (the dispatcher that routes each inbound package), `send_inv` and `send_get_data` (announce and request), `send_tx` and `send_block` (full-object delivery), and `process_known_nodes` (peer discovery). Complete listings appear in Chapter 12.A.
 
 ---
@@ -144,7 +146,7 @@ An additional technical appendix explains the transport trade-offs and an action
 
 ---
 
-## What We Covered
+## Summary
 
 - We built the peer-to-peer networking layer that enables blockchain nodes to communicate and synchronize.
 - We implemented message processing for block and transaction propagation across the network.
@@ -168,11 +170,11 @@ In the next chapter, we bring all these subsystems together under a unified Node
 >
 > **"Connection refused" when connecting to a peer** — The peer node is not running, or it is listening on a different port/interface than expected. Verify the peer's bind address (check for `0.0.0.0` vs `127.0.0.1`) and that no firewall rules are blocking the port.
 >
-> **Timeout during block synchronization** — If a new node is catching up with a long chain, the default read timeout may be too short. Increase the TCP timeout or implement chunked block transfer. Also check that the sending peer is not blocked on a lock while the receiver waits.
+> **Troubleshooting:** **Timeout during block synchronization** — If a new node is catching up with a long chain, the default read timeout may be too short. Increase the TCP timeout or implement chunked block transfer. Also check that the sending peer is not blocked on a lock while the receiver waits.
 >
 > **"Address already in use" on startup** — The previous node process did not release the TCP port. Wait a few seconds for the OS to reclaim it, or use `SO_REUSEADDR` in the socket options. On Linux, `ss -tlnp | grep <port>` shows which process holds the port.
 >
-> **Peers connect but no blocks propagate** — Check that the message dispatcher is routing `NewBlock` messages to the chainstate handler. A common mistake is registering the handler for `NewTransaction` but forgetting `NewBlock`.
+> **Troubleshooting:** **Peers connect but no blocks propagate** — Check that the message dispatcher is routing `NewBlock` messages to the chainstate handler. A common mistake is registering the handler for `NewTransaction` but forgetting `NewBlock`.
 
 ---
 

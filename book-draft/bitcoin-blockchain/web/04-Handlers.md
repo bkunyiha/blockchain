@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.4: Request Handlers** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
+**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.4: Request Handlers** | **[Next: Chapter 16: Desktop Admin (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 
 </div>
 
@@ -207,7 +207,7 @@ pub async fn create_wallet(
 }
 ```
 
-> **Response Conversion**: The `WalletResponse` struct is converted to an HTTP response through Axum's `IntoResponse` trait. See [Example: Converting WalletResponse to HTTP Response](Axum.md#example-converting-walletresponse-to-http-response) in the Axum Framework Guide for a detailed step-by-step explanation of how `WalletResponse` → `ApiResponse<WalletResponse>` → `Json<ApiResponse<WalletResponse>>` → HTTP `Response`.
+> **Implementation example:**: The `WalletResponse` struct is converted to an HTTP response through Axum's `IntoResponse` trait. See [Example: Converting WalletResponse to HTTP Response](Axum.md#example-converting-walletresponse-to-http-response) in the Axum Framework Guide for a detailed step-by-step explanation of how `WalletResponse` → `ApiResponse<WalletResponse>` → `Json<ApiResponse<WalletResponse>>` → HTTP `Response`.
 
 **Get Balance**
 
@@ -419,7 +419,7 @@ Kubernetes uses `/health/live` to determine if a pod should be restarted and `/h
 
 <div align="center">
 
-**[← Previous: Routing](03-Routing.md)** | **[Chapter 15.4: Request Handlers](04-Handlers.md)** | **[Next: Middleware →](05-Middleware.md)** 
+**[← Previous: Routing](03-Routing.md)** | **[Chapter 15.4: Request Handlers](04-Handlers.md)** | **[Next: Middleware →](05-Middleware.md)**
 
 **[← Web API Index](README.md)** | **Introduction & Architecture Overview**
 

@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 15: Web API Architecture](README.md)** | **Tracing Framework Guide** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
+**[← Chapter 15: Web API Architecture](README.md)** | **Tracing Framework Guide** | **[Next: Chapter 16: Desktop Admin (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 
 </div>
 
@@ -86,7 +86,7 @@ In our blockchain API, Tracing is used extensively for:
 - **Debugging**: Detailed diagnostic information for development
 - **Production Monitoring**: Structured logs for production observability
 
-> **See the full implementation**: This guide explains Tracing concepts. To see how Tracing is used in our complete web API architecture, see the Middleware Layer chapter for logging middleware, the Server Setup chapter for logging configuration, and the Error Handling chapter for error logging.
+> **See the full implementation:**: This guide explains Tracing concepts. To see how Tracing is used in our complete web API architecture, see the Middleware Layer chapter for logging middleware, the Server Setup chapter for logging configuration, and the Error Handling chapter for error logging.
 
 ---
 
@@ -205,7 +205,7 @@ Tracing macros expand at compile time, creating structured events with named fie
 
 Fields are only evaluated if the log level is enabled (zero-cost when disabled).
 
-> **See it in action**: Check out the [Examples from Our Project](Tracing.md#examples-from-our-project) section to see how structured logging is used throughout our handlers and middleware.
+> **See it in action:**: Check out the [Examples from Our Project](Tracing.md#examples-from-our-project) section to see how structured logging is used throughout our handlers and middleware.
 
 ### Example from Our Project
 
@@ -368,7 +368,7 @@ TraceLayer::new_for_http()
 
 **Options:** `make_span_with`, `on_request`, `on_response`, `on_failure`, `on_eos`
 
-> **See it in action**: Check out the [Logging Middleware section](Tower.md#logging-middleware) in the Tower Framework Guide for more details on TraceLayer configuration and usage.
+> **See it in action:**: Check out the [Logging Middleware section](Tower.md#logging-middleware) in the Tower Framework Guide for more details on TraceLayer configuration and usage.
 
 ---
 
@@ -414,7 +414,7 @@ RUST_LOG=blockchain::web=trace ./blockchain
 
 ## Examples from Our Project
 
-Let's examine real examples of Tracing usage throughout our blockchain API.
+We examine real examples of Tracing usage throughout the blockchain API below.
 
 ### Server Lifecycle Logging
 
@@ -542,7 +542,7 @@ Tracing's design allows us to instrument our code for debugging and monitoring w
 
 <div align="center">
 
-**[← Web API Index](README.md)** | **Tracing Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Tower** | **Serde** | **Utoipa** | **Tokio** 
+**[← Web API Index](README.md)** | **Tracing Framework Guide** | **[Introduction & Architecture Overview →](01-Introduction.md)** | **Axum** | **Tower** | **Serde** | **Utoipa** | **Tokio**
 
 </div>
 

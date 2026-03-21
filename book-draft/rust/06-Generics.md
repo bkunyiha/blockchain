@@ -149,7 +149,7 @@ Generics enable code reuse with compile-time type safety. Trait bounds constrain
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Generics** | **[← Previous](05-Error-Handling.md)** | **[Next →](07-Lifetimes.md)** 
+**[← Rust Guide Index](README.md)** | **Generics** | **[← Previous](05-Error-Handling.md)** | **[Next →](07-Lifetimes.md)**
 
 </div>
 

@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](#)** 
+**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](#)**
 
 </div>
 
@@ -77,7 +77,7 @@
 
 This section is a practical, production-style guide to deploying and operating the blockchain network on Kubernetes. It focuses on repeatable commands, how to verify a healthy rollout, and how to perform common operational tasks safely.
 
-> **Methods involved**
+> **Methods involved:**
 > - `deploy.sh` / `undeploy.sh` ([Listings 9.1–9.2](01A-Kubernetes-Code-Listings.md))
 > - Workload + service manifests: [Listings 9.10–9.16](01A-Kubernetes-Code-Listings.md)
 > - HPA + PDB resources: [Listings 9.17–9.19](01A-Kubernetes-Code-Listings.md)

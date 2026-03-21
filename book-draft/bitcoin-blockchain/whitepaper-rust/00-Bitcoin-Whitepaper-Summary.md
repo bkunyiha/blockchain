@@ -61,7 +61,7 @@
 
 <div align="center">
 
-**[← Introduction to Blockchain](../README.md)** | **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** | **[Blockchain Rust Project →](../Rust-Project-Index.md)** 
+**[← Introduction to Blockchain](../README.md)** | **[Bitcoin Whitepaper Summary](00-Bitcoin-Whitepaper-Summary.md)** | **[Bitcoin Whitepaper → Rust Encoding →](00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md)** | **[Blockchain Rust Project →](../Rust-Project-Index.md)**
 
 </div>
 
@@ -417,7 +417,7 @@ This theorem establishes that consensus is determined by computational power rat
 
 #### 7.2.2 Sybil Attack Resistance
 
-**Theorem 7.3** (Sybil Resistance): Sybil resistance is a network's defense against Sybil attacks, where a single malicious entity creates numerous fake identities (Sybil nodes) to gain disproportionate control, undermining fairness and decentralization in systems like blockchains, P2P networks, and voting. Resistance is achieved by making identity creation costly, typically through resource-intensive Proof-of-Work (PoW) like Bitcoin, capital-heavy Proof-of-Stake (PoS), or identity verification (biometrics, IDs), ensuring one person equals one vote and protecting integrity. 
+**Theorem 7.3** (Sybil Resistance): Sybil resistance is a network's defense against Sybil attacks, where a single malicious entity creates numerous fake identities (Sybil nodes) to gain disproportionate control, undermining fairness and decentralization in systems like blockchains, P2P networks, and voting. Resistance is achieved by making identity creation costly, typically through resource-intensive Proof-of-Work (PoW) like Bitcoin, capital-heavy Proof-of-Stake (PoS), or identity verification (biometrics, IDs), ensuring one person equals one vote and protecting integrity.
 "If the majority were based on one-IP-address-one-vote, it could be subverted by anyone able to allocate many IPs" ([Bitcoin Whitepaper, Section 4](https://bitcoin.org/bitcoin.pdf)). Proof-of-work prevents this by requiring computational resources proportional to voting power.
 
 #### 7.2.3 Attack Resistance
@@ -546,7 +546,7 @@ The whitepaper specifies: "If two nodes broadcast different versions of the next
 - **Attacker's Choice**: If an attacker controls majority CPU power, they can either:
   1. **Attack**: Try to reverse transactions and steal back payments
   2. **Mine Honestly**: Generate new coins by following the rules
-  
+
 - **Economic Rationality**: "He ought to find it more profitable to play by the rules, such rules that favour him with more new coins than everyone else combined, than to undermine the system and the validity of his own wealth" ([Bitcoin Whitepaper, Section 6](https://bitcoin.org/bitcoin.pdf))
 
 **Key Insight**: The economic incentive aligns miner interests with network security, making attacks economically irrational. An attacker would destroy the value of the system they're attacking, making their attack counterproductive.
@@ -576,7 +576,7 @@ The whitepaper specifies: "If two nodes broadcast different versions of the next
 5. **Verification**: Can prove transaction inclusion using only a small "Merkle path"
 
 **Illustrations**
-Its bottom-up process, starting with raw data (transactions in a blockchain context) and progressively combining their hashes: 
+Its bottom-up process, starting with raw data (transactions in a blockchain context) and progressively combining their hashes:
 - Leaf Nodes: The process begins by taking each individual data block (**transactions** in Data A, **transactions** in Data B, etc.) and hashing it to create the leaf nodes (Hash A, Hash B).
 - Intermediate Nodes: The leaf hashes are then paired up, concatenated, and hashed again to form the next level of parent nodes (Hash AB, Hash CD). This process is repeated recursively up the tree.
 - Merkle Root: The procedure continues until a single, final hash is produced at the top. This is the Merkle root, which acts as a unique, secure summary of all the underlying data.
@@ -671,10 +671,10 @@ Its bottom-up process, starting with raw data (transactions in a blockchain cont
   - UTXO 1: 0.8 BTC
   - UTXO 2: 0.5 BTC
   - UTXO 3: 0.3 BTC
-  
+
 - **Transaction**: Alice creates a transaction with:
   - **Inputs**: UTXO 1, UTXO 2, UTXO 3 (total: 1.6 BTC)
-  - **Outputs**: 
+  - **Outputs**:
     - Output 1: 1.5 BTC to Bob
     - Output 2: 0.1 BTC back to Alice (change)
 
@@ -731,7 +731,7 @@ Its bottom-up process, starting with raw data (transactions in a blockchain cont
 
 **Limitations**: "Some linking is still unavoidable with multi-input transactions, which necessarily reveal that their inputs were owned by the same owner. The risk is that if the owner of a key is revealed, linking could reveal other transactions that belonged to the same owner" ([Bitcoin Whitepaper, Section 10](https://bitcoin.org/bitcoin.pdf)).
 
-**Understanding the Limitation**: 
+**Understanding the Limitation**:
 - **Multi-Input Linking**: When a transaction has multiple inputs, they must all be signed by the same private key, revealing they're controlled by the same owner
 - **Chain Analysis**: If one address is linked to a real-world identity, blockchain analysis can potentially trace other transactions
 - **Privacy Trade-off**: Full privacy requires careful address management and potentially additional techniques (like CoinJoin)
@@ -802,7 +802,7 @@ The whitepaper calculates how long a recipient should wait before being certain 
 
 **Key Insight**: As attacker's share of network power increases, exponentially more confirmations are needed for the same security level. The whitepaper demonstrates: "Given our assumption that p>q, the probability drops exponentially as the number of blocks the attacker has to catch up with increases" ([Bitcoin Whitepaper, Section 11](https://bitcoin.org/bitcoin.pdf)).
 
-**Practical Example**: 
+**Practical Example**:
 - If an attacker controls 10% of network power, waiting 5 blocks reduces attack probability to 0.09%
 - If an attacker controls 30% of network power, you need 24 blocks for the same security level
 - The relationship is exponential, not linear
@@ -921,9 +921,9 @@ If we want the primary source open while reading, we can keep the original white
 
 The Bitcoin whitepaper itself references several foundational works:
 
-- **[1] W. Dai, "b-money"** (1998): http://www.weidai.com/bmoney.txt - Early proposal for distributed electronic cash system
+- **[1] W. Dai, "b-money"** (1998): [http://www.weidai.com/bmoney.txt](http://www.weidai.com/bmoney.txt) - Early proposal for distributed electronic cash system
 - **[2-5] Timestamping Service Papers**: Various papers on secure timestamping services (see whitepaper for full citations)
-- **[6] A. Back, "Hashcash"** (2002): http://www.hashcash.org/papers/hashcash.pdf - Proof-of-work system that inspired Bitcoin's mining mechanism
+- **[6] A. Back, "Hashcash"** (2002): [http://www.hashcash.org/papers/hashcash.pdf](http://www.hashcash.org/papers/hashcash.pdf) - Proof-of-work system that inspired Bitcoin's mining mechanism
 - **[7] R.C. Merkle, "Protocols for public key cryptosystems"** (1980): Merkle tree structures used for efficient verification
 - **[8] W. Feller, "An introduction to probability theory and its applications"** (1957): Mathematical foundations for security analysis
 
@@ -960,7 +960,7 @@ All section numbers correspond to the original whitepaper structure:
 
 ---
 
-## What We Covered
+## Summary
 
 - We walked through all twelve sections of Satoshi Nakamoto's Bitcoin whitepaper, from the introduction of electronic cash to the probabilistic analysis of attacker success.
 - We explained how proof-of-work creates an immutable chain by making block production computationally expensive while verification remains cheap.

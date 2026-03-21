@@ -31,7 +31,7 @@ This project is a faithful re-implementation of Bitcoin's blockchain using Rust,
 - **Performance**: Zero-cost abstractions with C++-like performance
 - **Modern Tooling**: Cargo, built-in testing, excellent documentation tools
 
-### Bitcoin Core Compatibility
+### C++ Bitcoin Project Core Compatibility
 
 | Component | Bitcoin Core Equivalent | Alignment |
 |-----------|------------------------|-----------|

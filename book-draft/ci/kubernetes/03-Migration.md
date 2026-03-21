@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](#)** 
+**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](#)**
 
 </div>
 
@@ -77,7 +77,7 @@
 
 This section provides a step-by-step guide for migrating from Docker Compose to Kubernetes.
 
-> **Methods involved**
+> **Methods involved:**
 > - `deploy.sh` / `undeploy.sh` ([Listings 9.1–9.2](01A-Kubernetes-Code-Listings.md))
 > - Workload and service manifests: [Listings 9.11–9.16](01A-Kubernetes-Code-Listings.md)
 

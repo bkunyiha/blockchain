@@ -61,7 +61,7 @@
 
 <div align="center">
 
-**[← Error Handling](07-Error-Handling.md)** | **[Rate Limiting](08-Rate-Limiting.md)** | **[OpenAPI →](09-OpenAPI.md)** 
+**[← Error Handling](07-Error-Handling.md)** | **[Rate Limiting](08-Rate-Limiting.md)** | **[OpenAPI →](09-OpenAPI.md)**
 
 </div>
 
@@ -269,7 +269,7 @@ You should see a few `200` responses followed by `429`. When successful, respons
 
 <div align="center">
 
-**[← Error Handling](07-Error-Handling.md)** | **[Rate Limiting](08-Rate-Limiting.md)** | **[OpenAPI →](09-OpenAPI.md)** 
+**[← Error Handling](07-Error-Handling.md)** | **[Rate Limiting](08-Rate-Limiting.md)** | **[OpenAPI →](09-OpenAPI.md)**
 
 </div>
 

@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.6: Data Models** | **[Chapter 4: Desktop Admin UI →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)** 
+**[← Chapter 15: Web API Architecture](README.md)** | **Chapter 15.6: Data Models** | **[Next: Chapter 16: Desktop Admin (Iced) →](../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md)**
 
 </div>
 
@@ -77,7 +77,7 @@
 
 ## Data Models
 
-Data models define the structure of requests and responses. They provide type safety and automatic serialization/deserialization. These models use Serde for JSON serialization and Utoipa for OpenAPI schema generation. 
+Data models define the structure of requests and responses. They provide type safety and automatic serialization/deserialization. These models use Serde for JSON serialization and Utoipa for OpenAPI schema generation.
 
 **Axum Integration**: Data models are used with Axum's `Json` extractor for request deserialization and `Json` response wrapper for serialization. See [Request Extractors in Axum](Axum.md#request-extractors) for details on JSON extraction and [Response Types in Axum](Axum.md#response-types) for JSON response handling.
 
@@ -280,7 +280,7 @@ pub struct BlockQuery {
         )
     )]
     pub limit: Option<u32>,
-    
+
     pub hash: Option<String>,
 }
 ```
@@ -361,7 +361,7 @@ impl WebError {
 
 <div align="center">
 
-**[← Previous: Middleware](05-Middleware.md)** | **[Chapter 15.6: Data Models](06-Data-Models.md)** | **[Next: Error Handling →](07-Error-Handling.md)** 
+**[← Previous: Middleware](05-Middleware.md)** | **[Chapter 15.6: Data Models](06-Data-Models.md)** | **[Next: Error Handling →](07-Error-Handling.md)**
 
 **[← Web API Index](README.md)** | **Introduction & Architecture Overview**
 

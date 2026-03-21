@@ -97,9 +97,9 @@ pub fn merkle_root(mut leaves: Vec<[u8; 32]>) -> [u8; 32] {
 - Hashes pairs upward until one hash remains: the Merkle root.
 - If there is an odd number of nodes at a level, Bitcoin duplicates the last node before hashing pairs.
 ie
-- Input: all leaves (txids) in the block: Vec<[u8; 32]>
+- Input: all leaves (txids) in the block: `Vec<[u8; 32]>`
 - Operation: builds the entire Merkle tree level-by-level (pair everything, hash upward, repeat)
-- Output: the single root: BlockHeader.merkle_root
+- Output: the single root: `BlockHeader.merkle_root`
 - Use case: what a miner/full node does when constructing/validating a full block (it has all txids).
 
 Why “the next level has half as many nodes” (illustration):

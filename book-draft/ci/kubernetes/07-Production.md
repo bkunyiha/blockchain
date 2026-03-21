@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](../../../README.md)** 
+**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](../../../README.md)**
 
 </div>
 
@@ -77,9 +77,9 @@
 
 This section is the “production hardening” part of the Kubernetes chapter: it explains what changes when you move from a local learning cluster to a real environment, how to run safe deployments via CI/CD, and how cloud providers differ in the details that matter (identity, load balancers, storage, and registries).
 
-> **Methods involved**
+> **Methods involved:**
 > - Base resource set (as a baseline to harden): [Listings 9.4–9.20](01A-Kubernetes-Code-Listings.md)
-> - Deployment orchestration script: [Listing 9.1](01A-Kubernetes-Code-Listings.md#listing-91-cikubernetesmanifestsdeploysh)
+> - Deployment orchestration script: [Listing 23A.1](01A-Kubernetes-Code-Listings.md#listing-23a1-cikubernetesmanifestsdeploysh)
 
 ## How to Read This Section
 
@@ -1059,7 +1059,7 @@ If you run multiple clusters (or regions), decide:
 - what data needs to be replicated (if anything)
 - how you route traffic (DNS failover, global load balancers)
 - how you handle upgrades (staged rollouts cluster-by-cluster)
-  
+
 In many systems, “multi-region” is not the first step; focus on a reliable single-region setup with tested backups and restore first.
 
 ## Troubleshooting
@@ -1152,12 +1152,10 @@ This section covered:
 
 <div align="center">
 
-**[← Section 6: Autoscaling](06-Autoscaling.md)** | **Section 7: Production & Advanced Topics** | **[End of Book →](../../../README.md)** 
+**[← Section 6: Autoscaling](06-Autoscaling.md)** | **Section 7: Production & Advanced Topics** | **[End of Book →](../../../README.md)**
 
 </div>
 
 ---
 
-*This chapter has explored production-grade Kubernetes deployment for the blockchain network. We've examined architecture and core concepts, migration from Docker Compose, Kubernetes manifests, deployment and operations, autoscaling capabilities, and production considerations with advanced topics. Kubernetes provides industry-standard container orchestration with automatic scaling, high availability, rolling updates, and production-grade operational capabilities. The deployment system transforms our development blockchain network into a scalable, resilient, production-ready system. In the next chapter, we'll explore [Chapter 24: Rust Language Guide](../../rust/README.md) to understand the comprehensive Rust language features used throughout our blockchain implementation.*
-
-For more detailed information, see the complete guide sections on each topic.
+With the Kubernetes deployment in place, our blockchain network is production-ready: automatically scaling, self-healing, and observable. The next chapter, **[Chapter 24: Rust Language Guide](../../rust/README.md)**, serves as a standalone reference for the Rust language features used throughout the implementation.

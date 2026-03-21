@@ -435,7 +435,7 @@ Address encoding is essential for blockchain usability:
 
 <div align="center">
 
-**[← Previous: Key Pair Generation](03-Key-Pair-Generation.md)** | **[Address Encoding](04-Address-Encoding.md)** | **[Next section: Security and Performance →](05-Security-and-Performance.md)** 
+**[← Previous: Key Pair Generation](03-Key-Pair-Generation.md)** | **[Address Encoding](04-Address-Encoding.md)** | **[Next section: Security and Performance →](05-Security-and-Performance.md)**
 
 </div>
 

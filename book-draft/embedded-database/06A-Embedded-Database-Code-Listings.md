@@ -76,9 +76,9 @@ Both are presented below. The code is nearly identical; we include both so the r
 
 ---
 
-## Listing 6.1: Iced Wallet `src/database.rs`
+## Listing 20A.1: Iced Wallet `src/database.rs`
 
-> **Methods involved**
+> **Methods involved:**
 > - `init_database`
 > - `get_connection`
 > - `get_database_path`
@@ -486,9 +486,9 @@ pub fn load_wallet_addresses() -> SqliteResult<Vec<WalletAddress>> {
 
 ---
 
-## Listing 6.2: Tauri Wallet `src-tauri/src/database/mod.rs`
+## Listing 20A.2: Tauri Wallet `src-tauri/src/database/mod.rs`
 
-> **Methods involved**
+> **Methods involved:**
 > - `init_database`, `get_connection`, `get_database_path`
 > - `create_tables`, `run_migrations`
 > - `load_settings`, `save_settings_db`
@@ -815,9 +815,9 @@ mod tests;
 
 ---
 
-## Listing 6.3: Tauri Wallet `src-tauri/src/database/tests.rs`
+## Listing 20A.3: Tauri Wallet `src-tauri/src/database/tests.rs`
 
-> **Methods involved**
+> **Methods involved:**
 > - `setup_test_db` (test helper)
 > - `test_schema_creation`
 > - `test_settings_crud`
@@ -1072,9 +1072,9 @@ mod tests {
 
 ---
 
-## Listing 6.4: `generate_database_password` (shared between both wallets)
+## Listing 20A.4: `generate_database_password` (shared between both wallets)
 
-> **Methods involved**
+> **Methods involved:**
 > - `generate_database_password` (Iced: `src/main.rs`, Tauri: `src-tauri/src/main.rs`)
 
 This function is identical in both wallets. It appears in each wallet's `main.rs`:

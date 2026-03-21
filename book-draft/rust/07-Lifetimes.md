@@ -232,7 +232,7 @@ In the next chapter, we'll explore smart pointers, which enable shared ownership
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Lifetimes** | **[← Previous](06-Generics.md)** | **[Next →](08-Smart-Pointers.md)** 
+**[← Rust Guide Index](README.md)** | **Lifetimes** | **[← Previous](06-Generics.md)** | **[Next →](08-Smart-Pointers.md)**
 
 </div>
 

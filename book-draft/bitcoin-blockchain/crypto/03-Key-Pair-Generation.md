@@ -131,7 +131,7 @@ pub fn new_schnorr_key_pair() -> Result<Vec<u8>> {
     ring::rand::SystemRandom::new()
         .fill(&mut secret_key_bytes)
         .map_err(|e| BtcError::WalletKeyPairError(e.to_string()))?;
-    
+
     let _secp = Secp256k1::new();
     let secret_key = SecretKey::from_byte_array(secret_key_bytes)
         .map_err(|e| BtcError::WalletKeyPairError(e.to_string()))?;
@@ -397,7 +397,7 @@ Key pairs are fundamental to blockchain security:
 
 <div align="center">
 
-**[← Previous: Digital Signatures](02-Digital-Signatures.md)** | **[Key Pair Generation](03-Key-Pair-Generation.md)** | **[Next section: Address Encoding →](04-Address-Encoding.md)** 
+**[← Previous: Digital Signatures](02-Digital-Signatures.md)** | **[Key Pair Generation](03-Key-Pair-Generation.md)** | **[Next section: Address Encoding →](04-Address-Encoding.md)**
 
 </div>
 

@@ -138,7 +138,7 @@ Structs group data; enums represent one-of-many values. Together they enable saf
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Structs and Enums** | **[← Previous](02-Ownership-and-Borrowing.md)** | **[Next →](04-Traits.md)** 
+**[← Rust Guide Index](README.md)** | **Structs and Enums** | **[← Previous](02-Ownership-and-Borrowing.md)** | **[Next →](04-Traits.md)**
 
 </div>
 

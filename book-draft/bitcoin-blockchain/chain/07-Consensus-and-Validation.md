@@ -74,10 +74,10 @@ This subsection covers the rules behind **Section 9 (Blockchain — From Transac
 
 We will use the following distinction throughout the chapter:
 
-- **Validation (local correctness checks)**: “Is this object internally consistent and authorized?”  
+- **Validation (local correctness checks)**: “Is this object internally consistent and authorized?”
   Examples: transaction signatures verify; a block contains exactly one coinbase transaction; a block hash satisfies proof-of-work.
 
-- **Consensus / fork choice (global convergence rule)**: “Given multiple competing histories, which one is canonical?”  
+- **Consensus / fork choice (global convergence rule)**: “Given multiple competing histories, which one is canonical?”
   In Bitcoin, the rule is “the chain with the most cumulative proof-of-work wins.” In this learning implementation, fork choice is modeled as a deterministic hierarchy: **height → cumulative work → hash tie-break**.
 
 The most important engineering rule is the Step‑5 gate from the whitepaper (§5): **do not mutate durable chain state (tip + UTXO set) unless the block is valid and its spends are not already spent**. When this boundary is violated, you can “mint” money or accept double-spends even if proof-of-work is present elsewhere.
@@ -101,7 +101,7 @@ Incoming data  │  Validate (pure checks, no durable state mutation)        │
 
 In the current codebase, transaction signature verification is implemented and used during mining. The full Step‑5 block acceptance gate is explicitly noted as a FIXME in `BlockchainFileSystem::add_block` and is explored further in the dedicated Step‑5 chapter.
 
-> **Important note (implementation gap)**: the current implementation does **not** consistently enforce the Bitcoin whitepaper’s Step‑5 contract (“**valid AND not already spent**”) as a hard **Validate → Connect** gate for inbound blocks before mutating durable state (tip + UTXO set).  
+> **Important:** The current implementation does **not** consistently enforce the Bitcoin whitepaper’s Step‑5 contract (“**valid AND not already spent**”) as a hard **Validate → Connect** gate for inbound blocks before mutating durable state (tip + UTXO set).
 > For the concrete “what’s missing + how to implement it” deep dive, read **Section 10 (Whitepaper Step 5: Block Acceptance)**.
 
 ## 1) Transaction Validation (signature verification)
@@ -150,7 +150,7 @@ The code implements a three-level rule:
 
 The double-spend problem is simple to state and easy to accidentally reintroduce in code:
 
-- An attacker creates two different transactions that spend the **same outpoint** \((txid, vout)\).
+- An attacker creates two different transactions that spend the **same outpoint** $(txid, vout)$.
 - If different peers accept different spends (even temporarily), your node’s notion of “balance” and “ownership” becomes inconsistent.
 
 In our implementation, the core protection is: **only mutate the canonical chain tip + UTXO set after we are sure the block is valid**.
@@ -191,7 +191,40 @@ In Bitcoin, nodes sometimes learn about a competing branch that becomes “bette
 2. Undo state changes from blocks that are no longer on the best chain.
 3. Apply blocks on the winning branch in order.
 
-In practical terms, a correct reorg requires the ability to **roll back and re-apply UTXO updates** deterministically. Our codebase contains a reorg path (`reorganize_chain` plus UTXO rollback/apply helpers), but it is still a learning implementation: Step‑5 validation should be enforced consistently for every applied block.
+In practical terms, a correct reorg requires the ability to **roll back and re-apply UTXO updates** deterministically. Our codebase contains a reorg path (`reorganize_chain` plus UTXO rollback/apply helpers).
+
+**Critical rule**: rolled-back blocks are **never deleted** from the database. They remain as non-canonical entries so that `find_common_ancestor()` can always walk both branches during future reorganizations. This matches Bitcoin Core's behavior where all blocks are kept in `blk*.dat` files.
+
+**Critical implementation details for correct reorgs:**
+
+- **UTXO rollback for fully-spent transactions**: When `rollback_block()` restores a spent output, the original transaction's UTXO entry may have been completely removed from the database (because all its outputs were spent). The code handles this by creating a fresh vector when the entry is missing, rather than silently losing the output. Without this, coins would be permanently lost during reorganization.
+
+- **Reverse transaction order**: During rollback, transactions are processed newest-first (reverse order). This correctly handles intra-block dependencies where a later transaction spends an earlier transaction's output within the same block.
+
+- **Blocks are never deleted during rollback**: The `rollback_to_block()` method only rolls back the UTXO set and moves the tip pointer — it does NOT delete blocks from the database. Rolled-back blocks must remain available for `find_common_ancestor()` to work during future reorganizations. This matches Bitcoin Core's behavior where all blocks stay in `blk*.dat` files.
+
+## Multi-Node Consensus: Mining Protection and Block Relay
+
+When multiple miners compete in a multi-node network, several additional mechanisms ensure correct consensus:
+
+### Block Relay
+
+When a node receives a block and it is **new** (not already in the database), the node relays the block's `Inv` to all its peers (except the sender). This ensures blocks propagate across the full network, not just one hop from the miner. Without relay, in a linear topology (1→2→3→4→5→6→7), a block mined by Node 4 would only reach Nodes 3 and 5 — the rest of the network would never see it.
+
+The `block_is_new` check prevents infinite relay loops where nodes keep forwarding the same block back and forth.
+
+### Mining Concurrency and Cancellation
+
+When transactions arrive at a node, mining is triggered in a background task. Two guards prevent problems:
+
+1. **`MINING_IN_PROGRESS` flag**: Prevents concurrent mining tasks from running simultaneously on the same node.
+2. **`MINING_CANCELLED` flag**: Set by the `Package::Block` handler when a competing block arrives. Checked before mining starts — if a competing block was already accepted, mining is aborted.
+
+**Critical rule**: Cancellation is NEVER checked after `mine_block()` completes. Once the block is created and added to the local chain, it MUST be broadcast. Skipping the broadcast would leave an unbroadcast block in the node's chain, creating a permanent fork where this node has a block nobody else knows about.
+
+### Stale Mining Protection
+
+Between `prepare_mining_utxo()` (which validates transaction inputs with a read lock) and the actual `mine_block()` call (which requires the write lock), a competing block may be accepted — spending the same transaction inputs. The `chainstate.rs` wrapper re-validates all inputs under the write lock just before mining. If any inputs are already spent, mining is aborted with a "stale mining" error. Without this check, the node would create a block with already-spent inputs, and `update_utxo_set` would silently add the coinbase transaction — creating money from nothing.
 
 ## 5) Whitepaper Connections: Network Operation and Security Intuition
 
@@ -199,24 +232,24 @@ In practical terms, a correct reorg requires the ability to **roll back and re-a
 
 The whitepaper’s Section 5 lists the “network operation” loop. In this codebase, the closest mapping is:
 
-1. **New transactions are broadcast**  
-   - Entry point: `NodeContext::process_transaction(...)`  
+1. **New transactions are broadcast**
+   - Entry point: `NodeContext::process_transaction(...)`
    - Propagation primitive: `send_inv(...)` in `bitcoin/src/net/net_processing.rs`
 
-2. **Nodes collect new transactions into a block**  
+2. **Nodes collect new transactions into a block**
    - `miner::prepare_mining_utxo(...)` pulls from `GLOBAL_MEMORY_POOL`
 
-3. **Nodes work on proof-of-work**  
+3. **Nodes work on proof-of-work**
    - `ProofOfWork::run()` in `bitcoin/src/pow.rs`
 
-4. **When a node finds PoW, it broadcasts the block**  
+4. **When a node finds PoW, it broadcasts the block**
    - `send_inv(...)` announces the new block hash
 
-5. **Nodes accept the block only if all transactions are valid and not already spent**  
-   - This is the Step‑5 acceptance gate. In this book, it’s covered explicitly here:  
+5. **Nodes accept the block only if all transactions are valid and not already spent**
+   - This is the Step‑5 acceptance gate. In this book, it’s covered explicitly here:
      - **Block Acceptance (Whitepaper §5, Step 5)**
 
-6. **Nodes express acceptance by working on the next block**  
+6. **Nodes express acceptance by working on the next block**
    - Mining continues on the best tip selected by `add_block(...)` logic.
 
 ### 19 Security analysis (Whitepaper §11) — what we should take away as implementers
@@ -250,7 +283,7 @@ The whitepaper’s Section 11 quantifies the “attacker catching up” probabil
 
 Transaction-level validity here primarily means: “do signatures verify against the reconstructed digest?”
 
-**Code Listing 9-8.1**: Transaction validity (signature verification) (`Transaction::verify`)
+### Listing 9-8.1: Transaction validity (signature verification) (`Transaction::verify`)
 > **Source:** `transaction.rs` — Source
 
 ```rust
@@ -302,7 +335,7 @@ In addition, block construction itself (`Block::new_block`) runs proof-of-work u
 
 Before a mined block is constructed, `BlockchainService::mine_block` verifies each transaction:
 
-**Code Listing 9-8.2**: Mining-time validation gate (`BlockchainService::mine_block`)  
+### Listing 9-8.2: Mining-time validation gate (`BlockchainService::mine_block`)
 > **Source:** `chainstate.rs` — Source
 
 ```rust
@@ -318,7 +351,7 @@ pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
 }
 ```
 
-**Code Listing 9-8.3**: Block mining (construct block + update state) (`BlockchainFileSystem::mine_block`)
+### Listing 9-8.3: Block mining (construct block + update state) (`BlockchainFileSystem::mine_block`)
 
 > **Source:** `file_system_db_chain.rs` — Source
 
@@ -336,7 +369,7 @@ pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
 }
 ```
 
-**Code Listing 9-8.4**: Block construction + proof-of-work (`Block::new_block`)
+### Listing 9-8.4: Block construction + proof-of-work (`Block::new_block`)
 
 > **Source:** `block.rs` — Source
 
@@ -369,7 +402,7 @@ pub fn new_block(
 }
 ```
 
-**Code Listing 9-8.5**: Proof-of-work loop (`ProofOfWork::run`)
+### Listing 9-8.5: Proof-of-work loop (`ProofOfWork::run`)
 
 > **Source:** `pow.rs` — Source
 
@@ -413,60 +446,87 @@ Because this chapter is intended to stand alone, we print the method in full. Wh
 - **DB insertion vs. consensus decision**: the sled transaction closure is synchronous, while the fork-choice logic is async and runs afterwards.
 - **Validation gate (FIXME)**: the method currently contains a whitepaper Step‑5 FIXME (“accept only if all txs valid and not already spent”) that must be enforced before state mutation in a production node.
 
-**Code Listing 9-8.6**: Block insertion + fork choice (`BlockchainFileSystem::add_block`)
+### Listing 9-8.6: Block insertion + fork choice (`BlockchainFileSystem::add_block`)
 
 > **Source:** `file_system_db_chain.rs` — Source
+> **Note:** This is a simplified version focused on the fork-choice logic. For the full implementation including the sled atomic transaction that persists the block before fork-choice runs, see Chapter 11 (Storage Layer Code Walkthrough), Listing 11-6.
 
 ```rust
 pub async fn add_block(&mut self, new_block: &Block) -> Result<()> {
-    // Persistence (insert into sled) + fork-choice (decide if tip updates)
-    let block_tree = self
-        .blockchain
-        .db
-        .open_tree(self.get_blocks_tree_path())?;
+    let block_tree = self.blockchain.db.open_tree(self.get_blocks_tree_path())?;
 
-    if self.is_empty() {
-        self.set_not_empty();
-        self.update_blocks_tree(&block_tree, new_block).await?;
-        self.set_tip_hash(new_block.get_hash()).await?;
-        self.update_utxo_set(new_block).await?;
-        return Ok(());
-    }
+    // 1) Empty chain: first block always becomes tip
+    if self.is_empty() { /* ... accept and update UTXO ... */ }
 
-    if block_tree.get(new_block.get_hash())?.is_some() {
-        return Ok(()); // Already exists
-    }
+    // 2) Dedup: skip if already present
+    if block_tree.get(new_block.get_hash())?.is_some() { return Ok(()); }
 
-    // Persist inside sled transaction, then apply async fork-choice logic
+    // 3) Persist inside sled transaction (block is now in DB
+    // regardless of fork choice)
     block_tree.transaction(|tx| {
         tx.insert(new_block.get_hash(), new_block.serialize()?)
     })?;
 
-    // Fork-choice: prefer higher blocks; on equal height,
-    // compare cumulative work
+    // 4) Fork-choice: three-level consensus hierarchy
     let current_tip = self.get_tip_hash().await?;
     let current_height = self.get_best_height().await?;
 
     match new_block.get_height().cmp(&current_height) {
         Ordering::Greater => {
-            self.set_tip_hash(new_block.get_hash()).await?;
-            self.update_utxo_set(new_block).await?;
-        }
-        Ordering::Equal if new_block.get_pre_block_hash() == current_tip => {
-            // ... (normal next block, nothing to do)
+            if new_block.get_pre_block_hash() == current_tip {
+                // Normal case: extends our current chain
+                self.set_tip_hash(new_block.get_hash()).await?;
+                self.update_utxo_set(new_block).await?;
+            } else {
+                // FORK: reorganize to rollback old branch's UTXO
+                self.reorganize_chain(new_block.get_hash()).await?;
+            }
         }
         Ordering::Equal => {
-            // ... (work comparison and tie-breaking)
+            if new_block.get_pre_block_hash() == current_tip {
+                return Ok(()); // Extends our tip naturally
+            }
+            // Competing tips: compare cumulative work, then tie-break
+            let current_work = self.get_chain_work(&current_tip).await?;
+            let new_work = self.get_chain_work(new_block.get_hash()).await?;
+            match new_work.cmp(&current_work) {
+                Ordering::Greater => {
+                    self.reorganize_chain(new_block.get_hash()).await?;
+                }
+                Ordering::Equal => {
+                    // Deterministic tie-break (lexicographic hash comparison)
+                    if self
+                        .accept_new_block_tie_break(new_block, &current_tip)
+                        .await?
+                    {
+                        self.reorganize_chain(new_block.get_hash()).await?;
+                    }
+                }
+                Ordering::Less => { /* weaker chain, keep ours */ }
+            }
         }
-        Ordering::Less => { /* reject */ }
+        Ordering::Less => {
+            // Block stored but not accepted as tip
+        }
     }
     Ok(())
 }
 ```
 
+> **Key design decisions in `add_block`:**
+>
+> - **Step 3 inserts the block BEFORE fork-choice runs.** This means ALL received blocks end up in the database, even if they're rejected by consensus. This is intentional — `find_common_ancestor()` needs to walk both branches during future reorganizations, and it can only do so if the blocks are in the DB.
+>
+> - **`Ordering::Greater` checks for forks.** A higher-height block might be on a DIFFERENT branch (its parent doesn't match our current tip). This can happen when block relay delivers blocks out of order. Without the fork check, the old branch's UTXO (including coinbase subsidies) would never be rolled back — creating money from nothing.
+>
+> - **`Ordering::Less` blocks are retained, not deleted.** During `rollback_to_block()`, blocks are also NOT deleted from the database. This ensures `find_common_ancestor()` always works, matching Bitcoin Core's behavior where all blocks are kept in `blk*.dat` files regardless of whether they're on the active chain.
+
 - **What to notice**
   - This is the canonical “fork-choice” boundary in this codebase: it may update tip and may reorganize.
   - UTXO updates happen when the code decides the new block/branch is canonical.
+  - **`Ordering::Greater` now detects forks**: If a higher-height block's parent does NOT match our current tip, it is on a different branch. The code calls `reorganize_chain()` instead of directly updating the tip. Without this, the old branch's UTXO (including coinbase subsidies) would remain, creating money from nothing.
+  - **`Ordering::Less` blocks are retained**: Blocks at lower heights are stored in the DB (by the Sled transaction) but not accepted as the tip. They remain available for `find_common_ancestor()` during future reorganizations. Rolled-back blocks are also never deleted from the database.
+  - **Block relay**: When the `Package::Block` handler in `net_processing.rs` processes a new block, it relays the block's `Inv` to all peers (except the sender). This ensures blocks propagate across multi-hop network topologies, not just to the miner's direct neighbors.
 - **Whitepaper mapping**
   - **§5 (Step 6)**: nodes express acceptance by working on the next block (i.e., building on the chosen tip).
   - **§11**: the whole explains why “more work” makes history harder to rewrite (fork-choice must be deterministic).
@@ -475,7 +535,7 @@ pub async fn add_block(&mut self, new_block: &Block) -> Result<()> {
 
 Fork choice needs a notion of “how strong is this branch?” In Bitcoin this is “cumulative proof-of-work”. In this codebase, that is computed by walking parent links back to genesis and summing each block’s `get_work()` value.
 
-**Code Listing 9-8.7**: Cumulative chain work (`BlockchainFileSystem::get_chain_work`)
+### Listing 9-8.7: Cumulative chain work (`BlockchainFileSystem::get_chain_work`)
 
 > **Source:** `file_system_db_chain.rs` — Source
 
@@ -497,7 +557,7 @@ When two blocks have the same height but are
 *not* direct parent/child, the code treats them as
 a fork and compares chains.
 
-**Code Listing 9-8.4**: Equal-height
+### Listing 9-8.4: Equal-height
 competitors (compute work, then reorganize or
 reject)
 > **Source:** `file_system_db_chain.rs` — Source
@@ -548,7 +608,7 @@ Ordering::Equal => {
 
 When work is equal, the project resolves the fork deterministically by comparing hashes:
 
-**Code Listing 9-8.8**: Deterministic tie-break (lexicographic hash ordering)  
+### Listing 9-8.8: Deterministic tie-break (lexicographic hash ordering)
 > **Source:** `file_system_db_chain.rs` — Source
 
 ```rust
@@ -570,7 +630,7 @@ async fn accept_new_block_tie_break(
 
 If a stronger branch wins (higher work or tie-break), the project reorganizes:
 
-**Code Listing 9-8.9**: Reorganization contract (rollback to common ancestor, then apply new branch)  
+### Listing 9-8.9: Reorganization contract (rollback to common ancestor, then apply new branch)
 > **Source:** `file_system_db_chain.rs` — Source
 
 ```rust
@@ -620,7 +680,7 @@ The current `add_block(...)` implementation includes an explicit FIXME reminder 
 
 <div align="center">
 
-**[← Previous: Block Lifecycle and Mining](06-Block-Lifecycle-and-Mining.md)** | **Consensus and Validation** | **[Next: Node Orchestration →](08-Node-Orchestration.md)** 
+**[← Previous: Block Lifecycle and Mining](06-Block-Lifecycle-and-Mining.md)** | **Consensus and Validation** | **[Next: Node Orchestration →](08-Node-Orchestration.md)**
 
 </div>
 

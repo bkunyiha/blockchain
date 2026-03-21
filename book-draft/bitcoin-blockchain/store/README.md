@@ -62,7 +62,7 @@
 
 This chapter explains `bitcoin/src/store` as an implementer reads it: **how blocks become durable bytes on disk**, how we track the **tip**, and which write paths must be **atomic** to keep the node consistent after crashes.
 
-> **Prerequisites**: This chapter builds on the block and transaction types from Chapter 6 (Primitives) and the validation logic from Chapters 9–10. You should be comfortable with Rust's `Result` type and basic async/await — the storage layer uses both extensively. No prior database experience is required; we introduce sled from scratch below.
+> **Prerequisites:**: This chapter builds on the block and transaction types from Chapter 6 (Primitives) and the validation logic from Chapters 9–10. You should be comfortable with Rust's `Result` type and basic async/await — the storage layer uses both extensively. No prior database experience is required; we introduce sled from scratch below.
 
 **Why storage matters for Bitcoin.** Without durable storage, a node would lose all blockchain history every time it restarts — it would have to re-download and re-validate the entire chain from peers. The storage layer also enforces a critical invariant: the tip hash and the blocks tree must always be consistent. If the node crashes halfway through writing a new block, the database must either contain both the block and the updated tip, or neither. This is why atomicity is the central design concern of this chapter.
 
@@ -85,6 +85,8 @@ Our conventions on top of sled:
 - a **blocks tree** that maps `block_hash -> serialized Block bytes`
 - a stable **tip key** (`”tip_block_hash”`) that points at the canonical tip hash
 - atomic updates for “insert block + move tip” (sled transactions)
+
+Think of sled as a persistent in-memory data structure (like a `BTreeMap`) that writes changes to disk atomically. If the process crashes, the database either contains both the block and the updated tip, or neither — it never gets stuck in an inconsistent state.
 
 > **Tip:** When debugging storage issues, Sled's `Db::export()` and `Db::import()` methods can dump the entire database contents for inspection. This is invaluable during development.
 
@@ -117,7 +119,7 @@ This chapter is about making those two invariants true:
 
 ---
 
-## What We Covered
+## Summary
 
 - We explored how the BlockchainFileSystem uses the Sled embedded database to persist blocks, chain state, and UTXO data to disk.
 - We implemented the storage operations that allow efficient insertion and retrieval of blockchain data.
@@ -144,7 +146,7 @@ In the next chapter, we build the networking layer that enables nodes to communi
 >
 > **"sled lock file already exists"** — Another process (or a crashed previous run) still holds the database lock. Delete the `db/__sled__/lock` file manually, or ensure the previous node process has fully exited.
 >
-> **Deserialization panic after code changes** — If you modify the `Block` struct and restart without clearing the database, sled will try to deserialize old bytes into the new struct layout. Delete the `db/` directory to start fresh, or implement a migration path.
+> **Troubleshooting:** **Deserialization panic after code changes** — If you modify the `Block` struct and restart without clearing the database, sled will try to deserialize old bytes into the new struct layout. Delete the `db/` directory to start fresh, or implement a migration path.
 >
 > **"tree not found" on a fresh database** — Ensure `create_blockchain` is called before `open_blockchain`. The blocks tree must be explicitly created on first run.
 

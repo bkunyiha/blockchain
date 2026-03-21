@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](#)** 
+**[← Chapter 22: Docker Compose](../docker-compose/01-Introduction.md)** | **Chapter 23: Kubernetes** | **[End of Book →](#)**
 
 </div>
 
@@ -77,10 +77,10 @@
 
 This section provides complete Kubernetes manifest examples with detailed explanations. Each manifest file is numbered in deployment order.
 
-> **Methods involved**
+> **Methods involved:**
 > - Full manifest set: **[Chapter 23A: Kubernetes — Complete Code Listings](01A-Kubernetes-Code-Listings.md)** (Listings 9.4–9.20)
-> - `kustomization.yaml`: [Listing 9.3](01A-Kubernetes-Code-Listings.md#listing-93-cikubernetesmanifestskustomizationyaml)
-> - `deploy.sh`: [Listing 9.1](01A-Kubernetes-Code-Listings.md#listing-91-cikubernetesmanifestsdeploysh)
+> - `kustomization.yaml`: [Listing 23A.3](01A-Kubernetes-Code-Listings.md#listing-23a3-cikubernetesmanifestskustomizationyaml)
+> - `deploy.sh`: [Listing 23A.1](01A-Kubernetes-Code-Listings.md#listing-23a1-cikubernetesmanifestsdeploysh)
 
 
 ## Overview of Manifest Files
@@ -687,6 +687,8 @@ When a component tries to evict a pod, it typically uses the **Eviction API**. T
 kubectl get pdb -n blockchain
 kubectl describe pdb miner-pdb -n blockchain
 ```
+
+The PDB manifest itself declares the disruption budget for the miner pods:
 
 ```yaml
 apiVersion: policy/v1

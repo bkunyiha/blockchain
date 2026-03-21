@@ -2,7 +2,7 @@
 
 This appendix provides an annotated directory structure for each module covered in the book. Rather than printing verbatim listings (see companion chapters A/B/C), we map out the repository's organization so you can navigate to the exact files discussed in each chapter.
 
-> The complete source code for this book is available at **https://github.com/bkunyiha/rust-blockchain**. Each section below maps to a companion chapter that contains the full source listings. Use the directory trees to orient yourself in the repository and find the files discussed in each chapter.
+> The complete source code for this book is available at [**https://github.com/bkunyiha/rust-blockchain**](https://github.com/bkunyiha/rust-blockchain). Each section below maps to a companion chapter that contains the full source listings. Use the directory trees to orient yourself in the repository and find the files discussed in each chapter.
 
 ---
 
@@ -73,6 +73,11 @@ bitcoin-desktop-ui-tauri/
 │           ├── mining.rs      # Mining info + block generation
 │           ├── health.rs      # Health, liveness, readiness checks
 │           └── settings.rs    # Settings update command
+```
+
+The frontend is organized similarly, with layers for configuration, shared types, API wrappers, store management, and view components:
+
+```text
 └── src/ (Frontend - React/TypeScript)
     ├── package.json           # Frontend deps (@tauri-apps/api, react,
     │                           # tanstack)

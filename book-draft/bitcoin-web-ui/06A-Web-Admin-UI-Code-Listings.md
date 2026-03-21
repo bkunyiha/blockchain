@@ -81,7 +81,7 @@ Before each listing, you will find a short guide explaining:
 
 ---
 
-## Listing 7.1: `src/main.tsx`
+## Listing 21.1: `src/main.tsx`
 
 This is the **browser entry point**. It is responsible for mounting React into the DOM and importing global styles (`index.css`).
 
@@ -91,7 +91,7 @@ Important to understand:
 - `React.StrictMode` is enabled in development; it can cause some effects to run twice (by design) to surface side-effect bugs.
 - All application wiring happens inside `App` (routing, providers, layout).
 
-> **Methods involved**
+> **Methods involved:**
 > - `ReactDOM.createRoot(...).render(...)` (entrypoint call)
 
 ```typescript
@@ -112,7 +112,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 ---
 
-## Listing 7.2: `src/App.tsx`
+## Listing 21.2: `src/App.tsx`
 
 This is the **composition root** of the application. It wires together the major frameworks used by the UI:
 
@@ -128,7 +128,7 @@ Important to understand:
 - The `queryClient` options define global behaviors like retry policies and focus refetch.
 - The providers establish the “ambient services” used everywhere (queries, API config).
 
-> **Methods involved**
+> **Methods involved:**
 > - `App` (React component function)
 
 ```typescript
@@ -187,13 +187,13 @@ function App() {
           <Layout>
             <Routes>
               <Route path="/" element={<Home />} />
-              
+
               {/* Blockchain routes */}
               <Route path="/blockchain/info" element={<BlockchainInfo />} />
               <Route path="/blockchain/latest" element={<LatestBlocks />} />
               <Route path="/blockchain/all" element={<AllBlocks />} />
               <Route path="/blockchain/hash" element={<BlockByHash />} />
-              
+
               {/* Wallet routes */}
               <Route path="/wallet/create" element={<CreateWallet />} />
               <Route path="/wallet/info" element={<WalletInfo />} />
@@ -201,17 +201,17 @@ function App() {
               <Route path="/wallet/send" element={<SendTransaction />} />
               <Route path="/wallet/history" element={<TransactionHistory />} />
               <Route path="/wallet/addresses" element={<AllAddresses />} />
-              
+
               {/* Transaction routes */}
               <Route path="/transactions/mempool" element={<Mempool />} />
               <Route path="/transactions/mempool-tx" element={<MempoolTx />} />
               <Route path="/transactions/all" element={<AllTransactions />} />
               <Route path="/transactions/address" element={<AddressTransactions />} />
-              
+
               {/* Mining routes */}
               <Route path="/mining/info" element={<MiningInfo />} />
               <Route path="/mining/generate" element={<GenerateBlocks />} />
-              
+
               {/* Health routes */}
               <Route path="/health/check" element={<HealthCheck />} />
               <Route path="/health/liveness" element={<Liveness />} />
@@ -253,7 +253,7 @@ export default App;
 
 ---
 
-## Listing 7.3: `src/contexts/ApiConfigContext.tsx`
+## Listing 21.3: `src/contexts/ApiConfigContext.tsx`
 
 This module defines **global API configuration** (base URL and API key) and persists it in `localStorage`.
 
@@ -263,7 +263,7 @@ Important to understand:
 - The API client singleton is (re)created when config changes via `updateApiClient(...)`.
 - `useApiConfig()` enforces correct usage by throwing if called outside the provider.
 
-> **Methods involved**
+> **Methods involved:**
 > - `ApiConfigProvider`
 > - `useApiConfig`
 
@@ -344,7 +344,7 @@ export function useApiConfig() {
 
 ---
 
-## Listing 7.4: `src/services/api.ts`
+## Listing 21.4: `src/services/api.ts`
 
 This module is the **HTTP boundary** of the Web Admin UI:
 
@@ -358,7 +358,7 @@ Important to understand:
 - React Query hooks depend on these methods for actual HTTP transport.
 - Authentication is handled via the `X-API-Key` header when configured.
 
-> **Methods involved**
+> **Methods involved:**
 > - `ApiClient` constructor
 > - `ApiClient` methods (one per endpoint)
 > - `getApiClient`
@@ -535,7 +535,7 @@ export function updateApiClient(baseURL: string, apiKey?: string) {
 
 ---
 
-## Listing 7.5: `src/hooks/useApi.ts`
+## Listing 21.5: `src/hooks/useApi.ts`
 
 This module defines the **application’s data access surface** as React Query hooks.
 
@@ -547,7 +547,7 @@ Important to understand:
   - cache invalidation,
   - toast notifications.
 
-> **Methods involved**
+> **Methods involved:**
 > - `useBlockchainInfo`, `useLatestBlocks`, `useAllBlocks`, `useBlockByHash`
 > - `useCreateWallet`, `useAddresses`, `useWalletInfo`, `useBalance`, `useSendTransaction`, `useAddressTransactions`
 > - `useMempool`, `useMempoolTransaction`, `useAllTransactions`
@@ -753,7 +753,7 @@ export function useReadiness() {
 
 ---
 
-## Listing 7.6: `src/components/Layout/Layout.tsx`
+## Listing 21.6: `src/components/Layout/Layout.tsx`
 
 This is the **top-level layout** that wraps every routed page.
 
@@ -762,7 +762,7 @@ Important to understand:
 - It establishes the “chrome”: `Navbar` on top, `Sidebar` on the left, and the main content area.
 - It does not fetch data; it is purely structural.
 
-> **Methods involved**
+> **Methods involved:**
 > - `Layout`
 
 ```tsx
@@ -795,7 +795,7 @@ export function Layout({ children }: LayoutProps) {
 
 ---
 
-## Listing 7.7: `src/components/Layout/Navbar.tsx`
+## Listing 21.7: `src/components/Layout/Navbar.tsx`
 
 The navbar provides the **API configuration UX**: a “Configure API” menu where the user sets base URL and API key.
 
@@ -805,7 +805,7 @@ Important to understand:
 - It uses Headless UI’s `Menu` + `Transition` for an accessible dropdown.
 - Writing config updates `localStorage` and recreates the API client singleton.
 
-> **Methods involved**
+> **Methods involved:**
 > - `Navbar`
 
 ```tsx
@@ -824,7 +824,7 @@ export function Navbar() {
           <div className="flex items-center">
             <h1 className="text-xl font-bold text-bitcoin-orange">Bitcoin Blockchain Admin</h1>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <Menu as="div" className="relative">
               <Menu.Button className="btn-secondary text-sm">
@@ -883,7 +883,7 @@ export function Navbar() {
 
 ---
 
-## Listing 7.8: `src/components/Layout/Sidebar.tsx`
+## Listing 21.8: `src/components/Layout/Sidebar.tsx`
 
 The sidebar provides **navigation** and a persistent UX: dropdown sections remain open when navigating within their own subtree.
 
@@ -893,7 +893,7 @@ Important to understand:
 - `openMenuPath` is derived from `location.pathname` so reloads/deep links open the correct menu.
 - This is UI state only; all data fetching remains in routed components via hooks.
 
-> **Methods involved**
+> **Methods involved:**
 > - `Sidebar`
 
 ```tsx
@@ -965,13 +965,13 @@ const navItems: NavItem[] = [
 
 export function Sidebar() {
   const location = useLocation();
-  
+
   // Determine which menu should be open based on current location
   const getOpenMenuPath = (): string | null => {
     for (const item of navItems) {
       if (item.subItems) {
         // Check if current path matches this menu or any of its sub-items
-        if (location.pathname === item.path || 
+        if (location.pathname === item.path ||
             item.subItems.some(sub => location.pathname === sub.path)) {
           return item.path;
         }
@@ -993,12 +993,12 @@ export function Sidebar() {
     <aside className="w-64 bg-gray-800 border-r border-gray-700 min-h-screen">
       <nav className="p-4 space-y-2">
         {navItems.map((item) => {
-          const isActive = location.pathname === item.path || 
+          const isActive = location.pathname === item.path ||
             (item.subItems && item.subItems.some(sub => location.pathname === sub.path));
-          
+
           if (item.subItems) {
             const isOpen = openMenuPath === item.path;
-            
+
             return (
               <div key={item.path} className="relative">
                 <button
@@ -1082,11 +1082,11 @@ export function Sidebar() {
 
 ---
 
-## Listing 7.9: `src/pages/Home.tsx`
+## Listing 21.9: `src/pages/Home.tsx`
 
 The home route is intentionally thin: it renders the `Dashboard`.
 
-> **Methods involved**
+> **Methods involved:**
 > - `Home`
 
 ```tsx
@@ -1100,7 +1100,7 @@ export function Home() {
 
 ---
 
-## Listing 7.10: `src/components/Dashboard/Dashboard.tsx`
+## Listing 21.10: `src/components/Dashboard/Dashboard.tsx`
 
 The dashboard is the canonical example of the “React Query + stat cards” pattern:
 
@@ -1114,7 +1114,7 @@ Important to understand:
 - The view does not call the API client directly; it relies on `useApi` hooks.
 - Date formatting is delegated to `formatDate` for robustness.
 
-> **Methods involved**
+> **Methods involved:**
 > - `Dashboard`
 
 ```tsx
@@ -1171,7 +1171,7 @@ export function Dashboard() {
           icon={<span className="text-2xl">⏳</span>}
         />
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card">
           <h2 className="text-lg font-semibold text-white mb-4">Blockchain Info</h2>
@@ -1199,7 +1199,7 @@ export function Dashboard() {
 
 ---
 
-## Listing 7.11: `src/components/common/JsonViewer.tsx`
+## Listing 21.11: `src/components/common/JsonViewer.tsx`
 
 This shared component is how the UI displays “raw JSON” payloads in a readable, copyable form.
 
@@ -1209,7 +1209,7 @@ Important to understand:
 - The user can expand/collapse height and copy to clipboard.
 - Toast notifications confirm copy actions.
 
-> **Methods involved**
+> **Methods involved:**
 > - `JsonViewer`
 > - `copyToClipboard` (local helper)
 
@@ -1268,11 +1268,11 @@ export function JsonViewer({ data, title }: JsonViewerProps) {
 
 ---
 
-## Listing 7.12: `src/components/common/LoadingSpinner.tsx`
+## Listing 21.12: `src/components/common/LoadingSpinner.tsx`
 
 Simple shared component used by nearly every screen to show “query is in flight”.
 
-> **Methods involved**
+> **Methods involved:**
 > - `LoadingSpinner`
 
 ```tsx
@@ -1287,11 +1287,11 @@ export function LoadingSpinner() {
 
 ---
 
-## Listing 7.13: `src/components/common/ErrorMessage.tsx`
+## Listing 21.13: `src/components/common/ErrorMessage.tsx`
 
 Shared error presentation. It converts either an `Error` or a string into a display message.
 
-> **Methods involved**
+> **Methods involved:**
 > - `ErrorMessage`
 
 ```tsx
@@ -1312,11 +1312,11 @@ export function ErrorMessage({ error }: ErrorMessageProps) {
 
 ---
 
-## Listing 7.14: `src/components/common/StatCard.tsx`
+## Listing 21.14: `src/components/common/StatCard.tsx`
 
 Small reusable component used on the dashboard for consistent “label + value” rendering.
 
-> **Methods involved**
+> **Methods involved:**
 > - `StatCard`
 
 ```tsx
@@ -1344,7 +1344,7 @@ export function StatCard({ label, value, icon }: StatCardProps) {
 
 ---
 
-## Listing 7.15: `src/utils/date.ts`
+## Listing 21.15: `src/utils/date.ts`
 
 This utility exists because the UI consumes timestamps from a Rust backend, and production UIs must be resilient to malformed or unexpected date formats.
 
@@ -1354,7 +1354,7 @@ Important to understand:
 - The code includes a guard for a previously observed backend bug where a date’s year becomes unreasonably large.
 - `formatDateWithTimezone` provides a “presentation-grade” format with timezone name.
 
-> **Methods involved**
+> **Methods involved:**
 > - `formatDate`
 > - `formatDateWithTimezone`
 
@@ -1371,7 +1371,7 @@ export function formatDate(date: string | Date | null | undefined): string {
 
   try {
     let dateObj: Date;
-    
+
     if (typeof date === 'string') {
       // Check if it's a malformed date (like "+57878-04-29T11:29:35Z" from backend bug)
       // This happens when milliseconds are treated as seconds
@@ -1385,12 +1385,12 @@ export function formatDate(date: string | Date | null | undefined): string {
           return 'Date format error';
         }
       }
-      
+
       dateObj = new Date(date);
     } else {
       dateObj = date;
     }
-    
+
     // Check if date is valid
     if (isNaN(dateObj.getTime())) {
       // Try to parse as Unix timestamp (milliseconds)
@@ -1432,7 +1432,7 @@ export function formatDateWithTimezone(date: string | Date | null | undefined): 
 
   try {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    
+
     // Check if date is valid
     if (isNaN(dateObj.getTime())) {
       return 'Invalid Date';
@@ -1456,7 +1456,7 @@ export function formatDateWithTimezone(date: string | Date | null | undefined): 
 
 ---
 
-## Listing 7.16: `src/types/api.ts`
+## Listing 21.16: `src/types/api.ts`
 
 This file defines the **TypeScript mirror** of the Rust server’s response types. Its job is to make:
 
@@ -1469,7 +1469,7 @@ Important to understand:
 - `ApiResponse<T>` matches the server wrapper (success/data/error/timestamp).
 - `PaginatedResponse<T>` encodes pagination metadata used by UI components.
 
-> **Methods involved**
+> **Methods involved:**
 > - Type definitions (interfaces and type aliases)
 
 ```typescript
@@ -1552,7 +1552,7 @@ export interface PaginatedResponse<T> {
 
 ---
 
-## Listing 7.17: `src/components/Blockchain/BlockchainInfo.tsx`
+## Listing 21.17: `src/components/Blockchain/BlockchainInfo.tsx`
 
 “Fetch + refresh button + JSON viewer” is the simplest screen pattern. This component demonstrates:
 
@@ -1560,7 +1560,7 @@ export interface PaginatedResponse<T> {
 - explicit refetch on demand,
 - structured loading/error handling.
 
-> **Methods involved**
+> **Methods involved:**
 > - `BlockchainInfo`
 
 ```tsx
@@ -1590,7 +1590,7 @@ export function BlockchainInfo() {
           Refresh
         </button>
       </div>
-      
+
       {/* Only render when the payload exists; the hook returns ApiResponse<T>. */}
       {data?.data && <JsonViewer data={data.data} title="Blockchain Information" />}
     </div>
@@ -1600,7 +1600,7 @@ export function BlockchainInfo() {
 
 ---
 
-## Listing 7.18: `src/components/Blockchain/LatestBlocks.tsx`
+## Listing 21.18: `src/components/Blockchain/LatestBlocks.tsx`
 
 This screen demonstrates presenting a list view (latest blocks) while still providing access to raw JSON.
 
@@ -1609,7 +1609,7 @@ Important to understand:
 - The list view is human-friendly; JSON viewer is an “escape hatch” for debugging and inspection.
 - `formatDate` is used so timestamps are robustly displayed.
 
-> **Methods involved**
+> **Methods involved:**
 > - `LatestBlocks`
 
 ```tsx
@@ -1641,7 +1641,7 @@ export function LatestBlocks() {
           Refresh
         </button>
       </div>
-      
+
       {blocks.length > 0 ? (
         <div className="space-y-4">
           {blocks.map((block) => (
@@ -1677,7 +1677,7 @@ export function LatestBlocks() {
       ) : (
         <div className="text-gray-400">No blocks found</div>
       )}
-      
+
       {blocks.length > 0 && (
         <div className="mt-6">
           {/* Raw JSON is useful for debugging and for readers comparing fields to the API schema. */}
@@ -1691,7 +1691,7 @@ export function LatestBlocks() {
 
 ---
 
-## Listing 7.19: `src/components/Blockchain/AllBlocks.tsx`
+## Listing 21.19: `src/components/Blockchain/AllBlocks.tsx`
 
 This screen demonstrates a “load on demand” query:
 
@@ -1703,7 +1703,7 @@ Important to understand:
 - `handleLoadAll` iterates pages by calling the API client directly. This is a conscious escape hatch for bulk loading that does not rely on React Query paging.
 - The component keeps its own `allBlocks` state for “bulk loaded” datasets.
 
-> **Methods involved**
+> **Methods involved:**
 > - `AllBlocks`
 > - `handleLoad` (local helper)
 > - `handleLoadAll` (local helper)
@@ -1734,7 +1734,7 @@ export function AllBlocks() {
   const handleLoadAll = async () => {
     setIsLoadingAll(true);
     setAllBlocks([]);
-    
+
     try {
       const allBlocksData: BlockSummary[] = [];
       let page = 0;
@@ -1793,11 +1793,11 @@ export function AllBlocks() {
 
       {paginatedData && (
         <div className="mb-4 text-sm text-gray-400">
-          Showing page {paginatedData.page + 1} of {paginatedData.total_pages} 
+          Showing page {paginatedData.page + 1} of {paginatedData.total_pages}
           ({paginatedData.total} total blocks)
         </div>
       )}
-      
+
       {blocksToShow.length > 0 ? (
         <JsonViewer data={blocksToShow} title={allBlocks.length > 0 ? `All Blocks (${allBlocks.length})` : 'Blocks'} />
       ) : (
@@ -1810,14 +1810,14 @@ export function AllBlocks() {
 
 ---
 
-## Listing 7.20: `src/components/Blockchain/BlockByHash.tsx`
+## Listing 21.20: `src/components/Blockchain/BlockByHash.tsx`
 
 This screen demonstrates a “query parameterized by local state” pattern:
 
 - the component owns the input field (`hash`),
 - the hook is `enabled: !!hash` but the UI still uses `refetch()` on demand.
 
-> **Methods involved**
+> **Methods involved:**
 > - `BlockByHash`
 > - `handleSearch` (local helper)
 
@@ -1843,7 +1843,7 @@ export function BlockByHash() {
   return (
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">Block by Hash</h1>
-      
+
       <div className="mb-6">
         <div className="flex gap-4">
           <input
@@ -1862,13 +1862,13 @@ export function BlockByHash() {
       </div>
 
       {isLoading && <LoadingSpinner />}
-      
+
       {error && <ErrorMessage error={error as Error} />}
-      
+
       {data?.data && (
         <JsonViewer data={data.data} title="Block Details" />
       )}
-      
+
       {!hash && !isLoading && !data && (
         <div className="text-gray-400">Enter a block hash to search</div>
       )}
@@ -1879,7 +1879,7 @@ export function BlockByHash() {
 
 ---
 
-## Listing 7.21: `src/components/Wallet/CreateWallet.tsx`
+## Listing 21.21: `src/components/Wallet/CreateWallet.tsx`
 
 This component demonstrates a mutation flow:
 
@@ -1888,7 +1888,7 @@ This component demonstrates a mutation flow:
 - toasts + cache invalidation handled by the hook,
 - and a success panel + JSON viewer.
 
-> **Methods involved**
+> **Methods involved:**
 > - `CreateWallet`
 > - `handleCreate` (local helper)
 
@@ -1911,7 +1911,7 @@ export function CreateWallet() {
       toast.error('Please enter a wallet label');
       return;
     }
-    
+
     // Trigger the mutation; results land in createWallet.data / createWallet.error.
     createWallet.mutate({ label: label.trim() });
     // Clear the input for fast repeated operations.
@@ -1921,7 +1921,7 @@ export function CreateWallet() {
   return (
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">Create Wallet</h1>
-      
+
       <div className="card mb-6">
         <div className="space-y-4">
           <div>
@@ -1949,7 +1949,7 @@ export function CreateWallet() {
 
       {/* Mutation-in-flight state; keep the component responsive during network calls. */}
       {createWallet.isPending && <LoadingSpinner />}
-      
+
       {createWallet.data?.data && (
         <div>
           {/* A human-friendly success summary; JSON viewer below provides the exact payload. */}
@@ -1970,11 +1970,11 @@ export function CreateWallet() {
 
 ---
 
-## Listing 7.22: `src/components/Wallet/WalletInfo.tsx`
+## Listing 21.22: `src/components/Wallet/WalletInfo.tsx`
 
 “Enter address → fetch → show JSON” screen. It is intentionally minimal and relies on shared primitives (hooks + JSON viewer).
 
-> **Methods involved**
+> **Methods involved:**
 > - `WalletInfo`
 > - `handleLoad` (local helper)
 
@@ -2000,7 +2000,7 @@ export function WalletInfo() {
   return (
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">Wallet Info</h1>
-      
+
       <div className="mb-6">
         <div className="flex gap-4">
           <input
@@ -2019,13 +2019,13 @@ export function WalletInfo() {
       </div>
 
       {isLoading && <LoadingSpinner />}
-      
+
       {error && <ErrorMessage error={error as Error} />}
-      
+
       {data?.data && (
         <JsonViewer data={data.data} title="Wallet Information" />
       )}
-      
+
       {!address && !isLoading && !data && (
         <div className="text-gray-400">Enter a wallet address to view information</div>
       )}
@@ -2036,11 +2036,11 @@ export function WalletInfo() {
 
 ---
 
-## Listing 7.23: `src/components/Wallet/Balance.tsx`
+## Listing 21.23: `src/components/Wallet/Balance.tsx`
 
 This screen shows an important pattern: “render a summarized view, then provide raw JSON.”
 
-> **Methods involved**
+> **Methods involved:**
 > - `Balance`
 > - `handleLoad` (local helper)
 
@@ -2064,7 +2064,7 @@ export function Balance() {
   return (
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">Balance</h1>
-      
+
       <div className="mb-6">
         <div className="flex gap-4">
           <input
@@ -2082,9 +2082,9 @@ export function Balance() {
       </div>
 
       {isLoading && <LoadingSpinner />}
-      
+
       {error && <ErrorMessage error={error as Error} />}
-      
+
       {data?.data && (
         <div>
           <div className="card mb-4">
@@ -2107,7 +2107,7 @@ export function Balance() {
           <JsonViewer data={data.data} title="Balance Details" />
         </div>
       )}
-      
+
       {!address && !isLoading && !data && (
         <div className="text-gray-400">Enter a wallet address to view balance</div>
       )}
@@ -2118,7 +2118,7 @@ export function Balance() {
 
 ---
 
-## Listing 7.24: `src/components/Wallet/SendTransaction.tsx`
+## Listing 21.24: `src/components/Wallet/SendTransaction.tsx`
 
 This is the primary “mutation + validation” component:
 
@@ -2127,7 +2127,7 @@ This is the primary “mutation + validation” component:
 - sends the mutation,
 - displays a success state.
 
-> **Methods involved**
+> **Methods involved:**
 > - `SendTransaction`
 > - `handleSend` (local helper)
 
@@ -2163,7 +2163,7 @@ export function SendTransaction() {
   return (
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">Send Bitcoin</h1>
-      
+
       <div className="card mb-6">
         <div className="space-y-4">
           <div>
@@ -2208,7 +2208,7 @@ export function SendTransaction() {
       </div>
 
       {sendTransaction.isPending && <LoadingSpinner />}
-      
+
       {sendTransaction.data?.data && (
         <div>
           <div className="card mb-4 bg-green-900/20 border-green-500/50">
@@ -2228,11 +2228,11 @@ export function SendTransaction() {
 
 ---
 
-## Listing 7.25: `src/components/Wallet/TransactionHistory.tsx`
+## Listing 21.25: `src/components/Wallet/TransactionHistory.tsx`
 
 This screen demonstrates consuming a paginated response shape (when present) and presenting an empty state.
 
-> **Methods involved**
+> **Methods involved:**
 > - `TransactionHistory`
 > - `handleLoad` (local helper)
 
@@ -2256,7 +2256,7 @@ export function TransactionHistory() {
   return (
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">Transaction History</h1>
-      
+
       <div className="mb-6">
         <div className="flex gap-4">
           <input
@@ -2274,9 +2274,9 @@ export function TransactionHistory() {
       </div>
 
       {isLoading && <LoadingSpinner />}
-      
+
       {error && <ErrorMessage error={error as Error} />}
-      
+
       {data?.data && (
         <>
           {data.data.items && data.data.items.length > 0 ? (
@@ -2295,7 +2295,7 @@ export function TransactionHistory() {
           )}
         </>
       )}
-      
+
       {!address && !isLoading && !data && (
         <div className="text-gray-400">Enter a wallet address to view transaction history</div>
       )}
@@ -2306,7 +2306,7 @@ export function TransactionHistory() {
 
 ---
 
-## Listing 7.26: `src/components/Wallet/AllAddresses.tsx`
+## Listing 21.26: `src/components/Wallet/AllAddresses.tsx`
 
 This is the most complex wallet screen: it combines a table view with a modal that can display info/balance/history for a selected address.
 
@@ -2316,7 +2316,7 @@ Important to understand:
 - The modal component conditionally enables data hooks by passing either the address or an empty string (so the hook’s `enabled: !!address` gates requests).
 - The history path expects a paginated response with `.items`.
 
-> **Methods involved**
+> **Methods involved:**
 > - `AllAddresses`
 > - `AddressDetailsModal` (local component function)
 > - `handleAction` (local helper)
@@ -2352,9 +2352,9 @@ export function AllAddresses() {
       </div>
 
       {isLoading && <LoadingSpinner />}
-      
+
       {error && <ErrorMessage error={error as Error} />}
-      
+
       {addresses.length > 0 && (
         <div className="card mb-6">
           <div className="overflow-x-auto">
@@ -2545,11 +2545,11 @@ function AddressDetailsModal({
 
 ---
 
-## Listing 7.27: `src/components/Transactions/Mempool.tsx`
+## Listing 21.27: `src/components/Transactions/Mempool.tsx`
 
 Minimal “query + refresh + JSON” pattern for mempool transactions.
 
-> **Methods involved**
+> **Methods involved:**
 > - `Mempool`
 
 ```tsx
@@ -2577,7 +2577,7 @@ export function Mempool() {
           Refresh
         </button>
       </div>
-      
+
       {data?.data && <JsonViewer data={data.data} title="Mempool Transactions" />}
     </div>
   );
@@ -2586,11 +2586,11 @@ export function Mempool() {
 
 ---
 
-## Listing 7.28: `src/components/Transactions/MempoolTx.tsx`
+## Listing 21.28: `src/components/Transactions/MempoolTx.tsx`
 
 “Search by txid” screen. Demonstrates local state + `refetch` on demand.
 
-> **Methods involved**
+> **Methods involved:**
 > - `MempoolTx`
 > - `handleSearch` (local helper)
 
@@ -2616,7 +2616,7 @@ export function MempoolTx() {
   return (
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">Mempool Transaction</h1>
-      
+
       <div className="mb-6">
         <div className="flex gap-4">
           <input
@@ -2635,13 +2635,13 @@ export function MempoolTx() {
       </div>
 
       {isLoading && <LoadingSpinner />}
-      
+
       {error && <ErrorMessage error={error as Error} />}
-      
+
       {data?.data && (
         <JsonViewer data={data.data} title="Transaction Details" />
       )}
-      
+
       {!txid && !isLoading && !data && (
         <div className="text-gray-400">Enter a transaction ID to search</div>
       )}
@@ -2652,7 +2652,7 @@ export function MempoolTx() {
 
 ---
 
-## Listing 7.29: `src/components/Transactions/AllTransactions.tsx`
+## Listing 21.29: `src/components/Transactions/AllTransactions.tsx`
 
 This screen demonstrates:
 
@@ -2660,7 +2660,7 @@ This screen demonstrates:
 - an “enabled: false” query that is triggered on demand,
 - and a bulk “load all pages” mode that iterates using the API client directly.
 
-> **Methods involved**
+> **Methods involved:**
 > - `AllTransactions`
 > - `handleLoad`, `handleLoadPage`, `handleLoadAll` (local helpers)
 
@@ -2702,7 +2702,7 @@ export function AllTransactions() {
     // Bulk-load loop: iteratively fetch pages until the backend reports no further pages.
     setIsLoadingAll(true);
     setAllTransactions([]);
-    
+
     try {
       let currentPage = 1;
       let allItems: any[] = [];
@@ -2714,7 +2714,7 @@ export function AllTransactions() {
           const paginatedData = response.data;
           // Accumulate items across pages.
           allItems = [...allItems, ...paginatedData.items];
-          
+
           if (paginatedData.has_next) {
             currentPage++;
           } else {
@@ -2791,12 +2791,12 @@ export function AllTransactions() {
           Loaded {allTransactions.length} transactions (all pages)
         </div>
       )}
-      
+
       {displayData.length > 0 ? (
         <div className="max-h-[80vh] overflow-y-auto">
-          <JsonViewer 
-            data={displayData} 
-            title={`All Transactions${allTransactions.length > 0 ? ` (${allTransactions.length} total)` : paginationInfo ? ` (${paginationInfo.total} total)` : ''}`} 
+          <JsonViewer
+            data={displayData}
+            title={`All Transactions${allTransactions.length > 0 ? ` (${allTransactions.length} total)` : paginationInfo ? ` (${paginationInfo.total} total)` : ''}`}
           />
         </div>
       ) : (
@@ -2809,11 +2809,11 @@ export function AllTransactions() {
 
 ---
 
-## Listing 7.30: `src/components/Transactions/AddressTransactions.tsx`
+## Listing 21.30: `src/components/Transactions/AddressTransactions.tsx`
 
 This screen is an address-driven query that displays the server’s response as JSON.
 
-> **Methods involved**
+> **Methods involved:**
 > - `AddressTransactions`
 > - `handleLoad` (local helper)
 
@@ -2837,7 +2837,7 @@ export function AddressTransactions() {
   return (
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">Address Transactions</h1>
-      
+
       <div className="mb-6">
         <div className="flex gap-4">
           <input
@@ -2855,13 +2855,13 @@ export function AddressTransactions() {
       </div>
 
       {isLoading && <LoadingSpinner />}
-      
+
       {error && <ErrorMessage error={error as Error} />}
-      
+
       {data?.data && (
         <JsonViewer data={data.data} title="Address Transactions" />
       )}
-      
+
       {!address && !isLoading && !data && (
         <div className="text-gray-400">Enter an address to view transactions</div>
       )}
@@ -2872,11 +2872,11 @@ export function AddressTransactions() {
 
 ---
 
-## Listing 7.31: `src/components/Mining/MiningInfo.tsx`
+## Listing 21.31: `src/components/Mining/MiningInfo.tsx`
 
 Minimal “query + refresh + JSON” screen for mining info.
 
-> **Methods involved**
+> **Methods involved:**
 > - `MiningInfo`
 
 ```tsx
@@ -2904,7 +2904,7 @@ export function MiningInfo() {
           Refresh
         </button>
       </div>
-      
+
       {data?.data && <JsonViewer data={data.data} title="Mining Information" />}
     </div>
   );
@@ -2913,11 +2913,11 @@ export function MiningInfo() {
 
 ---
 
-## Listing 7.32: `src/components/Mining/GenerateBlocks.tsx`
+## Listing 21.32: `src/components/Mining/GenerateBlocks.tsx`
 
 This is the mining mutation screen. It validates inputs and triggers `useGenerateBlocks()`.
 
-> **Methods involved**
+> **Methods involved:**
 > - `GenerateBlocks`
 > - `handleGenerate` (local helper)
 
@@ -2958,7 +2958,7 @@ export function GenerateBlocks() {
   return (
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">Generate Blocks</h1>
-      
+
       <div className="card mb-6">
         <div className="space-y-4">
           <div>
@@ -3004,7 +3004,7 @@ export function GenerateBlocks() {
       </div>
 
       {generateBlocks.isPending && <LoadingSpinner />}
-      
+
       {generateBlocks.data?.data && (
         <div>
           <div className="card mb-4 bg-green-900/20 border-green-500/50">
@@ -3020,11 +3020,11 @@ export function GenerateBlocks() {
 
 ---
 
-## Listing 7.33: `src/components/Health/HealthCheck.tsx`
+## Listing 21.33: `src/components/Health/HealthCheck.tsx`
 
 This is a health endpoint query with a summarized success panel plus raw JSON.
 
-> **Methods involved**
+> **Methods involved:**
 > - `HealthCheck`
 
 ```tsx
@@ -3052,7 +3052,7 @@ export function HealthCheck() {
           Refresh
         </button>
       </div>
-      
+
       {data?.data && (
         <div>
           <div className={`card mb-4 ${data.success ? 'bg-green-900/20 border-green-500/50' : 'bg-red-900/20 border-red-500/50'}`}>
@@ -3070,11 +3070,11 @@ export function HealthCheck() {
 
 ---
 
-## Listing 7.34: `src/components/Health/Liveness.tsx`
+## Listing 21.34: `src/components/Health/Liveness.tsx`
 
 Health screen variant for liveness.
 
-> **Methods involved**
+> **Methods involved:**
 > - `Liveness`
 
 ```tsx
@@ -3102,7 +3102,7 @@ export function Liveness() {
           Refresh
         </button>
       </div>
-      
+
       {data?.data && (
         <div>
           <div className={`card mb-4 ${data.success ? 'bg-green-900/20 border-green-500/50' : 'bg-red-900/20 border-red-500/50'}`}>
@@ -3120,11 +3120,11 @@ export function Liveness() {
 
 ---
 
-## Listing 7.35: `src/components/Health/Readiness.tsx`
+## Listing 21.35: `src/components/Health/Readiness.tsx`
 
 Health screen variant for readiness.
 
-> **Methods involved**
+> **Methods involved:**
 > - `Readiness`
 
 ```tsx
@@ -3152,7 +3152,7 @@ export function Readiness() {
           Refresh
         </button>
       </div>
-      
+
       {data?.data && (
         <div>
           <div className={`card mb-4 ${data.success ? 'bg-green-900/20 border-green-500/50' : 'bg-red-900/20 border-red-500/50'}`}>
@@ -3170,13 +3170,13 @@ export function Readiness() {
 
 ---
 
-## Listing 7.36: `vite.config.ts`
+## Listing 21.36: `vite.config.ts`
 
 Vite config controls the developer experience and production output. The most important part is the dev server proxy:
 
 - `/api/*` is proxied to the Rust server, avoiding CORS complexity in development.
 
-> **Methods involved**
+> **Methods involved:**
 > - `defineConfig(...)` (configuration call)
 
 ```typescript
@@ -3203,11 +3203,11 @@ export default defineConfig({
 
 ---
 
-## Listing 7.37: `tailwind.config.js`
+## Listing 21.37: `tailwind.config.js`
 
 Tailwind config defines where classnames are scanned and extends the theme with Bitcoin colors.
 
-> **Methods involved**
+> **Methods involved:**
 > - configuration object export
 
 ```javascript
@@ -3231,11 +3231,11 @@ export default {
 
 ---
 
-## Listing 7.38: `postcss.config.js`
+## Listing 21.38: `postcss.config.js`
 
 PostCSS config wires Tailwind + Autoprefixer.
 
-> **Methods involved**
+> **Methods involved:**
 > - configuration object export
 
 ```javascript
@@ -3249,11 +3249,11 @@ export default {
 
 ---
 
-## Listing 7.39: `tsconfig.json`
+## Listing 21.39: `tsconfig.json`
 
 TypeScript config controls compiler strictness, module resolution, and JSX transformation.
 
-> **Methods involved**
+> **Methods involved:**
 > - configuration object
 
 ```json
@@ -3282,7 +3282,7 @@ TypeScript config controls compiler strictness, module resolution, and JSX trans
 
 ---
 
-## Listing 7.40: `src/index.css`
+## Listing 21.40: `src/index.css`
 
 This is where Tailwind layers are imported and a small component class library is defined (`btn-primary`, `input-field`, etc.).
 
@@ -3290,7 +3290,7 @@ Important to understand:
 
 - These classes are used across nearly all components to keep styling consistent.
 
-> **Methods involved**
+> **Methods involved:**
 > - CSS component class definitions
 
 ```css
@@ -3308,15 +3308,15 @@ Important to understand:
   .btn-primary {
     @apply px-4 py-2 bg-bitcoin-orange hover:bg-bitcoin-gold text-white font-semibold rounded-lg transition-colors;
   }
-  
+
   .btn-secondary {
     @apply px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors;
   }
-  
+
   .input-field {
     @apply w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-bitcoin-orange;
   }
-  
+
   .card {
     @apply bg-gray-800 rounded-lg border border-gray-700 p-20;
   }

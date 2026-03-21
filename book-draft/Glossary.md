@@ -30,6 +30,8 @@ This glossary defines terms used throughout the book. Each entry includes the ch
 
 **Double-spend** — An attempt to spend the same UTXO in two different transactions. Prevented by the consensus layer rejecting blocks that reference already-spent outputs. *(Ch 3, 10)*
 
+**Hash function** — A deterministic function that maps arbitrary-length input to a fixed-length output (the hash or digest). Bitcoin uses SHA-256 and RIPEMD-160 for block hashing, transaction IDs, and address derivation. A cryptographic hash function is collision-resistant and one-way. *(Ch 8)*
+
 **Fork** — When two valid blocks reference the same parent, creating a temporary branch in the chain. Resolved when one branch becomes longer than the other. *(Ch 10)*
 
 **Genesis block** — The hardcoded first block in the chain (height 0). It has no parent hash. *(Ch 9)*
@@ -38,11 +40,15 @@ This glossary defines terms used throughout the book. Each entry includes the ch
 
 **Merkle root** — A single hash that summarizes all transactions in a block, computed by recursively hashing pairs of transaction hashes into a binary tree. *(Ch 9)*
 
+**Mining** — The process of finding a nonce that makes a block's hash satisfy the difficulty target. The first miner to find a valid nonce earns the coinbase reward and the right to append their block to the chain. *(Ch 10, 13)*
+
 **Nonce** — A 32-bit field in the block header that miners increment to search for a valid block hash. The nonce is the variable that makes mining a trial-and-error process. *(Ch 10)*
 
 **Outpoint** — A reference to a specific output of a previous transaction, consisting of a transaction ID and an output index. Used as the "pointer" in transaction inputs. *(Ch 6)*
 
 **Peer** — Another node in the network. Our implementation connects peers via TCP and exchanges typed messages (`Package` structs). *(Ch 12)*
+
+**Peer-to-peer (P2P)** — A network architecture where nodes communicate directly with each other rather than through a central server. Each node in our blockchain acts as both client and server, relaying blocks and transactions. *(Ch 2, 12)*
 
 **Proof-of-work (PoW)** — The consensus mechanism where miners must find a nonce that makes the block hash fall below a target. Proves computational effort was spent. *(Ch 3, 10)*
 
@@ -54,11 +60,15 @@ This glossary defines terms used throughout the book. Each entry includes the ch
 
 **UTXO (Unspent Transaction Output)** — An output of a previous transaction that has not yet been consumed as an input. The UTXO set represents all spendable coins at any point in time. *(Ch 3, 9)*
 
+**Wallet** — A component that manages private keys, derives addresses, signs transactions, and tracks balances by scanning the UTXO set. Our project includes both Iced and Tauri wallet implementations with encrypted local storage. *(Ch 14, 18, 19)*
+
 ---
 
 ## Rust Language Terms
 
 **`async`/`await`** — Rust's syntax for asynchronous programming. Functions marked `async fn` return a `Future` that is lazily executed. Used throughout the networking, node, and web API layers. *(Ch 10, 12)*
+
+**Axum** — A web framework built on top of Tower and Hyper that provides routing, extractors, and middleware for async HTTP services. Powers the blockchain node's REST API. *(Ch 15)*
 
 **Borrow checker** — The Rust compiler's system for enforcing ownership rules at compile time. Prevents data races and use-after-free bugs without runtime overhead. *(Ch 24)*
 
@@ -76,13 +86,15 @@ This glossary defines terms used throughout the book. Each entry includes the ch
 
 **Monomorphization** — The process by which the Rust compiler generates specialized versions of generic functions for each concrete type. Produces zero-cost abstractions. *(Ch 24)*
 
-**Pin** — A wrapper type that prevents a value from being moved in memory. Required for certain async patterns where futures hold self-referential pointers. *(Ch 24)*
-
 **`Option<T>`** — A type representing either `Some(value)` or `None`. Used instead of null pointers. *(Ch 24)*
 
 **Ownership** — Rust's core memory management concept: every value has a single owner, and the value is dropped when the owner goes out of scope. *(Ch 24)*
 
+**Pin** — A wrapper type that prevents a value from being moved in memory. Required for certain async patterns where futures hold self-referential pointers. *(Ch 24)*
+
 **`Result<T, E>`** — A type representing either `Ok(value)` or `Err(error)`. The primary error-handling mechanism in Rust. *(Ch 24)*
+
+**secp256k1** — The elliptic curve used in Bitcoin's digital signature scheme. The `secp256k1` crate provides key generation, signing, and verification. Our wallet derives addresses from secp256k1 public keys. *(Ch 8, 14)*
 
 **Serde** — The Rust ecosystem's standard serialization/deserialization framework. All primitive types derive `Serialize` and `Deserialize` for JSON and binary encoding. *(Ch 6)*
 
@@ -93,6 +105,20 @@ This glossary defines terms used throughout the book. Each entry includes the ch
 **Trait Object** — A dynamically dispatched reference to a type implementing a trait, written as `dyn Trait`. Used when the concrete type is not known at compile time. *(Ch 24)*
 
 **`Vec<u8>`** — A growable byte vector. Used throughout the primitives module for hashes, transaction IDs, and serialized data. Chosen over fixed-size arrays for flexibility. *(Ch 6)*
+
+---
+
+## Deployment & Infrastructure Terms
+
+**Container** — A lightweight, isolated environment that packages application code, dependencies, and configuration. Containers are created from images and managed by Docker or Kubernetes. *(Ch 22, 23)*
+
+**Container Registry** — A centralized storage for Docker images (e.g., Docker Hub, AWS ECR). Registries allow teams to push and pull images for deployment. *(Ch 22, 23)*
+
+**Headless Service** — A Kubernetes Service without a ClusterIP, used for StatefulSets where pods need stable DNS names without load balancing. Each pod is directly addressable. *(Ch 23)*
+
+**Volume** — A Docker storage mechanism for persisting data beyond container lifetime. Volumes are managed by Docker and mounted into containers at a path. *(Ch 22)*
+
+**PersistentVolumeClaim (PVC)** — A Kubernetes request for storage. PVCs abstract underlying storage systems, allowing pods to request storage without knowing implementation details. *(Ch 23)*
 
 ---
 

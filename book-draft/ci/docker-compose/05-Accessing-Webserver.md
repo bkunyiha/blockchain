@@ -69,7 +69,7 @@
 
 <div align="center">
 
-**[← Chapter 21: Web Admin UI](../../bitcoin-web-ui/06-Web-Admin-UI.md)** | **Chapter 22: Docker Compose** | **[Chapter 23: Kubernetes →](../kubernetes/README.md)** 
+**[← Chapter 21: Web Admin UI](../../bitcoin-web-ui/06-Web-Admin-UI.md)** | **Chapter 22: Docker Compose** | **[Chapter 23: Kubernetes →](../kubernetes/README.md)**
 
 </div>
 
@@ -81,9 +81,9 @@ Once Docker containers are running, access the webserver at:
 
 **Base URL:** `http://localhost:8080`
 
-> **Methods involved**
-> - Webserver service definition + health check endpoints: `docker-compose.yml` ([Listing 8.1](01A-Docker-Compose-Code-Listings.md#listing-81-cidocker-composeconfigsdocker-composeyml))
-> - Rate limiting settings: `Settings.toml` ([Listing 8.10](01A-Docker-Compose-Code-Listings.md#listing-810-cidocker-composeconfigssettingstoml))
+> **Methods involved:**
+> - Webserver service definition + health check endpoints: `docker-compose.yml` ([Listing 22A.1](01A-Docker-Compose-Code-Listings.md#listing-22a1-cidocker-composeconfigsdocker-composeyml))
+> - Rate limiting settings: `Settings.toml` ([Listing 22A.10](01A-Docker-Compose-Code-Listings.md#listing-22a10-cidocker-composeconfigssettingstoml))
 
 ## 1. Health Check (No Authentication Required)
 
@@ -277,7 +277,7 @@ curl -i http://localhost:8080/api/health/liveness | grep -i "x-ratelimit"
 ```
 
 ### API Authentication Failing
-Make sure you're using the correct API key:
+Make sure you are using the correct API key:
 - Check `docker-compose.yml` for `BITCOIN_API_ADMIN_KEY` and `BITCOIN_API_WALLET_KEY`
 - Default values are `admin-secret` and `wallet-secret`
 

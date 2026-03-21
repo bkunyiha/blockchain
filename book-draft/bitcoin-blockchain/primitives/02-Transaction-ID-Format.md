@@ -63,13 +63,13 @@
 
 ---
 
-# Chapter 7: Transaction ID Format
+# Transaction ID Format (Chapter 6 — Extended)
 
 **Part I: Foundations & Core Implementation**
 
 <div align="center">
 
-**[← Primitives](README.md)** | **[Chapter 6: Transaction ID Format](02-Transaction-ID-Format.md)** 
+**[← Primitives](README.md)** | **Chapter 6 — Transaction ID Format** (current page)
 
 </div>
 
@@ -102,7 +102,7 @@ By the end of this chapter, you'll understand the technical reasoning behind eve
 
 When we first started designing our transaction system, we faced a fundamental question: how should we represent transaction IDs? The answer lies in understanding what transaction IDs actually are.
 
-Transaction IDs are **SHA-256 hashes**, and hash functions produce **binary data**, not text. Let's see what this means in practice:
+Transaction IDs are **SHA-256 hashes**, and hash functions produce **binary data**, not text. Here is what this means in practice:
 
 ```rust
 // From src/primitives/transaction.rs
@@ -147,7 +147,7 @@ When we look at how Bitcoin actually works at the protocol level, we discover an
 
 #### Code Comparison
 
-Let's see what this means in practice. If we stored transaction IDs as strings, we'd need constant conversions:
+Consider what this means in practice. If we stored transaction IDs as strings, we would need constant conversions:
 
 ```rust
 // ❌ BAD: String storage requires constant conversions
@@ -178,7 +178,7 @@ fn send_to_network(tx: &Transaction) {
 
 #### From Our Codebase
 
-Let's see how this works in our actual implementation:
+Here is how this works in our actual implementation:
 
 ```rust
 // src/node/context.rs (line 99-110)
@@ -189,9 +189,9 @@ pub async fn process_transaction(
 ) -> Result<String> {
     // Add to memory pool
     add_to_memory_pool(tx, &self.blockchain).await;
-    
+
     let my_node_addr = GLOBAL_CONFIG.get_node_addr();
-    
+
     // Broadcast using BINARY format
     if my_node_addr.eq(&CENTERAL_NODE) {
         let nodes = self.get_nodes_excluding_sender(addr_from).await?;
@@ -206,7 +206,7 @@ pub async fn process_transaction(
 
 ### Performance Comparison
 
-Now that we understand why binary storage matters, let's see how it performs compared to string storage. The performance differences are significant:
+Now that we understand why binary storage matters, we compare its performance against string storage. The performance differences are significant:
 
 ```rust
 // ✅ Binary: Direct byte comparison O(n)
@@ -254,7 +254,7 @@ impl BlockchainFileSystem {
     ) -> Result<Option<Transaction>> {
         // Binary for efficient DB lookup.
         let tx_tree = self.blockchain.db.open_tree(TRANSACTIONS_CF)?;
-        
+
         match tx_tree.get(id)? {  // Direct binary key lookup
             Some(tx_bytes) => {
                 let tx = bincode::deserialize(&tx_bytes)?;
@@ -282,6 +282,8 @@ For a blockchain processing **400,000 transactions per day**:
 
 // SAVINGS: 56 MB (64% reduction!)
 ```
+
+The same advantage applies to network bandwidth, where binary IDs reduce per-transaction overhead:
 
 ```rust
 // Network bandwidth (1000 tx/s sustained):
@@ -312,12 +314,12 @@ impl Transaction {
     pub fn get_id_bytes(&self) -> Vec<u8> {
         self.txid.clone()
     }
-    
+
     /// Get transaction ID as hex string (for display)
     pub fn get_tx_id_hex(&self) -> String {
         hex::encode(&self.txid)
     }
-    
+
     /// Get transaction ID reference (most efficient)
     pub fn get_id(&self) -> &[u8] {
         &self.txid
@@ -344,26 +346,26 @@ impl Transaction {
 
  Analysis
 
-Understanding the cost of each operation helps us make informed decisions about when to use which method. Let's break down the actual costs:
+Understanding the cost of each operation helps us make informed decisions about when to use which method. We break down the actual costs:
 
 ```rust
 // Conversion costs for a 32-byte transaction ID:
 
 // get_id() - FREE (just returns reference)
-let id_ref: &[u8] = tx.get_id();  
+let id_ref: &[u8] = tx.get_id();
 // Cost: 0 bytes allocated, 0 copies
 //       Just returns a pointer (8 bytes) + length (8 bytes) = 16 bytes total
 //       This is essentially free - no heap allocation, no data copying
 //       CPU: ~1-2 nanoseconds (just pointer arithmetic)
 
 // get_id_bytes() - CLONE COST
-let id_vec: Vec<u8> = tx.get_id_bytes();  
+let id_vec: Vec<u8> = tx.get_id_bytes();
 // Cost: 32 bytes copied + Vec overhead (24 bytes) = 56 bytes allocated
 //       CPU: ~10-20 nanoseconds (memory copy operation)
 //       This is necessary when you need ownership (e.g., storing in HashMap)
 
 // get_tx_id_hex() - ENCODE + ALLOCATE
-let id_hex: String = tx.get_tx_id_hex();  
+let id_hex: String = tx.get_tx_id_hex();
 // Cost: 32 bytes read + 64 bytes allocated (hex string) + String overhead (24
 // bytes)
 //       = 88 bytes allocated + encoding computation
@@ -380,7 +382,7 @@ These costs might seem small, but they compound:
 // Scenario: Processing 1,000 transactions/second
 
 // Using get_id() (references) - 1,000 × 2ns = 2 microseconds/second
-// Using get_id_bytes() (cloning) - 1,000 × 15ns = 15 microseconds/second  
+// Using get_id_bytes() (cloning) - 1,000 × 15ns = 15 microseconds/second
 // Using get_tx_id_hex() (encoding) - 1,000 × 75ns = 75 microseconds/second
 
 // Over 1 day (86,400 seconds):
@@ -429,9 +431,9 @@ These represent different ways to get a reference to the transaction ID bytes, a
 ### Type Difference
 
 ```rust
-let tx = Transaction { 
-    txid: vec![0x23A, 0x2f, 0x3c, /* ... */], 
-    // ... 
+let tx = Transaction {
+    txid: vec![0x23A, 0x2f, 0x3c, /* ... */],
+    // ...
 };
 
 // Different types:
@@ -446,7 +448,7 @@ Rust's **deref coercion** is a powerful feature that automatically converts refe
 In **most cases**, they behave identically due to this automatic conversion:
 
 ```rust
-fn takes_slice(data: &[u8]) { 
+fn takes_slice(data: &[u8]) {
     println!("Length: {}", data.len());
 }
 
@@ -468,7 +470,7 @@ if tx.id.as_slice() == other_slice { }  // ✅ Same result
 class CTransaction {
 private:
     mutable uint256 hash;  // 256-bit binary hash (like Vec<u8>)
-    
+
 public:
     // Get binary hash (like get_id_bytes())
     const uint256& GetHash() const {
@@ -476,7 +478,7 @@ public:
             hash = SerializeHash(*this);
         return hash;  // Returns reference to binary
     }
-    
+
     // Get hex string (like get_tx_id_hex())
     std::string GetHex() const {
         return hash.GetHex();  // Convert to hex only when needed
@@ -492,14 +494,14 @@ UniValue getrawtransaction(const JSONRPCRequest& request) {
     uint256 hash = ParseHashV(request.params[0], "txid");
     //             ^^^^^^^^^^
     //             Parse hex from RPC → binary uint256
-    
+
     CTransactionRef tx;
     if (!GetTransaction(hash, tx, ...)) {
         //               ^^^^
         //               Use binary for lookup
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No such transaction");
     }
-    
+
     // Return hex to user
     return EncodeHexTx(*tx);
     //     ^^^^^^^^^^^
@@ -521,7 +523,7 @@ impl Transaction {
     pub fn get_id(&self) -> &[u8] {
         &self.txid
     }
-    
+
     // Like Bitcoin's GetHex() - converts to hex
     pub fn get_tx_id_hex(&self) -> String {
         hex::encode(&self.txid)
@@ -732,14 +734,14 @@ This matches Bitcoin Core's design and minimizes unnecessary conversions while k
 
 <div align="center">
 
-**[← Primitives](README.md)** | **[Chapter 7: Transaction ID Format](02-Transaction-ID-Format.md)** 
+**[← Primitives](README.md)** | **[Chapter 7: Transaction ID Format](02-Transaction-ID-Format.md)**
 
 </div>
 
 ---
 
-*This chapter has explored the fundamental aspects of transaction representation and storage in our blockchain implementation. We've examined why transaction IDs are stored as `Vec<u8>` rather than strings, understanding the critical differences between bytes and hex representations and their implications for memory efficiency, performance, and code clarity. We've compared our implementation with Bitcoin Core, explored best practices and performance benchmarks, and delved deep into the UTXO model implementation, script execution, verification, and the complete transaction lifecycle. These design decisions cascade through the entire architecture, affecting everything from network protocol efficiency to database query performance. In the next chapter, we'll explore Blockchain State Management to understand how the UTXO set is maintained and how blockchain state operations are coordinated.*
+In the next chapter, we explore blockchain state management and the UTXO set, essential to understanding how spendability is tracked through the blockchain.
 
-**Last Updated:** December 2024  
-**Version:** 1.0  
+**Last Updated:** December 2024
+**Version:** 1.0
 **Status:** Production Reference

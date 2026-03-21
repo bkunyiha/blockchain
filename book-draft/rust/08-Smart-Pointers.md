@@ -172,7 +172,7 @@ In the next chapter, we'll explore pattern matching, which works seamlessly with
 
 <div align="center">
 
-**[← Rust Guide Index](README.md)** | **Smart Pointers** | **[← Previous](07-Lifetimes.md)** | **[Next →](09-Pattern-Matching.md)** 
+**[← Rust Guide Index](README.md)** | **Smart Pointers** | **[← Previous](07-Lifetimes.md)** | **[Next →](09-Pattern-Matching.md)**
 
 </div>
 

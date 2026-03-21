@@ -81,11 +81,11 @@ Before each listing, you will find a short guide explaining:
 
 ---
 
-## Listing 9.1: `ci/kubernetes/manifests/deploy.sh`
+## Listing 23A.1: `ci/kubernetes/manifests/deploy.sh`
 
 This is the “opinionated `kubectl apply`” script. It applies resources in dependency order and waits for pods to become Ready.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: `deploy.sh` (deployment orchestration)
 
 ```bash
@@ -183,11 +183,11 @@ echo "  Then open http://localhost:8080"
 
 ---
 
-## Listing 9.2: `ci/kubernetes/manifests/undeploy.sh`
+## Listing 23A.2: `ci/kubernetes/manifests/undeploy.sh`
 
 Reverse of `deploy.sh`: deletes resources in a safe teardown order.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: `undeploy.sh` (teardown orchestration)
 
 ```bash
@@ -237,11 +237,11 @@ echo "Note: PersistentVolumeClaims were deleted. Data may be lost unless backups
 
 ---
 
-## Listing 9.3: `ci/kubernetes/manifests/kustomization.yaml`
+## Listing 23A.3: `ci/kubernetes/manifests/kustomization.yaml`
 
 Kustomize entrypoint for `kubectl apply -k .`. It lists resources in the intended dependency order.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: `kustomization.yaml`
 
 ```yaml
@@ -276,11 +276,11 @@ commonLabels:
 
 ---
 
-## Listing 9.4: `ci/kubernetes/manifests/01-namespace.yaml`
+## Listing 23A.4: `ci/kubernetes/manifests/01-namespace.yaml`
 
 Creates the `blockchain` namespace to isolate resources and simplify operations.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: namespace resource
 
 ```yaml
@@ -296,11 +296,11 @@ metadata:
 
 ---
 
-## Listing 9.5: `ci/kubernetes/manifests/02-configmap.yaml`
+## Listing 23A.5: `ci/kubernetes/manifests/02-configmap.yaml`
 
 Defines non-secret configuration values. Workloads reference these keys as environment variables.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: ConfigMap resource
 
 ```yaml
@@ -319,13 +319,13 @@ data:
   SEQUENTIAL_STARTUP: "no"  # Kubernetes handles orchestration, so we don't need sequential startup
   CENTERAL_NODE: ""         # Optional central node address
   WALLET_FILE: "wallets/wallets.dat"  # Path to wallet file
-  
+
   # Miner-specific defaults
   # These are used when creating miner pods
   MINER_NODE_IS_MINER: "yes"           # Enable mining
   MINER_NODE_IS_WEB_SERVER: "no"       # Disable web server
   MINER_NODE_CONNECT_NODES: "local"    # Start as seed node (first miner)
-  
+
   # Webserver-specific defaults
   # These are used when creating webserver pods
   WEBSERVER_NODE_IS_MINER: "no"       # Disable mining
@@ -337,11 +337,11 @@ data:
 
 ---
 
-## Listing 9.6: `ci/kubernetes/manifests/14-configmap-rate-limit.yaml`
+## Listing 23A.6: `ci/kubernetes/manifests/14-configmap-rate-limit.yaml`
 
 ConfigMap that contains a `Settings.toml` file. It is mounted into the webserver container as `/app/Settings.toml`.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: ConfigMap (file-as-value pattern)
 
 ```yaml
@@ -371,11 +371,11 @@ data:
 
 ---
 
-## Listing 9.7: `ci/kubernetes/manifests/03-secrets.yaml`
+## Listing 23A.7: `ci/kubernetes/manifests/03-secrets.yaml`
 
 Secret values (API keys). Mining address can be omitted; the container entrypoint can generate one and persist it.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: Secret resource
 
 ```yaml
@@ -408,11 +408,11 @@ stringData:
 
 ---
 
-## Listing 9.8: `ci/kubernetes/manifests/04-pvc-miner.yaml`
+## Listing 23A.8: `ci/kubernetes/manifests/04-pvc-miner.yaml`
 
 Legacy PVCs (not used by StatefulSet volume templates). Kept for compatibility with older setups and for clusters without dynamic provisioning.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: PVC resources
 
 ```yaml
@@ -453,11 +453,11 @@ spec:
 
 ---
 
-## Listing 9.9: `ci/kubernetes/manifests/05-pvc-webserver.yaml`
+## Listing 23A.9: `ci/kubernetes/manifests/05-pvc-webserver.yaml`
 
 Legacy PVCs for webserver data/wallets (see note above).
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: PVC resources
 
 ```yaml
@@ -498,11 +498,11 @@ spec:
 
 ---
 
-## Listing 9.10: `ci/kubernetes/manifests/15-redis.yaml`
+## Listing 23A.10: `ci/kubernetes/manifests/15-redis.yaml`
 
 Redis Deployment + Service for rate limiting state.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: Service + Deployment resources
 
 ```yaml
@@ -579,11 +579,11 @@ spec:
 
 ---
 
-## Listing 9.11: `ci/kubernetes/manifests/08-service-miner-headless.yaml`
+## Listing 23A.11: `ci/kubernetes/manifests/08-service-miner-headless.yaml`
 
 Headless Service for stable per-pod DNS names used by StatefulSet.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: Service resource
 
 ```yaml
@@ -609,11 +609,11 @@ spec:
 
 ---
 
-## Listing 9.12: `ci/kubernetes/manifests/08-service-miner.yaml`
+## Listing 23A.12: `ci/kubernetes/manifests/08-service-miner.yaml`
 
 ClusterIP service for miners (stable name for clients).
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: Service resource
 
 ```yaml
@@ -642,11 +642,11 @@ spec:
 
 ---
 
-## Listing 9.13: `ci/kubernetes/manifests/09-service-webserver-headless.yaml`
+## Listing 23A.13: `ci/kubernetes/manifests/09-service-webserver-headless.yaml`
 
 Headless Service for webserver StatefulSet.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: Service resource
 
 ```yaml
@@ -675,11 +675,11 @@ spec:
 
 ---
 
-## Listing 9.14: `ci/kubernetes/manifests/09-service-webserver.yaml`
+## Listing 23A.14: `ci/kubernetes/manifests/09-service-webserver.yaml`
 
 Webserver Service. In cloud clusters it is typically LoadBalancer; in local clusters you often use port-forwarding.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: Service resource
 
 ```yaml
@@ -714,11 +714,11 @@ spec:
 
 ---
 
-## Listing 9.15: `ci/kubernetes/manifests/06-statefulset-miner.yaml`
+## Listing 23A.15: `ci/kubernetes/manifests/06-statefulset-miner.yaml`
 
 Miner StatefulSet. Uses `volumeClaimTemplates` to allocate per-pod storage.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: StatefulSet resource
 
 ```yaml
@@ -770,13 +770,13 @@ spec:
         # For production, use a specific version tag and registry:
         # image: your-registry/blockchain-node:v1.0.0
         imagePullPolicy: IfNotPresent  # Use Always in production
-        
+
         # Ports
         ports:
         - name: p2p
           containerPort: 2001
           protocol: TCP
-        
+
         # Environment variables from ConfigMap
         env:
         - name: NODE_IS_MINER
@@ -810,7 +810,7 @@ spec:
             configMapKeyRef:
               name: blockchain-config
               key: WALLET_FILE
-        
+
         # Environment variables from Secrets
         - name: NODE_MINING_ADDRESS
           valueFrom:
@@ -818,7 +818,7 @@ spec:
               name: blockchain-secrets
               key: MINER_ADDRESS
               optional: true
-        
+
         # ⚠️ Critical: Use Downward API to get pod information for StatefulSet
         # StatefulSet pods have stable names: miner-0, miner-1, miner-2, etc.
         - name: POD_NAME
@@ -833,7 +833,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
-        
+
         # Volume mounts
         # ⚠️ Important: StatefulSet uses volumeClaimTemplates instead of volumes
         # Each pod gets its own PVC automatically
@@ -842,7 +842,7 @@ spec:
           mountPath: /app/data
         - name: miner-wallets
           mountPath: /app/wallets
-        
+
         # Resource limits and requests
         resources:
           requests:
@@ -851,7 +851,7 @@ spec:
           limits:
             cpu: "2000m"     # 2 CPU (mining is CPU-intensive)
             memory: "2Gi"    # 2 GB RAM
-        
+
         # Health checks
         livenessProbe:
           tcpSocket:
@@ -860,7 +860,7 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
-        
+
         readinessProbe:
           tcpSocket:
             port: 2001
@@ -872,11 +872,11 @@ spec:
 
 ---
 
-## Listing 9.16: `ci/kubernetes/manifests/07-deployment-webserver.yaml`
+## Listing 23A.16: `ci/kubernetes/manifests/07-deployment-webserver.yaml`
 
 Webserver StatefulSet. Uses initContainers to wait for miner + redis and mounts `Settings.toml` for rate limiting.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: StatefulSet resource
 
 ```yaml
@@ -928,14 +928,14 @@ spec:
       - name: wait-for-redis
         image: busybox:1.35
         command: ['sh', '-c', 'until nc -z redis.blockchain.svc.cluster.local 6379; do echo waiting for redis; sleep 2; done;']
-      
+
       containers:
       - name: blockchain-node
         image: blockchain-node:latest
         # For production, use a specific version tag and registry:
         # image: your-registry/blockchain-node:v1.0.0
         imagePullPolicy: IfNotPresent
-        
+
         # Ports
         ports:
         - name: web
@@ -944,7 +944,7 @@ spec:
         - name: p2p
           containerPort: 2001
           protocol: TCP
-        
+
         # Environment variables from ConfigMap
         env:
         - name: NODE_IS_MINER
@@ -981,7 +981,7 @@ spec:
         # Rate limiting configuration (axum_rate_limiter)
         - name: RL_SETTINGS_PATH
           value: /app/Settings.toml
-        
+
         # Environment variables from Secrets
         - name: BITCOIN_API_ADMIN_KEY
           valueFrom:
@@ -993,7 +993,7 @@ spec:
             secretKeyRef:
               name: blockchain-secrets
               key: BITCOIN_API_WALLET_KEY
-        
+
         # Environment variables from Secrets
         - name: NODE_MINING_ADDRESS
           valueFrom:
@@ -1001,7 +1001,7 @@ spec:
               name: blockchain-secrets
               key: MINER_ADDRESS
               optional: true
-        
+
         # Use Downward API to get pod information
         - name: POD_NAME
           valueFrom:
@@ -1015,7 +1015,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
-        
+
         # Volume mounts
         volumeMounts:
         - name: webserver-data
@@ -1026,7 +1026,7 @@ spec:
           mountPath: /app/Settings.toml
           subPath: Settings.toml
           readOnly: true
-        
+
         # Resource limits
         resources:
           requests:
@@ -1035,7 +1035,7 @@ spec:
           limits:
             cpu: "1000m"
             memory: "1Gi"
-        
+
         # Health checks
         livenessProbe:
           httpGet:
@@ -1045,7 +1045,7 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
-        
+
         readinessProbe:
           httpGet:
             path: /api/health/ready
@@ -1054,7 +1054,7 @@ spec:
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
-      
+
       # Volumes
       volumes:
       - name: rate-limit-settings
@@ -1067,11 +1067,11 @@ spec:
 
 ---
 
-## Listing 9.17: `ci/kubernetes/manifests/10-hpa-webserver.yaml`
+## Listing 23A.17: `ci/kubernetes/manifests/10-hpa-webserver.yaml`
 
 HPA for webservers (CPU + memory).
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: HPA resource
 
 ```yaml
@@ -1125,11 +1125,11 @@ spec:
 
 ---
 
-## Listing 9.18: `ci/kubernetes/manifests/11-hpa-miner.yaml`
+## Listing 23A.18: `ci/kubernetes/manifests/11-hpa-miner.yaml`
 
 HPA for miners (conservative scaling due to statefulness).
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: HPA resource
 
 ```yaml
@@ -1167,11 +1167,11 @@ spec:
 
 ---
 
-## Listing 9.19: `ci/kubernetes/manifests/12-pod-disruption-budget.yaml`
+## Listing 23A.19: `ci/kubernetes/manifests/12-pod-disruption-budget.yaml`
 
 Ensures that at least one miner and one webserver remain available during voluntary disruptions.
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: PDB resources
 
 ```yaml
@@ -1204,11 +1204,11 @@ spec:
 
 ---
 
-## Listing 9.20: `ci/kubernetes/manifests/13-network-policy.yaml`
+## Listing 23A.20: `ci/kubernetes/manifests/13-network-policy.yaml`
 
 Optional network policy template (commented out by default).
 
-> **Methods involved**
+> **Methods involved:**
 > - Artifact: NetworkPolicy template
 
 ```yaml

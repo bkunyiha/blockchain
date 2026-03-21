@@ -265,7 +265,7 @@ Bitcoin commits to transactions via a Merkle root in the block header. This impl
 
 Mining is only attempted when the node is configured as a miner and the mempool has reached a minimum size.
 
-**Code Listing 9-6.1**: mining trigger (`should_trigger_mining`)
+### Listing 9-6.1: mining trigger (`should_trigger_mining`)
 > **Source:** `miner.rs` — Source
 
 ```rust
@@ -283,14 +283,14 @@ pub fn should_trigger_mining() -> bool {
 }
 ```
 
-**Listing 9-6.1 explanation**:
+### Listing 9-6.1 explanation:
 
 - It checks two conditions—mempool size and “am I a miner?”—and returns a boolean.
 - It makes miner scheduling explicit and easy to reason about: the node mines only when there is enough pending work to justify it.
 
 ### Step 2 — Build a candidate tx list (mempool txs + coinbase) (`prepare_mining_utxo`)
 
-This step constructs the exact list of transactions that will be included in the next block to be mined. 
+This step constructs the exact list of transactions that will be included in the next block to be mined.
 
 **In this project**: The miner takes a snapshot of the entire mempool using `GLOBAL_MEMORY_POOL.get_all()`, which returns all pending transactions without any filtering or ordering. There is no fee-based selection or size optimization—this is a simplified learning implementation that prioritizes clarity over production efficiency. Mining is triggered when the mempool contains at least 3 transactions (`TRANSACTION_THRESHOLD = 3`), and when mining occurs, all transactions in the mempool are included in the candidate block.
 
@@ -306,39 +306,73 @@ candidate_txs =
   + [Transaction::new_coinbase_tx(mining_address)]
 ```
 
-**Code Listing 9-6.2**: candidate assembly (`prepare_mining_utxo`)
+### Listing 9-6.2: candidate assembly (`prepare_mining_utxo`)
 > **Source:** `miner.rs` — Source
 
 ```rust
-pub fn prepare_mining_utxo(
+pub async fn prepare_mining_utxo(
     mining_address: &WalletAddress,
+    blockchain: &BlockchainService,       // validates inputs against UTXO set
 ) -> Result<Vec<Transaction>> {
-    // Snapshot the mempool at a point in time.
-    // This gives the miner a deterministic candidate list.
     let txs = GLOBAL_MEMORY_POOL.get_all()?;
 
-    // Construct the coinbase transaction (subsidy).
-    let coinbase_tx = create_mining_coinbase_transaction(
-        mining_address
-    )?;
-    // Candidate ordering: mempool txs, then coinbase
-    let mut final_txs = txs;
-    final_txs.push(coinbase_tx);
+    // Validate each transaction's inputs are still unspent
+    let db = blockchain.get_db().await?;
+    let utxo_tree = db.open_tree("chainstate")?;
 
+    let mut valid_txs = Vec::new();
+    for tx in txs {
+        if tx.is_coinbase() { continue; }
+        let mut inputs_valid = true;
+        for input in tx.get_vin() {
+            match utxo_tree.get(input.get_txid()) {
+                Ok(Some(outs_bytes)) => {
+                    let outputs: Vec<TXOutput> = decode(outs_bytes)?;
+                    if input.get_vout() >= outputs.len() {
+                        inputs_valid = false;
+                        break;
+                    }
+                }
+                _ => { inputs_valid = false; break; }
+            }
+        }
+        if inputs_valid {
+            valid_txs.push(tx);
+        } else {
+            remove_from_memory_pool(tx, blockchain).await;
+        }
+    }
+
+    if valid_txs.is_empty() {
+        return Err(BtcError::InvalidValueForMiner(
+            "No valid transactions to mine".to_string(),
+        ));
+    }
+
+    let coinbase_tx = create_mining_coinbase_transaction(mining_address)?;
+    let mut final_txs = valid_txs;
+    final_txs.push(coinbase_tx);
     Ok(final_txs)
 }
 ```
 
-**Listing 9-6.2 explanation**:
+### Listing 9-6.2 explanation:
 
-- It snapshots the current mempool and uses that as the candidate transaction set (no fee or weight selection in this learning implementation).
+- It snapshots the current mempool and validates each transaction's inputs against the UTXO set. This prevents mining blocks with already-spent inputs when a competing block has been accepted during the race between miners.
+- Transactions with spent inputs are removed from the mempool (they were already confirmed in a competing block).
+- If no valid transactions remain (all were stale), mining is aborted.
 - It appends a coinbase transaction, which is the mechanism by which new coins (subsidy) are created for the miner.
+- **Note:** The function is now `async` and accepts a `BlockchainService` parameter for UTXO validation. The `chainstate.rs` wrapper provides additional protection by re-validating inputs under the write lock just before calling `mine_block`.
+
+> **Why does validation happen in `prepare` AND again in `mine_block`?**
+>
+> `prepare_mining_utxo` validates with a **read lock** — other operations can proceed concurrently. Between this validation and the actual `mine_block` call (which requires the **write lock**), a competing block may arrive from the network and be processed via `add_block`. That competing block spends the same transaction inputs. If we didn't re-validate under the write lock, we'd mine a block with already-spent inputs — creating a duplicate coinbase subsidy (money from nothing). The second validation in `BlockchainService::mine_block` (Section 9.2, Listing 9-10) catches this race condition.
 
 ### Step 3 — Mine, persist, and clean up mempool (`process_mine_block` → `mine_block`)
 
 **Mining + persistence + mempool cleanup code**: `bitcoin/src/node/miner.rs`, `bitcoin/src/store/file_system_db_chain.rs`
 
-**Code Listing 9-6.3**: mine → mempool cleanup → announce (`process_mine_block`)
+### Listing 9-6.3: mine → mempool cleanup → announce (`process_mine_block`)
 > **Source:** `miner.rs` — Source
 
 ```rust
@@ -346,24 +380,42 @@ pub async fn process_mine_block(
     txs: Vec<Transaction>,
     blockchain: &BlockchainService,
 ) -> Result<Block> {
-    // Used only for logging/identification.
-    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
+    // Prevent concurrent mining — only one mining task at a time
+    if MINING_IN_PROGRESS
+        .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+        .is_err()
+    {
+        let msg = "Mining already in progress";
+        return Err(BtcError::InvalidValueForMiner(msg.to_string()));
+    }
 
-    // Ask the chainstate to mine a block from this candidate list.
-    // Important: the chainstate enforces signature verification at the mining
-    // boundary.
-    let new_block = blockchain.mine_block(&txs).await?;
+    // Reset cancellation flag before starting
+    reset_mining_cancellation();
 
-    // Log the mined block id (hash) and which node mined it.
-    info!(
-        "New block {} is mined by node {}!",
-        new_block.get_hash(),
-        my_node_addr
-    );
+    let result = async {
+        // Check for cancellation before mining
+        // (a competing block may have arrived)
+        if is_mining_cancelled() {
+            let msg = "Mining cancelled";
+            return Err(BtcError::InvalidValueForMiner(msg.to_string()));
+        }
 
-    // Local housekeeping: once the block is mined, those transactions are no
-    // longer pending locally.
-    for tx in &txs {
+        let my_node_addr = GLOBAL_CONFIG.get_node_addr();
+        let new_block = blockchain.mine_block(&txs).await?;
+
+        // CRITICAL: Do NOT cancel after block creation.
+        // Once mine_block() completes, the block is in our chain.
+        // If we skip broadcasting, other nodes never learn about it,
+        // creating a permanent fork.
+
+        let block_hash = new_block.get_hash();
+        info!(
+            "New block {} is mined by node {}!",
+            block_hash, my_node_addr
+        );
+
+        // Local housekeeping: remove confirmed txs from mempool
+        for tx in &txs {
         remove_from_memory_pool(tx.clone(), blockchain).await;
     }
 
@@ -374,7 +426,7 @@ pub async fn process_mine_block(
 }
 ```
 
-**Listing 9-6.3 explanation**:
+### Listing 9-6.3 explanation:
 
 - It delegates block production to `blockchain.mine_block(&txs)` (which enforces the mining boundary and persists the resulting block).
 - It removes transactions from the local mempool after they have been confirmed in the mined block (local housekeeping).
@@ -382,7 +434,7 @@ pub async fn process_mine_block(
 
 #### Step 3a — Enforce correctness at the mining boundary (`BlockchainService::mine_block`)
 
-**Code Listing 9-6.4**: mining boundary verification (`BlockchainService::mine_block`)
+### Listing 9-6.4: mining boundary verification (`BlockchainService::mine_block`)
 
 > **Source:** `chainstate.rs` — Source
 
@@ -398,14 +450,14 @@ pub async fn mine_block(&self, transactions: &[Transaction]) -> Result<Block> {
 }
 ```
 
-**Listing 9-6.4 explanation**:
+### Listing 9-6.4 explanation:
 
 - It verifies every transaction’s signatures before any proof-of-work effort is spent.
 - It delegates the “build + mine + persist” work to the storage-backed chain only after validation passes.
 
 #### Step 3b — Construct the block and commit to transactions (`Block::new_block`, `hash_transactions`)
 
-**Code Listing 9-6.7**: block construction + transaction commitment
+### Listing 9-6.7: block construction + transaction commitment
 
 > **Source:** `block.rs` — Source
 
@@ -442,7 +494,7 @@ pub fn hash_transactions(&self) -> Vec<u8> {
 }
 ```
 
-**Listing 9-6.7 explanation**:
+### Listing 9-6.7 explanation:
 
 - It builds a header that links to the previous block and captures a timestamp and height.
 - It commits to the block's transactions via `hash_transactions()` (a simplified stand-in for a Merkle root).
@@ -470,7 +522,7 @@ prepare_data(nonce) =
   || nonce.to_be_bytes()
 ```
 
-**Code Listing 9-6.8**: proof-of-work target + data layout + search loop (`pow.rs`)
+### Listing 9-6.8: proof-of-work target + data layout + search loop (`pow.rs`)
 
 > **Source:** `pow.rs` — Source
 
@@ -518,7 +570,7 @@ impl ProofOfWork {
 }
 ```
 
-**Listing 9-6.8 explanation**:
+### Listing 9-6.8 explanation:
 
 - It calculates a difficulty target based on `TARGET_BITS` (a 256-bit number that determines mining difficulty).
 - It prepares the data to hash by concatenating: previous block hash, transaction commitment, timestamp, difficulty bits, and nonce.
@@ -527,7 +579,7 @@ impl ProofOfWork {
 
 #### Step 3d — Persist the mined block and advance derived state (`BlockchainFileSystem::mine_block`)
 
-**Code Listing 9-6.5**: persist mined block and update derived state (`BlockchainFileSystem::mine_block`)
+### Listing 9-6.5: persist mined block and update derived state (`BlockchainFileSystem::mine_block`)
 
 > **Source:** `file_system_db_chain.rs` — Source
 
@@ -555,9 +607,9 @@ pub async fn mine_block(
 }
 ```
 
-**Listing 9-6.5 explanation**:
+### Listing 9-6.5 explanation:
 
-- It constructs a new block at \(height = best\_height + 1\) and runs proof-of-work inside `Block::new_block(...)`.
+- It constructs a new block at $height = best\_height + 1$ and runs proof-of-work inside `Block::new_block(...)`.
 - It writes the block to storage and advances the tip hash to point at the new block.
 - It applies the UTXO state transition for the newly accepted tip.
 
@@ -586,7 +638,7 @@ For every tx in the mined block (coinbase too):
     future transactions via (txid, vout) pair
 ```
 
-**Code Listing 9-6.6**: UTXO update on block connection (`update_utxo_set`)
+### Listing 9-6.6: UTXO update on block connection (`update_utxo_set`)
 
 > **Source:** `file_system_db_chain.rs` — Source
 
@@ -657,7 +709,7 @@ After removing any spent outputs, the function inserts all newly created transac
 }
 ```
 
-**Listing 9-6.6 explanation**:
+### Listing 9-6.6 explanation:
 
 - For each non-coinbase transaction, it removes the spent output index from the referenced previous transaction’s UTXO entry.
 - For every transaction, it inserts the newly created outputs, making them spendable for subsequent transactions.
@@ -685,7 +737,7 @@ BLOCK(block_bytes)  ------>  (receives block)
                               remove txs from mempool
 ```
 
-**Code Listing 9-6.9**: broadcast block inventory (`broadcast_new_block`)
+### Listing 9-6.9: broadcast block inventory (`broadcast_new_block`)
 
 > **Source:** `miner.rs` — Source
 
@@ -708,12 +760,12 @@ pub async fn broadcast_new_block(
 }
 ```
 
-**Listing 9-6.9 explanation**:
+### Listing 9-6.9 explanation:
 
 - It announces the new block by hash (inventory), rather than pushing the full block to peers.
 - It spawns per-peer sends so announcement does not block the mining flow.
 
-**Code Listing 9-6.10**: message constructors for INV / GETDATA / BLOCK (`send_inv`, `send_get_data`, `send_block`)
+### Listing 9-6.10: message constructors for INV / GETDATA / BLOCK (`send_inv`, `send_get_data`, `send_block`)
 
 > **Source:** `net_processing.rs` — Source
 
@@ -771,7 +823,7 @@ pub async fn send_block(
 }
 ```
 
-**Code Listing 9-6.11**: network handler for INV / GETDATA / BLOCK (`process_stream`)
+### Listing 9-6.11: network handler for INV / GETDATA / BLOCK (`process_stream`)
 
 This is a long handler because it supports many message types; for the purposes of this section, focus on the `Package::{Inv,GetData,Block}` match arms and treat the other arms as contextual background.
 
@@ -957,7 +1009,7 @@ AdminNodeQueryType::ReindexUtxo => {
 }
 ```
 
-**Listing 9-6.11 explanation (block relay path)**:
+### Listing 9-6.11 explanation (block relay path):
 
 - On `Package::Inv` for a block, it requests the block by hash (`send_get_data`).
 - On `Package::GetData` for a block, it serves the block bytes if present (`send_block`).
@@ -972,7 +1024,7 @@ AdminNodeQueryType::ReindexUtxo => {
 
 <div align="center">
 
-**[← Previous: Transaction Lifecycle](05-Transaction-Lifecycle.md)** | **Block Lifecycle and Mining** | **[Next: Consensus and Validation →](07-Consensus-and-Validation.md)** 
+**[← Previous: Transaction Lifecycle](05-Transaction-Lifecycle.md)** | **Block Lifecycle and Mining** | **[Next: Consensus and Validation →](07-Consensus-and-Validation.md)**
 
 </div>
 
