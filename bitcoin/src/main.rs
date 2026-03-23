@@ -176,8 +176,8 @@ async fn process_block(block: &blockchain::Block) {
 /// Print the entire blockchain using functional iteration
 async fn print_blockchain() -> Result<()> {
     let blockchain = BlockchainService::default().await?;
-    let mut iterator = blockchain.iterator().await.expect("Failed to get iterator");
-    while let Some(block) = iterator.next() {
+    let iterator = blockchain.iterator().await.expect("Failed to get iterator");
+    for block in iterator {
         process_block(&block).await;
     }
     Ok(())
@@ -300,10 +300,11 @@ async fn start_node(
                 }
             });
 
-            // Wait for Ctrl+C or any server to stop.
-            // Shadow the JoinHandles as mutable because tokio::select! polls branches by &mut,
             // requiring mutable bindings to pass &mut handle into the select arms below.
             let mut web_handle = web_handle;
+
+            // Wait for Ctrl+C or any server to stop.
+            // Shadow the JoinHandles as mutable because tokio::select! polls branches by &mut,
             tokio::select! {
                 _ = tokio::signal::ctrl_c() => {
                     info!("Ctrl-C received, initiating shutdown...");

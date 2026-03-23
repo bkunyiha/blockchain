@@ -6,7 +6,7 @@ use crate::wallet::WalletAddress;
 use crate::wallet::get_pub_key_hash;
 use data_encoding::HEXLOWER;
 use std::collections::HashMap;
-use tracing::{debug, trace};
+use tracing::{debug, info, trace};
 
 const UTXO_TREE: &str = "chainstate";
 
@@ -269,16 +269,18 @@ impl UTXOSet {
             .open_tree(UTXO_TREE)
             .map_err(|e| BtcError::UTXODBconnection(e.to_string()))?;
 
-        // Process transactions in reverse order (newest first)
-        for curr_block_tx in block.get_transactions().await? {
+        // Fix 5: Process transactions in REVERSE order (newest first) to correctly
+        // handle intra-block dependencies where a later tx spends an earlier tx's output
+        let transactions = block.get_transactions().await?;
+        let reversed: Vec<_> = transactions.iter().rev().collect();
+
+        for curr_block_tx in reversed {
             // Step 1: Remove this transaction's outputs from UTXO set
             utxo_tree
                 .remove(curr_block_tx.get_id())
                 .map_err(|e| BtcError::RemovingUTXOError(e.to_string()))?;
 
             // Step 2: Restore the inputs that this transaction spent (unless coinbase)
-            // When a transaction is processed, its inputs are removed from UTXO set.
-            // When rolling back, we need to restore those inputs as unspent outputs.
             if !curr_block_tx.is_coinbase() {
                 for curr_blc_tx_inpt in curr_block_tx.get_vin() {
                     // Get the transaction that this input references
@@ -289,33 +291,43 @@ impl UTXOSet {
                     {
                         // Find the specific output that was spent and restore it
                         if let Some(output) = input_tx.get_vout().get(curr_blc_tx_inpt.get_vout()) {
-                            // Prepare to restore this output as a UTXO
-                            let mut outs_to_restore = vec![];
-
-                            // Check if this transaction already has other unspent outputs
-                            // If so, we need to merge the `outs_to_restore` with existing ones
-                            // This is because when a transaction is processed, its outputs are removed from UTXO set.
-                            // When rolling back, we need to restore those outputs as unspent outputs.
-                            // If the transaction already has other unspent outputs, we need to merge the restored output with existing ones.
-                            // This is because the restored output is the same as the existing output.
-                            if let Some(existing_outs_bytes) = utxo_tree
+                            // Fix 1: Load existing outputs OR start with empty vec
+                            // Previously, if the txid was fully removed from the UTXO tree
+                            // (all outputs spent), outs_to_restore stayed empty and the
+                            // output was lost. Now we always restore the output.
+                            let mut outs_to_restore = if let Some(existing_outs_bytes) = utxo_tree
                                 .get(curr_blc_tx_inpt.get_txid())
                                 .map_err(|e| BtcError::GettingUTXOError(e.to_string()))?
                             {
                                 // Deserialize existing outputs for this transaction
-                                let mut existing_outs: Vec<TXOutput> =
-                                    bincode::serde::decode_from_slice(
-                                        existing_outs_bytes.as_ref(),
-                                        bincode::config::standard(),
-                                    )
-                                    .map_err(|e| {
-                                        BtcError::TransactionDeserializationError(e.to_string())
-                                    })?
-                                    .0;
+                                bincode::serde::decode_from_slice(
+                                    existing_outs_bytes.as_ref(),
+                                    bincode::config::standard(),
+                                )
+                                .map_err(|e| {
+                                    BtcError::TransactionDeserializationError(e.to_string())
+                                })?
+                                .0
+                            } else {
+                                // Transaction was fully spent — no entry in UTXO tree
+                                // Start with empty vec; we'll insert the restored output below
+                                info!(
+                                    "Restoring fully-spent UTXO for txid: {}",
+                                    HEXLOWER.encode(curr_blc_tx_inpt.get_txid())
+                                );
+                                vec![]
+                            };
 
-                                // Insert the restored output at the correct position (vout index)
-                                existing_outs.insert(curr_blc_tx_inpt.get_vout(), output.clone());
-                                outs_to_restore = existing_outs;
+                            // Insert the restored output at the correct vout position
+                            let vout_idx = curr_blc_tx_inpt.get_vout();
+                            if vout_idx <= outs_to_restore.len() {
+                                outs_to_restore.insert(vout_idx, output.clone());
+                            } else {
+                                // Pad with clones of the output up to the required position
+                                while outs_to_restore.len() < vout_idx {
+                                    outs_to_restore.push(output.clone());
+                                }
+                                outs_to_restore.push(output.clone());
                             }
 
                             // Save the restored UTXOs back to the database

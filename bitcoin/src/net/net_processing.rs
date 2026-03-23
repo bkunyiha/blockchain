@@ -49,8 +49,20 @@ pub async fn process_stream(
             // If there are blocks in transit, it sends a get_data request for the next block.
             // If there are no more blocks in transit, it reindexes the UTXO set of the blockchain.
             Package::Block { addr_from, block } => {
+                // Fix 3: Cancel any in-progress mining before processing the received block
+                crate::node::miner::cancel_current_mining();
+
                 let block =
                     Block::deserialize(block.as_slice()).expect("Block deserialization error");
+
+                // Check if this block is NEW to us (not already in our database)
+                // This prevents infinite relay loops: A→B→C→B→A→...
+                let block_is_new = node_context
+                    .get_block(block.get_hash_bytes().as_slice())
+                    .await
+                    .unwrap_or(None)
+                    .is_none();
+
                 // If the block is not the best block, do nothing
                 // `add_block` will not add the block if its height is less than current tip height in the block chain.
                 node_context
@@ -65,6 +77,31 @@ pub async fn process_stream(
                     node_context.remove_from_memory_pool(tx.clone()).await;
                 }
 
+                // BLOCK RELAY: Forward NEW blocks to all peers except the sender.
+                // Only relay if the block was new to us — prevents infinite relay loops.
+                // Without relay, blocks only travel one hop from the miner.
+                // In a linear topology (1→2→3→4→5→6→7), a block mined by Node 4
+                // would only reach Nodes 3 and 5 without relay.
+                if block_is_new {
+                    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
+                    let nodes = GLOBAL_NODES.get_nodes().expect("Global nodes get error");
+                    let block_hash_for_relay = block.get_hash_bytes();
+                    for node in nodes.iter() {
+                        let node_addr = node.get_addr();
+                        // Don't relay back to sender or to ourselves
+                        if node_addr != addr_from && node_addr != my_node_addr {
+                            let hash_clone = block_hash_for_relay.clone();
+                            tokio::spawn(async move {
+                                send_inv(&node_addr, OpType::Block, &[hash_clone]).await;
+                            });
+                        }
+                    }
+
+                    // Note: blocks on different branches at lower heights are stored
+                    // in the DB (by add_block's Sled transaction) and available for
+                    // future reorganizations when higher blocks on that branch arrive.
+                }
+
                 // The add_block() method already handles UTXO updates internally through the reorganization process.
                 // Calling update_utxo_set() here would cause double UTXO updates, leading to multiple SUBSIDY rewards.
                 // This was the root cause of the consensus mechanism allowing all nodes to keep their SUBSIDY.
@@ -72,10 +109,10 @@ pub async fn process_stream(
                 let removed_block_hash = GLOBAL_BLOCKS_IN_TRANSIT
                     .remove(added_block_hash.as_ref())
                     .expect("Block removal error");
-                if removed_block_hash.is_some() {
+                if let Some(removed_block_hash) = removed_block_hash {
                     info!(
                         "Removed block {:?} FROM GLOBAL_BLOCKS_IN_TRANSIT",
-                        removed_block_hash.expect("Block removal error").as_slice()
+                        removed_block_hash.as_slice()
                     );
                 }
 
@@ -359,7 +396,7 @@ pub async fn process_stream(
                         .get_balance(&address_valid)
                         .await
                         .expect("UTXO set get balance error");
-                    debug!("Balance of {}: {}", addr_from, balance);
+                    info!("Balance of {}: {}", addr_from, balance);
                 }
                 AdminNodeQueryType::GetAllTransactions => {
                     let transactions_summary = node_context
@@ -432,7 +469,7 @@ pub async fn process_stream(
                         .get_blockchain_height()
                         .await
                         .expect("Blockchain read error");
-                    trace!("Block height: {}", height);
+                    info!("Block height: {}", height);
                 }
                 AdminNodeQueryType::MineEmptyBlock => {
                     if GLOBAL_CONFIG.is_miner() {

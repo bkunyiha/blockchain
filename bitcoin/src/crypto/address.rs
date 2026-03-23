@@ -256,7 +256,7 @@ mod tests {
     #[test]
     fn test_base58_roundtrip_random_data() {
         // Test roundtrip with random data
-        use rand::Rng;
+        use rand::RngExt;
         let mut rng = rand::rng();
 
         for _ in 0..100 {

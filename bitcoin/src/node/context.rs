@@ -1028,7 +1028,7 @@ impl NodeContext {
         if should_trigger_mining() {
             // Get mining address from config
             if let Some(mining_address) = GLOBAL_CONFIG.get_mining_addr() {
-                match prepare_mining_utxo(&mining_address) {
+                match prepare_mining_utxo(&mining_address, &self.blockchain).await {
                     Ok(txs) => {
                         if !txs.is_empty() {
                             process_mine_block(txs, &self.blockchain).await.map(|_| ())
