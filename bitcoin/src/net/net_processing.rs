@@ -109,10 +109,10 @@ pub async fn process_stream(
                 let removed_block_hash = GLOBAL_BLOCKS_IN_TRANSIT
                     .remove(added_block_hash.as_ref())
                     .expect("Block removal error");
-                if removed_block_hash.is_some() {
+                if let Some(removed_block_hash) = removed_block_hash {
                     info!(
                         "Removed block {:?} FROM GLOBAL_BLOCKS_IN_TRANSIT",
-                        removed_block_hash.expect("Block removal error").as_slice()
+                        removed_block_hash.as_slice()
                     );
                 }
 

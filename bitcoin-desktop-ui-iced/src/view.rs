@@ -728,13 +728,12 @@ fn view_wallet<'a>(app: &'a AdminApp) -> Element<'a, Message> {
                 button("Create Wallet").on_press(Message::CreateWalletAdmin),
             ]
             .spacing(10),
-            if app.created_wallet_address.is_some() {
+            if let Some(created_wallet_address) = &app.created_wallet_address {
                 column![
                     row![
                         text("Created Wallet Address:").size(12),
-                        button("📋 Copy").on_press(Message::CopyToClipboard(
-                            app.created_wallet_address.as_ref().unwrap().clone()
-                        )),
+                        button("📋 Copy")
+                            .on_press(Message::CopyToClipboard(created_wallet_address.clone())),
                     ]
                     .spacing(8),
                     scrollable(

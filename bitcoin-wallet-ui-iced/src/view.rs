@@ -693,7 +693,7 @@ fn create_wallet_section<'a>(app: &'a WalletApp) -> Element<'a, Message> {
             })
             .width(iced::Length::Fill),
             // Show created wallet address if one was just created
-            if app.new_address.is_some() {
+            if let Some(new_address) = &app.new_address {
                 let address_display: Element<Message> = container(
                     column![
                         row![
@@ -703,9 +703,7 @@ fn create_wallet_section<'a>(app: &'a WalletApp) -> Element<'a, Message> {
                                 }
                             }),
                             button("📋 Copy")
-                                .on_press(Message::CopyToClipboard(
-                                    app.new_address.as_ref().unwrap().clone()
-                                ))
+                                .on_press(Message::CopyToClipboard(new_address.clone()))
                                 .style(|_theme: &iced::Theme, _status| {
                                     iced::widget::button::Style {
                                         background: Some(iced::Background::Color(iced::Color {
@@ -1275,14 +1273,12 @@ fn send_section<'a>(app: &'a WalletApp) -> Element<'a, Message> {
         ]
         .spacing(12),
         // Transaction ID display
-        if app.last_txid.is_some() {
+        if let Some(last_txid) = &app.last_txid {
             column![
                 row![
                     text("Transaction ID:").size(14),
                     button("📋 Copy")
-                        .on_press(Message::CopyToClipboard(
-                            app.last_txid.as_ref().unwrap().clone()
-                        ))
+                        .on_press(Message::CopyToClipboard(last_txid.clone()))
                         .style(|_theme: &iced::Theme, _status| {
                             iced::widget::button::Style {
                                 background: Some(iced::Background::Color(iced::Color {

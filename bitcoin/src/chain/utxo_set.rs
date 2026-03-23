@@ -272,7 +272,7 @@ impl UTXOSet {
         // Fix 5: Process transactions in REVERSE order (newest first) to correctly
         // handle intra-block dependencies where a later tx spends an earlier tx's output
         let transactions = block.get_transactions().await?;
-        let reversed: Vec<_> = transactions.into_iter().rev().collect();
+        let reversed: Vec<_> = transactions.iter().rev().collect();
 
         for curr_block_tx in reversed {
             // Step 1: Remove this transaction's outputs from UTXO set

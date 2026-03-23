@@ -770,7 +770,7 @@ pub async fn rollback_block(&self, block: &Block) -> Result<()> {
     // handle intra-block dependencies where a later tx spends an earlier
     // transaction’s output
     let transactions = block.get_transactions().await?;
-    let reversed: Vec<_> = transactions.into_iter().rev().collect();
+    let reversed: Vec<_> = transactions.iter().rev().collect();
 
     for tx in reversed {
         // Step 1: Remove this transaction’s outputs from UTXO set
