@@ -1,0 +1,30 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{Ordering}\PYG{p}{::}\PYG{n}{Equal}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}pre\PYGZus{}block\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{current\PYGZus{}tip}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{current\PYGZus{}work}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{get\PYGZus{}chain\PYGZus{}work}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{current\PYGZus{}tip}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{// ... (ensure block in DB for traversal)}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{new\PYGZus{}work}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{get\PYGZus{}chain\PYGZus{}work}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{new\PYGZus{}work}\PYG{p}{.}\PYG{n}{cmp}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{current\PYGZus{}work}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{Ordering}\PYG{p}{::}\PYG{n}{Greater}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{reorganize\PYGZus{}chain}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{Ordering}\PYG{p}{::}\PYG{n}{Equal}\PYG{+w}{ }\PYG{k}{if}\PYG{+w}{ }\PYG{n+nb+bp}{self}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{accept\PYGZus{}new\PYGZus{}block\PYGZus{}tie\PYGZus{}break}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{new\PYGZus{}block}\PYG{p}{,}
+\PYG{+w}{                }\PYG{o}{\PYGZam{}}\PYG{n}{current\PYGZus{}tip}
+\PYG{+w}{            }\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{reorganize\PYGZus{}chain}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{c+cm}{/*}\PYG{c+cm}{ reject or clean up }\PYG{c+cm}{*/}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

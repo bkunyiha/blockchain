@@ -1,0 +1,448 @@
+% ══════════════════════════════════════════════════════════════════════════════
+%  Chapter 17: Desktop Admin Interface (Tauri)
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Desktop Admin Interface (Tauri)}
+\label{ch:desktop-tauri}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Build the same admin functionality using Tauri 2 with a Rust backend and React frontend
+  \item Implement IPC commands that bridge Rust and TypeScript across the process boundary
+  \item Compare the Tauri architecture with the Iced MVU approach from the previous chapter
+  \item Use Zustand for state management and React Query for data fetching in the frontend
+\end{itemize}
+\end{learnbox}
+
+\lettrine{T}{auri} is a \index{framework}framework for building \index{desktop application}desktop applications that pair a \index{Rust!backend}Rust backend with a \index{web-technology}web-technology \index{frontend}frontend (HTML/CSS/JS). Unlike \index{Electron}Electron, \index{Tauri}Tauri does not bundle Chromium---it uses the operating system's native \index{webview}webview, resulting in much smaller \index{binary}binaries (typically 5--24 MB vs. 150+ MB). The \index{Rust!backend}Rust side exposes \emph{\index{command}commands} via \code{\#[\index{tauri::command}tauri::command]}, which the \index{frontend}frontend calls through an \code{\index{invoke}invoke()} function over an \index{IPC}IPC bridge. The result is a two-language \index{architecture}architecture: \index{Rust!backend}Rust handles business \index{logic}logic and \index{system}system access, while \index{React}React handles the \index{UI}UI.
+
+\begin{notebox}[Architectural Comparison]
+This chapter builds the same admin interface as Chapter~\ref{ch:desktop-iced}, but with Tauri 2---a Rust backend connected to a React/TypeScript frontend via IPC. If you read Chapter~\ref{ch:desktop-iced} first, you will see exactly where the architectures diverge: state management, rendering, and the boundary between business logic and UI.
+\end{notebox}
+
+This chapter explains the \code{\index{bitcoin-desktop-ui-tauri}bitcoin-desktop-ui-tauri} \index{Cargo!crate}crate as a \index{Rust!developer}Rust developer reads it: \textbf{how a \index{Tauri}Tauri 2 app bridges a \index{Rust!backend}Rust backend to a \index{React}React/\index{TypeScript}TypeScript \index{frontend}frontend}, \textbf{how \index{command}commands flow across the \index{IPC}IPC boundary}, and \textbf{how the \index{frontend}frontend calls our \index{Bitcoin}Bitcoin \index{implementation}implementation's \index{admin dashboard}admin API} through that bridge.
+
+\section{What This UI Is (In One Sentence)}
+\label{sec:ch17-oneline}
+
+The \index{Tauri}Tauri \index{desktop application}desktop \index{admin dashboard}admin UI is a \textbf{two-language \index{desktop application}desktop \index{application}application}: a \index{Rust!backend}Rust \index{backend}backend exposes 22 \code{\#[\index{tauri::command}tauri::command]} handlers that wrap our \code{\index{bitcoin-api}bitcoin-api} \index{Cargo!crate}crate, while a \index{React}React/\index{TypeScript}TypeScript \index{frontend}frontend calls those handlers through \index{Tauri}Tauri's \index{IPC}IPC bridge using \code{\index{invoke}invoke()}.
+
+The Tauri desktop admin UI consists of: \code{main} (Tauri app setup, state management, command registration), \code{BitcoinApiService::*} (service layer wrapping \code{AdminClient} HTTP calls), \code{commands::*} (22 Tauri command handlers across 6 modules), \code{commands.ts} \(\to\) \code{invoke()} (TypeScript-to-Rust bridge), and React pages (18 views), components (14 shared), hooks (2 custom).
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Why Tauri? (Iced vs. Tauri --- An Architectural Comparison)}
+\label{sec:ch17-comparison}
+
+In Chapter~\ref{ch:desktop-iced} we built the same \index{admin dashboard}admin \index{dashboard}dashboard with \index{Iced}Iced---a pure-\index{Rust!backend}Rust, single-language \index{MVU}MVU \index{framework}framework. Chapter~\ref{ch:desktop-tauri} builds the identical \textbf{\index{feature}feature set} (\index{blockchain}blockchain info, \index{wallet}wallet \index{management}management, \index{mining}mining controls, \index{health check}health checks) with \index{Tauri}Tauri, which gives us a \textbf{\index{Rust!backend}Rust \index{backend}backend paired with a \index{web}web \index{frontend}frontend}. Both approaches have real \index{trade-off}trade-offs:
+
+\begin{table}[htbp]
+\caption{Iced vs. Tauri: Architectural comparison}
+\label{tab:iced-vs-tauri}
+\centering\small
+\begin{tabularx}{0.95\textwidth}{lXX}
+\toprule
+\textbf{Aspect} & \textbf{Iced (Chapter~\ref{ch:desktop-iced})} & \textbf{Tauri (this chapter)} \\
+\midrule
+Languages & Rust only & Rust backend \texttt{+} TypeScript/React frontend \\
+UI paradigm & MVU (Model-View-Update) & Component-based (React) with IPC bridge \\
+State management & Single \code{AdminApp} struct & Zustand (client) \texttt{+} React Query (server) \\
+Async boundary & Manual Tokio runtime in background thread (\code{spawn\_on\_tokio}) & Tauri handles async natively---\code{\#[tauri::command]} functions are async \\
+Event vocabulary & \code{Message} enum with \(\sim\)50 variants & React Router routes \texttt{+} React Query cache keys \\
+Styling & Iced built-in widgets (programmatic) & Tailwind CSS (declarative) \\
+Shared code & \code{bitcoin-api} crate (Rust) & \code{bitcoin-api} crate (Rust)---same crate, same API calls \\
+Binary size & Smaller (pure Rust) & Larger (embeds Chromium webview) \\
+Ecosystem & Iced widgets only & Full npm ecosystem (React Query, Zod, Lucide, etc.) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The key point: both apps call exactly the same \code{AdminClient} methods from the \code{bitcoin-api} crate. The difference is where the UI layer lives (Rust vs. browser) and how events cross the boundary (Iced \code{Message} vs. Tauri \code{invoke}).
+
+\begin{infobox}[Tip]
+Both the Iced admin (Chapter~\ref{ch:desktop-iced}) and this Tauri admin consume the same \code{bitcoin-api} crate for blockchain communication. This means the backend API is framework-agnostic---you could add a third frontend without changing any backend code.
+\end{infobox}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Diagram: Tauri IPC Architecture}
+\label{sec:ch17-ipc-arch}
+
+Data flows from the React frontend through IPC to the Rust backend and then to the blockchain API server:
+
+\begin{minted}[fontsize=\footnotesize]{text}
++-------------------------------------------------------------------------+
+|  TAURI APPLICATION                                                      |
+|                                                                         |
+|  +--------------------------+    IPC     +----------------------------+ |
+|  |   React Frontend         |  invoke()  |   Rust Backend             | |
+|  |   (WebView / Chromium)   | -------->  |   (src-tauri/)             | |
+|  |                          |            |                            | |
+|  |  Page Component          |            |  #[tauri::command]         | |
+|  |    +- useQuery()         |            |    +- reads State<RwLock>  | |
+|  |       +- commands.ts     |            |       +- BitcoinApiService | |
+|  |          +- invoke(name) |  <-------- |          +- AdminClient    | |
+|  |             {payload}    |  Result<V> |             +- HTTP call   | |
+|  +--------------------------+            +-------------+--------------+ |
+|                                                        |                |
++--------------------------------------------------------|----------------+
+                                                         | HTTP
+                                                         v
+                                              +---------------------+
+                                              |  Bitcoin API Server  |
+                                              |  (Chapter 24)        |
+                                              |  :8080               |
+                                              +---------------------+
+\end{minted}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{File Organization}
+\label{sec:ch17-files}
+
+The Tauri application is split between two directories:
+
+\begin{itemize}
+  \item \textbf{Rust backend} (\code{src-tauri/}):
+  \begin{itemize}
+    \item \code{src/main.rs} (app setup, state, command registration)
+    \item \code{src/api/service.rs} (service layer wrapping \code{AdminClient})
+    \item \code{src/commands/} (22 handlers across 6 modules)
+  \end{itemize}
+  \item \textbf{React frontend} (\code{src/}):
+  \begin{itemize}
+    \item \code{src/commands.ts} (IPC bridge via \code{invoke()})
+    \item \code{src/pages/} (18 views)
+    \item \code{src/components/} (14 shared components)
+    \item \code{src/hooks/} (custom hooks for queries)
+  \end{itemize}
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Rust Backend Architecture}
+\label{sec:ch17-rust-backend}
+
+The Rust backend follows a layered architecture:
+
+\begin{enumerate}
+  \item \textbf{Tauri state} (\code{main.rs}): Global state managed via \code{State<RwLock<AppState>>}.
+  \item \textbf{Service layer} (\code{api/service.rs}): \code{BitcoinApiService} wraps \code{AdminClient} HTTP calls with async/await.
+  \item \textbf{Command handlers} (\code{commands/*.rs}): 22 \code{\#[tauri::command]} functions that call the service and return results over IPC.
+\end{enumerate}
+
+\begin{listing}[htbp]
+\caption{Main Tauri app setup (\code{src-tauri/src/main.rs})}
+\label{lst:ch17-main}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use tauri::State;
+use std::sync::RwLock;
+
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+pub struct AppState {
+    pub base_url: String,
+    pub api_key: String,
+}
+
+fn main() {
+    tauri::Builder::default()
+        // Initialize AppState with default values
+        .manage(AppState {
+            base_url: "http://127.0.0.1:8080".to_string(),
+            api_key: std::env::var("BITCOIN_API_ADMIN_KEY")
+                .unwrap_or_else(|_| "admin-secret".to_string()),
+        })
+        // Register all command handlers
+        .invoke_handler(tauri::generate_handler![
+            cmd_get_blockchain_info,
+            cmd_get_latest_blocks,
+            cmd_get_blocks,
+            cmd_get_block_by_hash,
+            cmd_get_mining_info,
+            cmd_generate_to_address,
+            cmd_get_health,
+            cmd_get_liveness,
+            cmd_get_readiness,
+            cmd_get_mempool,
+            cmd_get_mempool_transaction,
+            cmd_get_transactions,
+            cmd_get_address_transactions,
+            cmd_create_wallet_admin,
+            cmd_get_addresses_admin,
+            cmd_get_wallet_info_admin,
+            cmd_get_balance_admin,
+            cmd_send_transaction_admin,
+            cmd_set_base_url,
+            cmd_set_api_key,
+            cmd_get_config,
+        ])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}
+\end{minted}
+\end{listing}
+
+The state is accessed in command handlers via the \code{State<AppState>} parameter injected by Tauri.
+
+\begin{listing}[htbp]
+\caption{Service layer example (\code{src-tauri/src/api/service.rs})}
+\label{lst:ch17-service}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use bitcoin_api::{AdminClient, ApiConfig, ApiResponse, BlockchainInfo};
+use serde_json::Value;
+
+pub struct BitcoinApiService;
+
+impl BitcoinApiService {
+    pub async fn get_blockchain_info(
+        base_url: String,
+        api_key: String,
+    ) -> Result<ApiResponse<BlockchainInfo>, String> {
+        let config = ApiConfig {
+            base_url,
+            api_key: Some(api_key),
+        };
+        let client = AdminClient::new(config)
+            .map_err(|e| e.to_string())?;
+        client
+            .get_blockchain_info()
+            .await
+            .map_err(|e| e.to_string())
+    }
+
+    pub async fn generate_to_address(
+        base_url: String,
+        api_key: String,
+        address: String,
+        nblocks: u32,
+        maxtries: Option<u32>,
+    ) -> Result<ApiResponse<Value>, String> {
+        let config = ApiConfig {
+            base_url,
+            api_key: Some(api_key),
+        };
+        let client = AdminClient::new(config)
+            .map_err(|e| e.to_string())?;
+        client
+            .generate_to_address(&address, nblocks, maxtries)
+            .await
+            .map_err(|e| e.to_string())
+    }
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{Command handler example (\code{src-tauri/src/commands/blockchain.rs})}
+\label{lst:ch17-command}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use crate::api::service::BitcoinApiService;
+use tauri::State;
+use serde_json::Value;
+
+use crate::AppState;
+
+#[tauri::command]
+pub async fn cmd_get_blockchain_info(
+    state: State<'_, AppState>,
+) -> Result<Value, String> {
+    let response = BitcoinApiService::get_blockchain_info(
+        state.base_url.clone(),
+        state.api_key.clone(),
+    )
+    .await?;
+
+    // Return the entire API response as JSON
+    serde_json::to_value(&response)
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn cmd_generate_to_address(
+    state: State<'_, AppState>,
+    address: String,
+    nblocks: u32,
+    maxtries: Option<u32>,
+) -> Result<Value, String> {
+    let response = BitcoinApiService::generate_to_address(
+        state.base_url.clone(),
+        state.api_key.clone(),
+        address,
+        nblocks,
+        maxtries,
+    )
+    .await?;
+
+    serde_json::to_value(&response)
+        .map_err(|e| e.to_string())
+}
+\end{minted}
+\end{listing}
+
+\textbf{Walkthrough: the command handler pattern:}
+
+Every command follows the same structure:
+
+\begin{enumerate}
+  \item Receive parameters from the IPC invocation.
+  \item Call a corresponding \code{BitcoinApiService} method (which calls the bitcoin-api HTTP API).
+  \item Return the result as JSON over IPC.
+\end{enumerate}
+
+This keeps the Rust side simple: it's a thin bridge between TypeScript and \code{AdminClient}.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{TypeScript-to-Rust Bridge}
+\label{sec:ch17-commands-ts}
+
+\begin{listing}[H]
+\caption{IPC command wrappers (\code{src/commands.ts})}
+\label{lst:ch17-commands-ts}
+\begin{minted}[fontsize=\footnotesize]{typescript}
+import { invoke } from '@tauri-apps/api/core';
+import { BlockchainInfo, BlockSummary, ApiResponse } from './types';
+
+export async function getBlockchainInfo(): Promise<ApiResponse<BlockchainInfo>> {
+    return invoke<ApiResponse<BlockchainInfo>>('cmd_get_blockchain_info');
+}
+
+export async function getLatestBlocks(): Promise<ApiResponse<BlockSummary[]>> {
+    return invoke<ApiResponse<BlockSummary[]>>('cmd_get_latest_blocks');
+}
+
+export async function getBlocks(): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_blocks');
+}
+
+export async function getBlockByHash(hash: string): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_block_by_hash', { hash });
+}
+
+export async function getMiningInfo(): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_mining_info');
+}
+
+export async function generateToAddress(
+    address: string,
+    nblocks: number,
+    maxtries?: number,
+): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_generate_to_address', {
+        address,
+        nblocks,
+        maxtries,
+    });
+}
+
+export async function getHealth(): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_health');
+}
+
+export async function getLiveness(): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_liveness');
+}
+
+export async function getReadiness(): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_readiness');
+}
+
+export async function getMempool(): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_mempool');
+}
+
+export async function getMempoolTransaction(txid: string): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_mempool_transaction', { txid });
+}
+
+export async function getTransactions(): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_transactions');
+}
+
+export async function getAddressTransactions(address: string): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_address_transactions', { address });
+}
+
+export async function createWalletAdmin(label?: string): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_create_wallet_admin', { label });
+}
+
+export async function getAddressesAdmin(): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_addresses_admin');
+}
+
+export async function getWalletInfoAdmin(address: string): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_wallet_info_admin', { address });
+}
+
+export async function getBalanceAdmin(address: string): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_get_balance_admin', { address });
+}
+
+export async function sendTransactionAdmin(
+    from: string,
+    to: string,
+    amount: number,
+): Promise<ApiResponse<any>> {
+    return invoke<ApiResponse<any>>('cmd_send_transaction_admin', { from, to, amount });
+}
+
+export async function setBaseUrl(url: string): Promise<void> {
+    return invoke<void>('cmd_set_base_url', { url });
+}
+
+export async function setApiKey(key: string): Promise<void> {
+    return invoke<void>('cmd_set_api_key', { key });
+}
+
+export async function getConfig(): Promise<{ baseUrl: string; apiKey: string }> {
+    return invoke<{ baseUrl: string; apiKey: string }>('cmd_get_config');
+}
+\end{minted}
+\end{listing}
+
+\textbf{Walkthrough: \code{invoke()} is the IPC bridge:}
+
+Each TypeScript function calls \code{invoke(command\_name, payload?)} which:
+
+\begin{enumerate}
+  \item Serializes the arguments to JSON.
+  \item Sends them across the IPC boundary to the Rust backend.
+  \item Waits for the command handler to finish.
+  \item Deserializes and returns the result.
+\end{enumerate}
+
+The pattern is clean: no manual message queues or event systems---just async/await.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{React Frontend Infrastructure}
+\label{sec:ch17-frontend-infra}
+
+The frontend uses React Query (v5) for async state management:
+
+\begin{listing}[htbp]
+\caption{React Query hooks (\code{src/hooks/useBlockchain.ts})}
+\label{lst:ch17-hooks}
+\begin{minted}[fontsize=\footnotesize]{typescript}
+import { useQuery } from '@tanstack/react-query';
+import * as commands from '../commands';
+
+export function useBlockchainInfo() {
+    return useQuery({
+        queryKey: ['blockchainInfo'],
+        queryFn: () => commands.getBlockchainInfo(),
+        staleTime: 10000, // 10 seconds
+    });
+}
+
+export function useLatestBlocks() {
+    return useQuery({
+        queryKey: ['latestBlocks'],
+        queryFn: () => commands.getLatestBlocks(),
+        staleTime: 10000,
+    });
+}
+
+export function useMiningInfo() {
+    return useQuery({
+        queryKey: ['miningInfo'],
+        queryFn: () => commands.getMiningInfo(),
+        staleTime: 30000, // 30 seconds
+    });
+}
+\end{minted}
+\end{listing}

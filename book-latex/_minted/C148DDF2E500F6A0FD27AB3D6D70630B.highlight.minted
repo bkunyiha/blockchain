@@ -1,0 +1,37 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(OpenApi)}\PYG{c+cp}{]}
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{openapi(}
+\PYG{c+cp}{    paths(}
+\PYG{c+cp}{        health::health\PYGZus{}check,}
+\PYG{c+cp}{        blockchain::get\PYGZus{}blockchain\PYGZus{}info,}
+\PYG{c+cp}{        wallet::create\PYGZus{}wallet,}
+\PYG{c+cp}{        // ... all endpoints}
+\PYG{c+cp}{    ),}
+\PYG{c+cp}{    components(}
+\PYG{c+cp}{        schemas(}
+\PYG{c+cp}{            BlockchainInfoResponse,}
+\PYG{c+cp}{            WalletResponse,}
+\PYG{c+cp}{            // ... all models}
+\PYG{c+cp}{        )}
+\PYG{c+cp}{    ),}
+\PYG{c+cp}{    tags(}
+\PYG{c+cp}{        (name = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Health}\PYG{l+s}{\PYGZdq{}}\PYG{c+cp}{,}
+\PYG{c+cp}{         description = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Health check endpoints}\PYG{l+s}{\PYGZdq{}}\PYG{c+cp}{),}
+\PYG{c+cp}{        (name = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Blockchain}\PYG{l+s}{\PYGZdq{}}\PYG{c+cp}{,}
+\PYG{c+cp}{         description = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Blockchain data and information}\PYG{l+s}{\PYGZdq{}}\PYG{c+cp}{),}
+\PYG{c+cp}{        // ... all tags}
+\PYG{c+cp}{    ),}
+\PYG{c+cp}{    info(}
+\PYG{c+cp}{        title = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Blockchain API}\PYG{l+s}{\PYGZdq{}}\PYG{c+cp}{,}
+\PYG{c+cp}{        version = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{0.1.0}\PYG{l+s}{\PYGZdq{}}\PYG{c+cp}{,}
+\PYG{c+cp}{        description = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{A comprehensive blockchain API}\PYG{l+s}{\PYGZdq{}}
+\PYG{c+cp}{    ),}
+\PYG{c+cp}{    servers(}
+\PYG{c+cp}{        (}
+\PYG{c+cp}{            url = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{http://localhost:8080}\PYG{l+s}{\PYGZdq{}}\PYG{c+cp}{,}
+\PYG{c+cp}{            description = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Local development server}\PYG{l+s}{\PYGZdq{}}
+\PYG{c+cp}{        )}
+\PYG{c+cp}{    )}
+\PYG{c+cp}{)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{ApiDoc}\PYG{p}{;}
+\end{MintedVerbatim}

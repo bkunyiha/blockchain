@@ -1,0 +1,45 @@
+\babel@toc {english}{}\relax 
+\addvspace {10pt}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {2.1}{\ignorespaces System Architecture: Layered Stack from Primitives to User Interfaces\relax }}{11}{figure.caption.5}%
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {10.1}{\ignorespaces Blockchain Domain Model: Chain History and Derived UTXO State\relax }}{148}{figure.caption.214}%
+\addvspace {10pt}
+\contentsline {figure}{\numberline {11.1}{\ignorespaces State Management Architecture: Web API Through Node Context to Blockchain Service\relax }}{156}{figure.caption.218}%
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {14.1}{\ignorespaces Transaction Lifecycle: From Wallet to Blockchain Confirmation\relax }}{204}{figure.caption.225}%
+\addvspace {10pt}
+\contentsline {figure}{\numberline {15.1}{\ignorespaces Block Lifecycle: From Pending Transactions to Blockchain Acceptance\relax }}{226}{figure.caption.230}%
+\addvspace {10pt}
+\contentsline {figure}{\numberline {16.1}{\ignorespaces Consensus Acceptance Boundary: Validate Then Connect\relax }}{247}{figure.caption.246}%
+\addvspace {10pt}
+\contentsline {figure}{\numberline {17.1}{\ignorespaces Node Orchestration: Event Routing Through Web API and Network Layers\relax }}{267}{figure.caption.257}%
+\addvspace {10pt}
+\contentsline {figure}{\numberline {18.1}{\ignorespaces End-to-End Flow: Transaction from Web API Node to Miner Block Creation\relax }}{289}{figure.caption.269}%
+\addvspace {10pt}
+\contentsline {figure}{\numberline {19.1}{\ignorespaces Block Validation Pipeline: Parse, PoW, Signatures, and UTXO Checks\relax }}{311}{figure.caption.271}%
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {31.1}{\ignorespaces Docker Compose Deployment Topology: Multi-Node Network with Storage Volumes\relax }}{576}{figure.caption.447}%
+\addvspace {10pt}
+\contentsline {figure}{\numberline {32.1}{\ignorespaces Kubernetes Deployment Architecture: StatefulSets, Services, and Configuration\relax }}{597}{figure.caption.491}%
+\addvspace {10pt}

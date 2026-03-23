@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} All miner logs}
+kubectl logs \PYGZhy{}n blockchain \PYGZhy{}l \PYG{n+nv}{app}\PYG{o}{=}miner \PYGZhy{}f
+
+\PYG{c+c1}{\PYGZsh{} Specific pod}
+kubectl logs \PYGZhy{}n blockchain miner\PYGZhy{}0 \PYGZhy{}f
+
+\PYG{c+c1}{\PYGZsh{} Show previous container logs (for crashes)}
+kubectl logs \PYGZhy{}n blockchain miner\PYGZhy{}0 \PYGZhy{}\PYGZhy{}previous
+\end{Verbatim}

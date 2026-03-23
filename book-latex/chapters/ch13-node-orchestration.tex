@@ -1,0 +1,624 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 13: Node Orchestration --- Coordinating the Runtime
+% ══════════════════════════════════════════════════════════════
+\chapter{Node Orchestration}
+\label{ch:node-orchestration}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Coordinate blockchain state, mempool, network, mining, and validation through the \code{NodeContext} API
+  \item Understand how the node module provides a unified interface over multiple subsystems
+  \item Trace how an incoming request flows through the node context to the appropriate handler
+  \item Explain why centralized orchestration simplifies the interaction between blockchain components
+\end{itemize}
+\end{learnbox}
+
+\lettrine{A}{t} \index{runtime}runtime, several \index{subsystem}subsystems must work together:
+
+\begin{itemize}
+  \item \textbf{\index{network!layer}Network} receives bytes and produces typed \index{message}messages (\code{\index{Package}Package})
+  \item \textbf{\index{NodeContext}NodeContext} decides what \index{subsystem}subsystem should handle the \index{message}message (\index{mempool}mempool, \index{chainstate}chainstate, \index{mining}mining)
+  \item \textbf{\index{chainstate}Chainstate} persists \index{block}blocks and updates the \index{canonical}canonical \index{tip}tip + \index{UTXO}UTXO
+  \item \textbf{\index{mempool}Mempool} stores \index{unconfirmed transaction}unconfirmed \index{transaction}transactions and marks \index{output}outputs as ``in \index{mempool}mempool''
+  \item \textbf{\index{miner}Mining} turns \index{mempool}mempool contents into a \index{block}block and relays the new \index{tip}tip
+  \item \textbf{\index{peer}Peers} is the \index{node}node's \index{peer}peer set used for relay
+\end{itemize}
+
+This chapter explains the \code{\index{Rust!module}bitcoin/src/node} \index{Rust!module}module as a \index{Rust!developer}Rust implementer reads it: as a \index{coordination}coordination layer that turns ``\index{network!message}network \index{message}messages and API calls'' into ``\index{chainstate}chainstate updates, \index{mempool}mempool updates, \index{mining}mining, and \index{peer!relay}peer relay''.
+
+% ──────────────────────────────────────────────────────────────
+\section{What ``Node Orchestration'' Means}
+\label{sec:ch13-what-means}
+
+The \index{runtime}runtime flow is:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+TCP -> Package -> NodeContext -> (mempool | add\_block | mining | relay)
+\end{minted}
+
+The key \index{entry point}entry points are:
+
+\begin{itemize}
+  \item \code{\index{NodeContext!process\_transaction}NodeContext::process\_transaction} (\index{mempool}mempool admission)
+  \item \code{\index{NodeContext!add\_block}NodeContext::add\_block} (\index{chain}chain extension from a \index{peer}peer)
+  \item \code{\index{NodeContext!mine\_empty\_block}NodeContext::mine\_empty\_block} (local \index{mining}mining trigger)
+\end{itemize}
+
+These delegate to:
+
+\begin{itemize}
+  \item \code{\index{txmempool}txmempool::\{add\_to\_memory\_pool, remove\_from\_memory\_pool\}} for \index{mempool}mempool \index{state}state
+  \item \code{\index{miner}miner::\{should\_trigger\_mining, process\_mine\_block, broadcast\_new\_block\}} for the \index{mining}mining \index{pipeline}pipeline
+\end{itemize}
+
+\begin{warnbox}[Critical Role]
+\code{\index{NodeContext}NodeContext} is the single \index{entry point}entry point for all \index{blockchain}blockchain operations. Every user-facing \index{interface}interface --- the \index{web API}web API, the desktop \index{admin dashboard}admin UIs, and the \index{wallet}wallet applications --- communicates with the \index{blockchain}blockchain exclusively through \code{\index{NodeContext}NodeContext}. Understanding this \index{Rust!module}module is essential for understanding how the \index{system}system's components fit together.
+\end{warnbox}
+
+% ──────────────────────────────────────────────────────────────
+\section{The Façade: \texttt{NodeContext} is the Coordinator}
+\label{sec:ch13-facade}
+
+\code{NodeContext} is the central façade used by other layers (network server, web/API) to interact with the node. It owns a \code{BlockchainService} handle and reaches out to:
+
+\begin{itemize}
+  \item the global mempool (\code{GLOBAL\_MEMORY\_POOL}) via \code{txmempool}
+  \item the peer set (\code{GLOBAL\_NODES}) via \code{peers}
+  \item the network send primitives (\code{send\_inv}) to announce inventory
+  \item the mining pipeline (\code{miner}) to build blocks and broadcast new tips
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\subsection{Transaction Ingestion: Accept $\to$ Relay $\to$ Maybe Mine}
+\label{sec:ch13-transaction-ingestion}
+
+This is the path you will trace most often when debugging ``why didn't my transaction propagate / get mined?''
+
+The orchestration call graph for transactions:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+Inbound tx bytes
+  -> (Network) Package::Tx
+  -> NodeContext::process_transaction
+      -> txmempool::add_to_memory_pool
+      -> spawn background task:
+         NodeContext::submit_transaction_for_mining
+             -> (if central) broadcast INV(txid) to peers
+             -> (if mining threshold) miner::process_mine_block
+\end{minted}
+
+\begin{listing}[htbp]
+\caption{NodeContext initialization and transaction acceptance}
+\label{lst:ch13-nodecontext-init}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use crate::chain::{BlockchainService, UTXOSet};
+use crate::error::{BtcError, Result};
+use crate::node::miner::*;
+use crate::node::txmempool::*;
+use crate::node::GLOBAL_NODES;
+use crate::{Block, Transaction, WalletAddress};
+use std::net::SocketAddr;
+
+#[derive(Clone, Debug)]
+pub struct NodeContext {
+    blockchain: BlockchainService,  // Only owned dependency
+}
+
+impl NodeContext {
+    pub fn new(blockchain: BlockchainService) -> Self {
+        Self { blockchain }
+    }
+
+    pub async fn btc_transaction(
+        &self,
+        wlt_frm_addr: &WalletAddress,
+        wlt_to_addr: &WalletAddress,
+        amount: i32,
+    ) -> Result<String> {
+        let utxo_set = UTXOSet::new(
+            self.blockchain.clone());
+        let utxo = Transaction::new_utxo_transaction(
+            wlt_frm_addr,
+            wlt_to_addr,
+            amount,
+            &utxo_set
+        ).await?;
+        let addr_from =
+            crate::GLOBAL_CONFIG.get_node_addr();
+        self.process_transaction(&addr_from, utxo)
+            .await
+    }
+
+    pub async fn process_transaction(
+        &self,
+        addr_from: &SocketAddr,
+        utxo: Transaction,
+    ) -> Result<String> {
+        // 1) Dedupe check
+        if transaction_exists_in_pool(&utxo) {
+            return Err(BtcError
+                ::TransactionAlreadyExistsInMemoryPool(
+                    utxo.get_tx_id_hex(),
+                ));
+        }
+
+        // 2) Accept into mempool
+        // (flags outputs as "in mempool")
+        add_to_memory_pool(utxo.clone(), &self.blockchain)
+            .await?;
+
+        // 3) Fire-and-forget: broadcast + mining
+        // in background task
+        let context = self.clone();
+        let addr_copy = *addr_from;
+        let tx = utxo.clone();
+        tokio::spawn(async move {
+            let _ = context
+                .submit_transaction_for_mining(
+                    &addr_copy,
+                    tx
+                ).await;
+        });
+
+        Ok(utxo.get_tx_id_hex())
+    }
+}
+\end{minted}
+\end{listing}
+
+After accepting a transaction into the mempool, the node spawns background tasks for relay and mining decisions:
+
+\begin{listing}[htbp]
+\caption{Background relay and mining submission}
+\label{lst:ch13-submit-mining}
+\begin{minted}[fontsize=\footnotesize]{rust}
+impl NodeContext {
+    async fn submit_transaction_for_mining(
+        &self,
+        addr_from: &SocketAddr,
+        utxo: Transaction,
+    ) -> Result<()> {
+        // Background: relay to peers (if central node)
+        // and maybe trigger mining
+        let my_node_addr =
+            GLOBAL_CONFIG.get_node_addr();
+        if my_node_addr == crate::node::CENTERAL_NODE {
+            let nodes = self
+                .get_nodes_excluding_sender(addr_from)
+                .await?;
+            for node in &nodes {
+                send_inv(
+                    &node.get_addr(),
+                    OpType::Tx,
+                    &[utxo.get_id_bytes()],
+                )
+                .await;
+            }
+        }
+
+        // Mining: trigger if mempool reaches threshold
+        if should_trigger_mining() {
+            if let Some(addr) =
+                GLOBAL_CONFIG.get_mining_addr() {
+                if let Ok(txs) =
+                    prepare_mining_utxo(&addr) {
+                    if !txs.is_empty() {
+                        process_mine_block(
+                            txs,
+                            &self.blockchain
+                        ).await?;
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    async fn get_nodes_excluding_sender(
+        &self,
+        addr_from: &SocketAddr,
+    ) -> Result<Vec<Node>> {
+        let nodes = GLOBAL_NODES
+            .get_nodes()?
+            .into_iter()
+            .filter(|node| {
+                let node_addr = node.get_addr();
+                node_addr != *addr_from
+                    && node_addr !=
+                    GLOBAL_CONFIG.get_node_addr()
+            })
+            .collect();
+        Ok(nodes)
+    }
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\subsection{Block Ingestion and Chain/Peer Queries}
+\label{sec:ch13-block-ingestion}
+
+This is the subset of \code{NodeContext} that the network layer and UI/API use for:
+
+\begin{itemize}
+  \item pushing blocks into chainstate (\code{add\_block})
+  \item answering sync queries (height, hashes, block lookup)
+  \item basic peer introspection (who are we connected to?)
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{NodeContext block and chain queries}
+\label{lst:ch13-block-queries}
+\begin{minted}[fontsize=\footnotesize]{rust}
+impl NodeContext {
+    pub fn get_blockchain(&self)
+        -> &BlockchainService {
+        &self.blockchain
+    }
+
+    pub async fn add_block(
+        &self,
+        block: &Block
+    ) -> Result<()> {
+        self.blockchain.add_block(block).await
+    }
+
+    pub async fn get_blockchain_height(
+        &self
+    ) -> Result<usize> {
+        self.blockchain.get_best_height().await
+    }
+
+    pub async fn get_block_hashes(
+        &self
+    ) -> Result<Vec<Vec<u8>>> {
+        self.blockchain.get_block_hashes().await
+    }
+
+    pub async fn get_block(
+        &self,
+        block_hash: &[u8]
+    ) -> Result<Option<Block>> {
+        self.blockchain.get_block(block_hash).await
+    }
+
+    pub async fn mine_empty_block(
+        &self,
+        wallet_address: &WalletAddress,
+    ) -> Result<Block> {
+        miner::mine_empty_block(
+            &self.blockchain,
+            wallet_address
+        ).await
+    }
+
+    pub fn get_peer_count(&self) -> Result<usize> {
+        use crate::node::GLOBAL_NODES;
+        let nodes = GLOBAL_NODES.get_nodes()?;
+        Ok(nodes.len())
+    }
+
+    pub fn get_peers(&self)
+        -> Result<Vec<SocketAddr>> {
+        use crate::node::GLOBAL_NODES;
+        let nodes = GLOBAL_NODES.get_nodes()?;
+        Ok(nodes.into_iter()
+            .map(|n| n.get_addr())
+            .collect())
+    }
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{The Mempool Primitives}
+\label{sec:ch13-mempool}
+
+The mempool module is deliberately small: it is a thin wrapper around \code{GLOBAL\_MEMORY\_POOL} plus a UTXO-side flag update so outputs can be marked ``in mempool''.
+
+\begin{listing}[htbp]
+\caption{Mempool helpers}
+\label{lst:ch13-mempool}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use crate::error::Result;
+use crate::node::GLOBAL_MEMORY_POOL;
+use crate::{BlockchainService, Transaction, UTXOSet};
+
+pub async fn add_to_memory_pool(
+    tx: Transaction,
+    blockchain_service: &BlockchainService,
+) -> Result<()> {
+    // Store in pool + mark outputs
+    // "in mempool" to prevent double-spend
+    GLOBAL_MEMORY_POOL.add(tx.clone())?;
+
+    let utxo_set = UTXOSet::new(
+        blockchain_service.clone());
+    utxo_set.set_global_mem_pool_flag(&tx, true)
+        .await?;
+
+    Ok(())
+}
+
+pub async fn remove_from_memory_pool(
+    tx: Transaction,
+    blockchain: &BlockchainService,
+) {
+    // Remove from pool + clear "in mempool" flags
+    let _ = GLOBAL_MEMORY_POOL.remove(tx.clone());
+    let utxo_set = UTXOSet::new(
+        blockchain.clone());
+    let _ = utxo_set
+        .set_global_mem_pool_flag(&tx, false)
+        .await;
+}
+
+pub fn transaction_exists_in_pool(
+    tx: &Transaction
+) -> bool {
+    GLOBAL_MEMORY_POOL.contains_transaction(tx)
+        .unwrap_or(false)
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Mining Pipeline}
+\label{sec:ch13-mining}
+
+Mining is triggered by \textbf{policy} (\code{should\_trigger\_mining}) and executed by \code{process\_mine\_block}. The output of mining is a new block which is then announced to peers using \code{INV(block\_hash)}.
+
+The mining trigger $\to$ mining $\to$ relay flow:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+NodeContext::submit_transaction_for_mining
+  |
+  | if should_trigger_mining()
+  v
+prepare_mining_utxo -> txs + coinbase
+  |
+  v
+process_mine_block -> blockchain.mine_block(txs)
+  |
+  | remove txs from mempool
+  v
+broadcast_new_block -> send_inv(op=Block, items=[block_hash])
+\end{minted}
+
+\begin{listing}[htbp]
+\caption{Mining trigger and block construction}
+\label{lst:ch13-mining-trigger}
+\begin{minted}[fontsize=\footnotesize]{rust}
+const TRANSACTION_THRESHOLD: usize = 3;
+
+pub fn should_trigger_mining() -> bool {
+    // Policy: mine if miner configured AND
+    // mempool size exceeds threshold
+    GLOBAL_MEMORY_POOL.len().unwrap_or(0)
+        >= TRANSACTION_THRESHOLD
+        && GLOBAL_CONFIG.is_miner()
+}
+
+pub async fn prepare_mining_utxo(
+    mining_address: &WalletAddress,
+) -> Result<Vec<Transaction>> {
+    // Snapshot mempool and validate each tx's inputs
+    // are still unspent. This prevents mining blocks
+    // with already-spent inputs when a competing block
+    // has been accepted during the race between miners.
+    let txs = GLOBAL_MEMORY_POOL.get_all()?;
+    let mut valid_txs = Vec::new();
+    for tx in txs {
+        if tx.is_coinbase() { continue; }
+        // ... (validate each input exists in UTXO tree)
+        // Stale transactions are removed from mempool
+    }
+    valid_txs.push(
+        Transaction::new_coinbase_tx(mining_address)?);
+    Ok(valid_txs)
+}
+\end{minted}
+\end{listing}
+
+Once we have a validated transaction set, \code{process\_mine\_block} performs the actual proof-of-work, clears the mempool, and announces the result to peers:
+
+\begin{listing}[htbp]
+\caption{Mining execution and broadcast}
+\label{lst:ch13-mining-exec}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn process_mine_block(
+    txs: Vec<Transaction>,
+    blockchain: &BlockchainService,
+) -> Result<Block> {
+    // Prevent concurrent mining
+    if MINING_IN_PROGRESS.compare_exchange(
+        false,
+        true,
+        Ordering::SeqCst,
+        Ordering::SeqCst
+    ).is_err() {
+        return Err("Mining already in progress".into());
+    }
+    reset_mining_cancellation();
+
+    let result = async {
+        // 1) Mine: PoW + chainstate integration
+        // (with stale-mining protection)
+        let new_block =
+            blockchain.mine_block(&txs).await?;
+
+        // CRITICAL: Do NOT cancel after block creation
+        // the block is in our chain and MUST be
+        // broadcast, or we create a permanent
+        // minority fork.
+
+        // 2) Remove confirmed txs from mempool
+        for tx in &txs {
+            remove_from_memory_pool(
+                tx.clone(),
+                blockchain
+            ).await;
+        }
+
+        // 3) Announce block hash to peers (INV-first)
+        broadcast_new_block(&new_block).await?;
+        Ok(new_block)
+    }.await;
+
+    // Always release lock
+    MINING_IN_PROGRESS.store(false, Ordering::SeqCst);
+    result
+}
+
+pub async fn broadcast_new_block(
+    block: &Block
+) -> Result<()> {
+    let my_addr = GLOBAL_CONFIG.get_node_addr();
+    let nodes = GLOBAL_NODES.get_nodes()?;
+    for node in nodes {
+        if node.get_addr() != my_addr {
+            let addr = node.get_addr();
+            let hash = block.get_hash_bytes();
+            tokio::spawn(async move {
+                send_inv(&addr, OpType::Block, &[hash])
+                    .await;
+            });
+        }
+    }
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Peer Set}
+\label{sec:ch13-peer-set}
+
+The peer set is a thread-safe wrapper around a \code{HashSet<Node>} guarded by an \code{RwLock}.
+
+\begin{listing}[htbp]
+\caption{Peer data structures}
+\label{lst:ch13-peers}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use crate::error::Result;
+use std::collections::HashSet;
+use std::net::SocketAddr;
+use std::sync::RwLock;
+
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+pub struct Node { addr: SocketAddr }
+
+impl Node {
+    fn new(addr: SocketAddr) -> Self {
+        Node { addr }
+    }
+    pub fn get_addr(&self) -> SocketAddr {
+        self.addr
+    }
+}
+
+// Thread-safe peer set: many reads, occasional writes
+pub struct Nodes {
+    inner: RwLock<HashSet<Node>>
+}
+
+impl Nodes {
+    pub fn new() -> Self {
+        Nodes {
+            inner: RwLock::new(HashSet::new())
+        }
+    }
+
+    pub fn add_node(&self, addr: SocketAddr)
+        -> Result<()> {
+        self.inner.write()?
+            .insert(Node::new(addr));
+        Ok(())
+    }
+
+    pub fn add_nodes(
+        &self,
+        nodes: HashSet<SocketAddr>
+    ) -> Result<()> {
+        let mut inner = self.inner.write()?;
+        for node in nodes {
+            inner.insert(Node::new(node));
+        }
+        Ok(())
+    }
+
+    pub fn evict_node(&self, addr: &SocketAddr)
+        -> Result<bool> {
+        Ok(self.inner.write()?
+            .remove(&Node::new(*addr)))
+    }
+
+    pub fn get_nodes(&self)
+        -> Result<Vec<Node>> {
+        Ok(self.inner.read()?
+            .iter()
+            .cloned()
+            .collect())
+    }
+
+    pub fn node_is_known(&self, addr: &SocketAddr)
+        -> Result<bool> {
+        Ok(self.inner.read()?
+            .iter()
+            .any(|x| x.get_addr() == *addr))
+    }
+}
+
+impl Default for Nodes {
+    fn default() -> Self { Self::new() }
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Integration Point: Network Routing Uses NodeContext}
+\label{sec:ch13-integration}
+
+The network router is responsible for \textbf{decoding} and \textbf{dispatching}, and then calling into \code{NodeContext} for stateful operations.
+
+At the key boundary:
+
+\begin{itemize}
+  \item \code{Package::Tx} $\to$ \code{NodeContext::process\_transaction(...)}
+  \item \code{Package::Block} $\to$ \code{NodeContext::add\_block(...)}
+\end{itemize}
+
+This is the ``runtime wiring'' that makes the node feel like a single system rather than a set of disconnected modules.
+
+% ──────────────────────────────────────────────────────────────
+\section{Exercises}
+\label{sec:ch13-exercises}
+
+\begin{enumerate}
+  \item \textbf{Request Flow Tracing} --- Pick any REST API endpoint (e.g., submit transaction) and trace the request from the HTTP handler through \code{NodeContext} to the final blockchain state change. Identify every module boundary the request crosses.
+
+  \item \textbf{Subsystem Interaction Map} --- Draw a diagram showing how \code{NodeContext} interacts with each subsystem: chain state, mempool, network, mining, and validation. For each interaction, label the function called and the data exchanged.
+\end{enumerate}
+
+% ──────────────────────────────────────────────────────────────
+\section{Summary: What to Remember}
+\label{sec:ch13-summary-remember}
+
+\begin{itemize}
+  \item \code{NodeContext} is a façade: it routes high-level requests into mempool, mining, relay, and chainstate.
+  \item \code{process\_transaction} is intentionally \textbf{fast}: it accepts to mempool and then spawns relay/mining in the background.
+  \item Mining is policy-driven (\code{should\_trigger\_mining}) and ends by relaying an \code{INV} for the new block.
+  \item The peer set is a simple \code{RwLock<HashSet<Node>>} and is used by both relay and mining.
+  \item Network messages are dispatched to \code{NodeContext} methods, which coordinate subsystems without owning them.
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+\item We built the \code{NodeContext} that serves as the central coordination point for all blockchain node operations.
+\item We unified interactions between blockchain state, transaction mempool, network operations, mining, and validation behind a single API.
+\item We saw how the node module abstracts the complexity of coordinating multiple subsystems into clean, testable interfaces.
+\item We traced the transaction and block ingestion paths from network packets to persistent blockchain state.
+\item We understood how mining policy, peer relay, and consensus validation integrate into a coherent runtime system.
+\end{chaptersummary}
+
+In the next chapter, we build the wallet system --- key generation, address derivation, and transaction signing --- that gives users the ability to hold and spend cryptocurrency.

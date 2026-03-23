@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+kubectl apply \PYGZhy{}f \PYG{l+m}{08}\PYGZhy{}service\PYGZhy{}miner\PYGZhy{}headless.yaml
+kubectl apply \PYGZhy{}f \PYG{l+m}{08}\PYGZhy{}service\PYGZhy{}miner.yaml
+kubectl apply \PYGZhy{}f \PYG{l+m}{09}\PYGZhy{}service\PYGZhy{}webserver\PYGZhy{}headless.yaml
+kubectl apply \PYGZhy{}f \PYG{l+m}{09}\PYGZhy{}service\PYGZhy{}webserver.yaml
+\end{Verbatim}

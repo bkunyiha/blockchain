@@ -1,0 +1,20 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{load\PYGZus{}wallet\PYGZus{}addresses}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{SqliteResult}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{WalletAddress}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{conn}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{get\PYGZus{}connection}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{stmt}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{prepare}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{SELECT address, label, created\PYGZus{}at }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{         FROM wallet\PYGZus{}addresses }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{         ORDER BY created\PYGZus{}at DESC}\PYG{l+s}{\PYGZdq{}}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{addresses}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{stmt}\PYG{p}{.}\PYG{n}{query\PYGZus{}map}\PYG{p}{(}\PYG{p}{[}\PYG{p}{]}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{|}\PYG{n}{row}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{WalletAddress}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{address}: \PYG{n+nc}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{label}: \PYG{n+nc}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{created\PYGZus{}at}: \PYG{n+nc}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{addresses}\PYG{p}{.}\PYG{n}{collect}::\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{\PYGZus{}}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

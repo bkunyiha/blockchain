@@ -1,0 +1,13 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Serialize, Deserialize, Validate,}
+\PYG{c+cp}{         ToSchema)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{SendTransactionRequest}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{from\PYGZus{}address}: \PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{to\PYGZus{}address}: \PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{+w}{    }\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{validate(range(}
+\PYG{c+cp}{        min = 1,}
+\PYG{c+cp}{        message = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Amount must be greater than 0}\PYG{l+s}{\PYGZdq{}}
+\PYG{c+cp}{    ))}\PYG{c+cp}{]}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{amount}: \PYG{k+kt}{i32}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

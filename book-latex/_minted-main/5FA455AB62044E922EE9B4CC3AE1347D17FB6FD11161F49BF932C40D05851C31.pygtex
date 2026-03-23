@@ -1,0 +1,23 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Clone, Default, Serialize, Deserialize)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{TXInput}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{txid}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{vout}: \PYG{k+kt}{usize}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{signature}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{pub\PYGZus{}key}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Clone, Serialize, Deserialize)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{TXOutput}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{value}: \PYG{k+kt}{i32}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{in\PYGZus{}global\PYGZus{}mem\PYGZus{}pool}: \PYG{k+kt}{bool}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Clone, Default, Serialize, Deserialize)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{Transaction}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{id}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{vin}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{TXInput}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{vout}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{TXOutput}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

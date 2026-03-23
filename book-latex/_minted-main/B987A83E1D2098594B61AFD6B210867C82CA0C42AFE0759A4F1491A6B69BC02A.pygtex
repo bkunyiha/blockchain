@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+docker compose ps
+netstat \PYGZhy{}tulpn \PYG{p}{|} grep \PYGZhy{}E \PYG{l+s+s1}{\PYGZsq{}2001|8080|2101\PYGZsq{}}
+\end{Verbatim}

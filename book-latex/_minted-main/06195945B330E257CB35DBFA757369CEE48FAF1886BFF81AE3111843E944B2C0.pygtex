@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+Scenario: Processing 1,000 transactions/second
+
+Using get\PYGZus{}id() (references) \PYGZhy{} 1,000 × 2ns = 2 microseconds/second
+Using get\PYGZus{}id\PYGZus{}bytes() (cloning) \PYGZhy{} 1,000 × 15ns = 15 microseconds/second
+Using get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex() (encoding) \PYGZhy{} 1,000 × 75ns = 75 microseconds/second
+
+Over 1 day (86,400 seconds):
+References: 172 milliseconds total
+Cloning: 3 seconds total
+Hex encoding: 6.5 seconds total
+
+The difference becomes significant at scale!
+\end{Verbatim}

@@ -1,0 +1,13 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Check pod status}
+kubectl get pods \PYGZhy{}n blockchain
+
+\PYG{c+c1}{\PYGZsh{} Wait for all pods to be ready}
+kubectl \PYG{n+nb}{wait} \PYGZhy{}\PYGZhy{}for\PYG{o}{=}\PYG{n+nv}{condition}\PYG{o}{=}ready pod \PYG{l+s+se}{\PYGZbs{}}
+  \PYGZhy{}l \PYG{n+nv}{app}\PYG{o}{=}miner \PYGZhy{}n blockchain \PYGZhy{}\PYGZhy{}timeout\PYG{o}{=}300s
+kubectl \PYG{n+nb}{wait} \PYGZhy{}\PYGZhy{}for\PYG{o}{=}\PYG{n+nv}{condition}\PYG{o}{=}ready pod \PYG{l+s+se}{\PYGZbs{}}
+  \PYGZhy{}l \PYG{n+nv}{app}\PYG{o}{=}webserver \PYGZhy{}n blockchain \PYGZhy{}\PYGZhy{}timeout\PYG{o}{=}300s
+
+\PYG{c+c1}{\PYGZsh{} View all resources}
+kubectl get all \PYGZhy{}n blockchain
+\end{Verbatim}

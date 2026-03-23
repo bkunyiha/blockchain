@@ -1,0 +1,77 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}best\PYGZus{}height}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{usize}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{is\PYGZus{}empty}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// An \PYGZdq{}empty handle\PYGZdq{} reports height 0}
+\PYG{+w}{        }\PYG{c+c1}{// (genesis is height 1 in this codebase).}
+\PYG{+w}{        }\PYG{n}{info}\PYG{o}{!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Blockchain is empty, returning height 0}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Open the blocks tree so we can fetch}
+\PYG{+w}{        }\PYG{c+c1}{// the tip block bytes.}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block\PYGZus{}tree}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{blockchain}\PYG{p}{.}\PYG{n}{db}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{open\PYGZus{}tree}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{get\PYGZus{}blocks\PYGZus{}tree\PYGZus{}path}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}
+\PYG{+w}{                }\PYG{n}{BtcError}::\PYG{n}{OpenBlockchainTreeError}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{// Use the cached tip hash to look up the}
+\PYG{+w}{        }\PYG{c+c1}{// corresponding block record.}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tip\PYGZus{}block\PYGZus{}bytes}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{block\PYGZus{}tree}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{get\PYGZus{}tip\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}
+\PYG{+w}{                }\PYG{n}{BtcError}::\PYG{n}{GetBlockchainError}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{ok\PYGZus{}or}\PYG{p}{(}\PYG{n}{BtcError}::\PYG{n}{GetBlockchainError}\PYG{p}{(}
+\PYG{+w}{                }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{tip is invalid}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{// Deserialize bytes back into a Block}
+\PYG{+w}{        }\PYG{c+c1}{// so we can read its height.}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tip\PYGZus{}block}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{            }\PYG{n}{Block}::\PYG{n}{deserialize}\PYG{p}{(}\PYG{n}{tip\PYGZus{}block\PYGZus{}bytes}\PYG{p}{.}\PYG{n}{as\PYGZus{}ref}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{tip\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}height}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}block}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{block\PYGZus{}hash}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Block}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Read\PYGZhy{}by\PYGZhy{}hash is a straight key\PYGZhy{}value lookup.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block\PYGZus{}tree}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{blockchain}\PYG{p}{.}\PYG{n}{db}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{open\PYGZus{}tree}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{get\PYGZus{}blocks\PYGZus{}tree\PYGZus{}path}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}
+\PYG{+w}{            }\PYG{n}{BtcError}::\PYG{n}{OpenBlockchainTreeError}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block\PYGZus{}bytes}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{block\PYGZus{}tree}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{n}{block\PYGZus{}hash}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}
+\PYG{+w}{            }\PYG{n}{BtcError}::\PYG{n}{GetBlockchainError}\PYG{p}{(}\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{block\PYGZus{}bytes}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{block\PYGZus{}bytes}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Found a record: decode it back into a Block.}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{            }\PYG{n}{Block}::\PYG{n}{deserialize}\PYG{p}{(}\PYG{n}{block\PYGZus{}bytes}\PYG{p}{.}\PYG{n}{as\PYGZus{}ref}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{block}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Missing key: caller gets None (not an error).}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n+nb}{None}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}block\PYGZus{}hashes}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}
+\PYG{+w}{    }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// \PYGZdq{}Inventory\PYGZdq{} for sync: walk the chain}
+\PYG{+w}{    }\PYG{c+c1}{// backward and collect hashes.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{iterator}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{iterator}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{blocks}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{vec!}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{loop}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{iterator}\PYG{p}{.}\PYG{n}{next}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n+nb}{None}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{k}{break}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{block}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{blocks}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{n}{block}\PYG{p}{.}\PYG{n}{get\PYGZus{}hash\PYGZus{}bytes}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{blocks}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

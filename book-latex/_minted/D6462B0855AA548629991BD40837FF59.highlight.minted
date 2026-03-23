@@ -1,0 +1,5 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+cargo\PYG{+w}{ }build\PYG{+w}{ }\PYGZhy{}\PYGZhy{}release
+cargo\PYG{+w}{ }\PYG{n+nb}{test}\PYG{+w}{ }\PYGZhy{}\PYGZhy{}\PYG{+w}{ }\PYGZhy{}\PYGZhy{}nocapture
+docker\PYG{+w}{ }compose\PYG{+w}{ }up\PYG{+w}{ }\PYGZhy{}d
+\end{MintedVerbatim}

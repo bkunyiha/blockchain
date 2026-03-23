@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{cd} ci/docker\PYGZhy{}compose/configs
+docker compose up \PYGZhy{}\PYGZhy{}build
+\end{Verbatim}

@@ -1,0 +1,59 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Source: txmempool.rs}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{add\PYGZus{}to\PYGZus{}memory\PYGZus{}pool}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{tx}: \PYG{n+nc}{Transaction}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{blockchain}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{BlockchainService}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tx\PYGZus{}id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}\PYG{p}{.}\PYG{n}{lock}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{.}\PYG{n}{contains\PYGZus{}key}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{tx\PYGZus{}id}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{BtcError}::\PYG{n}{TransactionAlreadyExistsInMemoryPool}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{tx\PYGZus{}id}
+\PYG{+w}{        }\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{lock}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{n}{tx\PYGZus{}id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Mark referenced inputs as reserved}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{utxo\PYGZus{}set}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UTXOSet}::\PYG{n}{new}\PYG{p}{(}\PYG{n}{blockchain}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{input}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}vin}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n+nb}{Some}\PYG{p}{(}\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{outputs}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{            }\PYG{n}{utxo\PYGZus{}set}\PYG{p}{.}\PYG{n}{find\PYGZus{}utxo\PYGZus{}by\PYGZus{}txid}\PYG{p}{(}\PYG{n}{input}\PYG{p}{.}\PYG{n}{get\PYGZus{}txid}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{input}\PYG{p}{.}\PYG{n}{vout}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{outputs}\PYG{p}{.}\PYG{n}{len}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{outputs}\PYG{p}{[}\PYG{n}{input}\PYG{p}{.}\PYG{n}{vout}\PYG{p}{]}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{set\PYGZus{}in\PYGZus{}global\PYGZus{}mem\PYGZus{}pool}\PYG{p}{(}\PYG{k+kc}{true}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{transaction\PYGZus{}exists\PYGZus{}in\PYGZus{}pool}\PYG{p}{(}\PYG{n}{tx}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Transaction}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{k+kt}{bool} \PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tx\PYGZus{}id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}\PYG{p}{.}\PYG{n}{blocking\PYGZus{}lock}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{contains\PYGZus{}key}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{tx\PYGZus{}id}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{remove\PYGZus{}from\PYGZus{}memory\PYGZus{}pool}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{tx}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Transaction}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{blockchain}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{BlockchainService}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tx\PYGZus{}id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}\PYG{p}{.}\PYG{n}{lock}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{.}\PYG{n}{remove}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{tx\PYGZus{}id}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Unmark referenced inputs}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{utxo\PYGZus{}set}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UTXOSet}::\PYG{n}{new}\PYG{p}{(}\PYG{n}{blockchain}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{input}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}vin}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n+nb}{Some}\PYG{p}{(}\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{outputs}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{            }\PYG{n}{utxo\PYGZus{}set}\PYG{p}{.}\PYG{n}{find\PYGZus{}utxo\PYGZus{}by\PYGZus{}txid}\PYG{p}{(}\PYG{n}{input}\PYG{p}{.}\PYG{n}{get\PYGZus{}txid}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{input}\PYG{p}{.}\PYG{n}{vout}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{outputs}\PYG{p}{.}\PYG{n}{len}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{outputs}\PYG{p}{[}\PYG{n}{input}\PYG{p}{.}\PYG{n}{vout}\PYG{p}{]}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{set\PYGZus{}in\PYGZus{}global\PYGZus{}mem\PYGZus{}pool}\PYG{p}{(}\PYG{k+kc}{false}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

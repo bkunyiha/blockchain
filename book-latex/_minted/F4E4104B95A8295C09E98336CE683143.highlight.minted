@@ -1,0 +1,13 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Check HPA status}
+kubectl\PYG{+w}{ }describe\PYG{+w}{ }hpa\PYG{+w}{ }webserver\PYGZhy{}hpa\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain
+
+\PYG{c+c1}{\PYGZsh{} Check if metrics are available}
+kubectl\PYG{+w}{ }top\PYG{+w}{ }pods\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain
+
+\PYG{c+c1}{\PYGZsh{} If metrics unavailable, enable metrics\PYGZhy{}server:}
+minikube\PYG{+w}{ }addons\PYG{+w}{ }\PYG{n+nb}{enable}\PYG{+w}{ }metrics\PYGZhy{}server
+
+\PYG{c+c1}{\PYGZsh{} Verify the Metrics API is registered:}
+kubectl\PYG{+w}{ }get\PYG{+w}{ }apiservices\PYG{+w}{ }\PYG{p}{|}\PYG{+w}{ }grep\PYG{+w}{ }metrics
+\end{MintedVerbatim}

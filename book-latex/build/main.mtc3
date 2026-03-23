@@ -1,0 +1,7 @@
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {2.1}Whitepaper Term $\to $ Rust Type Map}{\reset@font\mtcSfont 10}{section.2.1}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {2.2}Domain Object Diagrams}{\reset@font\mtcSfont 10}{section.2.2}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {2.3}Key Code Reading Checklist}{\reset@font\mtcSfont 11}{section.2.3}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {2.4}Step-by-Step Code Walkthrough}{\reset@font\mtcSfont 11}{section.2.4}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode Step 1: Block and BlockHeader}{\reset@font\mtcSSfont 11}{section*.8}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode Step 2: Transaction, Inputs, and Outputs}{\reset@font\mtcSSfont 13}{section*.9}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode Step 3: History vs.\ Derived State (the UTXO Set)}{\reset@font\mtcSSfont 15}{section*.10}}

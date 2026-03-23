@@ -1,0 +1,14 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// ✅ Compare without cloning}
+\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{transaction\PYGZus{}exists}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Transaction}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{pool}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{n}{Transaction}\PYG{p}{]}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{pool}\PYG{p}{.}\PYG{n}{iter}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{any}\PYG{p}{(}\PYG{o}{|}\PYG{n}{t}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{.}\PYG{n}{get\PYGZus{}id}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}id}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{c+c1}{//                   \PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}    \PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}}
+\PYG{+w}{    }\PYG{c+c1}{//                   Returns \PYGZam{}[u8] \PYGZhy{} no allocation}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// ❌ Don\PYGZsq{}t convert to hex for comparison}
+\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{transaction\PYGZus{}exists}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Transaction}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{pool}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{n}{Transaction}\PYG{p}{]}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tx\PYGZus{}hex}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// Allocation!}
+\PYG{+w}{    }\PYG{n}{pool}\PYG{p}{.}\PYG{n}{iter}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{any}\PYG{p}{(}\PYG{o}{|}\PYG{n}{t}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx\PYGZus{}hex}\PYG{p}{)}\PYG{+w}{  }\PYG{c+c1}{// More allocations!}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

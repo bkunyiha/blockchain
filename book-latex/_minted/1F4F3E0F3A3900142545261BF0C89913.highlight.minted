@@ -1,0 +1,65 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Source: transaction.rs}
+\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{trimmed\PYGZus{}copy}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{Transaction}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{inputs}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{vin}\PYG{p}{.}\PYG{n}{iter}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map}\PYG{p}{(}\PYG{o}{|}\PYG{n}{i}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{TXInput}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{i}\PYG{p}{.}\PYG{n}{get\PYGZus{}txid}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{i}\PYG{p}{.}\PYG{n}{get\PYGZus{}vout}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{collect}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{Transaction}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{id}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{self}\PYG{p}{.}\PYG{n}{id}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{vin}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{inputs}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{vout}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{self}\PYG{p}{.}\PYG{n}{vout}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{sign}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{k}{mut}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{blockchain}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{BlockchainService}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{private\PYGZus{}key}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{tx\PYGZus{}copy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{trimmed\PYGZus{}copy}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{idx}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{vin}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{vin}\PYG{p}{.}\PYG{n}{iter\PYGZus{}mut}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{enumerate}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{prev\PYGZus{}tx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{blockchain}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{find\PYGZus{}transaction}\PYG{p}{(}\PYG{n}{vin}\PYG{p}{.}\PYG{n}{get\PYGZus{}txid}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{c+c1}{// Temporarily inject the referenced output\PYGZsq{}s lock}
+\PYG{+w}{        }\PYG{n}{tx\PYGZus{}copy}\PYG{p}{.}\PYG{n}{vin}\PYG{p}{[}\PYG{n}{idx}\PYG{p}{]}\PYG{p}{.}\PYG{n}{pub\PYGZus{}key}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{            }\PYG{n}{prev\PYGZus{}tx}\PYG{p}{.}\PYG{n}{vout}\PYG{p}{[}\PYG{n}{vin}\PYG{p}{.}\PYG{n}{vout}\PYG{p}{]}\PYG{p}{.}\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{tx\PYGZus{}copy}\PYG{p}{.}\PYG{n}{id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx\PYGZus{}copy}\PYG{p}{.}\PYG{n}{hash}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{signature}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{schnorr\PYGZus{}sign\PYGZus{}digest}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{private\PYGZus{}key}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{tx\PYGZus{}copy}\PYG{p}{.}\PYG{n}{get\PYGZus{}id}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{vin}\PYG{p}{.}\PYG{n}{signature}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{signature}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{tx\PYGZus{}copy}\PYG{p}{.}\PYG{n}{vin}\PYG{p}{[}\PYG{n}{idx}\PYG{p}{]}\PYG{p}{.}\PYG{n}{pub\PYGZus{}key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{vec!}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{verify}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{blockchain}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{BlockchainService}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{bool}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{is\PYGZus{}coinbase}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{k+kc}{true}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{trimmed\PYGZus{}copy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{trimmed\PYGZus{}copy}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{idx}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{vin}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{vin}\PYG{p}{.}\PYG{n}{iter}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{enumerate}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{prev\PYGZus{}tx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{blockchain}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{find\PYGZus{}transaction}\PYG{p}{(}\PYG{n}{vin}\PYG{p}{.}\PYG{n}{get\PYGZus{}txid}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pkh}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{prev\PYGZus{}tx}\PYG{p}{.}\PYG{n}{vout}\PYG{p}{[}\PYG{n}{vin}\PYG{p}{.}\PYG{n}{vout}\PYG{p}{]}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{trimmed\PYGZus{}copy}\PYG{p}{.}\PYG{n}{vin}\PYG{p}{[}\PYG{n}{idx}\PYG{p}{]}\PYG{p}{.}\PYG{n}{pub\PYGZus{}key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{pkh}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{trimmed\PYGZus{}copy}\PYG{p}{.}\PYG{n}{id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{trimmed\PYGZus{}copy}\PYG{p}{.}\PYG{n}{hash}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{is\PYGZus{}valid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{schnorr\PYGZus{}sign\PYGZus{}verify}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{vin}\PYG{p}{.}\PYG{n}{get\PYGZus{}pub\PYGZus{}key}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{vin}\PYG{p}{.}\PYG{n}{get\PYGZus{}signature}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{trimmed\PYGZus{}copy}\PYG{p}{.}\PYG{n}{get\PYGZus{}id}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{is\PYGZus{}valid}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{k+kc}{false}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{trimmed\PYGZus{}copy}\PYG{p}{.}\PYG{n}{vin}\PYG{p}{[}\PYG{n}{idx}\PYG{p}{]}\PYG{p}{.}\PYG{n}{pub\PYGZus{}key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{vec!}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{k+kc}{true}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

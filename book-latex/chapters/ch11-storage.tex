@@ -1,0 +1,600 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 11: Storage Layer --- Persistence for Blocks and State
+% ══════════════════════════════════════════════════════════════
+\chapter{Storage Layer}
+\label{ch:storage}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Use the Sled embedded database for persistent block and chain state storage
+  \item Understand how the \code{BlockchainFileSystem} abstracts low-level storage operations
+  \item Implement efficient persistence and retrieval of blocks, chain state, and UTXO data
+  \item Explain the trade-offs in the storage design and why Sled was chosen
+\end{itemize}
+\end{learnbox}
+
+\lettrine{W}{ithout} \index{durable storage}durable storage, a \index{node}node would lose all \index{blockchain}blockchain \index{history}history every time it restarts --- it would have to re-download and re-validate the entire \index{chain}chain from \index{peer}peers. The \index{storage layer}storage layer also enforces a critical \index{invariant}invariant: the \index{chain tip}tip \index{hash}hash and the \index{block}blocks tree must always be \index{consistency}consistent. If the \index{node}node crashes halfway through writing a new \index{block}block, the \index{database}database must either contain both the \index{block}block and the updated \index{chain tip}tip, or neither. This is why \index{atomicity}atomicity is the central design concern of this chapter.
+
+% ──────────────────────────────────────────────────────────────
+\section{What ``Storage'' Means in Our Rust Bitcoin Implementation}
+\label{sec:ch11-what-storage-means}
+
+In this codebase, ``storage'' is not a separate service; it is an embedded key-value database (\textbf{\index{sled}sled}) with a small set of conventions.
+
+% ──────────────────────────────────────────────────────────────
+\subsection{What Is Sled?}
+\label{sec:ch11-what-is-sled}
+
+\index{sled}Sled is a pure-Rust embedded database --- think of it as a persistent \code{BTreeMap<Vec<u8>, Vec<u8>>} backed by a log-structured merge tree on disk. It requires no external process, no TCP connection, and no configuration file: you open a directory path and get a \code{sled::Db} handle. We chose it because it gives us atomic batch writes (critical for ``insert \index{block}block + move \index{chain tip}tip'' in one operation) and compiles on every platform Rust targets. If you have used RocksDB or LevelDB before, \index{sled}sled fills the same niche with a Rust-native API.
+
+Our conventions on top of \index{sled}sled:
+
+\begin{itemize}
+  \item a \textbf{\index{block}blocks tree} that maps \code{\index{block}block\_hash -> serialized \index{block}Block bytes}
+  \item a stable \textbf{\index{chain tip}tip key} (\code{"tip\_block\_hash"}) that points at the canonical \index{chain tip}tip hash
+  \item atomic updates for ``insert \index{block}block + move \index{chain tip}tip'' (\index{sled}sled transactions)
+\end{itemize}
+
+Think of sled as a persistent in-memory data structure (like a \code{BTreeMap}) that writes changes to disk atomically. If the process crashes, the database either contains both the block and the updated tip, or neither --- it never gets stuck in an inconsistent state.
+
+\begin{notebox}[Debugging Tip]
+When debugging storage issues, Sled's \code{Db::export()} and \code{Db::import()} methods can dump the entire database contents for inspection. This is invaluable during development.
+\end{notebox}
+
+The key methods are \code{BlockchainFileSystem::create\_blockchain} and \code{open\_blockchain} (lifecycle), \code{get\_tip\_hash} and \code{get\_last\_block} (reads), and \code{update\_blocks\_tree} (the internal atomic write that inserts a block and advances the tip in a single sled transaction).
+
+% ──────────────────────────────────────────────────────────────
+\section{Sled Layout: The Minimum Schema}
+\label{sec:ch11-sled-layout}
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+sled::Db at ./<TREE_DIR>/
+  |
+  +- Tree "<BLOCKS_TREE>"  (default: "blocks1")
+       |
+       |-- key: "<block_hash_string>"
+       |    -> value: serialized Block (bytes)
+       |
+       +-- key: "tip_block_hash"
+            -> value: "<block_hash_string>" (bytes)
+\end{minted}
+
+This chapter is about making those two invariants true:
+
+\begin{itemize}
+  \item if a \index{block}block exists, it can be fetched by hash
+  \item \index{chain tip}tip always points at a \index{block}block that exists (or a known ``empty'' sentinel)
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Initialization: Creating or Opening the DB}
+\label{sec:ch11-initialization}
+
+The storage location is chosen by environment variables:
+
+\begin{itemize}
+  \item \code{TREE\_DIR} (directory on disk; default \code{"data1"})
+  \item \code{BLOCKS\_TREE} (sled tree name; default \code{"blocks1"})
+\end{itemize}
+
+\subsection{Diagram: Config $\to$ Path $\to$ DB + Tree}
+\label{sec:ch11-config-diagram}
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+TREE_DIR="data1"      BLOCKS_TREE="blocks1"
+      |                    |
+      v                    v
+./data1/  (sled database)  Tree("blocks1")
+\end{minted}
+
+\subsection{Type Definition and Blockchain Creation}
+\label{sec:ch11-type-def}
+
+\begin{listing}[H]
+\caption{Type definition and blockchain creation}
+\label{lst:ch11-create}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use crate::error::{BtcError, Result};
+use crate::primitives::block::Block;
+use crate::primitives::blockchain::Blockchain;
+use crate::primitives::transaction::Transaction;
+use crate::wallet::WalletAddress;
+use sled::{Db, Tree};
+use std::env;
+use std::sync::Arc;
+use tokio::sync::RwLock as TokioRwLock;
+
+const DEFAULT_TIP_BLOCK_HASH_KEY: &str = "tip_block_hash";
+const DEFAULT_EMPTY_TIP_BLOCK_HASH_VALUE: &str = "empty";
+const DEFAULT_BLOCKS_TREE: &str = "blocks1";
+const DEFAULT_TREE_DIR: &str = "data1";
+
+#[derive(Clone, Debug)]
+pub struct BlockchainFileSystem {
+    blockchain: Blockchain<Db>,
+    file_system_tree_dir: String,
+}
+
+impl BlockchainFileSystem {
+    pub async fn create_blockchain(
+        genesis_address: &WalletAddress,
+    ) -> Result<Self> {
+        let blocks_tree_name = env::var("BLOCKS_TREE")
+            .unwrap_or_else(|_| DEFAULT_BLOCKS_TREE.to_string());
+        let dir = env::var("TREE_DIR")
+            .unwrap_or_else(|_| DEFAULT_TREE_DIR.to_string());
+        let path = std::env::current_dir()?
+            .join(dir.clone());
+
+        let db = sled::open(path)?;
+        let blocks_tree = db.open_tree(blocks_tree_name.clone())?;
+
+        // Check if chain exists, else create genesis
+        let tip_hash =
+            if let Some(data) =
+                blocks_tree.get(DEFAULT_TIP_BLOCK_HASH_KEY)? {
+            String::from_utf8(data.to_vec())?
+        } else {
+            // Initialize: create genesis block,
+            // persist + set tip atomically
+            let coinbase_tx =
+                Transaction::new_coinbase_tx(genesis_address)?;
+            let block =
+                Block::generate_genesis_block(&coinbase_tx);
+            Self::update_blocks_tree(&blocks_tree, &block)
+                .await?;
+            String::from(block.get_hash())
+        };
+
+        Ok(BlockchainFileSystem {
+            blockchain: Blockchain {
+                tip_hash: Arc::new(TokioRwLock::new(tip_hash)),
+                db,
+                is_empty: false,
+            },
+            file_system_tree_dir: blocks_tree_name,
+        })
+    }
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Open Existing or Empty Blockchain}
+\label{sec:ch11-open-blockchain}
+
+\begin{listing}[H]
+\caption{Open existing or empty blockchain}
+\label{lst:ch11-open}
+\begin{minted}[fontsize=\footnotesize]{rust}
+impl BlockchainFileSystem {
+    pub async fn open_blockchain() -> Result<Self> {
+        let blocks_tree_name = env::var("BLOCKS_TREE")
+            .unwrap_or_else(|_| DEFAULT_BLOCKS_TREE.to_string());
+        let dir = env::var("TREE_DIR")
+            .unwrap_or_else(|_| DEFAULT_TREE_DIR.to_string());
+        let path = std::env::current_dir()?.join(dir);
+
+        let db = sled::open(path)?;
+        let blocks_tree = db.open_tree(blocks_tree_name.clone())?;
+
+        let tip_bytes = blocks_tree
+            .get(DEFAULT_TIP_BLOCK_HASH_KEY)?
+            .ok_or(BtcError::BlockchainNotFoundError(
+                "No blockchain found".into(),
+            ))?;
+        let tip_hash = String::from_utf8(tip_bytes.to_vec())?;
+
+        Ok(BlockchainFileSystem {
+            blockchain: Blockchain {
+                tip_hash: Arc::new(TokioRwLock::new(tip_hash)),
+                db,
+                is_empty: false,
+            },
+            file_system_tree_dir: blocks_tree_name,
+        })
+    }
+
+    pub async fn open_blockchain_empty() -> Result<Self> {
+        let blocks_tree_name = env::var("BLOCKS_TREE")
+            .unwrap_or_else(|_| DEFAULT_BLOCKS_TREE.to_string());
+        let dir = env::var("TREE_DIR")
+            .unwrap_or_else(|_| DEFAULT_TREE_DIR.to_string());
+        let path = std::env::current_dir()?.join(dir);
+
+        let db = sled::open(path)?;
+        Ok(BlockchainFileSystem {
+            blockchain: Blockchain {
+                tip_hash: Arc::new(
+                    TokioRwLock::new("empty".to_string())),
+                db,
+                is_empty: true,
+            },
+            file_system_tree_dir: blocks_tree_name,
+        })
+    }
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Atomic Storage Primitive: \texttt{update\_blocks\_tree}}
+\label{sec:ch11-atomic-primitive}
+
+When we create genesis or mine locally, we want ``block insert'' and ``tip pointer update'' to happen as a single atomic unit.
+
+\begin{listing}[htbp]
+\caption{Atomic insert + tip update}
+\label{lst:ch11-atomic}
+\begin{minted}[fontsize=\footnotesize]{rust}
+async fn update_blocks_tree(
+    blocks_tree: &Tree,
+    block: &Block
+) -> Result<()> {
+    // Hash is the key; serialized block is the value.
+    let block_hash = block.get_hash();
+    let block_ivec = IVec::try_from(block.clone())?;
+
+    // sled transactions give us atomicity across
+    // multiple inserts into the same Tree.
+    let transaction_result: TransactionResult<(), ()> =
+        blocks_tree.transaction(|tx_db| {
+        // 1) Persist the block bytes under its hash.
+        let _ = tx_db.insert(
+            block_hash,
+            block_ivec.clone()
+        )?;
+        // 2) Move the "tip pointer" to the same hash.
+        // If the process crashes after this transaction
+        // commits, both updates are present.
+        let _ = tx_db.insert(
+            DEFAULT_TIP_BLOCK_HASH_KEY,
+            block_hash
+        )?;
+        Ok(())
+    });
+    transaction_result
+        .map(|_| ())
+        .map_err(|e|
+            BtcError::BlockchainDBconnection(
+                format!("{:?}", e)))
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Tip Pointer API}
+\label{sec:ch11-tip-api}
+
+The tip is also cached in memory (an async \code{RwLock<String>}) for fast access during runtime.
+
+\begin{listing}[htbp]
+\caption{Tip pointer helpers}
+\label{lst:ch11-tip-helpers}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn get_tip_hash(&self) -> Result<String> {
+    // Read-lock: multiple readers can read
+    // the cached tip concurrently.
+    let tip_hash = self.blockchain.tip_hash.read().await;
+    Ok(tip_hash.clone())
+}
+
+async fn set_tip_hash(&self, new_tip_hash: &str)
+    -> Result<()> {
+    // Write-lock: tip updates are exclusive.
+    let mut tip_hash =
+        self.blockchain.tip_hash.write().await;
+    // Update the in-memory cached tip
+    // (DB tip key updates happen elsewhere).
+    *tip_hash = String::from(new_tip_hash);
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Read Path: Height, Get-by-Hash, and Inventory}
+\label{sec:ch11-read-path}
+
+The network layer and UI need:
+
+\begin{itemize}
+  \item current height (\code{get\_best\_height})
+  \item fetch-by-hash (\code{get\_block})
+  \item list hashes (\code{get\_block\_hashes}) for sync inventory
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{Read path operations}
+\label{lst:ch11-read}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn get_best_height(&self) -> Result<usize> {
+    if self.is_empty() {
+        // An "empty handle" reports height 0
+        // (genesis is height 1 in this codebase).
+        info!("Blockchain is empty, returning height 0");
+        Ok(0)
+    } else {
+        // Open the blocks tree so we can fetch
+        // the tip block bytes.
+        let block_tree = self
+            .blockchain.db
+            .open_tree(self.get_blocks_tree_path())
+            .map_err(|e|
+                BtcError::OpenBlockchainTreeError(
+                    e.to_string()))?;
+        // Use the cached tip hash to look up the
+        // corresponding block record.
+        let tip_block_bytes = block_tree
+            .get(self.get_tip_hash().await?)
+            .map_err(|e|
+                BtcError::GetBlockchainError(
+                    e.to_string()))?
+            .ok_or(BtcError::GetBlockchainError(
+                "tip is invalid".to_string()))?;
+        // Deserialize bytes back into a Block
+        // so we can read its height.
+        let tip_block =
+            Block::deserialize(tip_block_bytes.as_ref())?;
+        Ok(tip_block.get_height())
+    }
+}
+
+pub async fn get_block(
+    &self,
+    block_hash: &[u8]
+) -> Result<Option<Block>> {
+    // Read-by-hash is a straight key-value lookup.
+    let block_tree = self
+        .blockchain.db
+        .open_tree(self.get_blocks_tree_path())
+        .map_err(|e|
+            BtcError::OpenBlockchainTreeError(
+                e.to_string()))?;
+    let block_bytes = block_tree
+        .get(block_hash)
+        .map_err(|e|
+            BtcError::GetBlockchainError(e.to_string()))?;
+
+    if let Some(block_bytes) = block_bytes {
+        // Found a record: decode it back into a Block.
+        let block =
+            Block::deserialize(block_bytes.as_ref())?;
+        Ok(Some(block))
+    } else {
+        // Missing key: caller gets None (not an error).
+        Ok(None)
+    }
+}
+
+pub async fn get_block_hashes(&self)
+    -> Result<Vec<Vec<u8>>> {
+    // "Inventory" for sync: walk the chain
+    // backward and collect hashes.
+    let mut iterator = self.iterator().await?;
+    let mut blocks = vec![];
+    loop {
+        match iterator.next() {
+            None => break,
+            Some(block) => {
+                blocks.push(block.get_hash_bytes());
+            }
+        }
+    }
+    Ok(blocks)
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Mining Write Path: \texttt{mine\_block}}
+\label{sec:ch11-mining-write}
+
+Local mining creates a new \code{Block}, writes it into sled, updates the in-memory tip, then updates derived state. This is the ``fast path'' for locally-mined blocks --- it bypasses the full consensus mechanism in \code{add\_block} because we know the block is at \code{best\_height + 1} (strictly higher than the current tip).
+
+\begin{listing}[htbp]
+\caption{Mining write path}
+\label{lst:ch11-mine}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn mine_block(
+    &self,
+    transactions: &[Transaction]
+) -> Result<Block> {
+    let best_height = self.get_best_height().await?;
+    let block = Block::new_block(
+        self.get_tip_hash().await?,
+        transactions,
+        best_height + 1,
+    );
+    let block_hash = block.get_hash();
+
+    let blocks_tree = self
+        .blockchain.db
+        .open_tree(self.get_blocks_tree_path())
+        .map_err(|e|
+            BtcError::BlockchainDBconnection(
+                e.to_string()))?;
+    Self::update_blocks_tree(&blocks_tree, &block)
+        .await?;
+    self.set_tip_hash(block_hash).await?;
+    self.update_utxo_set(&block).await?;
+
+    Ok(block)
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}[Stale Mining Protection]
+The \code{BlockchainService::mine\_block()} wrapper re-validates transaction inputs under the write lock before calling this method. Between \code{prepare\_mining\_utxo} (which validates with a read lock) and the actual mining (which requires the write lock), a competing block may have been accepted, spending the same inputs. The wrapper catches this race condition and aborts mining with a ``stale mining'' error rather than creating a block with already-spent inputs. This prevents duplicate mining subsidies when multiple miners compete for the same transactions.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Inbound Write Path: \texttt{add\_block}}
+\label{sec:ch11-inbound-write}
+
+Inbound blocks are first persisted, then the node runs consensus decisions to determine whether the tip should move or whether a reorganization is required.
+
+\begin{listing}[htbp]
+\caption{Inbound block persistence and dedup (part 1)}
+\label{lst:ch11-add-block-1}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn add_block(&mut self, new_block: &Block)
+    -> Result<()> {
+    // Inbound: persist first -> then consensus
+    // decision -> maybe reorg.
+    let block_tree = self.blockchain.db
+        .open_tree(self.get_blocks_tree_path())?;
+
+    if self.is_empty() {
+        // First block always becomes tip
+        self.set_not_empty();
+        Self::update_blocks_tree(&block_tree, new_block)
+            .await?;
+        self.set_tip_hash(new_block.get_hash()).await?;
+        self.update_utxo_set(new_block).await?;
+        return Ok(());
+    }
+
+    // Dedup: skip if already present
+    if block_tree.get(new_block.get_hash())?
+        .is_some() {
+        return Ok(());
+    }
+
+    // Atomic insert within transaction
+    let block_bytes = new_block.serialize()?;
+    let tip_hash = self.get_tip_hash().await?;
+    block_tree.transaction(|txn| {
+        txn.insert(
+            new_block.get_hash(),
+            block_bytes.clone()
+        )?;
+        // Eagerly move tip if block is strictly higher
+        if new_block.get_height() >
+            Block::deserialize(
+                txn.get(tip_hash.clone())?
+                    .ok_or(...)?)?
+            ).get_height() {
+            txn.insert(
+                DEFAULT_TIP_BLOCK_HASH_KEY,
+                new_block.get_hash()
+            )?;
+        }
+        Ok(())
+    })?;
+\end{minted}
+\end{listing}
+
+After persisting the block, we run consensus rules to decide whether to update the tip or reorganize:
+
+\begin{listing}[htbp]
+\caption{Fork choice and reorg decision (part 2)}
+\label{lst:ch11-add-block-2}
+\begin{minted}[fontsize=\footnotesize]{rust}
+    // Fork choice: compare height, work, then tie-break
+    let current_tip = self.get_tip_hash().await?;
+    let current_height = self.get_best_height().await?;
+
+    match new_block.get_height().cmp(&current_height) {
+        Ordering::Greater => {
+            // Check if block extends our chain
+            // or is on a different branch
+            if new_block.get_pre_block_hash()
+                == current_tip {
+                // Normal case: extends our current chain
+                self.set_tip_hash(
+                    new_block.get_hash()
+                ).await?;
+                self.update_utxo_set(new_block).await?;
+            } else {
+                // FORK: block is on a different branch
+                // at a higher height.
+                // Must reorganize to properly rollback
+                // old branch's UTXO.
+                self.reorganize_chain(
+                    new_block.get_hash()
+                ).await?;
+            }
+        }
+        Ordering::Equal => {
+            if new_block.get_pre_block_hash()
+                == current_tip {
+                return Ok(());
+            }
+            // Competing tips: compare cumulative work
+            let current_work =
+                self.get_chain_work(&current_tip).await?;
+            let new_work = self.get_chain_work(
+                new_block.get_hash()
+            ).await?;
+            match new_work.cmp(&current_work) {
+                Ordering::Greater => {
+                    self.reorganize_chain(
+                        new_block.get_hash()
+                    ).await?
+                }
+                Ordering::Equal => {
+                    if self.accept_new_block_tie_break(
+                        new_block,
+                        &current_tip
+                    ).await? {
+                        self.reorganize_chain(
+                            new_block.get_hash()
+                        ).await?;
+                    }
+                }
+                Ordering::Less => {}
+            }
+        }
+        Ordering::Less => {
+            // Block stored in DB but not accepted as tip.
+            // Available for future reorganizations when
+            // higher blocks on this branch arrive.
+        }
+    }
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}[Important Fork Detection Notes]
+\begin{enumerate}
+  \item \textbf{\code{Ordering::Greater} fork detection}: The original code assumed higher-height blocks always extended the current chain. With block relay across multi-hop networks, a higher-height block on a \emph{different branch} can arrive. Without checking \code{get\_pre\_block\_hash() == current\_tip}, the old branch's UTXO (including coinbase subsidies) would never be rolled back, creating money from nothing. The fix calls \code{reorganize\_chain()} to properly rollback and apply.
+
+  \item \textbf{\code{Ordering::Less} block retention}: Blocks at lower heights are now kept in the database. They are NOT deleted. This is critical because \code{find\_common\_ancestor()} needs to walk both chain branches during reorganization. If rolled-back blocks were deleted, future reorganizations would fail with ``No common ancestor found.'' This matches Bitcoin Core's behavior where all received blocks are kept in \code{blk*.dat} files.
+
+  \item \textbf{\code{rollback\_to\_block} no longer deletes blocks}: During chain reorganization, only the UTXO set is rolled back and the tip pointer is moved. Blocks remain in the database as non-canonical entries. This ensures \code{find\_common\_ancestor()} and \code{apply\_chain\_from\_ancestor()} can always find the necessary blocks.
+\end{enumerate}
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Exercises}
+\label{sec:ch11-exercises}
+
+\begin{enumerate}
+  \item \textbf{Storage Round-Trip Test} --- Write a test that creates a block, stores it using \code{BlockchainFileSystem}, retrieves it, and verifies all fields match the original. Pay attention to serialization: does every field survive the round trip?
+
+  \item \textbf{UTXO Retrieval Performance} --- Examine how UTXO lookups work in the Sled storage layer. If the blockchain has 10,000 transactions with an average of 2 outputs each, how many entries are in the UTXO set? What data structure does Sled use internally that makes lookups efficient?
+\end{enumerate}
+
+% ──────────────────────────────────────────────────────────────
+\section{Common Errors}
+\label{sec:ch11-common-errors}
+
+\begin{notebox}[Troubleshooting: Storage Layer]
+\textbf{``sled lock file already exists''} --- Another process (or a crashed previous run) still holds the database lock. Delete the \code{db/\_\_sled\_\_/lock} file manually, or ensure the previous node process has fully exited.
+
+\textbf{Deserialization panic after code changes} --- If you modify the \code{Block} struct and restart without clearing the database, sled will try to deserialize old bytes into the new struct layout. Delete the \code{db/} directory to start fresh, or implement a migration path.
+
+\textbf{``tree not found'' on a fresh database} --- Ensure \code{create\_blockchain} is called before \code{open\_blockchain}. The blocks tree must be explicitly created on first run.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+\item We explored how the \code{BlockchainFileSystem} uses the Sled embedded database to persist blocks, chain state, and UTXO data to disk.
+\item We implemented the storage operations that allow efficient insertion and retrieval of blockchain data.
+\item We examined the storage abstraction that decouples chain logic from persistence details, making it possible to swap storage backends.
+\item We understood the critical role of atomic transactions in ensuring consistency across crashes and failures.
+\end{chaptersummary}
+
+In the next chapter, we build the networking layer that enables nodes to communicate, propagate blocks, and maintain consensus across a distributed network.

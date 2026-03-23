@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+NodeContext::submit\PYGZus{}transaction\PYGZus{}for\PYGZus{}mining
+  |
+  | if should\PYGZus{}trigger\PYGZus{}mining()
+  v
+prepare\PYGZus{}mining\PYGZus{}utxo \PYGZhy{}\PYGZgt{} txs + coinbase
+  |
+  v
+process\PYGZus{}mine\PYGZus{}block \PYGZhy{}\PYGZgt{} blockchain.mine\PYGZus{}block(txs)
+  |
+  | remove txs from mempool
+  v
+broadcast\PYGZus{}new\PYGZus{}block \PYGZhy{}\PYGZgt{} send\PYGZus{}inv(op=Block, items=[block\PYGZus{}hash])
+\end{Verbatim}

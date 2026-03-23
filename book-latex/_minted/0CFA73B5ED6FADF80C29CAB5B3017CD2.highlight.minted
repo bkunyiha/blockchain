@@ -1,0 +1,30 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{update\PYGZus{}utxo\PYGZus{}set}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{block}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Block}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// For each transaction in the block:}
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n}{block}\PYG{p}{.}\PYG{n}{get\PYGZus{}transactions}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Remove spent outputs (coinbase has no inputs)}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{is\PYGZus{}coinbase}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{input}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}vin}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{spend\PYGZus{}output}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{n}{input}\PYG{p}{.}\PYG{n}{get\PYGZus{}txid}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                    }\PYG{n}{input}\PYG{p}{.}\PYG{n}{get\PYGZus{}vout}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{                }\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{c+c1}{// Add newly created outputs}
+\PYG{+w}{        }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{idx}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{output}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{in}
+\PYG{+w}{            }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}vout}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{iter}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{enumerate}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{add\PYGZus{}unspent\PYGZus{}output}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}id\PYGZus{}bytes}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{idx}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{output}
+\PYG{+w}{            }\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+T0: Genesis \PYGZhy{}\PYGZgt{} Alice (signed by genesis mechanism)
+T1: Alice \PYGZhy{}\PYGZgt{} Bob (signed by Alice\PYGZsq{}s private key sk\PYGZus{}A)
+T2: Bob \PYGZhy{}\PYGZgt{} Charlie (signed by Bob\PYGZsq{}s private key sk\PYGZus{}B)
+\end{Verbatim}

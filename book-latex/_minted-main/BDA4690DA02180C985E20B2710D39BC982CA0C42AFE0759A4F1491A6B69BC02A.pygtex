@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} List volumes}
+docker volume ls \PYG{p}{|} grep blockchain
+
+\PYG{c+c1}{\PYGZsh{} Inspect volume}
+docker volume inspect blockchain\PYGZus{}miner\PYGZhy{}data
+
+\PYG{c+c1}{\PYGZsh{} Remove volumes (WARNING: deletes data)}
+docker compose down \PYGZhy{}v
+\end{Verbatim}

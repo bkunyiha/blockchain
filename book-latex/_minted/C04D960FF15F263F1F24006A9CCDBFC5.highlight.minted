@@ -1,0 +1,74 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{error}\PYG{p}{::}\PYG{n+nb}{Result}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{std}\PYG{p}{::}\PYG{n}{collections}\PYG{p}{::}\PYG{n}{HashSet}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{std}\PYG{p}{::}\PYG{n}{net}\PYG{p}{::}\PYG{n}{SocketAddr}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{std}\PYG{p}{::}\PYG{n}{sync}\PYG{p}{::}\PYG{n}{RwLock}\PYG{p}{;}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Clone, Debug, Eq, PartialEq, Hash)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{Node}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{addr}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{SocketAddr}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{Node}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{new}\PYG{p}{(}\PYG{n}{addr}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{SocketAddr}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{Self}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{Node}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{addr}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{get\PYGZus{}addr}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{SocketAddr}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{addr}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Thread\PYGZhy{}safe peer set: many reads, occasional writes}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{Nodes}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{inner}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{RwLock}\PYG{o}{\PYGZlt{}}\PYG{n}{HashSet}\PYG{o}{\PYGZlt{}}\PYG{n}{Node}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{Nodes}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{new}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{Self}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{Nodes}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{inner}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{RwLock}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{HashSet}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{add\PYGZus{}node}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{addr}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{SocketAddr}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{inner}\PYG{p}{.}\PYG{n}{write}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{n}{Node}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{addr}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{add\PYGZus{}nodes}\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{nodes}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{HashSet}\PYG{o}{\PYGZlt{}}\PYG{n}{SocketAddr}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{    }\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{inner}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{inner}\PYG{p}{.}\PYG{n}{write}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{node}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n}{nodes}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{inner}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{n}{Node}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{node}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{evict\PYGZus{}node}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{addr}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{bool}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{inner}\PYG{p}{.}\PYG{n}{write}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{remove}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{Node}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{o}{*}\PYG{n}{addr}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{get\PYGZus{}nodes}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{Node}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{inner}\PYG{p}{.}\PYG{n}{read}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{iter}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{cloned}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{collect}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{node\PYGZus{}is\PYGZus{}known}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{addr}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{bool}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{inner}\PYG{p}{.}\PYG{n}{read}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{iter}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{any}\PYG{p}{(}\PYG{o}{|}\PYG{n}{x}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{.}\PYG{n}{get\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{addr}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n+nb}{Default}\PYG{+w}{ }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{Nodes}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{default}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{Self}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nb+bp}{Self}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

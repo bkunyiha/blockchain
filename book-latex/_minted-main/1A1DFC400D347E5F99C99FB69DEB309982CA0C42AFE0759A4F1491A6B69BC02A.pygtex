@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{cd} ci/kubernetes
+
+\PYG{c+c1}{\PYGZsh{} Start cluster with metrics\PYGZhy{}server addon (required for HPA)}
+minikube start \PYGZhy{}\PYGZhy{}cpus\PYG{o}{=}\PYG{l+m}{4} \PYGZhy{}\PYGZhy{}memory\PYG{o}{=}3072mb \PYG{l+s+se}{\PYGZbs{}}
+  \PYGZhy{}\PYGZhy{}addons\PYG{o}{=}metrics\PYGZhy{}server
+\end{Verbatim}

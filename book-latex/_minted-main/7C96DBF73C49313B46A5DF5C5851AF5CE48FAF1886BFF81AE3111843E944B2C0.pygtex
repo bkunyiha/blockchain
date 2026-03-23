@@ -1,0 +1,17 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+User input (click / type)
+   |
+   v
+Message (enum variant)  \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}+
+   |                         |
+   v                         |
+update(\PYGZam{}mut AdminApp, Message)
+   |
+   |\PYGZhy{}\PYGZhy{} pure state change \PYGZhy{}\PYGZgt{} Task::none()
+   |\PYGZhy{}\PYGZhy{} async request \PYGZhy{}\PYGZgt{} Task::perform() \PYGZhy{}+
+   |                                      |
+   v                                      |
+view(\PYGZam{}AdminApp) \PYGZhy{}\PYGZgt{} Element\PYGZlt{}Message\PYGZgt{}       |
+                                   (later) |
+                                Message::XxxLoaded(Result)
+\end{Verbatim}

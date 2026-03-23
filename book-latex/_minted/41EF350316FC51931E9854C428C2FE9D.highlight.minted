@@ -1,0 +1,7 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+payload bytes:
+  [ version: 1 byte ] [ pub\PYGZus{}key\PYGZus{}hash: N bytes ] [ checksum: 4 bytes ]
+
+encoded as:
+  Base58(payload)
+\end{MintedVerbatim}

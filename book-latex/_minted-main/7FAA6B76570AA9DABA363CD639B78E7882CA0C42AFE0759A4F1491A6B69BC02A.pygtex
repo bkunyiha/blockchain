@@ -1,0 +1,11 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{cd} ci/docker\PYGZhy{}compose/configs
+
+\PYG{n+nb}{export} \PYG{n+nv}{WALLET\PYGZus{}ADDRESS\PYGZus{}POOL}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}addr1,addr2,addr3,addr4\PYGZdq{}}
+./docker\PYGZhy{}compose.scale.sh \PYG{l+m}{3} \PYG{l+m}{1}
+
+\PYG{c+c1}{\PYGZsh{} Topology:}
+\PYG{c+c1}{\PYGZsh{} miner\PYGZus{}1 \PYGZlt{}\PYGZhy{} miner\PYGZus{}2 \PYGZlt{}\PYGZhy{} miner\PYGZus{}3}
+\PYG{c+c1}{\PYGZsh{} \PYGZca{}}
+\PYG{c+c1}{\PYGZsh{} webserver\PYGZus{}1 (accesses all blocks via miner network)}
+\end{Verbatim}

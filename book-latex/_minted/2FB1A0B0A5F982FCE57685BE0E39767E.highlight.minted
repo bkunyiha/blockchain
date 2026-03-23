@@ -1,0 +1,10 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Check if target node is ready}
+docker\PYG{+w}{ }compose\PYG{+w}{ }\PYG{n+nb}{exec}\PYG{+w}{ }miner\PYGZus{}2\PYG{+w}{ }nc\PYG{+w}{ }\PYGZhy{}zv\PYG{+w}{ }miner\PYGZus{}1\PYG{+w}{ }\PYG{l+m}{2001}
+
+\PYG{c+c1}{\PYGZsh{} Check connection environment variable}
+docker\PYG{+w}{ }compose\PYG{+w}{ }\PYG{n+nb}{exec}\PYG{+w}{ }miner\PYGZus{}2\PYG{+w}{ }env\PYG{+w}{ }\PYG{p}{|}\PYG{+w}{ }grep\PYG{+w}{ }NODE\PYGZus{}CONNECT\PYGZus{}NODES
+
+\PYG{c+c1}{\PYGZsh{} View connection errors in logs}
+docker\PYG{+w}{ }compose\PYG{+w}{ }logs\PYG{+w}{ }miner\PYGZus{}2\PYG{+w}{ }\PYG{p}{|}\PYG{+w}{ }grep\PYG{+w}{ }\PYGZhy{}i\PYG{+w}{ }connect
+\end{MintedVerbatim}

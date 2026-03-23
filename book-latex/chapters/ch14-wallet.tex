@@ -1,0 +1,527 @@
+% ══════════════════════════════════════════════════════════════
+% Chapter 14: Wallet System --- Keys, Addresses, and Local Wallet Persistence
+% ══════════════════════════════════════════════════════════════
+\chapter{Wallet System}
+\label{ch:wallet}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Generate cryptographic key pairs and create wallet addresses
+  \item Sign transactions to authorize spending from a wallet
+  \item Persist wallet data securely across application restarts
+  \item Understand the key management lifecycle from creation through usage to storage
+\end{itemize}
+\end{learnbox}
+
+\lettrine{T}{he} \index{wallet}wallet system (\code{bitcoin/src/wallet}) is the part of our Rust Bitcoin implementation that turns \textbf{\index{key pair}keys} into a stable \textbf{address}, validates that address format, and persists a set of \index{wallet}wallets locally on disk.
+
+As we walk through the code, we reference these files as our primary source:
+
+\begin{itemize}
+  \item \code{bitcoin/src/wallet/wallet\_impl.rs} (\index{key pair}key material and address derivation)
+  \item \code{bitcoin/src/wallet/wallet\_service.rs} (persistence and lifecycle)
+\end{itemize}
+
+\begin{infobox}[Prerequisites]
+This chapter depends on the cryptographic primitives from Chapter~9 (\index{key pair}key generation, \index{hash function}hashing, \index{digital signature}signing) and the \index{UTXO}UTXO model from Chapter~13. You do not need to have read the network or node chapters---the \index{wallet}wallet module is a standalone library that the node and UI layers consume.
+\end{infobox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Overview and Scope}
+\label{sec:wallet-overview}
+
+The \index{wallet}wallet system implements three concrete responsibilities:
+
+\begin{enumerate}
+  \item \textbf{\index{key pair}Keypair creation}: \code{Wallet::new()} generates a Schnorr \index{key pair}keypair (Taproot-style).
+  \item \textbf{Address derivation + validation}: \code{Wallet::get\_address()} and \code{WalletAddress::validate(...)} implement a \index{Base58}Base58 payload format with a version byte $+$ \index{hash function}hash $+$ \index{checksum}checksum.
+  \item \textbf{Local persistence}: \code{WalletService} loads/saves a map of \index{wallet}wallets to a single file (default \code{wallets.dat}) using \code{Rust!serialization}\code{bincode}.
+\end{enumerate}
+
+\begin{warnbox}[What we do not implement]
+\textbf{Transaction signing} is handled elsewhere (crypto and transaction logic). This wallet module focuses on keys, addresses, and persistence of wallet material. We also do not cover BIP-32 hierarchical deterministic (HD) wallets, multi-signature schemes, hardware wallet integration, or Lightning Network payment channels.
+\end{warnbox}
+
+\begin{warnbox}[Key reuse risk]
+Never reuse a private key across wallets. If a key is compromised in one wallet, all funds associated with that key are at risk regardless of which wallet holds them.
+\end{warnbox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Mental Model: Three Layers, One Responsibility Each}
+\label{sec:wallet-mental-model}
+
+The wallet module is easier to understand if you separate it into three responsibilities:
+
+\begin{enumerate}
+  \item \textbf{Key material}: create and hold a Schnorr keypair (\code{Wallet})
+  \item \textbf{Address format}: derive and validate a Base58-encoded payload (\code{WalletAddress}, \code{convert\_address}, \code{get\_pub\_key\_hash})
+  \item \textbf{Local persistence}: store multiple wallets in a file (\code{WalletService}, default \code{wallets.dat})
+\end{enumerate}
+
+The diagram below shows the runtime relationship between key creation, address derivation, and file persistence:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{rust}
+WalletService::create_wallet
+   |
+   |-- Wallet::new()                 // generates keypair
+   |-- Wallet::get_address()         // derives Base58 address from public key
+   |-- insert into HashMap           // address -> wallet
+   |-- save_to_file()                // bincode -> wallets.dat
+\end{minted}
+
+% ──────────────────────────────────────────────────────────────
+\section{Address Format and Validation}
+\label{sec:address-format}
+
+The address format used by our Rust Bitcoin implementation is based on three fields:
+
+\begin{itemize}
+  \item \textbf{version byte} (1 byte)
+  \item \textbf{\index{public key}pub\_key\_hash} (the ``data'' bytes)
+  \item \textbf{\index{checksum}checksum} (4 bytes), derived from a double-\index{SHA-256}SHA-256 digest
+\end{itemize}
+
+\subsection{Address Payload Structure}
+\label{sec:address-payload}
+
+This \index{wallet}wallet implementation uses a payload that matches the ``classic'' \index{Base58}Base58Check idea (version $+$ data $+$ \index{checksum}checksum), but note the version byte and \index{hash function}hashing choices are specific to our implementation. This is intentional for teaching purposes; Bitcoin's actual address format is slightly different.
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{rust}
+payload bytes:
+  [ version: 1 byte ] [ pub_key_hash: N bytes ] [ checksum: 4 bytes ]
+
+encoded as:
+  Base58(payload)
+\end{minted}
+
+The address pipeline flows through \code{Wallet::get\_address} (constructs the payload), \code{get\_pub\_key\_hash} (hashes the public key), and \code{WalletAddress::validate} (verifies checksum and version on decode). \code{convert\_address} extracts the public key hash from a Base58 address string.
+
+\subsection{Step 1: WalletAddress Validation and Checksum}
+\label{sec:wallet-address-validation}
+
+\begin{infobox}[Methods involved]
+\code{WalletAddress::validate(...)}, \code{WalletAddress::validate\_address(...)} (internal), \code{convert\_address(...)}, \code{get\_pub\_key\_hash(...)}, \code{checksum(...)} (internal)
+\end{infobox}
+
+\begin{listing}[htbp]
+\caption{\code{WalletAddress} validation and checksum (\code{wallet\_impl.rs})}
+\label{lst:ch14-wallet-address}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use crate::error::{BtcError, Result};
+use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
+
+const VERSION: u8 = 0x01;
+pub const ADDRESS_CHECK_SUM_LEN: usize = 4;
+
+#[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Hash, Debug, ToSchema)]
+pub struct WalletAddress(String);
+
+impl WalletAddress {
+    pub fn validate(address: String) -> Result<Self> {
+        if Self::validate_address(&address)? {
+            Ok(Self(address))
+        } else {
+            Err(BtcError::InvalidAddress(address))
+        }
+    }
+
+    fn validate_address(address: &str) -> Result<bool> {
+        let payload = crate::base58_decode(address)?;
+        let actual_checksum =
+            payload[payload.len() - ADDRESS_CHECK_SUM_LEN..]
+                .to_vec();
+        let version = payload[0];
+        let pub_key_hash =
+            payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN]
+                .to_vec();
+
+        let mut target_vec = vec![];
+        target_vec.push(version);
+        target_vec.extend(pub_key_hash);
+        let target_checksum = checksum(target_vec.as_slice());
+        Ok(actual_checksum.eq(target_checksum.as_slice()))
+    }
+
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+
+    pub fn as_string(&self) -> String {
+        self.0.clone()
+    }
+}
+
+fn checksum(payload: &[u8]) -> Vec<u8> {
+    let first_sha = crate::sha256_digest(payload);
+    let second_sha = crate::sha256_digest(first_sha.as_slice());
+    second_sha[0..ADDRESS_CHECK_SUM_LEN].to_vec()
+}
+\end{minted}
+\end{listing}
+
+\begin{checkpointbox}
+The validation flow is: (1)~Base58-decode the address string, (2)~split into version, pub\_key\_hash, and checksum fields, (3)~recompute the checksum from version + pub\_key\_hash, (4)~verify the recomputed checksum matches the embedded one.
+\end{checkpointbox}
+
+\subsection{Address Creation and Extraction Helpers}
+\label{sec:address-helpers}
+
+Address creation and extraction helper functions construct Base58-encoded addresses with checksums and decode them back to retrieve the public key hash:
+
+\begin{listing}[htbp]
+\caption{Address creation and extraction (\code{wallet\_impl.rs})}
+\label{lst:ch14-convert-address}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn convert_address(pub_hash_key: &[u8]) -> Result<WalletAddress> {
+    let mut payload: Vec<u8> = vec![];
+    payload.push(VERSION);
+    payload.extend(pub_hash_key);
+    let checksum = checksum(payload.as_slice());
+    payload.extend(checksum.as_slice());
+    let address_str = crate::base58_encode(payload.as_slice())?;
+    WalletAddress::validate(address_str)
+}
+
+pub fn get_pub_key_hash(address: &WalletAddress) -> Result<Vec<u8>> {
+    let payload = crate::base58_decode(address.as_str())?;
+    let pub_key_hash =
+        payload[1..payload.len() - ADDRESS_CHECK_SUM_LEN].to_vec();
+    Ok(pub_key_hash)
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Wallet: Keypair Creation and Address Derivation}
+\label{sec:wallet-keypair}
+
+In this codebase, a \code{Wallet} is just two byte vectors:
+
+\begin{itemize}
+  \item \code{private\_key: Vec<u8>}
+  \item \code{public\_key: Vec<u8>}
+\end{itemize}
+
+Keypairs are created using Schnorr helpers from the crypto layer.
+
+\subsection{Key Generation Flow}
+\label{sec:key-gen-flow}
+
+The keypair derivation pipeline flows through five stages:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{rust}
+new_schnorr_key_pair()
+   |
+   v
+private_key ------------------------------+
+   |                                     |
+   +--> get_schnorr_public_key()         |
+               |                         |
+               v                         |
+           public_key                    |
+               |                         |
+               +--> hash_pub_key() ----> pub_key_hash
+                                           |
+                       +--> convert_address() -> WalletAddress
+\end{minted}
+
+\subsection{Step 2: Wallet Implementation}
+\label{sec:wallet-impl}
+
+\begin{infobox}[Methods involved]
+\code{Wallet::new()}, \code{Wallet::get\_address()}, \code{Wallet::\{get\_public\_key, get\_public\_key\_hash, get\_private\_key, get\_pkcs8\}}, \code{hash\_pub\_key(...)}, \code{convert\_address(...)}
+\end{infobox}
+
+\begin{listing}[htbp]
+\caption{\code{Wallet} implementation (\code{wallet\_impl.rs})}
+\label{lst:ch14-wallet-struct}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use crate::crypto::keypair::{get_schnorr_public_key, new_schnorr_key_pair};
+use crate::error::Result;
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct Wallet {
+    // Stored as raw bytes; callers use these bytes as signing material
+    // elsewhere in the codebase.
+    private_key: Vec<u8>,
+    // Stored as raw bytes; used for deriving addresses and for signature
+    // verification contexts.
+    public_key: Vec<u8>,
+}
+
+impl Wallet {
+    pub fn new() -> Result<Wallet> {
+        // 1) Create a new Schnorr secret key.
+        let private_key = new_schnorr_key_pair()?;
+        // 2) Derive the corresponding Schnorr public key.
+        let public_key = get_schnorr_public_key(&private_key)?;
+        Ok(Wallet {
+            private_key,
+            public_key,
+        })
+    }
+
+    pub fn get_address(&self) -> Result<super::WalletAddress> {
+        // 1) Hash the public key into the payload "data" bytes.
+        let pub_key_hash = super::hash_pub_key(self.public_key.as_slice());
+
+        // 2) Construct and validate the final Base58 string.
+        super::convert_address(pub_key_hash.as_slice())
+    }
+
+    pub fn get_public_key(&self) -> &[u8] {
+        self.public_key.as_slice()
+    }
+
+    pub fn get_public_key_hash(&self) -> Vec<u8> {
+        super::hash_pub_key(self.get_public_key())
+    }
+
+    pub fn get_private_key(&self) -> &[u8] {
+        self.private_key.as_slice()
+    }
+
+    pub fn get_pkcs8(&self) -> &[u8] {
+        // Kept for compatibility with older signing code that expects
+        // "pkcs8-like" bytes.
+        self.private_key.as_slice()
+    }
+}
+
+pub fn hash_pub_key(pub_key: &[u8]) -> Vec<u8> {
+    // Taproot-oriented hashing (single SHA256-like digest).
+    // The concrete implementation is delegated to `crate::taproot_hash`.
+    crate::taproot_hash(pub_key)
+}
+\end{minted}
+\end{listing}
+
+\begin{checkpointbox}
+\code{Wallet::new()} creates both the private and public keys using Schnorr primitives. \code{get\_address()} hashes the public key and constructs a Base58-encoded payload. The private key is stored as raw bytes and is used as signing material elsewhere in the codebase.
+\end{checkpointbox}
+
+% ──────────────────────────────────────────────────────────────
+\section{WalletService: Multiple Wallets and File Persistence}
+\label{sec:wallet-service}
+
+\code{WalletService} is a small manager around:
+
+\begin{itemize}
+  \item an in-memory \code{HashMap<WalletAddress, Wallet>}
+  \item load/save to a file (default \code{wallets.dat})
+\end{itemize}
+
+\subsection{Persistence Flow}
+\label{sec:persistence-flow}
+
+The diagram below shows the load-mutate-save flow:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{rust}
+WalletService::new
+  |
+  +--> load_from_file()
+          |
+          +--> bincode decode -> HashMap<WalletAddress, Wallet>
+
+WalletService::create_wallet
+  |
+  +--> insert new wallet into HashMap
+  +--> save_to_file()
+          |
+          +--> bincode encode -> wallets.dat (truncate + write + flush)
+\end{minted}
+
+\subsection{Step 3: WalletService Implementation}
+\label{sec:wallet-service-impl}
+
+\begin{infobox}[Methods involved]
+\code{WalletService::\{new, create\_wallet, get\_addresses, get\_wallet\}}, \code{WalletService::\{load\_from\_file, get\_wallet\_file\_path\}}, \code{WalletService::save\_to\_file(...)} (internal)
+\end{infobox}
+
+\begin{listing}[htbp]
+\caption{\code{WalletService} implementation (\code{wallet\_service.rs})}
+\label{lst:ch14-wallet-service}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use crate::error::{BtcError, Result};
+use crate::wallet::{Wallet, WalletAddress};
+use std::collections::HashMap;
+use std::env;
+use std::env::current_dir;
+use std::fs::{File, OpenOptions};
+use std::io::{BufWriter, Read, Write};
+
+pub const DEFAULT_WALLETS_FILE: &str = "wallets.dat";
+
+pub struct WalletService {
+    wallets: HashMap<WalletAddress, Wallet>,
+}
+
+impl WalletService {
+    pub fn new() -> Result<WalletService> {
+        let mut wallets = WalletService {
+            wallets: HashMap::new(),
+        };
+        wallets.load_from_file()?;
+        Ok(wallets)
+    }
+
+    pub fn create_wallet(&mut self) -> Result<WalletAddress> {
+        let wallet = Wallet::new()?;
+        let address = wallet.get_address()?;
+        self.wallets.insert(address.clone(), wallet);
+        self.save_to_file()?;
+        Ok(address)
+    }
+
+    pub fn get_addresses(&self) -> Vec<WalletAddress> {
+        self.wallets.keys().cloned().collect()
+    }
+
+    pub fn get_wallet(&self, address: &WalletAddress) -> Option<&Wallet> {
+        self.wallets.get(address)
+    }
+}
+\end{minted}
+\end{listing}
+
+\subsection{File I/O: Loading Wallets}
+\label{sec:wallet-load}
+
+The file I/O methods handle persistence by reading and writing a bincode-encoded map to disk:
+
+\begin{listing}[htbp]
+\caption{Loading wallets from disk (\code{wallet\_service.rs})}
+\label{lst:ch14-load-wallets}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn load_from_file(&mut self) -> Result<()> {
+    let path = current_dir()
+        .map_err(|e| BtcError::WalletsFilePathError(e.to_string()))?
+        .join(self.get_wallet_file_path());
+
+    if !path.exists() {
+        return Ok(());
+    }
+
+    let mut file = File::open(path).map_err(|e| {
+        BtcError::WalletsFileOpenError(e.to_string())
+    })?;
+    let metadata = file
+        .metadata()
+        .map_err(|e| BtcError::WalletsFileMetadataError(e.to_string()))?;
+    let mut buf = vec![0; metadata.len() as usize];
+    let _ = file
+        .read(&mut buf)
+        .map_err(|e| BtcError::WalletsFileReadError(e.to_string()))?;
+
+    let wallets = bincode::serde::decode_from_slice(
+        &buf[..],
+        bincode::config::standard(),
+    )
+    .map_err(|e| {
+        BtcError::WalletsDeserializationError(e.to_string())
+    })?
+    .0;
+    self.wallets = wallets;
+    Ok(())
+}
+
+pub fn get_wallet_file_path(&self) -> String {
+    env::var("WALLET_FILE").unwrap_or(DEFAULT_WALLETS_FILE.to_string())
+}
+\end{minted}
+\end{listing}
+
+\begin{checkpointbox}
+If the wallet file does not exist, \code{load\_from\_file()} returns \code{Ok(())} with an empty HashMap. This allows new wallets to be created from scratch. The file path is determined by the \code{WALLET\_FILE} environment variable or defaults to \code{wallets.dat}.
+\end{checkpointbox}
+
+\subsection{File I/O: Saving Wallets}
+\label{sec:wallet-save}
+
+The save operation mirrors the load, but opens the file for writing and flushes the encoded bytes:
+
+\begin{listing}[htbp]
+\caption{Saving wallets to disk (\code{wallet\_service.rs})}
+\label{lst:ch14-save-wallets}
+\begin{minted}[fontsize=\footnotesize]{rust}
+fn save_to_file(&self) -> Result<()> {
+    let path = current_dir()
+        .map_err(|e| BtcError::WalletsFilePathError(e.to_string()))?
+        .join(self.get_wallet_file_path());
+
+    let file = OpenOptions::new()
+        .create(true)
+        .truncate(true)
+        .write(true)
+        .open(&path)
+        .map_err(|e| BtcError::SavingWalletsError(e.to_string()))?;
+    let mut writer = BufWriter::new(file);
+
+    let wallets_bytes = bincode::serde::encode_to_vec(
+        &self.wallets,
+        bincode::config::standard(),
+    )
+    .map_err(|e| {
+        BtcError::WalletsSerializationError(e.to_string())
+    })?;
+
+    writer
+        .write_all(wallets_bytes.as_slice())
+        .map_err(|e| BtcError::SavingWalletsError(e.to_string()))?;
+    writer
+        .flush()
+        .map_err(|e| BtcError::SavingWalletsError(e.to_string()))?;
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}[Atomicity note]
+\code{OpenOptions::truncate(true)} truncates the file before writing, which provides a simple form of atomicity: the old file is cleared before new data is written. If the write or flush fails, the wallet file is left in an inconsistent state. For production systems, consider writing to a temporary file and then renaming it atomically.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Key Reading Checklist}
+\label{sec:wallet-reading-checklist}
+
+As we follow the Rust code, you should be able to answer these questions from the structs and method signatures alone:
+
+\begin{itemize}
+  \item Where does a wallet get its address? (Search for \code{Wallet::get\_address()}.)
+  \item How is the public key hashed? (Look at \code{hash\_pub\_key(...)}.)
+  \item How does checksum validation work? (\code{WalletAddress::validate\_address(...)}.)
+  \item Where are multiple wallets stored? (In-memory \code{HashMap}; persisted via \code{wallets.dat}.)
+  \item What format are wallets serialized as? (\code{bincode} standard configuration.)
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Exercises}
+\label{sec:wallet-exercises}
+
+\begin{enumerate}
+  \item \textbf{Multi-Wallet Transfer} --- Generate two wallets, fund the first with a coinbase transaction, then send coins from the first wallet to the second. Verify the UTXO set reflects the transfer. Attempt to spend more than the first wallet's balance and confirm the transaction is rejected.
+
+  \item \textbf{Key Persistence Verification} --- Create a wallet, generate an address, and save the wallet. Restart the application, reload the wallet, and verify the same key pair and address are available. This confirms the persistence layer correctly serializes and deserializes cryptographic keys.
+\end{enumerate}
+
+% ──────────────────────────────────────────────────────────────
+\section{Further Reading}
+\label{sec:wallet-further-reading}
+
+\begin{itemize}
+  \item \textbf{BIP-32 (HD Wallets)} --- Defines hierarchical deterministic key derivation, allowing an entire tree of key pairs to be generated from a single seed. The \code{bitcoin} crate in the Rust ecosystem implements this.
+  \item \textbf{BIP-39 (Mnemonic Seed Phrases)} --- Specifies how a random seed is encoded as a human-readable list of 12 or 24 words. The \code{bip39} crate provides a Rust implementation.
+  \item \textbf{BIP-44 (Multi-Account Hierarchy)} --- Builds on BIP-32 to define a standard derivation path (\code{m/44\textquotesingle/0\textquotesingle/0\textquotesingle/...}) for organizing keys by coin type and account.
+  \item \textbf{\href{https://docs.rs/bitcoin}{rust-bitcoin wallet module}} --- The community's production-grade Bitcoin library for Rust. Studying its wallet implementation reveals the gap between our teaching implementation and production requirements.
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+\item We built the wallet system that generates key pairs, creates addresses, and persists keys securely.
+\item We implemented a Base58Check address format with version byte, pub-key-hash, and checksum verification.
+\item We traced the key management lifecycle from Schnorr keypair generation through address derivation and wallet persistence.
+\item \code{WalletService} manages multiple wallets in an in-memory \code{HashMap}, serialized to disk using \code{bincode}.
+\item In the next chapter, we expose the blockchain's capabilities through a REST API, creating the interface that desktop and web frontends will consume.
+\end{chaptersummary}

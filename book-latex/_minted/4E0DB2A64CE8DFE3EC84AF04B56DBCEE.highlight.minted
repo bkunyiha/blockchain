@@ -1,0 +1,20 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{create\PYGZus{}cors\PYGZus{}layer\PYGZus{}with\PYGZus{}origins}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{origins}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{CorsLayer}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{cors}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{CorsLayer}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{allow\PYGZus{}methods}\PYG{p}{(}\PYG{n}{Any}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{allow\PYGZus{}headers}\PYG{p}{(}\PYG{n}{Any}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{expose\PYGZus{}headers}\PYG{p}{(}\PYG{n}{Any}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{max\PYGZus{}age}\PYG{p}{(}\PYG{n}{std}\PYG{p}{::}\PYG{n}{time}\PYG{p}{::}\PYG{n}{Duration}\PYG{p}{::}\PYG{n}{from\PYGZus{}secs}\PYG{p}{(}\PYG{l+m+mi}{86400}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{origin}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n}{origins}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{parsed\PYGZus{}origin}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{            }\PYG{n}{origin}\PYG{p}{.}\PYG{n}{parse}\PYG{p}{:}\PYG{p}{:}\PYG{o}{\PYGZlt{}}\PYG{n}{axum}\PYG{p}{::}\PYG{n}{http}\PYG{p}{::}\PYG{n}{HeaderValue}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{cors}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{cors}\PYG{p}{.}\PYG{n}{allow\PYGZus{}origin}\PYG{p}{(}\PYG{n}{parsed\PYGZus{}origin}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n}{cors}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

@@ -1,0 +1,15 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+new\PYGZus{}schnorr\PYGZus{}key\PYGZus{}pair()
+   |
+   v
+private\PYGZus{}key \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}+
+   |                                     |
+   +\PYGZhy{}\PYGZhy{}\PYGZgt{} get\PYGZus{}schnorr\PYGZus{}public\PYGZus{}key()         |
+               |                         |
+               v                         |
+           public\PYGZus{}key                    |
+               |                         |
+               +\PYGZhy{}\PYGZhy{}\PYGZgt{} hash\PYGZus{}pub\PYGZus{}key() \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZgt{} pub\PYGZus{}key\PYGZus{}hash
+                                           |
+                       +\PYGZhy{}\PYGZhy{}\PYGZgt{} convert\PYGZus{}address() \PYGZhy{}\PYGZgt{} WalletAddress
+\end{MintedVerbatim}

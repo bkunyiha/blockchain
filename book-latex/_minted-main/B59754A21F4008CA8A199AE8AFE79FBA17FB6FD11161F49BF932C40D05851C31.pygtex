@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{blockchain}::\PYG{n}{functional\PYGZus{}transaction}\PYG{p}{;}
+
+\PYG{c+c1}{// Keep only non\PYGZhy{}coinbase transactions (pure/synchronous predicate).}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{non\PYGZus{}coinbase}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{functional\PYGZus{}transaction}::\PYG{n}{process\PYGZus{}transactions}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n}{transactions}\PYG{p}{,}
+\PYG{+w}{    }\PYG{o}{|}\PYG{n}{tx}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{not\PYGZus{}coinbase}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{p}{)}\PYG{p}{;}
+\end{Verbatim}

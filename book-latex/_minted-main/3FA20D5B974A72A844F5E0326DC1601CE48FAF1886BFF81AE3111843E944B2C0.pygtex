@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+Miner 1: NODE\PYGZus{}CONNECT\PYGZus{}NODES=local (seed node)
+  v
+Miner 2: NODE\PYGZus{}CONNECT\PYGZus{}NODES=miner\PYGZus{}1:2001
+  v
+Miner 3: NODE\PYGZus{}CONNECT\PYGZus{}NODES=miner\PYGZus{}2:2002
+  v
+Miner 4: NODE\PYGZus{}CONNECT\PYGZus{}NODES=miner\PYGZus{}3:2003
+\end{Verbatim}

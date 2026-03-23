@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{match}\PYG{+w}{ }\PYG{n}{block}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{block}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{Json}\PYG{p}{(}\PYG{n}{ApiResponse}::\PYG{n}{success}\PYG{p}{(}\PYG{n}{response}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nb}{None}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{StatusCode}::\PYG{n}{NOT\PYGZus{}FOUND}\PYG{p}{)}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

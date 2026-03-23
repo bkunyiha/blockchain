@@ -1,0 +1,23 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+User interaction                     Component state
+  |                                   |
+  | enter label + click \PYGZdq{}Create\PYGZdq{}      |
+  |\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZgt{}|
+  |                                   | validate label.trim()
+  |                                   | call mutate(\PYGZob{} label \PYGZcb{})
+  |                                   |
+  |                                   Hook lifecycle
+  |                                   |
+  |                                   | call ApiClient.POST
+  |                                   |\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZgt{} HTTP Request
+  |                                   |                           |
+  |                                   | receive response          | Rust node
+  |                                   |\PYGZlt{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZlt{}\PYGZhy{}|
+  |                                   |
+  |                                   | invalidateQueries
+  |                                   | show toast success
+  |                                   |
+  | render new address + JSON        \PYGZlt{}\PYGZhy{}
+  | show toast success
+  |
+\end{Verbatim}

@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{hash\PYGZus{}transactions}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{txhashs}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{vec!}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{transaction}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{transactions}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{txhashs}\PYG{p}{.}\PYG{n}{extend}\PYG{p}{(}\PYG{n}{transaction}\PYG{p}{.}\PYG{n}{get\PYGZus{}id}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k}{crate}::\PYG{n}{sha256\PYGZus{}digest}\PYG{p}{(}\PYG{n}{txhashs}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

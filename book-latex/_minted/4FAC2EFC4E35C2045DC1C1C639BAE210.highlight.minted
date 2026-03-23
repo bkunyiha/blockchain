@@ -1,0 +1,35 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+┌──────────────────────────────────────────┐
+│          SQLCipher Encrypted DB          │
+│   (shared by Iced and Tauri wallets)     │
+├──────────────────────────────────────────┤
+│                                          │
+│  ┌──────────────────┐  ┌──────────────┐ │
+│  │    settings       │  │    users     │ │
+│  │  (singleton)      │  │ (singleton)  │ │
+│  ├──────────────────┤  ├──────────────┤ │
+│  │ id (PK, CHECK=1) │  │ id (PK)     │ │
+│  │ base\PYGZus{}url (TEXT)   │  │ first\PYGZus{}name  │ │
+│  │ api\PYGZus{}key (TEXT)    │  │ last\PYGZus{}name   │ │
+│  │ created\PYGZus{}at (TEXT) │  │ profile\PYGZus{}pic │ │
+│  │ updated\PYGZus{}at (TEXT) │  │  (BLOB)     │ │
+│  └──────────────────┘  └──────────────┘ │
+│                                          │
+│  ┌──────────────────┐  ┌──────────────┐ │
+│  │ wallet\PYGZus{}addresses  │  │schema\PYGZus{}version│ │
+│  ├──────────────────┤  ├──────────────┤ │
+│  │ id (PK AUTO)     │  │ version (PK) │ │
+│  │ address (UNIQUE)  │  └──────────────┘ │
+│  │ label (TEXT)      │                   │
+│  │ created\PYGZus{}at (TEXT) │                   │
+│  │ updated\PYGZus{}at (TEXT) │                   │
+│  └──────────────────┘                    │
+└──────────────────────────────────────────┘
+          △                    △
+          │                    │
+     ┌────┴────┐         ┌────┴────┐
+     │  Iced   │         │  Tauri  │
+     │ Wallet  │         │ Wallet  │
+     └─────────┘         └─────────┘
+     Same password = same encryption key
+\end{MintedVerbatim}

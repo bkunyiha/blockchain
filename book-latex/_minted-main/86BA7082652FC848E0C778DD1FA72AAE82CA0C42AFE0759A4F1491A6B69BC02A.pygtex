@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Enable sequential startup (default)}
+\PYG{n+nb}{export} \PYG{n+nv}{SEQUENTIAL\PYGZus{}STARTUP}\PYG{o}{=}yes
+./docker\PYGZhy{}compose.scale.sh \PYG{l+m}{3} \PYG{l+m}{2}
+
+\PYG{c+c1}{\PYGZsh{} Or disable for simultaneous startup}
+\PYG{n+nb}{export} \PYG{n+nv}{SEQUENTIAL\PYGZus{}STARTUP}\PYG{o}{=}no
+./docker\PYGZhy{}compose.scale.sh \PYG{l+m}{3} \PYG{l+m}{2}
+\end{Verbatim}

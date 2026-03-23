@@ -1,0 +1,17 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{p}{::}\PYG{n}{primitives}\PYG{p}{::}\PYG{n}{transaction}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Transaction}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{TXInput}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{TXOutput}
+\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{c+c1}{// Create coinbase transaction}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{coinbase}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Transaction}\PYG{p}{::}\PYG{n}{new\PYGZus{}coinbase\PYGZus{}tx}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{mining\PYGZus{}address}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{c+c1}{// Create regular transaction}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Transaction}\PYG{p}{::}\PYG{n}{new\PYGZus{}utxo\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n}{from\PYGZus{}address}\PYG{p}{,}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n}{to\PYGZus{}address}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{amount}\PYG{p}{,}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n}{utxo\PYGZus{}set}
+\PYG{p}{)}
+\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\end{MintedVerbatim}

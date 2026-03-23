@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}database\PYGZus{}path}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{PathBuf}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{path}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{dirs}::\PYG{n}{data\PYGZus{}dir}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{PathBuf}::\PYG{n}{from}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{.}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{path}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{bitcoin\PYGZhy{}wallet\PYGZhy{}ui}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{path}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{n}{DB\PYGZus{}FILENAME}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{path}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

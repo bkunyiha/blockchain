@@ -1,0 +1,5 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+brew\PYG{+w}{ }install\PYG{+w}{ }kubectl
+brew\PYG{+w}{ }install\PYG{+w}{ }minikube
+brew\PYG{+w}{ }install\PYG{+w}{ }docker
+\end{MintedVerbatim}

@@ -1,0 +1,15 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+Incoming data  |  Validate (pure checks, no durable state mutation)
+──────────────►|  \PYGZhy{} tx signatures / structure
+               |  \PYGZhy{} block structure (coinbase rules, etc.)
+               |  \PYGZhy{} proof\PYGZhy{}of\PYGZhy{}work target check (TODO in some paths)
+               └───────────────┬──────────────────────────────────
+                               │ only if VALID
+                               ▼
+               ┌──────────────────────────────────────────────────
+               │  Connect (state mutation)
+               │  \PYGZhy{} write block to DB
+               │  \PYGZhy{} update tip / reorganize chain
+               │  \PYGZhy{} update UTXO set (spend inputs, create outputs)
+               └──────────────────────────────────────────────────
+\end{MintedVerbatim}

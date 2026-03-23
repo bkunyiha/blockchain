@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// [OK] CORRECT: Store as binary}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{Transaction}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{txid}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{vin}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{TXInput}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{vout}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{TXOutput}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// [X] WRONG: Don\PYGZsq{}t store as hex string}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{Transaction}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{txid}: \PYG{n+nb}{String}\PYG{p}{,}\PYG{+w}{  }\PYG{c+c1}{// Wastes memory and requires conversions}
+\PYG{+w}{    }\PYG{c+c1}{// ...}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

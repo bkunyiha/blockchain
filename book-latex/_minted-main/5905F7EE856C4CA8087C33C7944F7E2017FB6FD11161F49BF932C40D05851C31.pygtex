@@ -1,0 +1,17 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{ring}::\PYG{n}{signature}::\PYG{p}{\PYGZob{}}\PYG{n}{ECDSA\PYGZus{}P256\PYGZus{}SHA256\PYGZus{}FIXED\PYGZus{}SIGNING}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{EcdsaKeyPair}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{ecdsa\PYGZus{}p256\PYGZus{}sha256\PYGZus{}sign\PYGZus{}digest}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{pkcs8}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{message}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{rng}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ring}::\PYG{n}{rand}::\PYG{n}{SystemRandom}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{key\PYGZus{}pair}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{EcdsaKeyPair}::\PYG{n}{from\PYGZus{}pkcs8}\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n}{ECDSA\PYGZus{}P256\PYGZus{}SHA256\PYGZus{}FIXED\PYGZus{}SIGNING}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{pkcs8}\PYG{p}{,}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n}{rng}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{signature}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{key\PYGZus{}pair}\PYG{p}{.}\PYG{n}{sign}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{rng}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{message}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{signature}\PYG{p}{.}\PYG{n}{as\PYGZus{}ref}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

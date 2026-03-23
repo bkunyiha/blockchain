@@ -1,0 +1,21 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+Wallet (construct \PYGZam{} sign a transaction):
+  Transaction::new\PYGZus{}utxo\PYGZus{}transaction(...)
+    \PYGZhy{}\PYGZgt{} UTXOSet::find\PYGZus{}spendable\PYGZus{}outputs(...) // coin selection
+    \PYGZhy{}\PYGZgt{} Transaction::sign(...)               // authorize
+
+Node (add transaction into mempool):
+  NodeContext::process\PYGZus{}transaction(tx)
+    \PYGZhy{}\PYGZgt{} txmempool::add\PYGZus{}to\PYGZus{}memory\PYGZus{}pool(tx)   // store pending
+    \PYGZhy{}\PYGZgt{} spawn submit\PYGZus{}transaction\PYGZus{}for\PYGZus{}mining(...) // async
+
+Network (broadcast transaction to peers):
+  send\PYGZus{}inv(OpType::Tx, txid)  // announce by ID
+
+Mining boundary (verify transaction):
+  BlockchainService::mine\PYGZus{}block(txs)
+    \PYGZhy{}\PYGZgt{} Transaction::verify(...)     // defensive check
+
+Confirmation (transaction in block):
+  txmempool::remove\PYGZus{}from\PYGZus{}memory\PYGZus{}pool(txs) // confirm
+\end{MintedVerbatim}

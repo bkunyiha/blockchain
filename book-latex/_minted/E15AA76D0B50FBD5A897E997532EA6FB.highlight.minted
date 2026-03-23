@@ -1,0 +1,32 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+External Layer (web/clients/network)
+  |
+  ├─\PYGZgt{} NodeContext (central API)
+  |     |
+  |     ├─\PYGZgt{} BlockchainService (chain state)
+  |     |     └─\PYGZgt{} UTXOSet (query/update)
+  |     |
+  |     ├─\PYGZgt{} GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL (via txmempool)
+  |     |
+  |     ├─\PYGZgt{} miner functions
+  |     |     ├─\PYGZgt{} should\PYGZus{}trigger\PYGZus{}mining
+  |     |     ├─\PYGZgt{} prepare\PYGZus{}mining\PYGZus{}utxo
+  |     |     └─\PYGZgt{} process\PYGZus{}mine\PYGZus{}block
+  |     |
+  |     └─\PYGZgt{} net\PYGZus{}processing
+  |           ├─\PYGZgt{} send\PYGZus{}inv
+  |           ├─\PYGZgt{} send\PYGZus{}block
+  |           └─\PYGZgt{} send\PYGZus{}tx
+  |
+  └─\PYGZgt{} Server::run\PYGZus{}with\PYGZus{}shutdown (TCP loop)
+        └─\PYGZgt{} net\PYGZus{}processing::process\PYGZus{}stream
+
+Global Singletons (shared state):
+  ├─\PYGZgt{} GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL (pending txs)
+  ├─\PYGZgt{} GLOBAL\PYGZus{}NODES (peer list)
+  ├─\PYGZgt{} GLOBAL\PYGZus{}BLOCKS\PYGZus{}IN\PYGZus{}TRANSIT (download queue)
+  └─\PYGZgt{} CENTERAL\PYGZus{}NODE (bootstrap node)
+
+Persistent storage:
+  └─\PYGZgt{} BlockchainFileSystem (sled database)
+\end{MintedVerbatim}

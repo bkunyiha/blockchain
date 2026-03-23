@@ -1,0 +1,3 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{static}\PYG{+w}{ }\PYG{n}{DB\PYGZus{}CONN}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{OnceLock}\PYG{o}{\PYGZlt{}}\PYG{n}{Mutex}\PYG{o}{\PYGZlt{}}\PYG{n}{Connection}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{OnceLock}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\end{MintedVerbatim}

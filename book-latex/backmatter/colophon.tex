@@ -1,0 +1,69 @@
+% ══════════════════════════════════════════════════════════════
+%  colophon.tex — Production notes
+% ══════════════════════════════════════════════════════════════
+\chapter*{Colophon}
+\addcontentsline{toc}{chapter}{Colophon}
+
+\begin{center}
+  {\color{brand}\rule{0.4\textwidth}{1.5pt}}
+\end{center}
+
+\vspace{12pt}
+
+\noindent
+This book was typeset using \LaTeX{} with the \texttt{memoir}
+document class, configured for Crown Quarto format
+(7.44\,\texttimes\,9.69 inches).
+
+\medskip
+\noindent\textbf{Typography}
+
+\smallskip
+\noindent
+The body text is set in \emph{TeX Gyre Pagella} (a Palatino
+revival) at 11\,pt with 1.05\texttimes{} leading. Section
+headings and navigational elements use \emph{TeX Gyre Heros}
+(Helvetica family). Code listings and inline code use
+\emph{TeX Gyre Cursor} (Courier family). Mathematical
+notation uses \emph{Palatino Math} via the \texttt{mathpazo}
+package. Microtypographic refinements---character protrusion,
+font expansion, and tracking---are provided by the
+\texttt{microtype} package.
+
+\medskip
+\noindent\textbf{Color system}
+
+\smallskip
+\noindent
+The book's visual identity is built around Rust Orange
+(\texttt{\#B7410E}) for accent elements and Dark Teal
+(\texttt{\#2C5F7C}) for structural headings. Eleven callout box
+families provide instant visual classification of notes, tips,
+warnings, checkpoints, and code references.
+
+\medskip
+\noindent\textbf{Code presentation}
+
+\smallskip
+\noindent
+Source code is syntax-highlighted using the \texttt{minted}
+package with Pygments. Rust listings include line numbers and
+support inline \LaTeX{} annotations via escape sequences.
+Manning-style numbered annotation circles connect code lines
+to explanatory notes below each listing.
+
+\medskip
+\noindent\textbf{Production tools}
+
+\smallskip
+\noindent
+The PDF was produced with pdf\LaTeX{} and \texttt{latexmk}.
+Diagrams were created with Ti\textit{k}Z. The index was generated
+with \texttt{makeindex} and the glossary with
+\texttt{glossaries-extra}. Version control was managed with Git.
+
+\vfill
+\begin{center}
+  {\color{brand}\rule{0.4\textwidth}{1.5pt}}\\[8pt]
+  {\small\sffamily\color{sectioncolor} First Edition\enspace---\enspace\the\year}
+\end{center}

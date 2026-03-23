@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{WalletService}::\PYG{n}{new}
+\PYG{+w}{  }\PYG{o}{|}
+\PYG{+w}{  }\PYG{o}{+}\PYG{o}{\PYGZhy{}}\PYGZhy{}\PYGZgt{} \PYG{n+nc}{load\PYGZus{}from\PYGZus{}file}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{          }\PYG{o}{|}
+\PYG{+w}{          }\PYG{o}{+}\PYG{o}{\PYGZhy{}}\PYGZhy{}\PYGZgt{} \PYG{n+nc}{bincode}\PYG{+w}{ }\PYG{n}{decode}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{HashMap}\PYG{o}{\PYGZlt{}}\PYG{n}{WalletAddress}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Wallet}\PYG{o}{\PYGZgt{}}
+
+\PYG{n}{WalletService}::\PYG{n}{create\PYGZus{}wallet}
+\PYG{+w}{  }\PYG{o}{|}
+\PYG{+w}{  }\PYG{o}{+}\PYG{o}{\PYGZhy{}}\PYGZhy{}\PYGZgt{} \PYG{n+nc}{insert}\PYG{+w}{ }\PYG{n}{new}\PYG{+w}{ }\PYG{n}{wallet}\PYG{+w}{ }\PYG{n}{into}\PYG{+w}{ }\PYG{n}{HashMap}
+\PYG{+w}{  }\PYG{o}{+}\PYG{o}{\PYGZhy{}}\PYGZhy{}\PYGZgt{} \PYG{n+nc}{save\PYGZus{}to\PYGZus{}file}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{          }\PYG{o}{|}
+\PYG{+w}{          }\PYG{o}{+}\PYG{o}{\PYGZhy{}}\PYGZhy{}\PYGZgt{} \PYG{n+nc}{bincode}\PYG{+w}{ }\PYG{n}{encode}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{wallets}\PYG{p}{.}\PYG{n}{dat}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{truncate}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{write}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{flush}\PYG{p}{)}
+\end{Verbatim}

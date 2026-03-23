@@ -1,0 +1,17 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+blockchain/
+├── bitcoin/                    \PYGZsh{} Core blockchain implementation
+│   ├── src/
+│   │   ├── primitives/        \PYGZsh{} Transaction, Block, UTXO structures
+│   │   ├── node/              \PYGZsh{} Node context and networking
+│   │   ├── store/             \PYGZsh{} Blockchain storage (file system, database)
+│   │   └── web/               \PYGZsh{} REST API server (Axum)
+│   └── ...
+├── bitcoin\PYGZhy{}desktop\PYGZhy{}ui\PYGZhy{}iced/        \PYGZsh{} Desktop admin interface (Iced)
+├── bitcoin\PYGZhy{}wallet\PYGZhy{}ui\PYGZhy{}iced/          \PYGZsh{} Wallet user interface (Iced)
+├── bitcoin\PYGZhy{}web\PYGZhy{}ui/             \PYGZsh{} Web admin interface (React/TypeScript)
+├── ci/
+│   ├── docker\PYGZhy{}compose/        \PYGZsh{} Docker Compose deployment
+│   └── kubernetes/            \PYGZsh{} Kubernetes deployment
+└── book\PYGZhy{}draft/                 \PYGZsh{} This documentation
+\end{MintedVerbatim}

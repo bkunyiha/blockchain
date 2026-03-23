@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{save\PYGZus{}settings}\PYG{p}{(}\PYG{n}{settings}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Settings}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{SqliteResult}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{conn}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{get\PYGZus{}connection}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{UPDATE settings SET base\PYGZus{}url = ?, }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{         api\PYGZus{}key = ?, }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{         updated\PYGZus{}at = datetime(\PYGZsq{}now\PYGZsq{}) WHERE id = 1}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{params}\PYG{o}{!}\PYG{p}{[}\PYG{n}{settings}\PYG{p}{.}\PYG{n}{base\PYGZus{}url}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{settings}\PYG{p}{.}\PYG{n}{api\PYGZus{}key}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

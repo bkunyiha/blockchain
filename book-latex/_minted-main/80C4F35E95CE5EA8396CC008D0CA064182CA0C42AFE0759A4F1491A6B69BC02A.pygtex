@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Check if target node is ready}
+docker compose \PYG{n+nb}{exec} miner\PYGZus{}2 nc \PYGZhy{}zv miner\PYGZus{}1 \PYG{l+m}{2001}
+
+\PYG{c+c1}{\PYGZsh{} Check connection environment variable}
+docker compose \PYG{n+nb}{exec} miner\PYGZus{}2 env \PYG{p}{|} grep NODE\PYGZus{}CONNECT\PYGZus{}NODES
+
+\PYG{c+c1}{\PYGZsh{} View connection errors in logs}
+docker compose logs miner\PYGZus{}2 \PYG{p}{|} grep \PYGZhy{}i connect
+\end{Verbatim}

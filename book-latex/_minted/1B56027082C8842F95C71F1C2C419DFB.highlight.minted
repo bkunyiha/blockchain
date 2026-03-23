@@ -1,0 +1,16 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{address}\PYG{p}{;}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{hash}\PYG{p}{;}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{keypair}\PYG{p}{;}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{signature}\PYG{p}{;}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{use}\PYG{+w}{ }\PYG{n}{address}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}\PYG{n}{base58\PYGZus{}decode}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{base58\PYGZus{}encode}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{use}\PYG{+w}{ }\PYG{n}{hash}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}\PYG{n}{sha256\PYGZus{}digest}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{taproot\PYGZus{}hash}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{use}\PYG{+w}{ }\PYG{n}{keypair}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}\PYG{n}{get\PYGZus{}schnorr\PYGZus{}public\PYGZus{}key}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{new\PYGZus{}key\PYGZus{}pair}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{new\PYGZus{}schnorr\PYGZus{}key\PYGZus{}pair}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{use}\PYG{+w}{ }\PYG{n}{signature}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{ecdsa\PYGZus{}p256\PYGZus{}sha256\PYGZus{}sign\PYGZus{}digest}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{ecdsa\PYGZus{}p256\PYGZus{}sha256\PYGZus{}sign\PYGZus{}verify}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{schnorr\PYGZus{}sign\PYGZus{}digest}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{schnorr\PYGZus{}sign\PYGZus{}verify}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\end{MintedVerbatim}

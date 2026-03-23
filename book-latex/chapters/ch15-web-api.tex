@@ -1,0 +1,2171 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 15: Web API Architecture --- REST API with Axum
+% ══════════════════════════════════════════════════════════════
+
+\chapter{Web API Architecture}
+\label{ch:web-api}
+
+\begin{learnbox}
+\begin{itemize}
+  \item How to structure a REST API using Axum and Tokio
+  \item Request handlers, extractors, and middleware patterns
+  \item Authentication, CORS, logging, and error handling
+  \item Automatic OpenAPI documentation with Utoipa
+  \item Rate limiting, security, and production best practices
+\end{itemize}
+\end{learnbox}
+
+\lettrine{T}{he} web API layer serves as the primary interface between clients and our \index{blockchain}blockchain node. Whether accessed through desktop applications, web browsers, or programmatic clients, all interactions flow through a \index{REST API}REST API built with Rust's \index{Axum}Axum framework. This chapter provides a comprehensive guide to designing, implementing, and deploying a production-ready web API that is secure, scalable, and thoroughly documented.
+
+As we walk through the code, we use these files as our primary reference:
+
+\begin{itemize}
+  \item \code{bitcoin/src/web/server.rs}
+  \item \code{bitcoin/src/web/routes/}
+  \item \code{bitcoin/src/web/handlers/}
+  \item \code{bitcoin/src/web/middleware/}
+  \item \code{bitcoin/src/web/models/}
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Introduction and Architecture Overview}
+\label{sec:web-api-intro}
+
+The web API layer follows a modular architecture that cleanly separates concerns. Each component has a well-defined responsibility, making the codebase maintainable and testable.
+
+\subsection{Directory Structure}
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+bitcoin/src/web/
++-- mod.rs              # Module exports
++-- server.rs           # Server initialization
++-- routes/             # Route definitions
+|   +-- mod.rs
+|   +-- api.rs          # API routes
+|   +-- web.rs          # Web UI routes
++-- handlers/           # Request handlers
+|   +-- mod.rs
+|   +-- blockchain.rs   # Blockchain endpoints
+|   +-- wallet.rs       # Wallet operations
+|   +-- transaction.rs  # Transaction management
+|   +-- mining.rs       # Mining operations
+|   +-- health.rs       # Health checks
+|   +-- validation.rs   # Request validation
++-- middleware/         # HTTP middleware
+|   +-- mod.rs
+|   +-- auth.rs         # Authentication
+|   +-- cors.rs         # CORS configuration
+|   +-- logging.rs      # Logging
+|   +-- rate_limit.rs   # Rate limiting
++-- models/             # Data models
+|   +-- mod.rs
+|   +-- requests.rs     # Request structures
+|   +-- responses.rs    # Response structures
+|   +-- errors.rs       # Error models
++-- openapi.rs          # OpenAPI specification
+\end{minted}
+
+\subsection{Component Responsibilities}
+
+\begin{infobox}[Routes]
+Routes define endpoint paths and HTTP methods, connecting URLs to handler functions. Routes are organized by functionality (\index{REST API}API routes, web routes) and can be nested or merged.
+\end{infobox}
+
+\begin{infobox}[Handlers]
+Handlers contain the business logic for processing requests. Each handler is an \index{Rust!async}async function that extracts data from requests, performs operations using the \index{blockchain}blockchain node context, and returns structured responses.
+\end{infobox}
+
+\begin{infobox}[Middleware]
+Middleware provides cross-cutting concerns like authentication, \index{CORS}CORS, logging, and error handling. Middleware wraps handlers, processing requests before they reach handlers and responses after handlers complete.
+\end{infobox}
+
+\begin{infobox}[Models]
+Models define the structure of requests and responses using Rust types. Models provide type safety, automatic \index{Rust!serialization}serialization/deserialization, and validation.
+\end{infobox}
+
+\begin{infobox}[Server]
+The server orchestrates the entire web layer, combining routes, middleware, and state into a complete application. It handles server lifecycle, graceful shutdown, and configuration management.
+\end{infobox}
+
+\subsection{Design Principles}
+
+The web API architecture follows five key principles:
+
+\paragraph{1. Separation of Concerns}
+Each component has a single, well-defined responsibility. Routes define endpoints, not business logic. Handlers contain business logic, not routing details. Middleware handles cross-cutting concerns, not domain logic. This separation makes the codebase easier to understand, test, and maintain.
+
+\paragraph{2. Type Safety}
+Rust's type system ensures compile-time validation of requests and responses. Type mismatches are caught during compilation, not at runtime. This includes request extraction, response construction, and state sharing.
+
+\paragraph{3. Async-First Design}
+The entire web layer is built on async/await, enabling efficient concurrent request handling. All handlers are async functions, and the server uses Tokio's async runtime to manage concurrency.
+
+\paragraph{4. Security by Default}
+Security measures are built into the architecture from the ground up: API key-based authentication protects sensitive endpoints, CORS is configured appropriately, internal errors don't leak sensitive information, and request data is validated before processing.
+
+\paragraph{5. Automatic Documentation}
+OpenAPI/Swagger documentation is automatically generated from code, ensuring documentation stays synchronized with implementation.
+
+\subsection{Request Flow}
+
+Understanding how requests flow through the system is crucial for debugging and extending the API:
+
+\begin{listing}[htbp]
+\caption{HTTP Request Processing Pipeline}
+\label{lst:request-flow}
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+1. HTTP Request arrives
+   v
+2. CORS Middleware (if enabled)
+   - Handles preflight requests
+   v
+3. Compression Middleware
+   - Decompresses/prepares compression
+   v
+4. Error Handling Middleware
+   - Catches and formats errors
+   v
+5. Route Matching
+   - Extracts path parameters
+   v
+6. Authentication Middleware (if required)
+   - Validates API key
+   v
+7. Handler Execution
+   - Extracts request data
+   - Executes business logic
+   v
+8. Response Processing
+   - Compression applied
+   - Error handling formatted
+   - JSON serialization
+   v
+9. HTTP Response sent to client
+\end{minted}
+\end{listing}
+
+\subsection{Technology Stack}
+
+\paragraph{Axum}
+A modern, ergonomic web framework built on Tokio and Tower that leverages Rust's type system for compile-time safety and excellent performance.
+
+\paragraph{Tokio}
+Powers all async operations, providing the runtime for concurrent request handling.
+
+\paragraph{Tower}
+Provides middleware abstractions and HTTP-specific components like CORS and compression.
+
+\paragraph{Serde}
+Handles JSON serialization and deserialization for request/response bodies.
+
+\paragraph{Utoipa}
+Generates OpenAPI documentation from Rust types.
+
+\paragraph{Tracing}
+Provides structured logging and diagnostics for monitoring and debugging.
+
+% ──────────────────────────────────────────────────────────────
+\section{Server Setup and Configuration}
+\label{sec:server-setup}
+
+The web server is the entry point for all HTTP requests. We explore how it is structured and configured below.
+
+\subsection{WebServer Structure}
+
+We encapsulate the server configuration and node context in the \code{WebServer} struct:
+
+\begin{listing}[htbp]
+\caption{WebServer struct with configuration}
+\label{lst:webserver-struct}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub struct WebServer {
+    config: WebServerConfig,
+    node: Arc<NodeContext>,
+}
+\end{minted}
+\end{listing}
+
+The server holds two key components:
+
+\begin{itemize}
+  \item \textbf{Configuration}: Server settings like host, port, CORS, and rate limiting
+  \item \textbf{Node Context}: A shared reference to the blockchain node, allowing handlers to access blockchain data
+\end{itemize}
+
+\subsection{Configuration}
+
+We define all configurable aspects of the server in the \code{WebServerConfig} struct:
+
+\begin{listing}[htbp]
+\caption{WebServerConfig struct with sensible defaults}
+\label{lst:webserver-config}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Clone)]
+pub struct WebServerConfig {
+    pub host: String,
+    pub port: u16,
+    pub enable_cors: bool,
+    pub enable_rate_limiting: bool,
+    pub rate_limit_requests_per_second: u32,
+    pub rate_limit_burst_size: u32,
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Default Configuration}
+We provide sensible defaults through the \code{Default} implementation: Host \code{0.0.0.0} (listens on all interfaces), Port \code{8080}, CORS enabled, and rate limiting enabled with 10 requests per second and a burst size of 20. These defaults work well for development; in production, we configure them based on specific needs.
+
+\subsection{Creating the Application Router}
+
+We build the complete application router by combining routes and middleware in the \code{create\_app()} method:
+
+\begin{listing}[htbp]
+\caption{Building the complete application with router and middleware}
+\label{lst:create-app}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn create_app(
+    &self,
+) -> Result<Router, Box<dyn std::error::Error + Send + Sync>> {
+    let app = Router::new()
+        .merge(create_all_api_routes())
+        .merge(create_wallet_only_routes())
+        .merge(create_web_routes())
+        .with_state(self.node.clone());
+
+    // Add middleware layers
+    let mut app = app;
+
+    // Rate limiting middleware
+    if self.config.enable_rate_limiting {
+        let rl_config = RateLimitConfig::default();
+        if let Some(manager) = build_rate_limiter_manager(&rl_config)? {
+            app = app.layer(from_fn_with_state(
+                manager,
+                axum_rate_limiter::limiter::middleware,
+            ));
+        }
+    }
+
+    // CORS middleware
+    if self.config.enable_cors {
+        app = app.layer(cors::create_cors_layer());
+    }
+
+    // Compression middleware
+    app = app.layer(CompressionLayer::new());
+
+    // Error handling middleware
+    app = app.layer(axum::middleware::from_fn(handle_errors));
+
+    Ok(app)
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Router Construction}
+We build the router in several steps:
+
+\begin{enumerate}
+  \item \textbf{Route Merging}: We merge three sets of routes:
+  \begin{itemize}
+    \item \code{create\_all\_api\_routes()} --- Main API endpoints including admin routes and health checks
+    \item \code{create\_wallet\_only\_routes()} --- Wallet-specific endpoints with authentication
+    \item \code{create\_web\_routes()} --- Web UI serving and Swagger documentation
+  \end{itemize}
+
+  \item \textbf{State Injection}: We use \code{.with\_state(self.node.clone())} to make the \code{NodeContext} available to all handlers through Axum's state extraction.
+
+  \item \textbf{Middleware Layers}: We apply middleware in order using \code{.layer()}. Each layer wraps the previous one, creating a request processing pipeline.
+\end{enumerate}
+
+\subsection{Starting the Server}
+
+We start the server with graceful shutdown support:
+
+\begin{listing}[htbp]
+\caption{Server startup with graceful shutdown}
+\label{lst:server-startup}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn start_with_shutdown(
+    &self,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let app = self.create_app()?;
+
+    let addr = SocketAddr::from(([0, 0, 0, 0], self.config.port));
+
+    tracing::info!("Starting web server on {} with graceful shutdown",
+                   addr);
+
+    let listener = tokio::net::TcpListener::bind(addr).await?;
+
+    // Handle shutdown signal
+    let shutdown_signal = async {
+        tokio::signal::ctrl_c()
+            .await
+            .expect("Failed to install CTRL+C signal handler");
+        tracing::info!("Shutdown signal received");
+    };
+
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .with_graceful_shutdown(shutdown_signal)
+    .await?;
+
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Graceful Shutdown}
+The server listens for \texttt{CTRL+C} signals and shuts down gracefully. This means in-flight requests are allowed to complete, new connections are rejected, and the server exits cleanly. This is crucial for production deployments where we need to update the server without dropping active requests.
+
+% ──────────────────────────────────────────────────────────────
+\section{Routing System}
+\label{sec:routing}
+
+The routing system organizes endpoints into logical groups and applies appropriate middleware.
+
+\subsection{Route Organization}
+
+We organize routes into four main categories:
+
+\begin{enumerate}
+  \item \textbf{Public API Routes} (\code{/api/v1/*}): Main API endpoints
+  \item \textbf{Admin Routes} (\code{/api/admin/*}): Admin-only endpoints with authentication
+  \item \textbf{Wallet Routes} (\code{/api/wallet/*}): Wallet operations with authentication
+  \item \textbf{Web Routes} (\code{/}): Web UI and documentation
+\end{enumerate}
+
+\subsection{API Route Structure}
+
+We define the main API endpoints:
+
+\begin{listing}[htbp]
+\caption{Main API route definitions}
+\label{lst:api-routes}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn create_api_routes() -> Router<Arc<NodeContext>> {
+    Router::new()
+        // Blockchain endpoints
+        .route("/blockchain", get(blockchain::get_blockchain_info))
+        .route("/blockchain/blocks", get(blockchain::get_blocks))
+        .route("/blockchain/blocks/latest",
+               get(blockchain::get_latest_blocks))
+        .route("/blockchain/blocks/{hash}",
+               get(blockchain::get_block_by_hash))
+
+        // Wallet endpoints
+        .route("/wallet", post(wallet::create_wallet))
+        .route("/wallet/addresses", get(wallet::get_addresses))
+        .route("/wallet/{address}", get(wallet::get_wallet_info))
+        .route("/wallet/{address}/balance",
+               get(wallet::get_balance))
+
+        // Transaction endpoints
+        .route("/transactions", post(transaction::send_transaction))
+        .route("/transactions", get(transaction::get_transactions))
+        .route("/transactions/mempool",
+               get(transaction::get_mempool))
+        .route("/transactions/mempool/{txid}",
+               get(transaction::get_mempool_transaction))
+        .route("/transactions/address/{address}",
+               get(transaction::get_address_transactions))
+
+        // Mining endpoints
+        .route("/mining/info", get(mining::get_mining_info))
+        .route("/mining/generatetoaddress",
+               post(mining::generate_to_address))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Route Patterns}
+Routes are defined using handler functions from the \code{handlers/} directory:
+
+\begin{itemize}
+  \item \textbf{GET routes}: Retrieve data using handlers like \code{blockchain::get\_blockchain\_info}
+  \item \textbf{POST routes}: Create resources using handlers like \code{wallet::create\_wallet}
+  \item \textbf{Path parameters}: \code{\{hash\}}, \code{\{address\}}, \code{\{txid\}} extract values from the URL
+  \item \textbf{Query parameters}: Handled through Axum's \code{Query} extractor in handlers
+\end{itemize}
+
+\subsection{Admin Routes}
+
+We wrap the API routes with authentication middleware:
+
+\begin{listing}[htbp]
+\caption{Admin routes with authentication}
+\label{lst:admin-routes}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn create_admin_api_routes() -> Router<Arc<NodeContext>> {
+    Router::new()
+        .nest("/api/admin", create_api_routes())
+        .nest("/api/admin", create_monitor_api_routes())
+        .layer(axum::middleware::from_fn(require_admin))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Nesting Routes}
+Axum's \code{.nest()} method allows us to prefix routes. Here, we nest all API routes under \code{/api/admin}, and the \code{require\_admin} middleware ensures only authenticated admin users can access them.
+
+\subsection{Wallet-Only Routes}
+
+We provide a subset of endpoints for wallet operations:
+
+\begin{listing}[htbp]
+\caption{Wallet-only routes with separate authentication}
+\label{lst:wallet-routes}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn create_wallet_only_routes() -> Router<Arc<NodeContext>> {
+    let wallet_only = Router::new()
+        .route("/wallet", post(wallet::create_wallet))
+        .route("/transactions", post(transaction::send_transaction));
+
+    Router::new()
+        .nest("/api/wallet", wallet_only)
+        .layer(axum::middleware::from_fn(require_wallet))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Why Separate Wallet Routes?}
+Wallet routes use a different authentication key (\code{BITCOIN\_API\_WALLET\_KEY}) than admin routes. This approach allows us to: give wallet applications limited access (create wallets, send transactions), keep admin operations separate and more secure, and support different use cases (user wallets vs. administrative tools).
+
+\subsection{Health Check Routes}
+
+We define health check routes that are public and don't require authentication:
+
+\begin{listing}[htbp]
+\caption{Public health check endpoints}
+\label{lst:health-routes}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn create_monitor_api_routes() -> Router<Arc<NodeContext>> {
+    Router::new()
+        .route("/health", get(health::health_check))
+        .route("/health/live", get(health::liveness))
+        .route("/health/ready", get(health::readiness))
+}
+\end{minted}
+\end{listing}
+
+These endpoints are essential for container orchestration (Kubernetes and Docker use these for health checks), monitoring (external systems can check service health), and load balancers (can route traffic based on readiness status).
+
+% ──────────────────────────────────────────────────────────────
+\section{Request Handlers}
+\label{sec:handlers}
+
+Handlers contain the business logic for processing requests. Each handler is an async function that extracts data from the request, processes the data, and returns a response.
+
+\subsection{Handler Pattern}
+
+All handlers follow a consistent pattern:
+
+\begin{listing}[htbp]
+\caption{Standard handler pattern}
+\label{lst:handler-pattern}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn handler_name(
+    State(node): State<Arc<NodeContext>>,
+    // ... other extractors (Path, Query, Json)
+) -> Result<Json<ApiResponse<T>>, StatusCode> {
+    // 1. Extract and validate input
+    // 2. Process the request using NodeContext
+    // 3. Build response
+    // 4. Return success or error
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Key Components}
+
+\begin{enumerate}
+  \item \textbf{State Extraction}: \code{State(node)} gives us access to the blockchain node
+  \item \textbf{Input Extraction}: \code{Path}, \code{Query}, \code{Json} extract data from the request
+  \item \textbf{Return Type}: \code{Result<Json<ApiResponse<T>>, StatusCode>} provides type-safe responses
+  \item \textbf{Error Handling}: We convert errors to appropriate HTTP status codes
+  \item \textbf{Async/Await}: All handlers are async functions
+\end{enumerate}
+
+\subsection{Blockchain Handlers}
+
+\paragraph{Get Blockchain Info}
+
+We implement access to blockchain data:
+
+\begin{listing}[htbp]
+\caption{Get blockchain info handler}
+\label{lst:handler-blockchain-info}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn get_blockchain_info(
+    State(node): State<Arc<NodeContext>>,
+) -> Result<Json<ApiResponse<BlockchainInfoResponse>>,
+            StatusCode> {
+    let height = node.get_blockchain_height().await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let last_block = node.blockchain().get_last_block().await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let mempool_size = node.get_mempool_size()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let info = BlockchainInfoResponse {
+        height,
+        difficulty: 1,
+        total_blocks: height,
+        total_transactions: /* ... */,
+        mempool_size,
+        last_block_hash: /* ... */,
+        last_block_timestamp: chrono::Utc::now(),
+    };
+
+    Ok(Json(ApiResponse::success(info)))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Get Block by Hash}
+
+We implement block lookup by hash:
+
+\begin{listing}[htbp]
+\caption{Get block by hash handler with path extraction}
+\label{lst:handler-block-by-hash}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn get_block_by_hash(
+    State(node): State<Arc<NodeContext>>,
+    Path(hash): Path<String>,
+) -> Result<Json<ApiResponse<BlockResponse>>, StatusCode> {
+    let block = node.get_block_by_hash(&hash).await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    match block {
+        Some(block) => {
+            let response = BlockResponse {
+                hash: block.get_hash().to_string(),
+                previous_hash: block.get_previous_hash().to_string(),
+                // ... other fields
+            };
+            Ok(Json(ApiResponse::success(response)))
+        }
+        None => Err(StatusCode::NOT_FOUND),
+    }
+}
+\end{minted}
+\end{listing}
+
+The \code{Path(hash)} extractor automatically extracts the \code{\{hash\}} parameter from the URL. Axum handles the parsing and validation for us.
+
+\subsection{Wallet Handlers}
+
+\paragraph{Create Wallet}
+
+We implement wallet creation:
+
+\begin{listing}[htbp]
+\caption{Create wallet handler}
+\label{lst:handler-create-wallet}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn create_wallet(
+    State(_node): State<Arc<NodeContext>>,
+    Json(_request): Json<CreateWalletRequest>,
+) -> Result<Json<ApiResponse<WalletResponse>>, StatusCode> {
+    let mut wallet_service = WalletService::new()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let address = wallet_service.create_wallet()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let wallet = wallet_service.get_wallet(&address)
+        .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let response = WalletResponse {
+        address: address.as_string(),
+        public_key: HEXLOWER.encode(wallet.get_public_key()),
+        created_at: chrono::Utc::now(),
+    };
+
+    Ok(Json(ApiResponse::success(response)))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Get Balance}
+
+We implement balance queries with type-safe path extraction:
+
+\begin{listing}[htbp]
+\caption{Get balance handler with typed path parameter}
+\label{lst:handler-balance}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn get_balance(
+    State(node): State<Arc<NodeContext>>,
+    Path(address): Path<WalletAddress>,
+) -> Result<Json<ApiResponse<BalanceResponse>>, StatusCode> {
+    let balance = node.get_balance(&address).await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let utxo_set = UTXOSet::new(node.blockchain().clone());
+    let utxo_count = utxo_set.utxo_count(&address).await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let response = BalanceResponse {
+        address: address.as_string(),
+        balance,
+        utxo_count,
+        updated_at: chrono::Utc::now(),
+    };
+
+    Ok(Json(ApiResponse::success(response)))
+}
+\end{minted}
+\end{listing}
+
+Notice that \code{Path(address)} extracts a \code{WalletAddress} directly, not a \code{String}. Axum can deserialize path parameters into custom types, providing compile-time type safety.
+
+\subsection{Transaction Handlers}
+
+\paragraph{Send Transaction}
+
+We implement transaction submission:
+
+\begin{listing}[htbp]
+\caption{Send transaction handler with error mapping}
+\label{lst:handler-send-tx}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn send_transaction(
+    State(node): State<Arc<NodeContext>>,
+    Json(request): Json<SendTransactionRequest>,
+) -> Result<Json<ApiResponse<SendBitCoinResponse>>,
+            StatusCode> {
+    let txid = node.btc_transaction(
+        &request.from_address,
+        &request.to_address,
+        request.amount
+    ).await.map_err(|e| {
+        error!("Failed to create transaction: {}", e);
+        StatusCode::BAD_REQUEST
+    })?;
+
+    info!("Transaction {} submitted successfully", txid);
+
+    let response = SendBitCoinResponse {
+        txid,
+        timestamp: chrono::Utc::now(),
+    };
+
+    Ok(Json(ApiResponse::success(response)))
+}
+\end{minted}
+\end{listing}
+
+When \code{btc\_transaction} fails, we log the error, map it to \texttt{BAD\_REQUEST}, and return early. This approach provides clear feedback to the client about what went wrong.
+
+\subsection{Mining Handlers}
+
+\paragraph{Get Mining Info}
+
+We provide mining status:
+
+\begin{listing}[htbp]
+\caption{Get mining info handler}
+\label{lst:handler-mining-info}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn get_mining_info(
+    State(node): State<Arc<NodeContext>>,
+) -> Result<Json<ApiResponse<MiningInfoResponse>>,
+            StatusCode> {
+    let height = node.get_blockchain_height().await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let mempool_size = node.get_mempool_size()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let response = MiningInfoResponse {
+        blocks: height as u64,
+        currentblocksize: 0,
+        currentblocktx: mempool_size as u32,
+        difficulty: 1.0,
+        networkhashps: 0.0,
+        pooledtx: mempool_size as u32,
+    };
+
+    Ok(Json(ApiResponse::success(response)))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Generate to Address}
+
+We implement block generation:
+
+\begin{listing}[htbp]
+\caption{Generate to address handler}
+\label{lst:handler-generate}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn generate_to_address(
+    State(node): State<Arc<NodeContext>>,
+    Json(request): Json<GenerateToAddressRequest>,
+) -> Result<Json<ApiResponse<GenerateToAddressResponse>>,
+            StatusCode> {
+    // Validate address
+    let address = WalletAddress::from_string(&request.address)
+        .map_err(|_| StatusCode::BAD_REQUEST)?;
+
+    // Generate blocks
+    let block_hashes = (0..request.nblocks)
+        .map(|_| {
+            broadcast_new_block(&node, &address).await
+        })
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let response = GenerateToAddressResponse {
+        block_hashes,
+    };
+
+    Ok(Json(ApiResponse::success(response)))
+}
+\end{minted}
+\end{listing}
+
+\subsection{Health Check Handlers}
+
+\paragraph{Health Check}
+
+We provide comprehensive system status:
+
+\begin{listing}[htbp]
+\caption{Health check handler with full metrics}
+\label{lst:handler-health}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn health_check(
+    State(node): State<Arc<NodeContext>>,
+) -> Result<Json<ApiResponse<HealthResponse>>, StatusCode> {
+    let height = node.get_blockchain_height().await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let connected_peers = node.get_peer_count().unwrap_or(0);
+
+    let health_response = HealthResponse {
+        status: "healthy".to_string(),
+        version: env!("CARGO_PKG_VERSION").to_string(),
+        uptime_seconds: /* ... */,
+        blockchain_height: height,
+        connected_peers,
+        memory_usage_mb: 0.0,
+    };
+
+    Ok(Json(ApiResponse::success(health_response)))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Liveness Probe}
+
+We provide a simple liveness check:
+
+\begin{listing}[htbp]
+\caption{Liveness probe handler}
+\label{lst:handler-liveness}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn liveness() -> Result<Json<ApiResponse<String>>,
+                                   StatusCode> {
+    Ok(Json(ApiResponse::success("alive".to_string())))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Readiness Probe}
+
+We check if the service is ready to handle requests:
+
+\begin{listing}[htbp]
+\caption{Readiness probe handler}
+\label{lst:handler-readiness}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn readiness(
+    State(node): State<Arc<NodeContext>>,
+) -> Result<Json<ApiResponse<String>>, StatusCode> {
+    match node.get_blockchain_height().await {
+        Ok(_) => Ok(Json(ApiResponse::success("ready".to_string()))),
+        Err(_) => Err(StatusCode::SERVICE_UNAVAILABLE),
+    }
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Why Three Health Endpoints?}
+
+\begin{itemize}
+  \item \code{/health}: Comprehensive health check with detailed metrics
+  \item \code{/health/live}: Simple liveness check (is the process running?)
+  \item \code{/health/ready}: Readiness check (can the service handle requests?)
+\end{itemize}
+
+Kubernetes uses \code{/health/live} to determine if a pod should be restarted and \code{/health/ready} to determine if traffic should be routed to the pod.
+
+% ──────────────────────────────────────────────────────────────
+\section{Middleware Layer}
+\label{sec:middleware}
+
+Middleware provides cross-cutting concerns like authentication, CORS, logging, and error handling.
+
+\subsection{Authentication Middleware}
+
+We protect routes by checking API keys in authentication middleware:
+
+\begin{listing}[htbp]
+\caption{Role-based authentication middleware}
+\label{lst:middleware-auth}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn require_role(
+    mut req: axum::http::Request<axum::body::Body>,
+    required: Role,
+    next: axum::middleware::Next,
+) -> Result<axum::response::Response, StatusCode> {
+    let key = req.headers().get("X-API-Key")
+        .and_then(|h| h.to_str().ok());
+
+    let caller_role = match key {
+        Some(k) if is_admin_key(k) => Role::Admin,
+        Some(k) if is_wallet_key(k) => Role::Wallet,
+        _ => return Err(StatusCode::UNAUTHORIZED),
+    };
+
+    // Admin can access wallet routes too
+    let allowed = caller_role == required
+        || (caller_role == Role::Admin
+            && required == Role::Wallet);
+
+    if !allowed {
+        return Err(StatusCode::FORBIDDEN);
+    }
+
+    // Attach role to extensions for handlers
+    req.extensions_mut().insert(caller_role);
+
+    Ok(next.run(req).await)
+}
+\end{minted}
+\end{listing}
+
+\paragraph{How Authentication Works}
+
+\begin{enumerate}
+  \item Extract API Key from the \code{X-API-Key} header
+  \item Determine Role by checking if the key matches admin or wallet keys
+  \item Check Authorization to verify the role has permission for the route
+  \item Attach Role to request extensions for handlers to use
+  \item Continue or Reject the request
+\end{enumerate}
+
+\paragraph{Role Hierarchy}
+
+Admin users can access both admin and wallet routes, but wallet users can only access wallet routes. This provides a clear security model.
+
+\paragraph{Convenience Functions}
+
+We provide convenience wrappers:
+
+\begin{listing}[htbp]
+\caption{Authentication middleware convenience functions}
+\label{lst:middleware-auth-convenience}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn require_admin(
+    req: axum::http::Request<axum::body::Body>,
+    next: axum::middleware::Next,
+) -> Result<axum::response::Response, StatusCode> {
+    require_role(req, Role::Admin, next).await
+}
+
+pub async fn require_wallet(
+    req: axum::http::Request<axum::body::Body>,
+    next: axum::middleware::Next,
+) -> Result<axum::response::Response, StatusCode> {
+    require_role(req, Role::Wallet, next).await
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Key Validation}
+
+We validate API keys from environment variables:
+
+\begin{listing}[htbp]
+\caption{API key validation from environment}
+\label{lst:middleware-key-validation}
+\begin{minted}[fontsize=\footnotesize]{rust}
+fn is_admin_key(k: &str) -> bool {
+    let expected = std::env::var("BITCOIN_API_ADMIN_KEY")
+        .unwrap_or_else(|_| "admin-secret".to_string());
+    k == expected
+}
+
+fn is_wallet_key(k: &str) -> bool {
+    let expected = std::env::var("BITCOIN_API_WALLET_KEY")
+        .unwrap_or_else(|_| "wallet-secret".to_string());
+    k == expected
+}
+\end{minted}
+\end{listing}
+
+\begin{warnbox}[Security Note]
+In production, always set strong keys via environment variables. Consider using a key management service for production deployments.
+\end{warnbox}
+
+\subsection{CORS Middleware}
+
+We allow web browsers to make requests from different origins through CORS:
+
+\begin{listing}[htbp]
+\caption{CORS middleware configuration}
+\label{lst:middleware-cors}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn create_cors_layer() -> CorsLayer {
+    CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods(Any)
+        .allow_headers(Any)
+        .expose_headers(Any)
+        .max_age(std::time::Duration::from_secs(86400))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{CORS Configuration}
+
+\begin{itemize}
+  \item \code{allow\_origin(Any)}: Allows requests from any origin (development only)
+  \item \code{allow\_methods(Any)}: Allows all HTTP methods (GET, POST, etc.)
+  \item \code{allow\_headers(Any)}: Allows all request headers
+  \item \code{expose\_headers(Any)}: Exposes all response headers to JavaScript
+  \item \code{max\_age}: Caches preflight requests for 24 hours
+\end{itemize}
+
+\paragraph{Production CORS}
+
+For production, we use a restricted version:
+
+\begin{listing}[htbp]
+\caption{Production CORS with restricted origins}
+\label{lst:middleware-cors-prod}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn create_cors_layer_with_origins(
+    origins: Vec<String>,
+) -> CorsLayer {
+    let mut cors = CorsLayer::new()
+        .allow_methods(Any)
+        .allow_headers(Any)
+        .expose_headers(Any)
+        .max_age(std::time::Duration::from_secs(86400));
+
+    for origin in origins {
+        if let Ok(parsed_origin) =
+            origin.parse::<axum::http::HeaderValue>() {
+            cors = cors.allow_origin(parsed_origin);
+        }
+    }
+
+    cors
+}
+\end{minted}
+\end{listing}
+
+\subsection{Rate Limiting Middleware}
+
+We prevent abuse by limiting the number of requests clients can make within a specified time window.
+
+\paragraph{Rate Limiting Configuration}
+
+\begin{listing}[H]
+\caption{Rate limiting configuration}
+\label{lst:middleware-ratelimit-config}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub struct RateLimitConfig {
+    pub requests_per_second: u32,
+    pub burst_size: u32,
+}
+
+pub fn create_rate_limit_layer(
+    config: RateLimitConfig,
+) -> impl tower::Layer<axum::Router> + Clone {
+    // Returns rate limiting layer
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Rate Limiting Features}
+
+\begin{itemize}
+  \item \textbf{Token Bucket Algorithm}: Allows bursts up to \code{burst\_size} while maintaining average rate
+  \item \textbf{Per-IP Limiting}: Tracks requests by client IP address
+  \item \textbf{Per-API-Key Limiting}: Supports API key-based rate limiting
+  \item \textbf{Automatic Cleanup}: Removes inactive entries to manage memory
+  \item \textbf{Standard Headers}: Returns \code{X-RateLimit-Limit}, \code{X-RateLimit-Remaining}
+  \item \textbf{429 Response}: Returns \texttt{429 Too Many Requests} when limits exceeded
+\end{itemize}
+
+\subsection{Error Handling Middleware}
+
+We catch and format errors through error handling middleware:
+
+\begin{listing}[htbp]
+\caption{Error handling middleware}
+\label{lst:middleware-error-handling}
+\begin{minted}[fontsize=\footnotesize]{rust}
+async fn handle_errors(
+    request: axum::http::Request<axum::body::Body>,
+    next: axum::middleware::Next,
+) -> Result<axum::response::Response, StatusCode> {
+    let response = next.run(request).await;
+
+    // Log error response body if status indicates error
+    let is_error = response.status().is_server_error()
+        || response.status().is_client_error();
+    if is_error {
+        let (parts, body) = response.into_parts();
+        let body_bytes = axum::body::to_bytes(body, usize::MAX)
+            .await
+            .unwrap_or_default();
+        let body_str = String::from_utf8_lossy(&body_bytes);
+
+        tracing::error!(
+            "[handle_errors]: Error response ({}): {}",
+            parts.status,
+            body_str
+        );
+
+        // Format internal server errors safely
+        if parts.status == StatusCode::INTERNAL_SERVER_ERROR {
+            let error_response = ErrorResponse {
+                error: "Internal Server Error".to_string(),
+                message:
+                    "An unexpected error occurred".to_string(),
+                status_code: 500,
+                timestamp: chrono::Utc::now(),
+            };
+
+            return Ok(Json(ApiResponse::<()>::error(
+                serde_json::to_string(&error_response)
+                    .unwrap_or_else(|_|
+                        "Unknown error".to_string()),
+            )).into_response());
+        }
+
+        Ok(response)
+    } else {
+        Ok(response)
+    }
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Error Handling Flow}
+
+\begin{enumerate}
+  \item Run Next Middleware to process the request
+  \item Check Status to determine if the response indicates an error
+  \item Log Errors for debugging
+  \item Format Errors by converting internal server errors to user-friendly responses
+  \item Preserve Errors by allowing other errors to pass through unchanged
+\end{enumerate}
+
+\begin{infobox}[Error Sanitization]
+Internal server errors are sanitized before being sent to clients. This prevents leaking sensitive information like stack traces or internal paths.
+\end{infobox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Data Models}
+\label{sec:data-models}
+
+Data models define the structure of requests and responses. They provide type safety and automatic serialization/deserialization using Serde and Utoipa.
+
+\subsection{Response Models}
+
+\paragraph{Generic API Response}
+
+All API responses use a consistent wrapper:
+
+\begin{listing}[htbp]
+\caption{Generic API response wrapper}
+\label{lst:models-api-response}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct ApiResponse<T> {
+    pub success: bool,
+    pub data: Option<T>,
+    pub error: Option<String>,
+    pub timestamp: DateTime<Utc>,
+}
+
+impl<T> ApiResponse<T> {
+    pub fn success(data: T) -> Self {
+        Self {
+            success: true,
+            data: Some(data),
+            error: None,
+            timestamp: Utc::now(),
+        }
+    }
+
+    pub fn error(error: String) -> Self {
+        Self {
+            success: false,
+            data: None,
+            error: Some(error),
+            timestamp: Utc::now(),
+        }
+    }
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Why This Structure?}
+
+\begin{itemize}
+  \item \textbf{Consistent Format}: All responses follow the same structure
+  \item \textbf{Type Safety}: Generic \code{T} ensures compile-time type checking
+  \item \textbf{Error Handling}: Errors are clearly distinguished from success
+  \item \textbf{Timestamps}: Every response includes a timestamp for debugging
+\end{itemize}
+
+\paragraph{Blockchain Info Response}
+
+\begin{listing}[H]
+\caption{Blockchain information response model}
+\label{lst:models-blockchain-response}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct BlockchainInfoResponse {
+    pub height: usize,
+    pub difficulty: u32,
+    pub total_blocks: usize,
+    pub total_transactions: usize,
+    pub mempool_size: usize,
+    pub last_block_hash: String,
+    pub last_block_timestamp: DateTime<Utc>,
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Block Response}
+
+\begin{listing}[H]
+\caption{Block response model}
+\label{lst:models-block-response}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct BlockResponse {
+    pub hash: String,
+    pub previous_hash: String,
+    pub timestamp: DateTime<Utc>,
+    pub height: usize,
+    pub nonce: u64,
+    pub difficulty: u32,
+    pub transaction_count: usize,
+    pub merkle_root: String,
+    pub size_bytes: usize,
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Transaction Response}
+
+\begin{listing}[H]
+\caption{Transaction response model}
+\label{lst:models-transaction-response}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct TransactionResponse {
+    pub txid: String,
+    pub is_coinbase: bool,
+    pub input_count: usize,
+    pub output_count: usize,
+    pub total_input_value: i32,
+    pub total_output_value: i32,
+    pub fee: i32,
+    pub timestamp: DateTime<Utc>,
+    pub size_bytes: usize,
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Wallet Response}
+
+\begin{listing}[H]
+\caption{Wallet response model}
+\label{lst:models-wallet-response}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct WalletResponse {
+    pub address: String,
+    pub public_key: String,
+    pub created_at: DateTime<Utc>,
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Balance Response}
+
+\begin{listing}[H]
+\caption{Balance response model}
+\label{lst:models-balance-response}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct BalanceResponse {
+    pub address: String,
+    pub balance: i32,
+    pub unconfirmed_balance: i32,
+    pub utxo_count: usize,
+    pub last_updated: DateTime<Utc>,
+}
+\end{minted}
+\end{listing}
+
+\subsection{Request Models}
+
+Request models define the structure of incoming requests and include validation:
+
+\paragraph{Create Wallet Request}
+
+\begin{listing}[H]
+\caption{Create wallet request with validation}
+\label{lst:models-create-wallet-request}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize, Validate,
+         ToSchema)]
+pub struct CreateWalletRequest {
+    #[validate(length(
+        min = 1,
+        max = 100,
+        message = "Wallet name must be 1-100 characters"
+    ))]
+    pub name: Option<String>,
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Send Transaction Request}
+
+\begin{listing}[H]
+\caption{Send transaction request with validation}
+\label{lst:models-send-tx-request}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize, Validate,
+         ToSchema)]
+pub struct SendTransactionRequest {
+    pub from_address: WalletAddress,
+    pub to_address: WalletAddress,
+    #[validate(range(
+        min = 1,
+        message = "Amount must be greater than 0"
+    ))]
+    pub amount: i32,
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Block Query}
+
+\begin{listing}[H]
+\caption{Block query parameters with validation}
+\label{lst:models-block-query}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize, Validate,
+         ToSchema)]
+pub struct BlockQuery {
+    #[validate(range(
+        min = 0,
+        message = "Page must be 0 or greater"
+    ))]
+    pub page: Option<u32>,
+
+    #[validate(range(
+        min = 1,
+        max = 100,
+        message = "Limit must be 1-100"
+    ))]
+    pub limit: Option<u32>,
+
+    pub hash: Option<String>,
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Validation}
+
+The \code{validator} crate provides compile-time and runtime validation:
+
+\begin{itemize}
+  \item \textbf{Length validation}: Ensures strings are within bounds
+  \item \textbf{Range validation}: Ensures numbers are within bounds
+  \item \textbf{Custom validation}: Can be added for complex rules
+\end{itemize}
+
+\subsection{Error Models}
+
+Error models provide structured error responses:
+
+\paragraph{ErrorResponse Struct}
+
+\begin{listing}[H]
+\caption{Error response model}
+\label{lst:models-error-response}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct ErrorResponse {
+    pub error: String,
+    pub message: String,
+    pub status_code: u16,
+    pub timestamp: DateTime<Utc>,
+}
+\end{minted}
+\end{listing}
+
+\paragraph{WebError Enum}
+
+\begin{listing}[H]
+\caption{Web error enumeration}
+\label{lst:models-web-error}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize)]
+pub enum WebError {
+    ValidationError(String),
+    NotFound(String),
+    InternalError(String),
+    Unauthorized(String),
+    RateLimitExceeded,
+    InvalidRequest(String),
+    ServiceUnavailable(String),
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Error to Status Code Mapping}
+
+\begin{listing}[H]
+\caption{Error to HTTP status code mapping}
+\label{lst:models-error-mapping}
+\begin{minted}[fontsize=\footnotesize]{rust}
+impl WebError {
+    pub fn status_code(&self) -> u16 {
+        match self {
+            WebError::ValidationError(_) => 400,
+            WebError::NotFound(_) => 404,
+            WebError::InternalError(_) => 500,
+            WebError::Unauthorized(_) => 401,
+            WebError::RateLimitExceeded => 429,
+            WebError::InvalidRequest(_) => 400,
+            WebError::ServiceUnavailable(_) => 503,
+        }
+    }
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Error Handling}
+\label{sec:error-handling}
+
+Error handling in the web layer follows a consistent pattern that provides clear feedback to clients while maintaining security.
+
+\subsection{Error Flow}
+
+\begin{enumerate}
+  \item \textbf{Handler Error}: Handler encounters an error
+  \item \textbf{Status Code Mapping}: Error is mapped to appropriate HTTP status code
+  \item \textbf{Error Response}: Error is formatted into \code{ErrorResponse}
+  \item \textbf{Logging}: Error is logged for debugging
+  \item \textbf{Client Response}: Formatted error is sent to client
+\end{enumerate}
+
+\subsection{Common Error Patterns}
+
+\paragraph{Not Found Errors}
+
+\begin{listing}[H]
+\caption{Not found error pattern}
+\label{lst:error-not-found}
+\begin{minted}[fontsize=\footnotesize]{rust}
+match block {
+    Some(block) => Ok(Json(ApiResponse::success(response))),
+    None => Err(StatusCode::NOT_FOUND),
+}
+\end{minted}
+\end{listing}
+
+\needspace{3in}
+\paragraph{Validation Errors}
+
+\begin{listing}[H]
+\caption{Validation error pattern}
+\label{lst:error-validation}
+\begin{minted}[fontsize=\footnotesize]{rust}
+if !request.validate().is_ok() {
+    return Err(StatusCode::BAD_REQUEST);
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Internal Server Errors}
+
+\begin{listing}[H]
+\caption{Internal server error pattern}
+\label{lst:error-internal}
+\begin{minted}[fontsize=\footnotesize]{rust}
+let result = operation().await
+    .map_err(|e| {
+        error!("Operation failed: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+\end{minted}
+\end{listing}
+
+\subsection{Error Middleware}
+
+The \code{handle\_errors()} function in \code{server.rs} catches unhandled errors and formats them. Internal server errors are sanitized before being sent to clients. This prevents leaking sensitive information like stack traces or internal paths.
+
+% ──────────────────────────────────────────────────────────────
+\section{Rate Limiting Implementation}
+\label{sec:rate-limiting}
+
+We prevent abuse by limiting the number of requests clients can make within a specified time window.
+
+\subsection{Why Rate Limiting Matters}
+
+Blockchains are resource-heavy systems: even ``simple'' endpoints might touch storage, validate objects, or query UTXO state. A web API without protections is easy to overload intentionally (DoS) or accidentally (misconfigured clients). Rate limiting gives us a predictable upper bound on request volume per client and per endpoint.
+
+\subsection{Implementation Overview}
+
+We implemented rate limiting as Axum middleware using the \code{axum\_rate\_limiter} crate. The middleware:
+
+\begin{itemize}
+  \item Uses a \textbf{Redis-backed token bucket} to track limits across server instances
+  \item Supports multiple strategies (IP, URL, header, query, body)
+  \item Allows an \textbf{IP whitelist} to bypass rate limiting for trusted sources
+  \item Adds response headers: \code{X-RateLimit-Limit}, \code{X-RateLimit-Remaining}
+  \item Rejects requests with \textbf{HTTP 429} when limits are exceeded
+\end{itemize}
+
+\subsection{Token Bucket Algorithm}
+
+Think of every bucket as a small wallet of tokens:
+
+\begin{itemize}
+  \item \textbf{Capacity} (\code{tokens\_count}): Maximum tokens the bucket can hold (burst allowance)
+  \item \textbf{Refill interval} (\code{add\_tokens\_every} seconds): How often a token is added back
+  \item Every request \textbf{spends 1 token}
+  \item If bucket has \textbf{0 tokens}, the request is rejected (429)
+\end{itemize}
+
+\subsection{Settings File (TOML) Schema}
+
+The limiter reads configuration from a TOML file. Set the path using the \code{RL\_SETTINGS\_PATH} environment variable (default: \code{./Settings.toml}).
+
+\paragraph{Top-Level Settings}
+
+\begin{listing}[H]
+\caption{Rate limiter TOML configuration}
+\label{lst:ratelimit-toml}
+\begin{minted}[fontsize=\footnotesize]{toml}
+[rate_limiter]
+redis_addr = "127.0.0.1:6379"
+ip_whitelist = ["127.0.0.1"]
+\end{minted}
+\end{listing}
+
+\paragraph{Full Example}
+
+\begin{listing}[H]
+\caption{Complete rate limiter configuration}
+\label{lst:ratelimit-full-config}
+\begin{minted}[fontsize=\footnotesize]{toml}
+[rate_limiter]
+redis_addr = "127.0.0.1:6379"
+ip_whitelist = ["127.0.0.1"]
+
+# Per-IP limit: bursts of 20, refill 1 token per 6 sec
+[[rate_limiter.limiter]]
+strategy = "ip"
+global_bucket = { tokens_count = 20, add_tokens_every = 6 }
+
+# Tighten specific expensive endpoints
+[[rate_limiter.limiter]]
+strategy = "url"
+global_bucket = { tokens_count = 60, add_tokens_every = 1 }
+buckets_per_value = [
+  { value = "/api/mining/generate",
+    tokens_count = 2, add_tokens_every = 60 },
+]
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{OpenAPI Documentation}
+\label{sec:openapi}
+
+The web layer includes automatic OpenAPI/Swagger documentation generation using the \code{utoipa} crate.
+
+\subsection{OpenAPI Definition}
+
+\begin{listing}[H]
+\caption{OpenAPI definition with Utoipa}
+\label{lst:openapi-definition}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(OpenApi)]
+#[openapi(
+    paths(
+        health::health_check,
+        blockchain::get_blockchain_info,
+        wallet::create_wallet,
+        // ... all endpoints
+    ),
+    components(
+        schemas(
+            BlockchainInfoResponse,
+            WalletResponse,
+            // ... all models
+        )
+    ),
+    tags(
+        (name = "Health",
+         description = "Health check endpoints"),
+        (name = "Blockchain",
+         description = "Blockchain data and information"),
+        // ... all tags
+    ),
+    info(
+        title = "Blockchain API",
+        version = "0.1.0",
+        description = "A comprehensive blockchain API"
+    ),
+    servers(
+        (
+            url = "http://localhost:8080",
+            description = "Local development server"
+        )
+    )
+)]
+pub struct ApiDoc;
+\end{minted}
+\end{listing}
+
+\subsection{Swagger UI}
+
+The \code{create\_swagger\_ui()} function serves Swagger UI automatically:
+
+\begin{listing}[htbp]
+\caption{Swagger UI creation}
+\label{lst:swagger-ui}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn create_swagger_ui() -> SwaggerUi {
+    SwaggerUi::new("/swagger-ui")
+        .url("/api-docs/openapi.json", ApiDoc::openapi())
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Benefits}
+
+\begin{itemize}
+  \item \textbf{Interactive Documentation}: Test endpoints directly from browser
+  \item \textbf{Automatic Updates}: Documentation stays in sync with code
+  \item \textbf{Type Safety}: OpenAPI schema generated from Rust types
+  \item \textbf{Client Generation}: Generate client libraries from schema
+\end{itemize}
+
+\subsection{How Data Models Generate OpenAPI Schemas}
+
+When a data model has the \code{ToSchema} derive macro, Utoipa automatically generates an OpenAPI schema. Example:
+
+\begin{listing}[htbp]
+\caption{Data model with OpenAPI schema generation}
+\label{lst:toschema-example}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct WalletResponse {
+    pub address: String,
+    pub public_key: String,
+    pub created_at: DateTime<Utc>,
+}
+\end{minted}
+\end{listing}
+
+Generates OpenAPI schema:
+
+\begin{listing}[htbp]
+\caption{Generated OpenAPI schema from model}
+\label{lst:openapi-schema-generated}
+\begin{minted}[fontsize=\footnotesize]{json}
+{
+  "WalletResponse": {
+    "type": "object",
+    "required": ["address", "public_key", "created_at"],
+    "properties": {
+      "address": { "type": "string" },
+      "public_key": { "type": "string" },
+      "created_at": {
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  }
+}
+\end{minted}
+\end{listing}
+
+\subsection{Accessing Documentation}
+
+Once the server is running:
+
+\begin{itemize}
+  \item \textbf{Swagger UI}: \code{http://localhost:8080/swagger-ui} --- Interactive documentation
+  \item \textbf{OpenAPI JSON}: \code{http://localhost:8080/api-docs/openapi.json} --- Raw specification
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Security Architecture}
+\label{sec:security}
+
+Security is built into the web layer from the ground up.
+
+\subsection{Authentication}
+
+\paragraph{API Key Authentication}
+
+\begin{itemize}
+  \item Keys are passed via \code{X-API-Key} header
+  \item Admin and wallet keys are separate
+  \item Keys are validated against environment variables
+  \item Default keys are provided for development only
+\end{itemize}
+
+\paragraph{Role-Based Access Control}
+
+\begin{itemize}
+  \item \textbf{Admin role}: Full access to all endpoints
+  \item \textbf{Wallet role}: Limited access to wallet operations
+  \item \textbf{Unauthenticated}: Only health check endpoints
+\end{itemize}
+
+\subsection{CORS Configuration}
+
+\paragraph{Development}
+
+Allows all origins (for local development), all methods and headers.
+
+\paragraph{Production}
+
+\begin{itemize}
+  \item Restrict to specific origins
+  \item Limit methods and headers
+  \item Set appropriate cache times
+\end{itemize}
+
+\subsection{Error Handling Security}
+
+\paragraph{Error Sanitization}
+
+\begin{itemize}
+  \item Internal errors don't leak stack traces
+  \item Sensitive information is filtered
+  \item Generic error messages for clients
+  \item Detailed errors in logs only
+\end{itemize}
+
+\subsection{Rate Limiting}
+
+\begin{itemize}
+  \item Per-IP rate limiting
+  \item Per-API-key rate limiting
+  \item Configurable limits
+  \item Burst handling
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Best Practices and Patterns}
+\label{sec:best-practices}
+
+Throughout the web layer, we follow several best practices.
+
+\subsection{Type Safety}
+
+\begin{itemize}
+  \item Use Rust's type system for compile-time safety
+  \item Custom types for domain concepts (\code{WalletAddress}, etc.)
+  \item Strong typing prevents many runtime errors
+\end{itemize}
+
+\subsection{Async-First Design}
+
+\begin{itemize}
+  \item All handlers are async
+  \item Non-blocking I/O throughout
+  \item Efficient concurrent request handling
+\end{itemize}
+
+\subsection{Consistent Error Handling}
+
+\begin{itemize}
+  \item All errors return appropriate HTTP status codes
+  \item Structured error responses
+  \item Comprehensive error logging with full context
+\end{itemize}
+
+\subsection{Separation of Concerns}
+
+\begin{itemize}
+  \item Routes define endpoints
+  \item Handlers contain business logic
+  \item Middleware handles cross-cutting concerns
+  \item Models define data structures
+\end{itemize}
+
+\subsection{Documentation}
+
+\begin{itemize}
+  \item OpenAPI documentation automatically generated
+  \item Inline documentation for all public functions
+  \item Examples in documentation
+\end{itemize}
+
+\subsection{Structured Logging and Observability}
+
+We use structured logging with key-value pairs for queryability:
+
+\begin{listing}[htbp]
+\caption{Structured logging with context}
+\label{lst:structured-logging}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use tracing::{error, info};
+
+// Good: Structured logging with context
+info!(
+    txid = %txid,
+    from = %from_address,
+    to = %to_address,
+    amount = amount,
+    "Transaction submitted successfully"
+);
+
+// Good: Error logging with full context
+error!(
+    error = %e,
+    txid = %txid,
+    from = %from_address,
+    "Failed to process transaction"
+);
+\end{minted}
+\end{listing}
+
+\paragraph{Using Spans for Context}
+
+\begin{listing}[H]
+\caption{Spans for operation context}
+\label{lst:spans-context}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use tracing::instrument;
+
+#[instrument]
+async fn process_transaction(txid: String) {
+    // Automatic span creation with function name
+    // All logs include span context
+    info!("Processing transaction");
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Log Level Guidelines}
+
+\begin{itemize}
+  \item \textbf{ERROR}: Operation failures that prevent completion
+  \item \textbf{WARN}: Recoverable issues or deprecations
+  \item \textbf{INFO}: Normal operation events (request/response, state changes)
+  \item \textbf{DEBUG}: Detailed diagnostics (disabled in production)
+  \item \textbf{TRACE}: Very detailed tracing (disabled in production)
+\end{itemize}
+
+\subsection{Testing Considerations}
+
+\begin{itemize}
+  \item Handlers are pure functions (easy to test)
+  \item State is injected (easy to mock)
+  \item Error cases are explicit
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Framework Reference: Axum}
+\label{sec:framework-axum}
+
+\begin{deepdive}{Axum Framework Reference}
+
+This section provides a detailed reference to Axum framework features used in our blockchain API.
+
+\subsection{State Injection}
+
+State injection makes data available to all handlers without global variables, with compile-time type safety.
+
+\begin{listing}[H]
+\caption{State injection pattern}
+\label{lst:axum-state}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Create router with state
+let app = Router::new()
+    .merge(routes)
+    .with_state(self.node.clone());
+
+// Extract in handlers
+pub async fn get_blockchain_info(
+    State(node): State<Arc<NodeContext>>,
+) -> Result<Json<ApiResponse<BlockchainInfoResponse>>,
+            StatusCode> {
+    let height = node.get_blockchain_height().await?;
+    Ok(Json(ApiResponse::success(response)))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Key Concepts}
+
+\begin{enumerate}
+  \item Type must match between \code{.with\_state()} and \code{State()} extractor
+  \item Use \code{Arc<T>} for shared ownership without cloning
+  \item State is typically immutable; use interior mutability if needed
+\end{enumerate}
+
+\subsection{Middleware Layers}
+
+Middleware processes requests in order and provides cross-cutting concerns.
+
+\paragraph{Middleware Execution Order}
+
+Layers wrap each other; order matters:
+
+\begin{listing}[H]
+\caption{Middleware layer order}
+\label{lst:axum-middleware-order}
+\begin{minted}[fontsize=\footnotesize]{rust}
+let mut app = Router::new().with_state(self.node.clone());
+
+// 1. CORS (outermost - handles preflight first)
+app = app.layer(cors_layer());
+
+// 2. Compression
+app = app.layer(CompressionLayer::new());
+
+// 3. Error handling (innermost - catches handler errors)
+app = app.layer(axum::middleware::from_fn(handle_errors));
+
+// Request flow: CORS -> Compression -> Error Handler -> Handler
+\end{minted}
+\end{listing}
+
+\paragraph{Creating Custom Middleware}
+
+\begin{listing}[H]
+\caption{Custom middleware pattern}
+\label{lst:axum-custom-middleware}
+\begin{minted}[fontsize=\footnotesize]{rust}
+async fn my_middleware(
+    request: Request<Body>,
+    next: Next,
+) -> Result<Response, StatusCode> {
+    // Pre-processing
+    let response = next.run(request).await;
+    // Post-processing
+    Ok(response)
+}
+
+// Apply with from_fn
+.layer(axum::middleware::from_fn(my_middleware))
+\end{minted}
+\end{listing}
+
+\paragraph{Tower Layers and Services}
+
+Axum is built on Tower, which provides:
+
+\begin{itemize}
+  \item \textbf{Services}: Async functions that take requests and return responses
+  \item \textbf{Layers}: Middleware that wraps services to add functionality
+  \item \textbf{Composability}: Middleware can be stacked and combined
+\end{itemize}
+
+\paragraph{Pre-built Middleware from tower-http}
+
+\begin{listing}[H]
+\caption{Tower HTTP middleware components}
+\label{lst:tower-http-middleware}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use tower_http::cors::CorsLayer;
+use tower_http::compression::CompressionLayer;
+use tower_http::trace::TraceLayer;
+use tower_http::services::ServeDir;
+
+.layer(CorsLayer::new().allow_origin(Any))
+.layer(CompressionLayer::new())
+.layer(TraceLayer::new_for_http())
+.nest_service("/assets", ServeDir::new("/path/to/assets"))
+\end{minted}
+\end{listing}
+
+\subsection{Request Extractors}
+
+Extractors pull data from HTTP requests and make it available to handlers.
+
+\paragraph{Path Extractor}
+
+\begin{listing}[H]
+\caption{Path parameter extraction}
+\label{lst:axum-path-extractor}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Route: "/blockchain/blocks/{hash}"
+pub async fn get_block_by_hash(
+    State(node): State<Arc<NodeContext>>,
+    Path(hash): Path<String>,
+) -> Result<Json<ApiResponse<BlockResponse>>,
+            StatusCode> {
+    let block = node.get_block_by_hash(&hash).await?;
+    Ok(Json(ApiResponse::success(block)))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Type-Safe Path Extraction}
+
+Axum deserializes path parameters into custom types:
+
+\begin{listing}[H]
+\caption{Custom type path extraction}
+\label{lst:axum-typed-path}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn get_balance(
+    State(node): State<Arc<NodeContext>>,
+    Path(address): Path<WalletAddress>,  // Custom type
+) -> Result<Json<ApiResponse<BalanceResponse>>,
+            StatusCode> {
+    let balance = node.get_balance(&address).await?;
+    Ok(Json(ApiResponse::success(balance)))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Query Extractor}
+
+Query parameters are extracted and deserialized:
+
+\begin{listing}[H]
+\caption{Query parameter extraction}
+\label{lst:axum-query-extractor}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn get_blocks(
+    State(node): State<Arc<NodeContext>>,
+    Query(params): Query<BlockQuery>,
+) -> Result<Json<ApiResponse<Vec<BlockResponse>>>,
+            StatusCode> {
+    let page = params.page.unwrap_or(0);
+    let limit = params.limit.unwrap_or(10).min(100);
+    // ... fetch and return blocks
+}
+\end{minted}
+\end{listing}
+
+\paragraph{JSON Extractor}
+
+JSON request bodies are automatically deserialized:
+
+\begin{listing}[H]
+\caption{JSON body extraction}
+\label{lst:axum-json-extractor}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn send_transaction(
+    State(node): State<Arc<NodeContext>>,
+    Json(request): Json<SendTransactionRequest>,
+) -> Result<Json<ApiResponse<SendBitCoinResponse>>,
+            StatusCode> {
+    // request is automatically deserialized
+    // Validation via validator crate happens here
+}
+\end{minted}
+\end{listing}
+
+\subsection{Routing}
+
+Routes organize endpoints and HTTP methods.
+
+\paragraph{Basic Routing}
+
+\begin{listing}[H]
+\caption{Basic route definitions}
+\label{lst:axum-routing}
+\begin{minted}[fontsize=\footnotesize]{rust}
+Router::new()
+    .route("/path", get(handler1))
+    .route("/path", post(handler2))
+    .route("/path/:id", get(handler3))
+\end{minted}
+\end{listing}
+
+\paragraph{Route Nesting}
+
+\begin{listing}[H]
+\caption{Route nesting and merging}
+\label{lst:axum-nesting}
+\begin{minted}[fontsize=\footnotesize]{rust}
+let admin_routes = Router::new()
+    .route("/users", get(list_users))
+    .route("/users/:id", delete(delete_user));
+
+Router::new()
+    .nest("/api/admin", admin_routes)
+    .route("/health", get(health))
+\end{minted}
+\end{listing}
+
+\subsection{Response Types}
+
+Handlers return different response types depending on the situation.
+
+\paragraph{JSON Response}
+
+\begin{listing}[H]
+\caption{JSON response type}
+\label{lst:axum-json-response}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn handler() -> Result<Json<MyResponse>,
+                                  StatusCode> {
+    Ok(Json(MyResponse { /* ... */ }))
+}
+\end{minted}
+\end{listing}
+
+\paragraph{Status Code Response}
+
+\begin{listing}[H]
+\caption{Status code response}
+\label{lst:axum-status-response}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn handler() -> Result<StatusCode, StatusCode> {
+    // Return success (no body)
+    Ok(StatusCode::OK)
+
+    // Return error
+    Err(StatusCode::NOT_FOUND)
+}
+\end{minted}
+\end{listing}
+
+\paragraph{IntoResponse Trait}
+
+Axum uses the \code{IntoResponse} trait to convert handler return types into HTTP responses. Any type implementing \code{IntoResponse} can be returned from a handler:
+
+\begin{listing}[H]
+\caption{IntoResponse trait implementation}
+\label{lst:axum-intoresponse}
+\begin{minted}[fontsize=\footnotesize]{rust}
+impl<T: Serialize> IntoResponse for Json<T> {
+    fn into_response(self) -> Response {
+        // Serializes T to JSON
+        // Sets Content-Type header
+        // Returns Response
+    }
+}
+
+// Handlers return values that implement IntoResponse
+pub async fn handler()
+    -> impl IntoResponse
+{
+    Json(response)  // Implements IntoResponse
+}
+\end{minted}
+\end{listing}
+
+\subsection{Error Handling}
+
+Axum provides error handling through extractors and middleware.
+
+\paragraph{Status Code Error Response}
+
+\begin{listing}[H]
+\caption{Error response pattern}
+\label{lst:axum-error-handling}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn handler(
+    Path(id): Path<u64>,
+) -> Result<Json<MyResponse>, StatusCode> {
+    let item = database.get(id)
+        .ok_or(StatusCode::NOT_FOUND)?;
+
+    Ok(Json(response))
+}
+\end{minted}
+\end{listing}
+
+\subsection{CORS Configuration}
+
+\begin{listing}[H]
+\caption{Axum CORS setup}
+\label{lst:axum-cors}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use tower_http::cors::{CorsLayer, Any};
+
+let cors = CorsLayer::new()
+    .allow_origin(Any)
+    .allow_methods(Any)
+    .allow_headers(Any);
+
+app = app.layer(cors);
+\end{minted}
+\end{listing}
+
+\subsection{Compression}
+
+\begin{listing}[H]
+\caption{Axum compression setup}
+\label{lst:axum-compression}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use tower_http::compression::CompressionLayer;
+
+app = app.layer(CompressionLayer::new());
+\end{minted}
+\end{listing}
+
+\subsection{Async/Await}
+
+All Axum handlers are async, enabling concurrent request handling:
+
+\begin{listing}[H]
+\caption{Async handler pattern}
+\label{lst:axum-async}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn handler(
+    State(node): State<Arc<NodeContext>>,
+) -> Result<Json<ApiResponse<T>>, StatusCode> {
+    // Can use .await on async operations
+    let data = node.get_data().await?;
+    Ok(Json(ApiResponse::success(data)))
+}
+\end{minted}
+\end{listing}
+
+\end{deepdive}
+
+% ──────────────────────────────────────────────────────────────
+
+\begin{chaptersummary}
+\item Built a complete REST API using Axum with type-safe routing, handlers, and extractors
+\item Implemented authentication and authorization middleware with role-based access control
+\item Configured CORS, compression, and rate limiting for production readiness
+\item Designed data models with validation for request and response structures
+\item Established comprehensive error handling with appropriate HTTP status codes
+\item Generated automatic OpenAPI/Swagger documentation from Rust types
+\item Applied async-first design patterns for efficient concurrent request handling
+\item Followed security best practices: sanitized error responses, API key validation, input validation
+\item Used structured logging with tracing for observability and debugging
+\item Demonstrated separation of concerns: routes, handlers, middleware, and models in distinct modules
+\end{chaptersummary}
+

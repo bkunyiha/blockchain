@@ -1,0 +1,5 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+docker\PYG{+w}{ }build\PYG{+w}{ }\PYGZhy{}t\PYG{+w}{ }blockchain\PYGZhy{}node:latest\PYG{+w}{ }\PYGZhy{}f\PYG{+w}{ }Dockerfile\PYG{+w}{ }.
+docker\PYG{+w}{ }tag\PYG{+w}{ }blockchain\PYGZhy{}node:latest\PYG{+w}{ }your\PYGZhy{}registry/blockchain\PYGZhy{}node:v1.0.0
+docker\PYG{+w}{ }push\PYG{+w}{ }your\PYGZhy{}registry/blockchain\PYGZhy{}node:v1.0.0
+\end{MintedVerbatim}

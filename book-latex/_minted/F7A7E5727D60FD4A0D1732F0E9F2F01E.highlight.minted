@@ -1,0 +1,13 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Check pod status}
+kubectl\PYG{+w}{ }get\PYG{+w}{ }pods\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain
+
+\PYG{c+c1}{\PYGZsh{} Wait for all pods to be ready}
+kubectl\PYG{+w}{ }\PYG{n+nb}{wait}\PYG{+w}{ }\PYGZhy{}\PYGZhy{}for\PYG{o}{=}\PYG{n+nv}{condition}\PYG{o}{=}ready\PYG{+w}{ }pod\PYG{+w}{ }\PYG{l+s+se}{\PYGZbs{}}
+\PYG{+w}{  }\PYGZhy{}l\PYG{+w}{ }\PYG{n+nv}{app}\PYG{o}{=}miner\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain\PYG{+w}{ }\PYGZhy{}\PYGZhy{}timeout\PYG{o}{=}300s
+kubectl\PYG{+w}{ }\PYG{n+nb}{wait}\PYG{+w}{ }\PYGZhy{}\PYGZhy{}for\PYG{o}{=}\PYG{n+nv}{condition}\PYG{o}{=}ready\PYG{+w}{ }pod\PYG{+w}{ }\PYG{l+s+se}{\PYGZbs{}}
+\PYG{+w}{  }\PYGZhy{}l\PYG{+w}{ }\PYG{n+nv}{app}\PYG{o}{=}webserver\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain\PYG{+w}{ }\PYGZhy{}\PYGZhy{}timeout\PYG{o}{=}300s
+
+\PYG{c+c1}{\PYGZsh{} View all resources}
+kubectl\PYG{+w}{ }get\PYG{+w}{ }all\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain
+\end{MintedVerbatim}

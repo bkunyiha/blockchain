@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{tokio}::\PYG{n}{join}\PYG{p}{;}
+
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{blocks}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{transactions}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{join}\PYG{o}{!}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{get\PYGZus{}blocks}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{get\PYGZus{}transactions}\PYG{p}{(}\PYG{p}{)}
+\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\end{Verbatim}

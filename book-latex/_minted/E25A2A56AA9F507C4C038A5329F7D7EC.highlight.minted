@@ -1,0 +1,7 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{result}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{operation}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{error}\PYG{o}{!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Operation failed: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{StatusCode}\PYG{p}{::}\PYG{n}{INTERNAL\PYGZus{}SERVER\PYGZus{}ERROR}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\end{MintedVerbatim}

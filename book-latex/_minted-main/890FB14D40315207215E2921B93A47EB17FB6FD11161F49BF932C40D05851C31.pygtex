@@ -1,0 +1,52 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{error}::\PYG{p}{\PYGZob{}}\PYG{n}{BtcError}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{serde}::\PYG{p}{\PYGZob{}}\PYG{n}{Deserialize}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Serialize}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{utoipa}::\PYG{n}{ToSchema}\PYG{p}{;}
+
+\PYG{k}{const}\PYG{+w}{ }\PYG{n}{VERSION}: \PYG{k+kt}{u8} \PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mh}{0x01}\PYG{p}{;}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{ADDRESS\PYGZus{}CHECK\PYGZus{}SUM\PYGZus{}LEN}: \PYG{k+kt}{usize} \PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{4}\PYG{p}{;}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Clone, Serialize, Deserialize, PartialEq, Eq, Hash, Debug, ToSchema)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{WalletAddress}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{WalletAddress}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{validate}\PYG{p}{(}\PYG{n}{address}: \PYG{n+nb}{String}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb+bp}{Self}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n+nb+bp}{Self}::\PYG{n}{validate\PYGZus{}address}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{address}\PYG{p}{)}\PYG{o}{?}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n+nb+bp}{Self}\PYG{p}{(}\PYG{n}{address}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{BtcError}::\PYG{n}{InvalidAddress}\PYG{p}{(}\PYG{n}{address}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{fn} \PYG{n+nf}{validate\PYGZus{}address}\PYG{p}{(}\PYG{n}{address}: \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{bool}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{payload}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{base58\PYGZus{}decode}\PYG{p}{(}\PYG{n}{address}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{actual\PYGZus{}checksum}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{            }\PYG{n}{payload}\PYG{p}{[}\PYG{n}{payload}\PYG{p}{.}\PYG{n}{len}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{ADDRESS\PYGZus{}CHECK\PYGZus{}SUM\PYGZus{}LEN}\PYG{o}{..}\PYG{p}{]}
+\PYG{+w}{                }\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{version}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{payload}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{            }\PYG{n}{payload}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{o}{..}\PYG{n}{payload}\PYG{p}{.}\PYG{n}{len}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{ADDRESS\PYGZus{}CHECK\PYGZus{}SUM\PYGZus{}LEN}\PYG{p}{]}
+\PYG{+w}{                }\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{target\PYGZus{}vec}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{vec!}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{target\PYGZus{}vec}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{n}{version}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{target\PYGZus{}vec}\PYG{p}{.}\PYG{n}{extend}\PYG{p}{(}\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{target\PYGZus{}checksum}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{checksum}\PYG{p}{(}\PYG{n}{target\PYGZus{}vec}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{actual\PYGZus{}checksum}\PYG{p}{.}\PYG{n}{eq}\PYG{p}{(}\PYG{n}{target\PYGZus{}checksum}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{as\PYGZus{}str}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str} \PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{l+m+mi}{0}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{as\PYGZus{}string}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{String} \PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{l+m+mf}{0.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{fn} \PYG{n+nf}{checksum}\PYG{p}{(}\PYG{n}{payload}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{first\PYGZus{}sha}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{sha256\PYGZus{}digest}\PYG{p}{(}\PYG{n}{payload}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{second\PYGZus{}sha}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{sha256\PYGZus{}digest}\PYG{p}{(}\PYG{n}{first\PYGZus{}sha}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{second\PYGZus{}sha}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{o}{..}\PYG{n}{ADDRESS\PYGZus{}CHECK\PYGZus{}SUM\PYGZus{}LEN}\PYG{p}{]}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

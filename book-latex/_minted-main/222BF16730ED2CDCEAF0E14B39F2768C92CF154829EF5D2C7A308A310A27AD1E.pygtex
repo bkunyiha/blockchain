@@ -1,0 +1,71 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useState} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}react\PYGZsq{}}
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useAllBlocks} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../hooks/useApi\PYGZsq{}}
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{getApiClient} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../services/api\PYGZsq{}}
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useApiConfig} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../contexts/ApiConfigContext\PYGZsq{}}
+
+\PYG{k}{export} \PYG{k}{default} \PYG{k+kd}{function} \PYG{n+nx}{AllBlocks}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{const} \PYG{p}{\PYGZob{}} \PYG{n+nx}{config} \PYG{p}{\PYGZcb{}} \PYG{o}{=} \PYG{n+nx}{useApiConfig}\PYG{p}{()}
+  \PYG{k+kd}{const} \PYG{p}{[}\PYG{n+nx}{allBlocks}\PYG{p}{,} \PYG{n+nx}{setAllBlocks}\PYG{p}{]} \PYG{o}{=} \PYG{n+nx}{useState}\PYG{p}{([])}
+  \PYG{k+kd}{const} \PYG{p}{[}\PYG{n+nx}{loadingAll}\PYG{p}{,} \PYG{n+nx}{setLoadingAll}\PYG{p}{]} \PYG{o}{=} \PYG{n+nx}{useState}\PYG{p}{(}\PYG{k+kc}{false}\PYG{p}{)}
+
+  \PYG{k+kd}{const} \PYG{n+nx}{handleLoadAll} \PYG{o}{=} \PYG{k}{async} \PYG{p}{()} \PYG{p}{=\PYGZgt{}} \PYG{p}{\PYGZob{}}
+    \PYG{n+nx}{setLoadingAll}\PYG{p}{(}\PYG{k+kc}{true}\PYG{p}{)}
+    \PYG{k+kd}{const} \PYG{n+nx}{client} \PYG{o}{=} \PYG{n+nx}{getApiClient}\PYG{p}{(}\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{baseURL}\PYG{p}{,} \PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{apiKey}\PYG{p}{)}
+    \PYG{k+kd}{const} \PYG{n+nx}{blocks} \PYG{o}{=} \PYG{p}{[]}
+    \PYG{k+kd}{let} \PYG{n+nx}{offset} \PYG{o}{=} \PYG{l+m+mf}{0}
+    \PYG{k+kd}{const} \PYG{n+nx}{limit} \PYG{o}{=} \PYG{l+m+mf}{100}
+
+    \PYG{k}{while} \PYG{p}{(}\PYG{k+kc}{true}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+      \PYG{k+kd}{const} \PYG{n+nx}{result} \PYG{o}{=} \PYG{k}{await} \PYG{n+nx}{client}\PYG{p}{.}\PYG{n+nx}{getAllBlocks}\PYG{p}{(}\PYG{n+nx}{limit}\PYG{p}{,} \PYG{n+nx}{offset}\PYG{p}{)}
+      \PYG{k}{if} \PYG{p}{(}\PYG{o}{!}\PYG{n+nx}{result}\PYG{p}{.}\PYG{n+nx}{data} \PYG{o}{||} \PYG{n+nx}{result}\PYG{p}{.}\PYG{n+nx}{data}\PYG{p}{.}\PYG{n+nx}{items}\PYG{p}{.}\PYG{n+nx}{length} \PYG{o}{===} \PYG{l+m+mf}{0}\PYG{p}{)} \PYG{k}{break}
+      \PYG{n+nx}{blocks}\PYG{p}{.}\PYG{n+nx}{push}\PYG{p}{(...}\PYG{n+nx}{result}\PYG{p}{.}\PYG{n+nx}{data}\PYG{p}{.}\PYG{n+nx}{items}\PYG{p}{)}
+      \PYG{n+nx}{offset} \PYG{o}{+=} \PYG{n+nx}{limit}
+    \PYG{p}{\PYGZcb{}}
+
+    \PYG{n+nx}{setAllBlocks}\PYG{p}{(}\PYG{n+nx}{blocks}\PYG{p}{)}
+    \PYG{n+nx}{setLoadingAll}\PYG{p}{(}\PYG{k+kc}{false}\PYG{p}{)}
+  \PYG{p}{\PYGZcb{}}
+
+  \PYG{k}{return} \PYG{p}{(}
+    \PYG{o}{\PYGZlt{}}\PYG{n+nx}{div}\PYG{o}{\PYGZgt{}}
+      \PYG{o}{\PYGZlt{}}\PYG{n+nx}{h2} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}text\PYGZhy{}2xl font\PYGZhy{}bold mb\PYGZhy{}4\PYGZdq{}}\PYG{o}{\PYGZgt{}}\PYG{n+nx}{All} \PYG{n+nx}{Blocks}\PYG{o}{\PYGZlt{}}\PYG{err}{/h2\PYGZgt{}}
+      \PYG{o}{\PYGZlt{}}\PYG{n+nx}{button}
+        \PYG{n+nx}{onClick}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{handleLoadAll}\PYG{p}{\PYGZcb{}}
+        \PYG{n+nx}{disabled}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{loadingAll}\PYG{p}{\PYGZcb{}}
+        \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}px\PYGZhy{}4 py\PYGZhy{}2 bg\PYGZhy{}blue\PYGZhy{}600 text\PYGZhy{}white rounded\PYGZdq{}}
+      \PYG{o}{\PYGZgt{}}
+        \PYG{p}{\PYGZob{}}\PYG{n+nx}{loadingAll} \PYG{o}{?} \PYG{l+s+s1}{\PYGZsq{}Loading...\PYGZsq{}} \PYG{o}{:} \PYG{l+s+s1}{\PYGZsq{}Load All Blocks\PYGZsq{}}\PYG{p}{\PYGZcb{}}
+      \PYG{o}{\PYGZlt{}}\PYG{err}{/button\PYGZgt{}}
+
+      \PYG{p}{\PYGZob{}}\PYG{n+nx}{allBlocks}\PYG{p}{.}\PYG{n+nx}{length} \PYG{o}{\PYGZgt{}} \PYG{l+m+mf}{0} \PYG{o}{\PYGZam{}\PYGZam{}} \PYG{p}{(}
+        \PYG{o}{\PYGZlt{}}\PYG{n+nx}{div} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}mt\PYGZhy{}6\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+          \PYG{o}{\PYGZlt{}}\PYG{n+nx}{p} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}text\PYGZhy{}gray\PYGZhy{}600 mb\PYGZhy{}4\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+            \PYG{n+nx}{Loaded} \PYG{p}{\PYGZob{}}\PYG{n+nx}{allBlocks}\PYG{p}{.}\PYG{n+nx}{length}\PYG{p}{\PYGZcb{}} \PYG{n+nx}{blocks}
+          \PYG{o}{\PYGZlt{}}\PYG{err}{/p\PYGZgt{}}
+          \PYG{o}{\PYGZlt{}}\PYG{n+nx}{table} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}w\PYGZhy{}full border\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+            \PYG{o}{\PYGZlt{}}\PYG{n+nx}{thead}\PYG{o}{\PYGZgt{}}
+              \PYG{o}{\PYGZlt{}}\PYG{n+nx}{tr} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}bg\PYGZhy{}gray\PYGZhy{}100\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+                \PYG{o}{\PYGZlt{}}\PYG{n+nx}{th} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}border px\PYGZhy{}4 py\PYGZhy{}2\PYGZdq{}}\PYG{o}{\PYGZgt{}}\PYG{n+nx}{Height}\PYG{o}{\PYGZlt{}}\PYG{err}{/th\PYGZgt{}}
+                \PYG{o}{\PYGZlt{}}\PYG{n+nx}{th} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}border px\PYGZhy{}4 py\PYGZhy{}2\PYGZdq{}}\PYG{o}{\PYGZgt{}}\PYG{n+nx}{Hash}\PYG{o}{\PYGZlt{}}\PYG{err}{/th\PYGZgt{}}
+                \PYG{o}{\PYGZlt{}}\PYG{n+nx}{th} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}border px\PYGZhy{}4 py\PYGZhy{}2\PYGZdq{}}\PYG{o}{\PYGZgt{}}\PYG{n+nx}{Transactions}\PYG{o}{\PYGZlt{}}\PYG{err}{/th\PYGZgt{}}
+              \PYG{o}{\PYGZlt{}}\PYG{err}{/tr\PYGZgt{}}
+            \PYG{o}{\PYGZlt{}}\PYG{err}{/thead\PYGZgt{}}
+            \PYG{o}{\PYGZlt{}}\PYG{n+nx}{tbody}\PYG{o}{\PYGZgt{}}
+              \PYG{p}{\PYGZob{}}\PYG{n+nx}{allBlocks}\PYG{p}{.}\PYG{n+nx}{map}\PYG{p}{((}\PYG{n+nx}{block}\PYG{p}{)} \PYG{p}{=\PYGZgt{}} \PYG{p}{(}
+                \PYG{o}{\PYGZlt{}}\PYG{n+nx}{tr} \PYG{n+nx}{key}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{block}\PYG{p}{.}\PYG{n+nx}{height}\PYG{p}{\PYGZcb{}}\PYG{o}{\PYGZgt{}}
+                  \PYG{o}{\PYGZlt{}}\PYG{n+nx}{td} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}border px\PYGZhy{}4 py\PYGZhy{}2\PYGZdq{}}\PYG{o}{\PYGZgt{}}\PYG{p}{\PYGZob{}}\PYG{n+nx}{block}\PYG{p}{.}\PYG{n+nx}{height}\PYG{p}{\PYGZcb{}}\PYG{o}{\PYGZlt{}}\PYG{err}{/td\PYGZgt{}}
+                  \PYG{o}{\PYGZlt{}}\PYG{n+nx}{td} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}border px\PYGZhy{}4 py\PYGZhy{}2 font\PYGZhy{}mono text\PYGZhy{}sm\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+                    \PYG{p}{\PYGZob{}}\PYG{n+nx}{block}\PYG{p}{.}\PYG{n+nx}{hash}\PYG{p}{.}\PYG{n+nx}{substring}\PYG{p}{(}\PYG{l+m+mf}{0}\PYG{p}{,} \PYG{l+m+mf}{16}\PYG{p}{)\PYGZcb{}...}
+                  \PYG{o}{\PYGZlt{}}\PYG{err}{/td\PYGZgt{}}
+                  \PYG{o}{\PYGZlt{}}\PYG{n+nx}{td} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}border px\PYGZhy{}4 py\PYGZhy{}2\PYGZdq{}}\PYG{o}{\PYGZgt{}}\PYG{p}{\PYGZob{}}\PYG{n+nx}{block}\PYG{p}{.}\PYG{n+nx}{tx\PYGZus{}count}\PYG{p}{\PYGZcb{}}\PYG{o}{\PYGZlt{}}\PYG{err}{/td\PYGZgt{}}
+                \PYG{o}{\PYGZlt{}}\PYG{err}{/tr\PYGZgt{}}
+              \PYG{p}{))\PYGZcb{}}
+            \PYG{o}{\PYGZlt{}}\PYG{err}{/tbody\PYGZgt{}}
+          \PYG{o}{\PYGZlt{}}\PYG{err}{/table\PYGZgt{}}
+        \PYG{o}{\PYGZlt{}}\PYG{err}{/div\PYGZgt{}}
+      \PYG{p}{)\PYGZcb{}}
+    \PYG{o}{\PYGZlt{}}\PYG{err}{/div\PYGZgt{}}
+  \PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

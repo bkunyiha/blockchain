@@ -1,0 +1,5 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+T₀: Genesis → Alice (signed by genesis mechanism)
+T₁: Alice → Bob (signed by Alice\PYGZsq{}s private key sk\PYGZus{}A)
+T₂: Bob → Charlie (signed by Bob\PYGZsq{}s private key sk\PYGZus{}B)
+\end{MintedVerbatim}

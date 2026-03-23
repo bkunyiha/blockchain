@@ -1,0 +1,15 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n+nt}{apiVersion}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{v1}
+\PYG{n+nt}{kind}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{ConfigMap}
+\PYG{n+nt}{metadata}\PYG{p}{:}
+\PYG{+w}{  }\PYG{n+nt}{name}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{blockchain\PYGZhy{}config}
+\PYG{+w}{  }\PYG{n+nt}{namespace}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{blockchain}
+\PYG{n+nt}{data}\PYG{p}{:}
+\PYG{+w}{  }\PYG{n+nt}{MINER\PYGZus{}NODE\PYGZus{}IS\PYGZus{}MINER}\PYG{p}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{yes}\PYG{l+s}{\PYGZdq{}}
+\PYG{+w}{  }\PYG{n+nt}{MINER\PYGZus{}NODE\PYGZus{}CONNECT\PYGZus{}NODES}\PYG{p}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{local}\PYG{l+s}{\PYGZdq{}}
+\PYG{+w}{  }\PYG{n+nt}{WEBSERVER\PYGZus{}NODE\PYGZus{}IS\PYGZus{}WEB\PYGZus{}SERVER}\PYG{p}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{yes}\PYG{l+s}{\PYGZdq{}}
+\PYG{+w}{  }\PYG{n+nt}{WEBSERVER\PYGZus{}NODE\PYGZus{}CONNECT\PYGZus{}NODES}\PYG{p}{:}\PYG{+w}{ }\PYG{p+pIndicator}{\PYGZgt{}}\PYG{p+pIndicator}{\PYGZhy{}}
+\PYG{+w}{    }\PYG{n+no}{miner\PYGZhy{}service.blockchain.svc.cluster.local:2001}
+\PYG{+w}{  }\PYG{n+nt}{SEQUENTIAL\PYGZus{}STARTUP}\PYG{p}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{no}\PYG{l+s}{\PYGZdq{}}
+\PYG{+w}{  }\PYG{n+nt}{WALLET\PYGZus{}FILE}\PYG{p}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{wallets/wallets.dat}\PYG{l+s}{\PYGZdq{}}
+\end{MintedVerbatim}

@@ -1,0 +1,13 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{fn} \PYG{n+nf}{is\PYGZus{}admin\PYGZus{}key}\PYG{p}{(}\PYG{n}{k}: \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{k+kt}{bool} \PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{expected}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{std}::\PYG{n}{env}::\PYG{n}{var}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{BITCOIN\PYGZus{}API\PYGZus{}ADMIN\PYGZus{}KEY}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{admin\PYGZhy{}secret}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{k}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{expected}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{fn} \PYG{n+nf}{is\PYGZus{}wallet\PYGZus{}key}\PYG{p}{(}\PYG{n}{k}: \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{k+kt}{bool} \PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{expected}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{std}::\PYG{n}{env}::\PYG{n}{var}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{BITCOIN\PYGZus{}API\PYGZus{}WALLET\PYGZus{}KEY}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{wallet\PYGZhy{}secret}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{k}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{expected}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

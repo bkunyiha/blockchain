@@ -1,0 +1,313 @@
+% ══════════════════════════════════════════════════════════════
+%  Style Sheet --- Visual reference for every element type
+% ══════════════════════════════════════════════════════════════
+\chapter{Visual Style Sheet}
+\label{ch:stylesheet}
+
+\epigraph{The root problem with conventional currency is all the trust
+that's required to make it work.}{---Satoshi Nakamoto, 2009}
+
+\begin{chapteroutline}
+  \item Section Heading (Level 2)
+  \item Code Listings
+  \item Mathematics
+  \item Tables
+  \item Callout Boxes
+  \item Lists
+  \item Additional Elements
+\end{chapteroutline}
+
+\lettrine{T}{his} page demonstrates every visual element used in the book.
+It serves as a design reference during the \LaTeX{} conversion and
+ensures that all typographic choices work harmoniously together.
+
+% ── Section headings ─────────────────────────────────────────
+\section{Section Heading (Level 2)}
+
+Body text in TeX Gyre Pagella (Palatino family) at 11pt with 1.05
+line spread. Microtype provides character protrusion and font
+expansion for optically even margins. Inline code appears as
+\code{BlockHeader} or \code{Vec<Transaction>}---note the subtle
+background pill that makes code pop from prose. Cross-references
+use \cref{ch:stylesheet}.\marginnote{Cross-refs are clickable in PDF}
+
+A \keyterm{UTXO} (Unspent Transaction Output) is the fundamental
+unit of spendable value. First use of a key term prints bold and
+adds an index entry automatically.
+
+\subsection{Subsection Heading (Level 3)}
+
+Subsections use TeX Gyre Heros (Helvetica family) in the
+\textcolor{sectioncolor}{dark teal} accent color.
+
+\subsubsection{Subsubsection Heading (Level 4)}
+
+The deepest heading level, still sans-serif and colored.
+
+% ── Code listing ─────────────────────────────────────────────
+\section{Code Listings}
+
+{\small\sffamily\textbf{Listing: Block structure definition (\code{block.rs})}}
+\label{lst:block-struct}
+\refstepcounter{listing}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub struct BlockHeader {     // @\cmark{1}@
+    pub timestamp: i64,
+    pub pre_block_hash: String,
+    pub hash: String,
+    pub nonce: i64,
+    pub height: usize,
+}
+
+pub struct Block {           // @\cmark{2}@
+    pub header: BlockHeader,
+    pub transactions: Vec<Transaction>,
+}
+\end{minted}
+
+\begin{codeannotations}
+  \annotate{1}{The header contains only the fields needed for
+    proof-of-work hashing and chain linking.}
+  \annotate{2}{A block pairs its header with a vector of transactions,
+    keeping structure and payload separate.}
+\end{codeannotations}
+
+A code listing without line numbers (for shell commands):
+
+\begin{minted}[fontsize=\footnotesize]{bash}
+cargo build --release
+cargo test -- --nocapture
+docker compose up -d
+\end{minted}
+
+% ── Inline math ──────────────────────────────────────────────
+\section{Mathematics}
+
+Inline math: the probability that an attacker catches up from
+$z$ blocks behind is $q_z = (q/p)^z$ where $p$ is the probability
+of an honest node finding the next block and $q = 1 - p$.
+
+% ── Tables ───────────────────────────────────────────────────
+\section{Tables}
+
+\label{tab:wp-types}
+\medskip
+{\small\sffamily\textbf{Table: Whitepaper concept to Rust type mapping}}
+\smallskip
+
+\begin{center}
+\small
+\rowcolors{2}{white}{tableshade}
+\begin{tabularx}{0.9\textwidth}{lll}
+\toprule
+\textbf{Whitepaper Concept} & \textbf{Rust Type} & \textbf{Chapter} \\
+\midrule
+Block header       & \code{BlockHeader}  & 9 \\
+Transaction        & \code{Transaction}  & 9 \\
+Input (spend)      & \code{TXInput}      & 9 \\
+Output (new coin)  & \code{TXOutput}     & 9 \\
+UTXO set           & \code{UTXOSet}      & 9 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% ── Callout boxes ────────────────────────────────────────────
+\section{Callout Boxes}
+
+All 16 canonical callout types:
+
+\begin{notebox}
+This is a \textbf{Note} callout. Used for supplementary information
+that clarifies or expands on the main text.
+\end{notebox}
+
+\begin{tipbox}
+This is a \textbf{Tip} callout. Practical advice the reader can
+apply immediately.\marginnote{Tips are green-accented}
+\end{tipbox}
+
+\begin{warnbox}
+This is a \textbf{Warning} callout. Highlights a common mistake
+or non-obvious behavior.
+\end{warnbox}
+
+\begin{importantbox}
+This is an \textbf{Important} callout. Critical information the
+reader must not overlook.
+\end{importantbox}
+
+\begin{infobox}{Methods involved}
+\code{BlockchainService::add\_block()},
+\code{UTXOSet::update()},
+\code{ProofOfWork::run()}
+\end{infobox}
+
+\begin{infobox}{Source}
+\code{bitcoin/src/chain/blockchain\_service.rs} --- BlockchainService
+\end{infobox}
+
+\begin{learnbox}
+\begin{itemize}
+  \item How blocks link to form a chain via hash pointers
+  \item The UTXO model for tracking spendable outputs
+  \item How proof-of-work secures the chain
+\end{itemize}
+\end{learnbox}
+
+\begin{prereqbox}
+\begin{itemize}
+  \item Chapters~\ref{ch:primitives}--\ref{ch:cryptography} (Primitives, Utilities, Cryptography)
+  \item Basic familiarity with hash functions and digital signatures
+\end{itemize}
+\end{prereqbox}
+
+\begin{examplebox}{See it in action}
+Run \code{cargo test test\_new\_block} to see block creation and
+PoW in action.
+\end{examplebox}
+
+\begin{examplebox}{Implementation example}
+The \code{add\_block()} method validates the block, updates the
+chain tip, and triggers a UTXO set refresh.
+\end{examplebox}
+
+\begin{refbox}{See the full implementation}
+\code{bitcoin/src/chain/blockchain\_service.rs} ---
+full source with inline comments.
+\end{refbox}
+
+\begin{refbox}{Companion Chapter}
+Complete source code is available in Chapter~9A: Code Listings.
+In the print edition, these listings appear in the Appendix:
+Source Reference.
+\end{refbox}
+
+\begin{infobox}{Scope}
+This section covers the domain model only. State management,
+persistence, and consensus are covered in Sections~9.2--9.7.
+\end{infobox}
+
+\begin{checkpointbox}
+At this point you should understand: (1) why blocks contain a
+\code{pre\_block\_hash} field, (2) how transactions encode the
+UTXO worldview, and (3) where the signature lives in our model.
+\end{checkpointbox}
+
+\begin{troublebox}
+If \code{cargo test} fails with ``database locked,'' ensure no
+other node instance is running. The Sled database uses exclusive
+file locks.
+\end{troublebox}
+
+\begin{examplebox}{Framework Comparison}
+Iced uses the MVU (Model--View--Update) pattern; Tauri splits
+the Rust backend from a React/TypeScript frontend.
+\end{examplebox}
+
+% ── Lists ────────────────────────────────────────────────────
+\section{Lists}
+
+Bulleted list:
+\begin{itemize}
+  \item \code{pre\_block\_hash}: link to the previous block (whitepaper \S3/\S4)
+  \item \code{nonce} + \code{hash}: PoW search result (whitepaper \S4)
+  \item \code{timestamp}: ordering signal; also part of the PoW header bytes
+\end{itemize}
+
+Numbered list:
+\begin{enumerate}
+  \item Define what a transaction \emph{is} by reading the struct fields.
+  \item Show how a spending transaction is \emph{constructed} in code.
+  \item Trace the UTXO selection, signing, and broadcast flow.
+\end{enumerate}
+
+\scenbreak
+
+% ── Additional elements ─────────────────────────────────────
+\section{Additional Elements}
+
+The scene break above (\texttt{\textbackslash scenbreak}) creates a
+visual pause between major topics within a chapter.
+
+The \texttt{\textbackslash keyterm} command marks first definitions:
+a \keyterm{block header} is the metadata that identifies a block
+and links it to the previous one. Terms are indexed automatically.
+
+Epigraphs appear at the start of each chapter (see the Satoshi
+quote at the top of this chapter). They set the tone without
+interrupting the technical flow.
+
+Drop caps (\texttt{\textbackslash lettrine}) open each chapter's
+first paragraph with a large decorative initial in the brand color,
+a hallmark of premium book typography.
+
+Margin notes\marginnote{Like this one!}\ appear in the outer margin
+for quick cross-references and asides without interrupting flow.
+
+The \texttt{\textbackslash cmark} command creates numbered annotation
+circles for code walkthrough explanations (see \cref{lst:block-struct}).
+
+% ── Pull quote ───────────────────────────────────────────────
+\pullquote{The UTXO set is derived state---not history. It answers
+one question: what is spendable right now?}
+
+% ── Deep dive sidebar ───────────────────────────────────────
+\begin{deepdive}{Why we chose Sled over LevelDB}
+Our implementation uses the Sled embedded database instead of
+LevelDB (which Bitcoin Core uses). Sled is written in pure Rust,
+provides lock-free concurrent access, and integrates naturally
+with Rust's ownership model. The trade-off is a larger on-disk
+footprint and less battle-tested production history. For a
+learning project, the ergonomic benefits outweigh these costs.
+\end{deepdive}
+
+% ── Step-by-step tutorial ────────────────────────────────────
+A tutorial walkthrough with distinct step badges:
+
+\begin{steps}
+  \step{Clone the repository}
+    Run \code{git clone https://github.com/bkunyiha/\allowbreak rust-blockchain}
+    to get a local copy of the project.
+
+  \step{Build in release mode}
+    Run \code{cargo build --release} from the project root.
+    This compiles with optimizations enabled.
+
+  \step{Run the test suite}
+    Verify everything works: \code{cargo test -- --nocapture}.
+\end{steps}
+
+% ── Footnote demo ────────────────────────────────────────────
+Footnotes\footnote{Like this one---note the rust-orange marker
+and thin brand-colored separator rule above.} use brand-colored
+markers for visual consistency with the rest of the design system.
+
+% ── API reference table ──────────────────────────────────────
+\medskip
+{\small\sffamily\textbf{Table: API Reference --- \code{BlockchainService}}}
+
+\smallskip
+\begin{center}
+\small
+\rowcolors{2}{white}{tableshade}%
+\begin{tabular}{@{} l l l p{4.8cm} @{}}
+\toprule
+\textbf{Method} & \textbf{Parameters} & \textbf{Returns} & \textbf{Description} \\
+\midrule
+  \code{add\_block} & \texttt{block: Block} & \texttt{Result<()>} & Validates and appends a block \\
+  \code{get\_tip} & \texttt{---} & \texttt{Option<Block>} & Returns the chain tip \\
+  \code{get\_block} & \texttt{hash: \&str} & \texttt{Option<Block>} & Retrieves a block by hash \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ── Chapter-end summary ──────────────────────────────────────
+\begin{chaptersummary}
+  \item All visual elements render correctly in Crown Quarto format
+  \item Callout boxes have icon prefixes for instant recognition
+  \item Code listings support annotation callouts with numbered circles
+  \item Pull quotes, deep dives, and step environments add variety
+  \item Tables use alternating row shading; API tables have a standard format
+  \item Drop caps, margin notes, footnotes, and epigraphs add polish
+  \item A colophon page documents the book's production details
+\end{chaptersummary}

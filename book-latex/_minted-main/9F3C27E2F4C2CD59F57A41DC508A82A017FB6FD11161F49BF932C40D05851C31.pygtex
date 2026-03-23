@@ -1,0 +1,16 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{load\PYGZus{}settings}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{SqliteResult}\PYG{o}{\PYGZlt{}}\PYG{n}{Settings}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{conn}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{get\PYGZus{}connection}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{query\PYGZus{}row}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{SELECT base\PYGZus{}url, api\PYGZus{}key FROM settings WHERE id = 1}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{[}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{        }\PYG{o}{|}\PYG{n}{row}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{Settings}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{base\PYGZus{}url}: \PYG{n+nc}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{api\PYGZus{}key}: \PYG{n+nc}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

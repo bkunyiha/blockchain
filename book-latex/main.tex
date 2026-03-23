@@ -1,0 +1,116 @@
+% ══════════════════════════════════════════════════════════════
+%  main.tex — Rust Blockchain: A Full-Stack Implementation Guide
+%  Master document for Crown Quarto (7.44" × 9.69") print
+% ══════════════════════════════════════════════════════════════
+% Crown Quarto stock size is set explicitly in preamble.tex via
+% \setstocksize{9.69in}{7.44in} — no class option needed.
+\documentclass[11pt,twoside,openright]{memoir}
+
+\input{preamble}
+\input{backmatter/glossary}     % Load glossary definitions before \begin{document}
+
+\begin{document}
+
+% ── Cover ────────────────────────────────────────────────────
+\input{frontmatter/cover}
+
+% ── Front matter ─────────────────────────────────────────────
+\frontmatter
+
+\input{frontmatter/halftitle}
+\input{frontmatter/titlepage}
+\input{frontmatter/copyright}
+\input{frontmatter/dedication}
+
+\tableofcontents
+
+\cleardoublepage
+\listoflistings
+
+\cleardoublepage
+\listoffigures
+
+% ── Main matter ──────────────────────────────────────────────
+\mainmatter
+
+% Design proof: style sheet (comment out for production)
+%\input{chapters/ch00-stylesheet}
+
+% ── Chapter 0: Quick Start ──────────────────────────────────
+\input{chapters/ch00-quickstart}
+
+% ── Part I ──────────────────────────────────────────────────
+\setparttab{1}{brand}  % Part I: rust-orange thumb tab
+\partoverview{Chapters 2--30 build your blockchain from first principles:
+cryptographic primitives, the UTXO transaction model, proof-of-work
+consensus, peer-to-peer networking, and a persistence layer---all
+implemented in safe, idiomatic Rust.}
+\part{Foundations \& Core Implementation}
+
+\input{chapters/ch01-introduction}
+\input{chapters/ch02-blockchain-intro}
+\input{chapters/ch03-whitepaper}
+\input{chapters/ch04-whitepaper-rust}
+
+\input{chapters/ch05-project-index}
+\input{chapters/ch06-primitives}
+\input{chapters/ch07-utilities}
+\input{chapters/ch08-cryptography}
+
+\input{chapters/ch09-1-domain-model}
+\input{chapters/ch09-2-state-management}
+\input{chapters/ch09-3-chain-state}
+\input{chapters/ch09-4-utxo-set}
+\input{chapters/ch09-5-transaction-lifecycle}
+\input{chapters/ch09-6-block-lifecycle}
+\input{chapters/ch09-7-consensus}
+\input{chapters/ch09-8-node-orchestration}
+\input{chapters/ch09-9-tx-to-block}
+
+\input{chapters/ch10-block-acceptance}
+\input{chapters/ch11-storage}
+\input{chapters/ch12-network}
+\input{chapters/ch13-node-orchestration}
+
+\input{chapters/ch14-wallet}
+\input{chapters/ch15-web-api}
+\input{chapters/ch16-desktop-iced}
+\input{chapters/ch17-desktop-tauri}
+\input{chapters/ch18-wallet-iced}
+\input{chapters/ch19-wallet-tauri}
+\input{chapters/ch20-embedded-db}
+\input{chapters/ch21-web-ui}
+
+\setparttab{2}{sectioncolor}  % Part II: blue thumb tab
+\partoverview{Chapters 31--32 take your blockchain from a single binary to
+a production-ready distributed system---first with Docker Compose for local
+multi-node testing, then with Kubernetes for scalable cloud deployment.}
+\part{Deployment \& Operations}
+
+\input{chapters/ch22-docker}
+\input{chapters/ch23-kubernetes}
+
+\setparttab{3}{codeframe}  % Part III: green thumb tab
+\partoverview{Chapter 33 is a self-contained Rust language reference covering
+every feature used in the implementation chapters---from ownership and traits
+through async/await and concurrency---so you can read it before or alongside
+the main text.}
+\part{Language Reference}
+
+\input{chapters/ch24-rust-guide}
+
+% ── Back matter ──────────────────────────────────────────────
+\backmatter
+
+\printglossary[type=\acronymtype,title=Acronyms]
+\printglossary[title=Glossary]
+% \printbibliography
+% \input{backmatter/appendix}
+\printindex
+\input{backmatter/colophon}
+
+% ── Back cover ───────────────────────────────────────────────
+% Back cover removed from interior PDF — IngramSpark uses the cover wrap separately.
+% \input{backmatter/backcover}
+
+\end{document}

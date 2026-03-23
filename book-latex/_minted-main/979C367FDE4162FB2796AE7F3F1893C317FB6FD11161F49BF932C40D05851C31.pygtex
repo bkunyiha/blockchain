@@ -1,0 +1,62 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{NODE\PYGZus{}VERSION}: \PYG{k+kt}{usize} \PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+
+\PYG{c+c1}{// Discriminator: tells receiver what type}
+\PYG{c+c1}{// (Tx or Block) the hash refers to.}
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Serialize, Deserialize)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum} \PYG{n+nc}{OpType}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{Tx}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Block}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Serialize, Deserialize)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum} \PYG{n+nc}{MessageType}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Error}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Success}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Info}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Warning}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Ack}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Admin operations (not part of P2P protocol)}
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Serialize, Deserialize)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum} \PYG{n+nc}{AdminNodeQueryType}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{GetBalance}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{wlt\PYGZus{}address}: \PYG{n+nb}{String} \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{GetAllTransactions}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{GetBlockHeight}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{MineEmptyBlock}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{ReindexUtxo}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Wire envelope: every JSON message is one Package}
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Serialize, Deserialize)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum} \PYG{n+nc}{Package}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Block}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{SocketAddr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{block}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{GetBlocks}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{SocketAddr}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{GetData}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{op\PYGZus{}type}: \PYG{n+nc}{OpType}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{id}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Inv}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{op\PYGZus{}type}: \PYG{n+nc}{OpType}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{items}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Tx}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{SocketAddr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{transaction}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{SendBitCoin}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{wlt\PYGZus{}frm\PYGZus{}addr}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{wlt\PYGZus{}to\PYGZus{}addr}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{amount}: \PYG{k+kt}{i32}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{KnownNodes}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{SocketAddr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{nodes}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{SocketAddr}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Version}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{version}: \PYG{k+kt}{usize}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{best\PYGZus{}height}: \PYG{k+kt}{usize}
+    \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Message}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{message\PYGZus{}type}: \PYG{n+nc}{MessageType}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{message}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{AdminNodeQuery}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{query\PYGZus{}type}: \PYG{n+nc}{AdminNodeQueryType}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

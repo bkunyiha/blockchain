@@ -6,7 +6,7 @@ This appendix provides an annotated directory structure for each module covered 
 
 ---
 
-## Chapter 16: Desktop Admin UI (Iced)
+## Chapter 25: Desktop Admin UI (Iced)
 
 **Repository path:** `bitcoin-desktop-ui-iced/`
 
@@ -37,7 +37,7 @@ bitcoin-desktop-ui-iced/
 
 ---
 
-## Chapter 17: Desktop Admin UI (Tauri)
+## Chapter 26: Desktop Admin UI (Tauri)
 
 **Repository path:** `bitcoin-desktop-ui-tauri/`
 
@@ -150,7 +150,7 @@ The frontend is organized similarly, with layers for configuration, shared types
 
 ---
 
-## Chapter 18: Wallet UI (Iced)
+## Chapter 27: Wallet UI (Iced)
 
 **Repository path:** `bitcoin-wallet-ui-iced/`
 
@@ -182,7 +182,7 @@ bitcoin-wallet-ui-iced/
 
 ---
 
-## Chapter 19: Wallet UI (Tauri)
+## Chapter 28: Wallet UI (Tauri)
 
 **Repository path:** `bitcoin-wallet-ui-tauri/`
 
@@ -258,7 +258,7 @@ bitcoin-wallet-ui-tauri/
 
 ---
 
-## Chapter 20: Embedded Database
+## Chapter 29: Embedded Database
 
 **Repository path:** `embedded-database/`
 
@@ -285,7 +285,7 @@ embedded-database/
 
 ---
 
-## Chapter 21: Web Admin UI
+## Chapter 30: Web Admin UI
 
 **Repository path:** `bitcoin-web-ui/`
 
@@ -353,7 +353,7 @@ bitcoin-web-ui/
 
 ---
 
-## Chapter 22: Docker Compose Deployment
+## Chapter 31: Docker Compose Deployment
 
 **Repository path:** `ci/docker-compose/`
 
@@ -387,7 +387,7 @@ ci/docker-compose/
 
 ---
 
-## Chapter 23: Kubernetes Deployment
+## Chapter 32: Kubernetes Deployment
 
 **Repository path:** `ci/kubernetes/`
 

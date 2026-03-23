@@ -1,0 +1,17 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+User navigates to \PYGZdq{}/\PYGZdq{}
+    v
+Component calls useBlockchainInfo(5000)
+    v
+Hook calls getApiClient().getBlockchainInfo()
+    v
+ApiClient makes GET /api/admin/blockchain (with X\PYGZhy{}API\PYGZhy{}Key)
+    v
+Rust node API returns ApiResponse\PYGZlt{}BlockchainInfo\PYGZgt{}
+    v
+Hook receives response.data
+    v
+Component receives \PYGZob{} data, isLoading, error \PYGZcb{}
+    v
+Component renders StatCards + details
+\end{Verbatim}

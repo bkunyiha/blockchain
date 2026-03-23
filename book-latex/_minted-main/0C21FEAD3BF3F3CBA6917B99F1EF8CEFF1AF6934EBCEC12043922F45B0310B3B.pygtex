@@ -1,0 +1,20 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{// Bitcoin Core: src/primitives/transaction.h}
+\PYG{k}{class}\PYG{+w}{ }\PYG{n+nc}{CTransaction}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{k}{private}\PYG{o}{:}
+\PYG{+w}{    }\PYG{k}{mutable}\PYG{+w}{ }\PYG{n}{uint256}\PYG{+w}{ }\PYG{n}{hash}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// 256\PYGZhy{}bit binary hash (like Vec\PYGZlt{}u8\PYGZgt{})}
+
+\PYG{k}{public}\PYG{o}{:}
+\PYG{+w}{    }\PYG{c+c1}{// Get binary hash (like get\PYGZus{}id\PYGZus{}bytes())}
+\PYG{+w}{    }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{uint256}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{GetHash}\PYG{p}{()}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{hash}\PYG{p}{.}\PYG{n}{IsNull}\PYG{p}{())}
+\PYG{+w}{            }\PYG{n}{hash}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SerializeHash}\PYG{p}{(}\PYG{o}{*}\PYG{k}{this}\PYG{p}{);}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{hash}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// Returns reference to binary}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// Get hex string (like get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex())}
+\PYG{+w}{    }\PYG{n}{std}\PYG{o}{::}\PYG{n}{string}\PYG{+w}{ }\PYG{n}{GetHex}\PYG{p}{()}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{hash}\PYG{p}{.}\PYG{n}{GetHex}\PYG{p}{();}\PYG{+w}{  }\PYG{c+c1}{// Convert to hex only when needed}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{};}
+\end{Verbatim}

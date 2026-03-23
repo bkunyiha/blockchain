@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{cd} ci/docker\PYGZhy{}compose/configs
+\PYG{n+nb}{export} \PYG{n+nv}{NODE\PYGZus{}MINING\PYGZus{}ADDRESS}\PYG{o}{=}3npBNyKSEwhCQWTXHFjwR8Rb66kjq6khfZSdmLPm8Gde9XoTwW
+docker compose up \PYGZhy{}d
+\end{Verbatim}

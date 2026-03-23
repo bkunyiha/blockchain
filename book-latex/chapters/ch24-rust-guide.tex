@@ -1,0 +1,1081 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 24: Rust Language Guide --- Language Reference
+% ══════════════════════════════════════════════════════════════
+
+\chapter{Rust Language Guide}
+\label{ch:rust-guide}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Understand Rust's ownership and borrowing system for memory safety
+  \item Apply traits, generics, and lifetimes to write flexible code
+  \item Handle errors idiomatically with \code{Result}, \code{Option}, and the \code{?} operator
+  \item Write async code with Tokio and manage concurrency with channels and synchronization primitives
+  \item Test Rust code at unit and integration levels using the built-in test framework
+  \item Apply best practices and idioms for production-grade systems programming
+\end{itemize}
+\end{learnbox}
+
+\lettrine[lines=3]{R}{ust} is a systems programming language that combines memory safety, performance, and concurrency without garbage collection. Unlike C or C++, which require manual memory management and are prone to memory bugs, Rust provides compile-time guarantees through its \index{Rust!ownership}ownership system. This chapter guides you through Rust's key features and shows how they appear in our \index{blockchain}blockchain implementation.
+
+Throughout this reference, we use examples from the codebase to connect language features to real implementation decisions. Our goal is not syntax memorization but building mental models that enable correct, efficient systems code.
+
+\section{Installation and Setup}
+\label{sec:ch24-install-setup}
+
+Install Rust using rustup, the official toolchain manager:
+
+\begin{minted}[fontsize=\footnotesize]{bash}
+# macOS / Linux
+curl --proto '=https' --tlsv2 -sSf https://sh.rustup.rs | sh
+source "$HOME/.cargo/env"
+
+# Windows (PowerShell)
+winget install --id Rustlang.Rustup -e
+
+# Verify installation
+rustc --version
+cargo --version
+\end{minted}
+
+Essential tools:
+\begin{itemize}
+  \item \code{cargo build} (compile), \code{cargo test} (test), \code{cargo run} (execute)
+  \item \code{cargo fmt} (format code)
+  \item \code{cargo clippy} (lint and flag mistakes)
+\end{itemize}
+
+Install components if missing:
+\begin{minted}[fontsize=\footnotesize]{bash}
+rustup component add rustfmt clippy
+\end{minted}
+
+For IDE support, install rust-analyzer: VS Code extension or IntelliJ/CLion plugin.
+
+\section{Introduction to Rust}
+\label{sec:ch24-intro}
+
+Rust's core principles center on three seemingly contradictory goals:
+\begin{enumerate}
+  \item \textbf{Safety}: The compiler prevents memory safety bugs and data races at compile time
+  \item \textbf{Performance}: Zero-cost abstractions mean high-level features compile to efficient machine code
+  \item \textbf{\index{Rust!async}Concurrency}: The type system enables ``fearless \index{Rust!async}concurrency''---safe concurrent code without data races
+\end{enumerate}
+
+These principles aren't trade-offs. Rust achieves all three through careful language design and compile-time analysis. In blockchain systems where a single bug can compromise the entire system, Rust's compile-time safety is a strategic advantage.
+
+\subsection{Why Rust for Blockchain?}
+\label{subsec:ch24-why-rust}
+
+\index{blockchain}Blockchain systems have unique requirements making Rust particularly well-suited:
+
+\begin{itemize}
+  \item \textbf{Security}: Process untrusted input safely; compile-time checks catch many bugs before production
+  \item \textbf{Performance}: \index{transaction}Transaction processing requires low latency; Rust's zero-cost abstractions ensure performance
+  \item \textbf{\index{Rust!async}Concurrency}: Nodes handle many concurrent operations (network, \index{transaction}transactions, \index{mining}mining); Rust's type system ensures thread safety
+  \item \textbf{Reliability}: Continuous operation requires memory safety; Rust's \index{Rust!ownership}ownership system prevents crashes from memory errors
+\end{itemize}
+
+\section{Ownership and Borrowing}
+\label{sec:ch24-ownership}
+
+\index{Rust!ownership}Ownership is Rust's distinctive feature---a compile-time system that tracks data \index{Rust!ownership}ownership and ensures memory is freed exactly once, automatically. Three rules govern it:
+
+\begin{enumerate}
+  \item \textbf{Each value has one owner}: Only one variable \index{Rust!ownership}owns each value at any time
+  \item \textbf{Only one mutable \index{Rust!borrowing}borrow at a time}: Prevents data races
+  \item \textbf{Values drop when owner goes out of scope}: Automatic cleanup without garbage collection
+\end{enumerate}
+
+\subsection{Ownership in Practice}
+\label{subsec:ch24-ownership-practice}
+
+From our blockchain (\code{bitcoin/src/primitives/transaction.rs}):
+
+\begin{listing}[htbp]
+\caption{Ownership example in TXInput implementation}
+\label{lst:ch24-ownership-1}
+\begin{minted}[fontsize=\footnotesize]{rust}
+impl TXInput {
+    pub fn new(txid: &[u8], vout: usize) -> TXInput {
+        TXInput {
+            txid: txid.to_vec(),  // Takes ownership of new Vec
+            vout,
+        }
+    }
+    pub fn get_txid(&self) -> &[u8] {  // Returns borrowed ref
+        self.txid.as_slice()
+    }
+}
+\end{minted}
+\end{listing}
+
+The \code{new} function receives a borrowed slice but creates a new \code{Vec<u8>} that the \code{TXInput} owns. The \code{to\_vec()} method creates owned data; the \code{get\_txid()} method returns a borrowed reference.
+
+\subsection{Borrowing}
+\label{subsec:ch24-borrowing}
+
+\textbf{Immutable borrows (\code{\&T})}: Multiple readers, no modifications.
+
+\begin{listing}[H]
+\caption{Immutable borrowing}
+\label{lst:ch24-borrow-immut}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn uses_key(&self, pub_key_hash: &[u8]) -> bool {
+    hash_pub_key(self.pub_key.as_slice()).eq(pub_key_hash)
+}
+\end{minted}
+\end{listing}
+
+\textbf{Mutable borrows (\code{\&mut T})}: One exclusive writer.
+
+\begin{listing}[H]
+\caption{Mutable borrowing}
+\label{lst:ch24-borrow-mut}
+\begin{minted}[fontsize=\footnotesize]{rust}
+fn set_key(&mut self, key: Vec<u8>) {
+    self.pub_key = key;  // Exclusive mutable access
+}
+\end{minted}
+\end{listing}
+
+The borrow checker enforces these rules at compile time, preventing data races without runtime overhead.
+
+\subsection{Ownership Transfer (Moves)}
+\label{subsec:ch24-moves}
+
+When ownership transfers between variables, it's zero-cost---just pointer transfer:
+
+\begin{listing}[htbp]
+\caption{Ownership move}
+\label{lst:ch24-moves}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn new(blockchain: BlockchainService) -> NodeContext {
+    NodeContext { blockchain }  // Move, not copy
+}
+\end{minted}
+\end{listing}
+
+In our blockchain, we borrow for reads (efficient), move for isolation (transactional safety).
+
+\section{Data Structures: Structs and Enums}
+\label{sec:ch24-data-structures}
+
+Structs and enums are Rust's primary mechanisms for modeling domain concepts.
+
+\subsection{Structs}
+\label{subsec:ch24-structs}
+
+Structs group related data with named fields. From our blockchain (\code{bitcoin/src/primitives/block.rs}):
+
+\begin{listing}[htbp]
+\caption{Struct definitions for blocks}
+\label{lst:ch24-struct-block}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Clone, Serialize, Deserialize)]
+pub struct BlockHeader {
+    timestamp: i64,
+    pre_block_hash: String,
+    hash: String,
+    nonce: i64,
+    height: usize,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct Block {
+    header: BlockHeader,
+    transactions: Vec<Transaction>,
+}
+\end{minted}
+\end{listing}
+
+Structs compose data hierarchically, make the domain model self-documenting, and allow implementing methods in \code{impl} blocks.
+
+\subsection{Enums}
+\label{subsec:ch24-enums}
+
+Enums represent values that are one of several variants. From \code{bitcoin/src/error.rs}:
+
+\begin{listing}[htbp]
+\caption{Error enum with variants}
+\label{lst:ch24-enum-error}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Clone, Error, Debug)]
+pub enum BtcError {
+    #[error("Blockchain not found: {0}")]
+    BlockchainNotFoundError(String),
+    #[error("Invalid transaction")]
+    InvalidTransaction,
+    #[error("Not enough funds")]
+    NotEnoughFunds,
+}
+\end{minted}
+\end{listing}
+
+Enums can carry data (unit, tuple, or struct variants) and are exhaustively pattern-matched by the compiler.
+
+\section{Traits: Polymorphism and Code Reuse}
+\label{sec:ch24-traits}
+
+Traits define shared behavior that types can implement. They enable polymorphism and code reuse.
+
+\subsection{Defining and Implementing Traits}
+\label{subsec:ch24-trait-impl}
+
+Traits specify a contract. From \code{bitcoin/src/node/peers.rs}:
+
+\begin{listing}[htbp]
+\caption{Trait implementation example}
+\label{lst:ch24-trait-impl}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+pub struct Node {
+    addr: SocketAddr,
+}
+
+impl Node {
+    fn new(addr: SocketAddr) -> Node {
+        Node { addr }
+    }
+    pub fn get_addr(&self) -> SocketAddr {
+        self.addr
+    }
+}
+
+impl Default for Node {
+    fn default() -> Self {
+        Self::new(/* ... */)
+    }
+}
+\end{minted}
+\end{listing}
+
+\subsection{Trait Bounds}
+\label{subsec:ch24-trait-bounds}
+
+Trait bounds constrain generic types. From \code{bitcoin/src/chain/chainstate.rs}:
+
+\begin{listing}[htbp]
+\caption{Trait bounds in generic functions}
+\label{lst:ch24-trait-bounds}
+\begin{minted}[fontsize=\footnotesize]{rust}
+async fn read<F, Fut, T>(&self, f: F) -> Result<T>
+where
+    F: FnOnce(BlockchainFileSystem) -> Fut + Send,
+    Fut: Future<Output = Result<T>> + Send,
+    T: Send + 'static,
+{
+    let blockchain_guard = self.0.read().await;
+    f(blockchain_guard.clone()).await
+}
+\end{minted}
+\end{listing}
+
+Bounds like \code{F: FnOnce(...) + Send} ensure \code{F} can be called once and is safe to send between threads.
+
+\section{Error Handling}
+\label{sec:ch24-error-handling}
+
+Error handling is explicit and type-safe in Rust. \code{Result<T, E>} represents operations that can fail; \code{Option<T>} represents values that might not exist.
+
+\subsection{Result Type}
+\label{subsec:ch24-result}
+
+The \code{Result<T, E>} type represents outcomes of operations that can succeed or fail. Example from \code{bitcoin/src/primitives/transaction.rs}:
+
+\begin{listing}[htbp]
+\caption{Result type in transaction output creation}
+\label{lst:ch24-result}
+\begin{minted}[fontsize=\footnotesize]{rust}
+impl TXOutput {
+    pub fn new(value: i32, address: &WalletAddress) -> Result<TXOutput> {
+        let mut output = TXOutput {
+            value,
+            in_global_mem_pool: false,
+            pub_key_hash: vec![],
+        };
+        output.lock(address)?;  // ? operator propagates errors
+        Ok(output)
+    }
+
+    fn lock(&mut self, address: &WalletAddress) -> Result<()> {
+        let pub_key_hash = get_pub_key_hash(address)?;
+        self.pub_key_hash = pub_key_hash;
+        Ok(())
+    }
+}
+\end{minted}
+\end{listing}
+
+This example shows how \code{Result} types flow through code. The \code{?} operator automatically propagates errors---if \code{lock()} returns an error, the function immediately returns that error.
+
+Rust provides several methods for working with \code{Result} types:
+\begin{itemize}
+  \item \textbf{\code{?} operator}: Most common; unwraps \code{Ok} or returns error immediately
+  \item \textbf{\code{unwrap()}}: Unwraps \code{Ok} or panics; useful in tests
+  \item \textbf{\code{expect()}}: Like \code{unwrap()}, with custom panic message
+  \item \textbf{\code{map()}}: Transforms \code{Ok} value if present
+  \item \textbf{\code{map\_err()}}: Transforms \code{Err} value if present
+\end{itemize}
+
+\subsection{Option Type}
+\label{subsec:ch24-option}
+
+\code{Option<T>} represents values that might not exist, replacing null pointers with explicit handling. Example from \code{bitcoin/src/node/peers.rs}:
+
+\begin{listing}[htbp]
+\caption{Option type in peer management}
+\label{lst:ch24-option}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn first(&self) -> Result<Option<Node>> {
+    let inner = self
+        .inner
+        .read()
+        .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
+    Ok(inner.iter().next().cloned())  // Returns Option<Node>
+}
+\end{minted}
+\end{listing}
+
+The \code{first()} method returns \code{Result<Option<Node>>}, showing how \code{Result} and \code{Option} combine. The outer \code{Result} represents potential errors, while the inner \code{Option} represents whether a node was found.
+
+Working with \code{Option} requires explicit handling:
+\begin{itemize}
+  \item \textbf{\code{unwrap\_or()}}: Provides default if \code{None}
+  \item \textbf{\code{unwrap\_or\_else()}}: Computes default lazily if \code{None}
+  \item \textbf{\code{map()}}: Transforms \code{Some} value if present
+  \item \textbf{\code{and\_then()}}: Chains operations returning \code{Option}
+  \item \textbf{\code{match}}: Exhaustive pattern matching for both \code{Some} and \code{None}
+\end{itemize}
+
+\subsection{The \code{?} Operator}
+\label{subsec:ch24-question-mark}
+
+The \code{?} operator makes error propagation concise. Example from \code{bitcoin/src/primitives/block.rs}:
+
+\begin{listing}[htbp]
+\caption{Error propagation with the \code{?} operator}
+\label{lst:ch24-question-mark}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn deserialize(bytes: &[u8]) -> Result<Block> {
+    bincode::serde::decode_from_slice(bytes, bincode::config::standard())
+        .map_err(|e| BtcError::BlockDeserializationError(e.to_string()))
+        .map(|(block, _)| block)
+}
+\end{minted}
+\end{listing}
+
+The \code{?} operator checks if the operation succeeded. If it returned \code{Ok}, it unwraps the value. If it returned \code{Err}, it immediately returns that error from the function. This is equivalent to a \code{match} statement with early return but much more concise.
+
+\section{Generics: Type Parameters and Code Reuse}
+\label{sec:ch24-generics}
+
+Generics allow writing code once that works with multiple types. From \code{bitcoin/src/web/models/responses.rs}:
+
+\begin{listing}[htbp]
+\caption{Generic struct for API responses}
+\label{lst:ch24-generic-struct}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ApiResponse<T> {
+    pub success: bool,
+    pub data: Option<T>,
+    pub error: Option<String>,
+}
+
+impl<T> ApiResponse<T> {
+    pub fn success(data: T) -> Self {
+        Self { success: true, data: Some(data), error: None }
+    }
+}
+\end{minted}
+\end{listing}
+
+Generic structs wrap any type. \code{ApiResponse<T>} enables consistent response formats for all endpoints.
+
+\subsection{Monomorphization}
+\label{subsec:ch24-monomorphization}
+
+The compiler generates separate code for each concrete type:
+
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Generic function
+fn process<T: Serialize>(item: T) -> Vec<u8> { ... }
+
+// Compiler generates:
+// fn process_Transaction(...) { ... }
+// fn process_Block(...) { ... }
+\end{minted}
+
+Zero runtime overhead; each monomorphized function is optimized for its type.
+
+\section{Lifetimes: Managing Reference Validity}
+\label{sec:ch24-lifetimes}
+
+Lifetimes track how long references remain valid, preventing dangling references. Most of the time, Rust can infer lifetimes automatically through lifetime elision rules.
+
+\subsection{The \code{'static} Lifetime}
+\label{subsec:ch24-static-lifetime}
+
+The \code{'static} lifetime represents data that lives for the entire program duration. Example from \code{bitcoin/src/web/routes/web.rs}:
+
+\begin{listing}[htbp]
+\caption{Static lifetime for string literals}
+\label{lst:ch24-static}
+\begin{minted}[fontsize=\footnotesize]{rust}
+async fn react_app_not_built() -> Html<&'static str> {
+    Html(
+        r#"
+        <!DOCTYPE html>
+        ...
+        "#
+    )
+}
+\end{minted}
+\end{listing}
+
+String literals have the \code{'static} lifetime because they're compiled into the binary and exist for the program's entire execution.
+
+\subsection{Lifetime Elision}
+\label{subsec:ch24-lifetime-elision}
+
+Writing explicit lifetime annotations for every function would be verbose. Rust infers lifetimes automatically through elision rules:
+
+\begin{listing}[htbp]
+\caption{Lifetime elision example}
+\label{lst:ch24-lifetime-elision}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Lifetime elided - compiler infers automatically
+pub fn get_txid(&self) -> &[u8] {
+    self.txid.as_slice()
+}
+
+// Equivalent explicit version (what compiler infers)
+pub fn get_txid<'a>(&'a self) -> &'a [u8] {
+    self.txid.as_slice()
+}
+\end{minted}
+\end{listing}
+
+The compiler applies three elision rules:
+\begin{enumerate}
+  \item Each input reference gets its own lifetime
+  \item Single input reference: output uses that lifetime
+  \item Method with \code{\&self} or \code{\&mut self}: output uses \code{self}'s lifetime
+\end{enumerate}
+
+\section{Smart Pointers: Shared Ownership}
+\label{sec:ch24-smart-pointers}
+
+Smart pointers enable shared ownership when single ownership isn't sufficient. \code{Arc} provides thread-safe shared ownership; \code{Rc} provides single-threaded shared ownership.
+
+\subsection{Arc: Atomic Reference Counting}
+\label{subsec:ch24-arc}
+
+When we need to share data across multiple threads, \code{Arc} provides thread-safe shared ownership. Example from \code{bitcoin/src/chain/chainstate.rs}:
+
+\begin{listing}[htbp]
+\caption{Arc for thread-safe shared ownership}
+\label{lst:ch24-arc}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use std::sync::Arc;
+use tokio::sync::RwLock as TokioRwLock;
+
+#[derive(Debug)]
+pub struct BlockchainService(Arc<TokioRwLock<BlockchainFileSystem>>);
+
+impl Clone for BlockchainService {
+    fn clone(&self) -> Self {
+        BlockchainService(self.0.clone())  // Clones Arc, not data
+    }
+}
+\end{minted}
+\end{listing}
+
+The \code{BlockchainService} wraps blockchain data in \code{Arc<TokioRwLock<BlockchainFileSystem>>}. When we clone a \code{BlockchainService}, we're cloning the \code{Arc}, which just increments a reference counter. The actual blockchain data isn't copied, making cloning efficient.
+
+\code{Arc} provides:
+\begin{itemize}
+  \item \textbf{Thread Safety}: Uses atomic operations for reference counting
+  \item \textbf{Reference Counting}: Tracks references; frees data when last reference drops
+  \item \textbf{Immutable by Default}: Data inside \code{Arc} is immutable; wrap in \code{Mutex} or \code{RwLock} to modify
+\end{itemize}
+
+\section{Pattern Matching}
+\label{sec:ch24-pattern-matching}
+
+Pattern matching enables exhaustive case handling. From \code{bitcoin/src/node/server.rs}:
+
+\begin{listing}[htbp]
+\caption{Match expression for error handling}
+\label{lst:ch24-match}
+\begin{minted}[fontsize=\footnotesize]{rust}
+match listener.accept() {
+    Ok((stream, _peer)) => {
+        tokio::spawn(async move { /* process stream */ });
+    }
+    Err(e) => error!("accept error: {}", e),
+}
+\end{minted}
+\end{listing}
+
+The compiler enforces exhaustiveness---all variants must be handled.
+
+\subsection{if let}
+\label{subsec:ch24-if-let}
+
+\code{if let} concisely handles one pattern:
+
+\begin{minted}[fontsize=\footnotesize]{rust}
+let tip_hash = if let Some(data) = data {
+    process(data)
+} else {
+    default_value()
+};
+\end{minted}
+
+Less verbose than \code{match} when handling one case.
+
+\section{Derive Macros}
+\label{sec:ch24-derive-macros}
+
+Derive macros automatically generate trait implementations. From \code{bitcoin/src/primitives/transaction.rs}:
+
+\begin{listing}[htbp]
+\caption{Derive macro for automatic implementations}
+\label{lst:ch24-derive}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Clone, Default, Serialize, Deserialize)]
+pub struct TXInput {
+    txid: Vec<u8>,
+    vout: usize,
+    signature: Vec<u8>,
+    pub_key: Vec<u8>,
+}
+\end{minted}
+\end{listing}
+
+Four traits generated from one line: reduces boilerplate, ensures correctness, handles field additions automatically.
+
+Common derives:
+\begin{itemize}
+  \item \textbf{\code{Clone}}: Explicit copying via \code{.clone()}
+  \item \textbf{\code{Debug}}: Format with \code{\{:?\}} and \code{\{:\#?\}}
+  \item \textbf{\code{PartialEq}/\code{Eq}}: Equality comparison
+  \item \textbf{\code{Hash}}: Use as HashMap/HashSet keys
+  \item \textbf{\code{Serialize}/\code{Deserialize}}: Convert to/from JSON or binary
+\end{itemize}
+
+\section{Async/Await: Asynchronous Programming}
+\label{sec:ch24-async-await}
+
+Async/await enables writing asynchronous code that looks synchronous but doesn't block threads. Async functions return \code{Future} types; \code{.await} suspends execution until futures complete.
+
+\subsection{Async Functions}
+\label{subsec:ch24-async-func}
+
+Example from \code{bitcoin/src/web/handlers/blockchain.rs}:
+
+\begin{listing}[htbp]
+\caption{Async function for blockchain info retrieval}
+\label{lst:ch24-async-func}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn get_blockchain_info(
+    State(node): State<Arc<NodeContext>>,
+) -> Result<Json<ApiResponse<BlockchainInfoResponse>>, StatusCode> {
+    let height = node
+        .get_blockchain_height()
+        .await  // Yields control, resumes when ready
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    // ... rest of handler
+}
+\end{minted}
+\end{listing}
+
+This handler is marked \code{async}, returning a \code{Future} that produces the \code{Result} when awaited. Inside, we call \code{.await} on \code{get\_blockchain\_height()}, yielding control. While waiting, the async runtime can process other requests, enabling high concurrency.
+
+\subsection{Async Patterns}
+\label{subsec:ch24-async-patterns}
+
+\textbf{Pattern 1: Concurrent Operations}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use tokio::join;
+
+let (blocks, transactions) = join!(
+    get_blocks(),
+    get_transactions()
+).await;
+\end{minted}
+
+\textbf{Pattern 2: Timeout Handling}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use tokio::time::{timeout, Duration};
+
+match timeout(Duration::from_secs(5), operation()).await {
+    Ok(result) => result?,
+    Err(_) => Err(BtcError::Timeout),
+}
+\end{minted}
+
+\section{Concurrency: Thread Safety}
+\label{sec:ch24-concurrency}
+
+Rust's type system ensures thread safety through \code{Send} and \code{Sync} marker traits. These traits don't have methods---they indicate whether types can be safely used across thread boundaries.
+
+\subsection{Send and Sync Traits}
+\label{subsec:ch24-send-sync}
+
+\code{Send} indicates a type can be safely transferred between threads. \code{Sync} indicates a type can be safely shared between threads via references.
+
+Example from \code{bitcoin/src/chain/chainstate.rs}:
+
+\begin{listing}[htbp]
+\caption{Send and Sync trait bounds}
+\label{lst:ch24-send-sync}
+\begin{minted}[fontsize=\footnotesize]{rust}
+async fn read<F, Fut, T>(&self, f: F) -> Result<T>
+where
+    F: FnOnce(BlockchainFileSystem) -> Fut + Send,  // Must be Send
+    Fut: Future<Output = Result<T>> + Send,  // Must be Send
+    T: Send + 'static,  // Must be Send
+{
+    // ...
+}
+\end{minted}
+\end{listing}
+
+These bounds ensure thread safety. Most Rust types implement \code{Send} and \code{Sync} automatically.
+
+\subsection{Mutex and RwLock}
+\label{subsec:ch24-locks}
+
+\code{Mutex} and \code{RwLock} provide thread-safe interior mutability. Example from \code{bitcoin/src/node/peers.rs}:
+
+\begin{listing}[htbp]
+\caption{RwLock for thread-safe shared state}
+\label{lst:ch24-rwlock}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use std::sync::RwLock;
+
+pub struct Nodes {
+    inner: RwLock<HashSet<Node>>,
+}
+
+impl Nodes {
+    pub fn add_node(&self, addr: SocketAddr) -> Result<()> {
+        let mut inner = self
+            .inner
+            .write()  // Acquires write lock
+            .map_err(|e| BtcError::NodesInnerPoisonedLockError(e.to_string()))?;
+        inner.insert(Node::new(addr));
+        Ok(())
+    }
+}
+\end{minted}
+\end{listing}
+
+\code{RwLock} allows multiple readers or one writer. For write-heavy workloads, use \code{Mutex}. For async code, use \code{TokioRwLock<T>} or \code{TokioMutex<T>}.
+
+\section{Modules: Code Organization}
+\label{sec:ch24-modules}
+
+Modules organize code hierarchically and control visibility. Example from \code{bitcoin/src/wallet/mod.rs}:
+
+\begin{listing}[htbp]
+\caption{Module organization with re-exports}
+\label{lst:ch24-modules}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub mod wallet_impl;
+pub mod wallet_service;
+
+pub use wallet_impl::{
+    Wallet, WalletAddress, convert_address, hash_pub_key,
+};
+
+pub use wallet_service::{WalletService};
+\end{minted}
+\end{listing}
+
+Declare sub-modules with \code{pub mod}. Use \code{pub use} to re-export items, creating convenient public APIs while keeping internal structure flexible.
+
+Visibility levels:
+\begin{itemize}
+  \item \textbf{\code{pub}}: Public, accessible from anywhere
+  \item \textbf{(no modifier)}: Private, within same module only
+  \item \textbf{\code{pub(crate)}}: Public within crate only
+  \item \textbf{\code{pub(super)}}: Public to parent module
+\end{itemize}
+
+\section{Iterators and Closures}
+\label{sec:ch24-iterators-closures}
+
+Iterators and closures enable functional programming patterns with zero runtime overhead.
+
+\subsection{Iterators}
+\label{subsec:ch24-iterators}
+
+Iterators are lazy---operations don't execute until consumed. From \code{bitcoin/src/net/net\_processing.rs}:
+
+\begin{listing}[htbp]
+\caption{Iterator with for\_each}
+\label{lst:ch24-iterator}
+\begin{minted}[fontsize=\footnotesize]{rust}
+nodes_to_add.iter().for_each(|node| {
+    let node_addr = *node;
+    tokio::spawn(async move {
+        send_known_nodes(&node_addr, all_nodes).await;
+    });
+});
+\end{minted}
+\end{listing}
+
+Common iterator methods:
+\begin{itemize}
+  \item \textbf{\code{iter()}}: Immutable references
+  \item \textbf{\code{iter\_mut()}}: Mutable references
+  \item \textbf{\code{into\_iter()}}: Takes ownership
+  \item \textbf{\code{map()}, \code{filter()}}: Transform and filter lazily
+  \item \textbf{\code{collect()}}: Consume and collect into collection
+  \item \textbf{\code{for\_each()}}: Execute closure for each item
+\end{itemize}
+
+\subsection{Closures}
+\label{subsec:ch24-closures}
+
+Closures are anonymous functions with capture. Three closure traits based on capture:
+\begin{itemize}
+  \item \textbf{\code{FnOnce}}: Called once; takes ownership of captured variables
+  \item \textbf{\code{FnMut}}: Multiple calls; requires mutable borrow
+  \item \textbf{\code{Fn}}: Multiple calls; requires immutable borrow
+\end{itemize}
+
+Example from \code{bitcoin/src/chain/chainstate.rs}:
+
+\begin{listing}[htbp]
+\caption{Closure traits in generic function}
+\label{lst:ch24-closure}
+\begin{minted}[fontsize=\footnotesize]{rust}
+async fn read<F, Fut, T>(&self, f: F) -> Result<T>
+where
+    F: FnOnce(BlockchainFileSystem) -> Fut + Send,
+    Fut: Future<Output = Result<T>> + Send,
+    T: Send + 'static,
+{
+    let blockchain_guard = self.0.read().await;
+    f(blockchain_guard.clone()).await
+}
+\end{minted}
+\end{listing}
+
+\section{Type Conversions}
+\label{sec:ch24-conversions}
+
+Type conversion traits define how types convert to/from other types.
+
+\subsection{From and Into}
+\label{subsec:ch24-from-into}
+
+\code{From<T>} converts \code{T} to \code{Self} (infallible). \code{Into<T>} is auto-implemented; implement \code{From} and get \code{Into} free. Example from \code{bitcoin/src/node/server.rs}:
+
+\begin{listing}[htbp]
+\caption{FromStr implementation}
+\label{lst:ch24-from-str}
+\begin{minted}[fontsize=\footnotesize]{rust}
+impl FromStr for ConnectNode {
+    type Err = std::net::AddrParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s == "local" {
+            Ok(ConnectNode::Local)
+        } else {
+            let ip_addr = s.parse()?;
+            Ok(ConnectNode::Remote(ip_addr))
+        }
+    }
+}
+\end{minted}
+\end{listing}
+
+\subsection{TryFrom and TryInto}
+\label{subsec:ch24-tryfrom-tryinto}
+
+\code{TryFrom<T>} converts \code{T} to \code{Self} (fallible, returns \code{Result}). \code{TryInto<T>} is auto-implemented. Example from \code{bitcoin/src/primitives/block.rs}:
+
+\begin{listing}[htbp]
+\caption{TryFrom for fallible conversion}
+\label{lst:ch24-tryfrom}
+\begin{minted}[fontsize=\footnotesize]{rust}
+impl TryFrom<Block> for IVec {
+    type Error = BtcError;
+
+    fn try_from(block: Block) -> Result<Self, Self::Error> {
+        let serialized = block.serialize()?;
+        Ok(IVec::from(serialized))
+    }
+}
+\end{minted}
+\end{listing}
+
+\section{Testing}
+\label{sec:ch24-testing}
+
+Testing is fundamental to building reliable blockchain software. Rust's type system catches many errors at compile time, but comprehensive testing ensures code behaves correctly at runtime.
+
+\subsection{Basic Test Structure}
+\label{subsec:ch24-test-basic}
+
+\begin{listing}[H]
+\caption{Simple unit test}
+\label{lst:ch24-test-basic}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[test]
+fn test_transaction_creation() {
+    let tx = Transaction::new();
+    assert!(tx.is_valid());
+}
+
+#[test]
+fn test_transaction_id_generation() {
+    let tx = create_test_transaction();
+    let id = tx.get_id();
+
+    assert_eq!(id.len(), 32);
+    assert!(!id.is_empty());
+}
+\end{minted}
+\end{listing}
+
+\subsection{Async Tests}
+\label{subsec:ch24-test-async}
+
+For testing async code, use \code{\#[tokio::test]}:
+
+\begin{listing}[htbp]
+\caption{Async test with tokio}
+\label{lst:ch24-test-async}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[tokio::test]
+async fn test_blockchain_operation() {
+    let blockchain = create_test_blockchain().await;
+    let result = blockchain.process_transaction(tx).await;
+    assert!(result.is_ok());
+}
+\end{minted}
+\end{listing}
+
+\subsection{Test Modules}
+\label{subsec:ch24-test-modules}
+
+Tests are organized in modules only compiled in test mode:
+
+\begin{listing}[htbp]
+\caption{Test module organization}
+\label{lst:ch24-test-module}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    mod creation {
+        use super::*;
+        #[test] fn test_new_transaction() { }
+    }
+
+    mod validation {
+        use super::*;
+        #[test] fn test_valid_transaction() { }
+    }
+
+    mod serialization {
+        use super::*;
+        #[test] fn test_serialize() { }
+    }
+}
+\end{minted}
+\end{listing}
+
+\subsubsection{Test Helpers and Fixtures}
+
+Use Rust's ownership system for automatic cleanup via the \code{Drop} trait:
+
+\begin{listing}[htbp]
+\caption{RAII-based test fixture}
+\label{lst:ch24-test-fixture}
+\begin{minted}[fontsize=\footnotesize]{rust}
+struct TestDatabaseGuard {
+    db_path: String,
+}
+
+impl Drop for TestDatabaseGuard {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.db_path);
+    }
+}
+
+#[test]
+fn test_with_database() {
+    let _guard = TestDatabaseGuard::new();
+    // Guard automatically cleans up when test ends
+}
+\end{minted}
+\end{listing}
+
+\subsection{Running Tests}
+\label{subsec:ch24-test-run}
+
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Run all tests
+cargo test
+
+# Run tests with output
+cargo test -- --nocapture
+
+# Run a specific test
+cargo test test_transaction_creation
+
+# Run tests sequentially (for file-based databases)
+cargo test -- --test-threads=1
+\end{minted}
+
+\section{Best Practices}
+\label{sec:ch24-best-practices}
+
+\subsection{Error Handling}
+\label{subsec:ch24-best-err}
+
+\textbf{Use \code{Result} over panicking}: Return \code{Result} for recoverable errors, panic only for unrecoverable errors.
+
+\begin{listing}[H]
+\caption{Error handling best practice}
+\label{lst:ch24-best-error}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Good: Returns Result
+pub fn new(value: i32, address: &WalletAddress) -> Result<TXOutput> {
+    if value < 0 {
+        return Err(TransactionError::InvalidAmount);
+    }
+    Ok(TXOutput { value, address: address.clone() })
+}
+
+// Bad: Panics on error
+pub fn new(value: i32, address: &WalletAddress) -> TXOutput {
+    assert!(value >= 0, "Value must be non-negative");
+    TXOutput { value, address: address.clone() }
+}
+\end{minted}
+\end{listing}
+
+\textbf{Use \code{?} for error propagation}: Concise and readable.
+
+\begin{listing}[H]
+\caption{Error propagation best practice}
+\label{lst:ch24-best-propagate}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Good: Use ? operator
+pub fn process_transaction(&self, tx: Transaction) -> Result<()> {
+    validate_transaction(&tx)?;
+    add_to_mempool(tx)?;
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\subsection{Memory Management}
+\label{subsec:ch24-best-memory}
+
+\textbf{Use \code{Arc} for shared ownership}:
+
+\begin{listing}[H]
+\caption{Arc for shared ownership}
+\label{lst:ch24-best-arc}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Good: Arc for shared ownership
+let shared: Arc<NodeContext> = Arc::new(node);
+let clone1 = Arc::clone(&shared);  // Cheap
+
+// Bad: Cloning entire struct
+let shared = node.clone();  // Expensive
+\end{minted}
+\end{listing}
+
+\textbf{Prefer borrowing over ownership}: When only reading data, borrowing is more efficient.
+
+\begin{listing}[H]
+\caption{Borrowing best practice}
+\label{lst:ch24-best-borrow}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Good: Borrows reference
+pub fn get_txid(&self) -> &[u8] {
+    &self.txid
+}
+
+// Bad: Unnecessary clone
+pub fn get_txid(&self) -> Vec<u8> {
+    self.txid.clone()
+}
+\end{minted}
+\end{listing}
+
+\subsection{Type System}
+\label{subsec:ch24-best-types}
+
+\textbf{Leverage the type system for compile-time safety}:
+
+\begin{listing}[H]
+\caption{Type-safe wrappers}
+\label{lst:ch24-best-types}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Good: Type-safe wrappers prevent mixing up types
+pub struct WalletAddress(String);
+pub struct TransactionId(Vec<u8>);
+pub struct BlockHash(Vec<u8>);
+
+// Bad: Raw types can be confused
+fn process_tx(id: Vec<u8>) { }
+fn process_block(hash: Vec<u8>) { }
+\end{minted}
+\end{listing}
+
+\subsection{Concurrency}
+\label{subsec:ch24-best-concurrent}
+
+\textbf{Use \code{RwLock} for read-heavy workloads}: Multiple readers or one writer.
+
+\textbf{Prefer message passing over shared state}: Use channels instead of locks when possible.
+
+\textbf{Use \code{Arc<T>} for thread-safe shared ownership}.
+
+\subsection{Testing}
+\label{subsec:ch24-best-test}
+
+\textbf{Test both success and error cases}: Don't just test the happy path.
+
+\textbf{Use descriptive test names}: Clearly state what is being tested.
+
+\textbf{Follow Arrange-Act-Assert pattern}: Structure tests clearly.
+
+\textbf{Use test helpers to reduce duplication}: Create reusable test utilities.
+
+\begin{chaptersummary}
+\item Rust's ownership system ensures memory safety and enables fine-grained control over resource management
+\item Borrowing and moving are compile-time decisions that lead to safer code without runtime overhead
+\item Traits define shared behavior and enable polymorphism with zero-cost abstractions
+\item Generics and monomorphization provide type safety without performance penalties
+\item Lifetimes ensure references remain valid; most of the time they're inferred automatically
+\item Smart pointers like \code{Arc} enable shared ownership while maintaining safety
+\item Error handling with \code{Result} and \code{Option} is explicit and type-safe
+\item Pattern matching enables exhaustive case handling with compile-time verification
+\item Async/await enables efficient concurrent I/O without blocking threads
+\item The type system prevents Send and Sync violations at compile time
+\item Modules organize code hierarchically while controlling visibility
+\item Iterators and closures provide functional patterns with zero overhead
+\item Type conversions are explicit and type-safe via \code{From}, \code{Into}, \code{TryFrom}, \code{TryInto}
+\item Comprehensive testing with unit, integration, and async tests ensures reliability
+\item Best practices emphasize explicit error handling, type safety, and leveraging the compiler
+\item Rust's combination of safety, performance, and concurrency makes it ideal for blockchain systems
+\end{chaptersummary}
+
+% ══════════════════════════════════════════════════════════════
+%  End of Chapter 24
+% ══════════════════════════════════════════════════════════════

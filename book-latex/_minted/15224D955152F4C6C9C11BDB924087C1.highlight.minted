@@ -1,0 +1,11 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+Network bandwidth (1000 tx/s sustained):
+
+Vec\PYGZlt{}u8\PYGZgt{} transmission:
+1000 tx/s × 32 bytes = 32 KB/s
+
+String transmission:
+1000 tx/s × 64 bytes = 64 KB/s
+
+SAVINGS: 32 KB/s (50\PYGZpc{} bandwidth reduction!)
+\end{MintedVerbatim}

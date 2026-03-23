@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+docker build \PYGZhy{}t blockchain\PYGZhy{}node:latest \PYGZhy{}f Dockerfile .
+docker tag blockchain\PYGZhy{}node:latest your\PYGZhy{}registry/blockchain\PYGZhy{}node:v1.0.0
+docker push your\PYGZhy{}registry/blockchain\PYGZhy{}node:v1.0.0
+\end{Verbatim}

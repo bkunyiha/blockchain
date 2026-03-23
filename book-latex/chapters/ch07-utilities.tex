@@ -1,0 +1,198 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 7: Utilities
+% ══════════════════════════════════════════════════════════════
+\chapter{Utilities}
+\label{ch:utilities}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Use the timestamp generation utility for consistent time handling across the system
+  \item Apply functional programming helpers that simplify operations throughout the codebase
+  \item Understand cross-cutting concerns that serve multiple modules without belonging to any single domain
+\end{itemize}
+\end{learnbox}
+
+\lettrine{I}{n} this chapter, we build the shared ``glue'' that keeps the rest of the
+codebase readable. When we implemented the \index{primitives}primitives (\index{block}blocks, \index{transaction}transactions, and related
+types), we deliberately avoided mixing in ``random helpful functions.'' The \code{\index{Rust!module}util}
+module is where those helpers live---functions that are not a \index{blockchain!domain}blockchain domain concept
+by themselves, but that multiple layers can depend on without creating circular
+dependencies.
+
+The code for this section lives in \code{bitcoin/src/util/}:
+
+\begin{itemize}
+  \item \code{mod.rs}: module wiring + re-exports
+  \item \code{utils.rs}: small, concrete helpers (currently: time)
+  \item \code{functional\_operations.rs}: optional functional-style helpers (map/filter/reduce patterns)
+\end{itemize}
+
+Because \code{bitcoin/src/lib.rs} re-exports the util module (\code{pub use util::*;}),
+utilities are typically called from within the crate as \code{crate::...}.
+
+% ──────────────────────────────────────────────────────────────
+\section{Why utilities matter in a Bitcoin implementation}
+\label{sec:ch07-why-matter}
+
+The Bitcoin \index{whitepaper}whitepaper frames the system in terms of a few big ideas---\index{transaction}transactions, \index{block}blocks,
+\index{proof-of-work}proof-of-work, and a shared notion of ordering over time. In practice, an implementation
+needs ``small but everywhere'' pieces:
+
+\begin{itemize}
+  \item \textbf{Time}: We need a consistent way to place a \index{timestamp}timestamp into a \index{block header}block header when we create a new \index{block}block.
+  \item \textbf{Common transformations}: We frequently \index{map!functional programming}map/\index{filter!functional programming}filter collections (\index{transaction}transactions, \index{UTXO}outputs, \index{UTXO}UTXOs). Helpers can keep these pipelines explicit and readable.
+\end{itemize}
+
+The goal of \code{util} is not to be a dumping ground. The goal is to keep the core modules
+focused, while still making the rest of the code ergonomic.
+
+% ──────────────────────────────────────────────────────────────
+\section{Module wiring: \texttt{util/mod.rs}}
+\label{sec:ch07-module-wiring}
+
+The \code{util} module exposes a small public surface area:
+
+\begin{itemize}
+  \item \code{current\_timestamp} is re-exported as a top-level util function.
+  \item The \code{transaction} submodule in \code{functional\_operations.rs} is re-exported as \code{functional\_transaction} (an alias).
+\end{itemize}
+
+This is what lets us write code like \code{crate::current\_timestamp()} instead of
+\code{crate::util::utils::current\_timestamp()}.
+
+% ──────────────────────────────────────────────────────────────
+\section{Timestamp utility: \texttt{current\_timestamp()}}
+\label{sec:ch07-timestamp}
+
+The smallest utility in the codebase is also one of the most important: time.
+
+In the \index{whitepaper}whitepaper's language, the system uses \index{proof-of-work}proof-of-work to create a single history,
+and \index{block}blocks include a \index{timestamp}timestamp as part of their \index{header!metadata}header metadata. In our implementation,
+\code{\index{timestamp}current\_timestamp()} produces a \index{Unix timestamp}Unix timestamp in \textbf{milliseconds}:
+
+\begin{listing}[htbp]
+\caption{Using the timestamp utility}
+\label{lst:7-1}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use blockchain::current_timestamp;
+
+let now_ms = current_timestamp();
+\end{minted}
+\end{listing}
+
+% ── Where the timestamp is used ────────────────────────────────
+\subsection{Where the timestamp is used}
+\label{sec:ch07-timestamp-where}
+
+Right now, the timestamp is set when a new block is constructed:
+
+\begin{listing}[htbp]
+\caption{Timestamp in block construction}
+\label{lst:7-2}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// bitcoin/src/primitives/block.rs
+timestamp: crate::current_timestamp(),
+\end{minted}
+\end{listing}
+
+Because \code{Block::new\_block(...)} assigns the timestamp internally, callers do not
+pass a timestamp; they pass the previous block hash, the transactions to include, and
+the height:
+
+\begin{listing}[htbp]
+\caption{Creating a block without explicit timestamp}
+\label{lst:7-3}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use blockchain::primitives::block::Block;
+
+let block = Block::new_block(previous_hash, &transactions, height);
+\end{minted}
+\end{listing}
+
+% ── A note on determinism ──────────────────────────────────────
+\subsection{A note on determinism}
+\label{sec:ch07-determinism}
+
+Time is a classic source of non-determinism. For \index{consensus rules}consensus-critical code, we want
+\index{determinism}deterministic behavior given the same inputs. In this project, the \index{timestamp}timestamp is part of
+\index{block!creation}block creation, so it is expected to vary across nodes and across runs; we keep the
+\index{timestamp}timestamp helper isolated in \code{\index{Rust!module}util} so it does not ``leak'' unpredictability into
+unrelated code paths.
+
+% ──────────────────────────────────────────────────────────────
+\section{Functional helpers: \texttt{functional\_operations.rs}}
+\label{sec:ch07-functional}
+
+This file contains small, composable helpers that demonstrate a functional style: pass in
+a slice, pass in a function, get back transformed data.
+
+The transaction helpers are re-exported as \code{functional\_transaction}:
+
+\begin{listing}[htbp]
+\caption{Using functional transaction helpers}
+\label{lst:7-4}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use blockchain::functional_transaction;
+
+// Keep only non-coinbase transactions (pure/synchronous predicate).
+let non_coinbase = functional_transaction::process_transactions(
+    &transactions,
+    |tx| tx.not_coinbase(),
+);
+\end{minted}
+\end{listing}
+
+% ── Current status in the codebase ────────────────────────────
+\subsection{Current status in the codebase}
+\label{sec:ch07-functional-status}
+
+At the time of writing, these functional helpers are \textbf{not used by the production
+code} in \code{bitcoin/src/} (they are exercised in \code{\#[cfg(test)]} unit tests). We
+keep them in the book for two reasons:
+
+\begin{itemize}
+  \item They provide a clean, ``library-like'' pattern that many Rust developers enjoy for collection-heavy code.
+  \item They are a good refactoring target: readers can replace ad-hoc loops in mempool/chain logic with explicit \code{process\_transactions} / \code{validate\_transactions} pipelines.
+\end{itemize}
+
+If we decide not to use them, the right move is to delete them. Utilities should earn
+their place.
+
+% ──────────────────────────────────────────────────────────────
+\section{Related sections}
+\label{sec:ch07-related}
+
+\begin{itemize}
+  \item \textbf{Primitives}: The data structures we timestamp and transform
+  \item \textbf{Blockchain State Management}: Where block headers and validation rules begin to matter
+  \item \textbf{Transaction ID Format}: How transaction identifiers are derived and represented
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════
+\section{Exercises}
+\label{sec:ch07-exercises}
+
+\begin{enumerate}
+  \item \textbf{Timestamp Consistency Check} --- Call the timestamp utility in a loop 1,000 times. Verify that the returned values are monotonically non-decreasing. What guarantees does the implementation provide, and what edge cases could cause issues (e.g., system clock adjustments)?
+
+  \item \textbf{Functional Helper Exploration} --- The functional helpers in this module are currently used in unit tests (not production code). Either (a) find three test cases that use them and explain the transformation, or (b) identify three places in mempool/chain logic where they \emph{could} be refactored in for clarity.
+\end{enumerate}
+
+% ──────────────────────────────────────────────────────────────
+\section{Further Reading}
+\label{sec:ch07-further}
+
+\begin{itemize}
+  \item \textbf{\href{https://doc.rust-lang.org/rust-by-example/fn.html}{Rust by Example: Functional Programming}} --- Closures, higher-order functions, and iterators in Rust.
+  \item \textbf{\href{https://docs.rs/chrono/}{chrono Crate Documentation}} --- Time handling in Rust, relevant to timestamp generation.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════
+\begin{chaptersummary}
+\item We explored the utility functions that provide cross-cutting functionality used by every module in the blockchain system.
+\item We implemented timestamp generation for consistent time handling across blocks and transactions.
+\item We built functional programming helpers that simplify common operations throughout the codebase.
+\end{chaptersummary}
+
+In the next chapter, we add the \index{cryptography}cryptographic layer --- \index{hash}hashing, \index{digital signature}signing, and \index{key generation}key
+generation --- that secures every \index{transaction}transaction and \index{block}block in the system.

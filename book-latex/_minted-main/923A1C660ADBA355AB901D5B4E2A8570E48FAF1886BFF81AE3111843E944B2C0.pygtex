@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+update (sync)        runtime (tokio)           api (async)
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}        \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}           \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+Task::perform(   spawn\PYGZus{}on\PYGZus{}tokio(fut)  \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZgt{}  AdminClient::new()
+  spawn\PYGZus{}on\PYGZus{}tokio,     .await                .endpoint().await
+  Message::Loaded                          .send()
+)
+\end{Verbatim}

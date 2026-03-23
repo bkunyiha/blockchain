@@ -1,0 +1,38 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{process\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{addr\PYGZus{}from}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{std}::\PYG{n}{net}::\PYG{n}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{utxo}: \PYG{n+nc}{Transaction}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// 1) Reject duplicates early (important to}
+\PYG{+w}{    }\PYG{c+c1}{// prevent loops and redundant work)}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{transaction\PYGZus{}exists\PYGZus{}in\PYGZus{}pool}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{utxo}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{BtcError}::\PYG{n}{TransactionAlreadyExistsInMemoryPool}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{utxo}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// 2) Add to the global mempool and mark outputs}
+\PYG{+w}{    }\PYG{c+c1}{// as \PYGZdq{}reserved\PYGZdq{} by mempool policy}
+\PYG{+w}{    }\PYG{n}{add\PYGZus{}to\PYGZus{}memory\PYGZus{}pool}\PYG{p}{(}\PYG{n}{utxo}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{blockchain}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 3) Background work: propagation and}
+\PYG{+w}{    }\PYG{c+c1}{// (if this node is a miner) mining trigger}
+\PYG{+w}{    }\PYG{c+c1}{// Spawned so caller (HTTP handler or P2P handler)}
+\PYG{+w}{    }\PYG{c+c1}{// returns quickly}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{context}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{addr\PYGZus{}copy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{addr\PYGZus{}from}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{utxo}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{tokio}::\PYG{n}{spawn}\PYG{p}{(}\PYG{k}{async}\PYG{+w}{ }\PYG{k}{move}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{context}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{submit\PYGZus{}transaction\PYGZus{}for\PYGZus{}mining}\PYG{p}{(}
+\PYG{+w}{                }\PYG{o}{\PYGZam{}}\PYG{n}{addr\PYGZus{}copy}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 4) Return txid immediately (accept\PYGZhy{}to\PYGZhy{}mempool)}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{utxo}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

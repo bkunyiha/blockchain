@@ -1,0 +1,7 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Source: mining.rs — router → generate\PYGZus{}to\PYGZus{}address(handler)}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{mined\PYGZus{}block}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{node}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{mine\PYGZus{}block}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{transactions}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{StatusCode}\PYG{p}{::}\PYG{n}{INTERNAL\PYGZus{}SERVER\PYGZus{}ERROR}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\end{MintedVerbatim}

@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{blockchain}::\PYG{n}{current\PYGZus{}timestamp}\PYG{p}{;}
+
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{now\PYGZus{}ms}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{current\PYGZus{}timestamp}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\end{Verbatim}

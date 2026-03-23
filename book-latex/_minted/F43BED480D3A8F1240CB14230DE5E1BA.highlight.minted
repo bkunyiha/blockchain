@@ -1,0 +1,13 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+Web server / handlers (bitcoin/src/web/*)
+        │  (State\PYGZlt{}Arc\PYGZlt{}NodeContext\PYGZgt{}\PYGZgt{})
+        ▼
+NodeContext (coordination boundary)
+        │  (owns a BlockchainService)
+        ▼
+BlockchainService  (Arc\PYGZlt{}TokioRwLock\PYGZlt{}BlockchainFileSystem\PYGZgt{}\PYGZgt{})
+        │                    │
+        │ read() / write()   │ durable chain + tip pointer
+        ▼                    ▼
+UTXOSet (derived state)   BlockchainFileSystem (sled\PYGZhy{}backed storage)
+\end{MintedVerbatim}

@@ -1,0 +1,49 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{BlockchainFileSystem}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{open\PYGZus{}blockchain}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb+bp}{Self}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{blocks\PYGZus{}tree\PYGZus{}name}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{env}\PYG{p}{::}\PYG{n}{var}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{BLOCKS\PYGZus{}TREE}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{DEFAULT\PYGZus{}BLOCKS\PYGZus{}TREE}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{dir}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{env}\PYG{p}{::}\PYG{n}{var}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{TREE\PYGZus{}DIR}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{DEFAULT\PYGZus{}TREE\PYGZus{}DIR}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{path}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{std}\PYG{p}{::}\PYG{n}{env}\PYG{p}{::}\PYG{n}{current\PYGZus{}dir}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{.}\PYG{n}{join}\PYG{p}{(}\PYG{n}{dir}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{db}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{sled}\PYG{p}{::}\PYG{n}{open}\PYG{p}{(}\PYG{n}{path}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{blocks\PYGZus{}tree}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{db}\PYG{p}{.}\PYG{n}{open\PYGZus{}tree}\PYG{p}{(}\PYG{n}{blocks\PYGZus{}tree\PYGZus{}name}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tip\PYGZus{}bytes}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{blocks\PYGZus{}tree}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{n}{DEFAULT\PYGZus{}TIP\PYGZus{}BLOCK\PYGZus{}HASH\PYGZus{}KEY}\PYG{p}{)}\PYG{o}{?}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{ok\PYGZus{}or}\PYG{p}{(}\PYG{n}{BtcError}\PYG{p}{::}\PYG{n}{BlockchainNotFoundError}\PYG{p}{(}
+\PYG{+w}{                }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{No blockchain found}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{into}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tip\PYGZus{}hash}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{::}\PYG{n}{from\PYGZus{}utf8}\PYG{p}{(}\PYG{n}{tip\PYGZus{}bytes}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{BlockchainFileSystem}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{blockchain}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Blockchain}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{tip\PYGZus{}hash}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Arc}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{TokioRwLock}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{tip\PYGZus{}hash}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{db}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{is\PYGZus{}empty}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{false}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{file\PYGZus{}system\PYGZus{}tree\PYGZus{}dir}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{blocks\PYGZus{}tree\PYGZus{}name}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{open\PYGZus{}blockchain\PYGZus{}empty}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb+bp}{Self}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{blocks\PYGZus{}tree\PYGZus{}name}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{env}\PYG{p}{::}\PYG{n}{var}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{BLOCKS\PYGZus{}TREE}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{DEFAULT\PYGZus{}BLOCKS\PYGZus{}TREE}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{dir}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{env}\PYG{p}{::}\PYG{n}{var}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{TREE\PYGZus{}DIR}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{DEFAULT\PYGZus{}TREE\PYGZus{}DIR}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{path}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{std}\PYG{p}{::}\PYG{n}{env}\PYG{p}{::}\PYG{n}{current\PYGZus{}dir}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{.}\PYG{n}{join}\PYG{p}{(}\PYG{n}{dir}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{db}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{sled}\PYG{p}{::}\PYG{n}{open}\PYG{p}{(}\PYG{n}{path}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{BlockchainFileSystem}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{blockchain}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Blockchain}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{tip\PYGZus{}hash}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Arc}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{n}{TokioRwLock}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{empty}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{db}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{is\PYGZus{}empty}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{true}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{file\PYGZus{}system\PYGZus{}tree\PYGZus{}dir}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{blocks\PYGZus{}tree\PYGZus{}name}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

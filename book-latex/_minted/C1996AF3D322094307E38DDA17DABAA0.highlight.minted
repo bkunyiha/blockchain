@@ -1,0 +1,5 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// FIXME: From bitcoin whitepaper, only add block if:}
+\PYG{c+c1}{// A) \PYGZdq{}All transactions in it are valid\PYGZdq{}}
+\PYG{c+c1}{// B) \PYGZdq{}Not already spent\PYGZdq{}}
+\end{MintedVerbatim}

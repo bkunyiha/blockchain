@@ -1,0 +1,47 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{send\PYGZus{}get\PYGZus{}data}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{addr\PYGZus{}to}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{op\PYGZus{}type}: \PYG{n+nc}{OpType}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{id}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{send\PYGZus{}data}\PYG{p}{(}\PYG{n}{addr\PYGZus{}to}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Package}::\PYG{n}{GetData}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{op\PYGZus{}type}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{id}: \PYG{n+nc}{id}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{send\PYGZus{}inv}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{addr\PYGZus{}to}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{op\PYGZus{}type}: \PYG{n+nc}{OpType}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{blocks}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{]}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{send\PYGZus{}data}\PYG{p}{(}\PYG{n}{addr\PYGZus{}to}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Package}::\PYG{n}{Inv}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{op\PYGZus{}type}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{items}: \PYG{n+nc}{blocks}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{send\PYGZus{}tx}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{addr\PYGZus{}to}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{tx}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Transaction}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{send\PYGZus{}data}\PYG{p}{(}\PYG{n}{addr\PYGZus{}to}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Package}::\PYG{n}{Tx}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{transaction}: \PYG{n+nc}{tx}\PYG{p}{.}\PYG{n}{serialize}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Serialization error}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{send\PYGZus{}block}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{addr\PYGZus{}to}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{block}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Block}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{send\PYGZus{}data}\PYG{p}{(}\PYG{n}{addr\PYGZus{}to}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Package}::\PYG{n}{Block}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{block}: \PYG{n+nc}{block}\PYG{p}{.}\PYG{n}{serialize}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Serialization error}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

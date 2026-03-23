@@ -1,0 +1,14 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Serialize, Deserialize)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{T}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{success}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{data}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{T}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{error}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{o}{\PYGZlt{}}\PYG{n}{T}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{T}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{success}\PYG{p}{(}\PYG{n}{data}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{T}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{Self}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb+bp}{Self}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{success}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{true}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{data}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{data}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{error}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{None}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

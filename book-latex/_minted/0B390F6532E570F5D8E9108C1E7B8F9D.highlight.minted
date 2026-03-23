@@ -1,0 +1,16 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// ✅ Binary keys are compact}
+\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{store\PYGZus{}transaction}\PYG{p}{(}\PYG{n}{db}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Db}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Transaction}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{db}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}id}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{bincode}\PYG{p}{::}\PYG{n}{serialize}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{)}\PYG{o}{?}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{//        \PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}}
+\PYG{+w}{    }\PYG{c+c1}{//        32\PYGZhy{}byte binary key}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// ❌ Hex keys waste space}
+\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{store\PYGZus{}transaction}\PYG{p}{(}\PYG{n}{db}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Db}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Transaction}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// 64 bytes!}
+\PYG{+w}{    }\PYG{n}{db}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{n}{key}\PYG{p}{.}\PYG{n}{as\PYGZus{}bytes}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{bincode}\PYG{p}{::}\PYG{n}{serialize}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{)}\PYG{o}{?}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{cd} ci/docker\PYGZhy{}compose/configs
+./docker\PYGZhy{}compose.scale.sh \PYG{l+m}{3} \PYG{l+m}{2}
+
+\PYG{c+c1}{\PYGZsh{} This script:}
+\PYG{c+c1}{\PYGZsh{} 1. Generates docker\PYGZhy{}compose.override.yml with port mappings}
+\PYG{c+c1}{\PYGZsh{} 2. Scales services with all ports accessible externally}
+\PYG{c+c1}{\PYGZsh{} 3. All instances have ports mapped to host}
+\end{Verbatim}

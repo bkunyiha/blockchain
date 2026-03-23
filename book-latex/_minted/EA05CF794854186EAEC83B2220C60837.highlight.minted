@@ -1,0 +1,27 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+miner::should\PYGZus{}trigger\PYGZus{}mining
+  // Check if mempool size \PYGZgt{}= threshold
+  \PYGZhy{}\PYGZgt{} miner::prepare\PYGZus{}mining\PYGZus{}utxo
+       // Snapshot mempool + append coinbase
+       \PYGZhy{}\PYGZgt{} chainstate::BlockchainService::mine\PYGZus{}block
+            // Mining boundary: verify sigs
+            \PYGZhy{}\PYGZgt{} store::BlockchainFileSystem::mine\PYGZus{}block
+                 // Persist block as tip
+                 \PYGZhy{}\PYGZgt{} Block::new\PYGZus{}block
+                      // Construct header + PoW
+                      \PYGZhy{}\PYGZgt{} ProofOfWork::new\PYGZus{}proof\PYGZus{}of\PYGZus{}work
+                      \PYGZhy{}\PYGZgt{} ProofOfWork::run
+                           // Search nonce
+       \PYGZhy{}\PYGZgt{} miner::broadcast\PYGZus{}new\PYGZus{}block
+            // Announce to network
+            \PYGZhy{}\PYGZgt{} net\PYGZus{}processing::send\PYGZus{}inv(OpType::Block, [hash])
+
+net\PYGZus{}processing::process\PYGZus{}stream
+  // Network message handler
+  Package::Inv(Block)  \PYGZhy{}\PYGZgt{} send\PYGZus{}get\PYGZus{}data(Block, hash)
+       // On INV: request full block
+  Package::GetData     \PYGZhy{}\PYGZgt{} send\PYGZus{}block(block\PYGZus{}bytes)
+       // On GETDATA: send serialized block
+  Package::Block       \PYGZhy{}\PYGZgt{} node\PYGZus{}context.add\PYGZus{}block(\PYGZam{}block)
+       // On BLOCK: add + cleanup mempool
+\end{MintedVerbatim}

@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Verify each webserver has its own PVC}
+kubectl get pvc \PYGZhy{}n blockchain \PYG{p}{|} grep webserver
+
+\PYG{c+c1}{\PYGZsh{} If sharing storage, ensure StatefulSet with}
+\PYG{c+c1}{\PYGZsh{} volumeClaimTemplates is used (not Deployment)}
+\PYG{c+c1}{\PYGZsh{} with shared PVC}
+\end{Verbatim}

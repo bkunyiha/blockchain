@@ -1,0 +1,3 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+curl\PYG{+w}{ }http://localhost:8080/api/admin/blockchain\PYGZhy{}info\PYG{+w}{ }\PYG{p}{|}\PYG{+w}{ }python3\PYG{+w}{ }\PYGZhy{}m\PYG{+w}{ }json.tool
+\end{MintedVerbatim}

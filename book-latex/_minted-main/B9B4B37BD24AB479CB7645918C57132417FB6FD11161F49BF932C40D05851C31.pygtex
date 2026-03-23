@@ -1,0 +1,29 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}connection}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{SqliteResult}\PYG{o}{\PYGZlt{}}
+\PYG{+w}{    }\PYG{n}{std}::\PYG{n}{sync}::\PYG{n}{MutexGuard}\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZsq{}}\PYG{n+nb}{static}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Connection}\PYG{o}{\PYGZgt{}}
+\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{DB\PYGZus{}CONN}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{ok\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{c+c1}{// The database was never initialized}
+\PYG{+w}{            }\PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{} UI must call init\PYGZus{}database at startup.}
+\PYG{+w}{            }\PYG{n}{rusqlite}::\PYG{n}{Error}::\PYG{n}{SqliteFailure}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{rusqlite}::\PYG{n}{ffi}::\PYG{n}{Error}::\PYG{n}{new}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{n}{rusqlite}::\PYG{n}{ffi}::\PYG{n}{SQLITE\PYGZus{}MISUSE}
+\PYG{+w}{                }\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Database not initialized}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{o}{?}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{lock}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{c+c1}{// Poisoned mutex implies a panic}
+\PYG{+w}{            }\PYG{c+c1}{// while holding the lock.}
+\PYG{+w}{            }\PYG{n}{rusqlite}::\PYG{n}{Error}::\PYG{n}{SqliteFailure}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{rusqlite}::\PYG{n}{ffi}::\PYG{n}{Error}::\PYG{n}{new}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{n}{rusqlite}::\PYG{n}{ffi}::\PYG{n}{SQLITE\PYGZus{}MISUSE}
+\PYG{+w}{                }\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Failed to acquire lock}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

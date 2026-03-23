@@ -1,0 +1,7 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{cd}\PYG{+w}{ }ci/kubernetes
+
+\PYG{c+c1}{\PYGZsh{} Start cluster with metrics\PYGZhy{}server addon (required for HPA)}
+minikube\PYG{+w}{ }start\PYG{+w}{ }\PYGZhy{}\PYGZhy{}cpus\PYG{o}{=}\PYG{l+m}{4}\PYG{+w}{ }\PYGZhy{}\PYGZhy{}memory\PYG{o}{=}3072mb\PYG{+w}{ }\PYG{l+s+se}{\PYGZbs{}}
+\PYG{+w}{  }\PYGZhy{}\PYGZhy{}addons\PYG{o}{=}metrics\PYGZhy{}server
+\end{MintedVerbatim}

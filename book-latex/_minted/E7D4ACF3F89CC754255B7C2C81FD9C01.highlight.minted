@@ -1,0 +1,20 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// 1. Generate key pair}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{private\PYGZus{}key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{new\PYGZus{}schnorr\PYGZus{}key\PYGZus{}pair}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{public\PYGZus{}key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{get\PYGZus{}schnorr\PYGZus{}public\PYGZus{}key}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{private\PYGZus{}key}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{c+c1}{// 2. Hash public key}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{taproot\PYGZus{}hash}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{public\PYGZus{}key}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// 3. Create address payload}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{version\PYGZus{}byte}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mh}{0x01}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// P2TR version}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{address\PYGZus{}data}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{vec!}\PYG{p}{[}\PYG{n}{version\PYGZus{}byte}\PYG{p}{]}\PYG{p}{;}
+\PYG{n}{address\PYGZus{}data}\PYG{p}{.}\PYG{n}{extend\PYGZus{}from\PYGZus{}slice}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// 4. Calculate checksum (double SHA\PYGZhy{}256, first 4 bytes)}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{checksum}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{checksum}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{address\PYGZus{}data}\PYG{p}{)}\PYG{p}{;}
+\PYG{n}{address\PYGZus{}data}\PYG{p}{.}\PYG{n}{extend\PYGZus{}from\PYGZus{}slice}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{checksum}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// 5. Encode to Base58}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{address}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{base58\PYGZus{}encode}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{address\PYGZus{}data}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\end{MintedVerbatim}

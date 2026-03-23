@@ -1,0 +1,18 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Input from wait script}
+\PYG{n+nv}{PREV\PYGZus{}ADDR}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}miner\PYGZus{}1:2001\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} Initialize resolution address}
+\PYG{n+nv}{RESOLVE\PYGZus{}ADDR}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{PREV\PYGZus{}ADDR}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} Pattern match: miner\PYGZus{}N:PORT}
+\PYG{k}{if} \PYG{o}{[[} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{PREV\PYGZus{}ADDR}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}} \PYG{o}{=}\PYGZti{} \PYGZca{}miner\PYGZus{}\PYG{o}{([}\PYG{l+m}{0}\PYGZhy{}23\PYG{o}{]}+\PYG{o}{)}: \PYG{o}{]]}\PYG{p}{;} \PYG{k}{then}
+    \PYG{c+c1}{\PYGZsh{} Extract port and convert to service name}
+    \PYG{n+nv}{PORT\PYGZus{}PART}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{PREV\PYGZus{}ADDR}\PYG{p}{\PYGZsh{}\PYGZsh{}*:}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}          \PYG{c+c1}{\PYGZsh{} Extract port}
+    \PYG{n+nv}{RESOLVE\PYGZus{}ADDR}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}miner:}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{PORT\PYGZus{}PART}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}     \PYG{c+c1}{\PYGZsh{} Use service name}
+\PYG{k}{fi}
+
+\PYG{c+c1}{\PYGZsh{} Now resolve using Docker DNS}
+\PYG{n+nv}{PREV\PYGZus{}ADDR\PYGZus{}RESOLVED}\PYG{o}{=}\PYG{k}{\PYGZdl{}(}resolve\PYGZus{}hostname\PYGZus{}to\PYGZus{}ip \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{RESOLVE\PYGZus{}ADDR}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{k}{)}
+\PYG{c+c1}{\PYGZsh{} Result: PREV\PYGZus{}ADDR\PYGZus{}RESOLVED=\PYGZdq{}172.19.0.2:2001\PYGZdq{}}
+\end{Verbatim}

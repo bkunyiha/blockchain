@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{deserialize}\PYG{p}{(}\PYG{n}{bytes}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{Block}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{bincode}::\PYG{n}{serde}::\PYG{n}{decode\PYGZus{}from\PYGZus{}slice}\PYG{p}{(}\PYG{n}{bytes}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{bincode}::\PYG{n}{config}::\PYG{n}{standard}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{BtcError}::\PYG{n}{BlockDeserializationError}\PYG{p}{(}\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map}\PYG{p}{(}\PYG{o}{|}\PYG{p}{(}\PYG{n}{block}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{p}{)}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{block}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,10 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+Inbound tx bytes
+  \PYGZhy{}\PYGZgt{} (Network) Package::Tx
+  \PYGZhy{}\PYGZgt{} NodeContext::process\PYGZus{}transaction
+      \PYGZhy{}\PYGZgt{} txmempool::add\PYGZus{}to\PYGZus{}memory\PYGZus{}pool
+      \PYGZhy{}\PYGZgt{} spawn background task:
+         NodeContext::submit\PYGZus{}transaction\PYGZus{}for\PYGZus{}mining
+             \PYGZhy{}\PYGZgt{} (if central) broadcast INV(txid) to peers
+             \PYGZhy{}\PYGZgt{} (if mining threshold) miner::process\PYGZus{}mine\PYGZus{}block
+\end{MintedVerbatim}

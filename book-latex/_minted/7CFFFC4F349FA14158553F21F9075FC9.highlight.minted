@@ -1,0 +1,14 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{p}{::}\PYG{n}{chain}\PYG{p}{::}\PYG{n}{BlockchainService}\PYG{p}{;}
+
+\PYG{c+c1}{// Initialize blockchain with genesis address}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{blockchain\PYGZus{}service}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{BlockchainService}\PYG{p}{::}\PYG{n}{initialize}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n}{genesis\PYGZus{}address}
+\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{c+c1}{// Add block to the chain}
+\PYG{n}{blockchain\PYGZus{}service}\PYG{p}{.}\PYG{n}{add\PYGZus{}block}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{block}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{c+c1}{// Get block by hash}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{blockchain\PYGZus{}service}\PYG{p}{.}\PYG{n}{get\PYGZus{}block\PYGZus{}by\PYGZus{}hash}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{hash}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\end{MintedVerbatim}

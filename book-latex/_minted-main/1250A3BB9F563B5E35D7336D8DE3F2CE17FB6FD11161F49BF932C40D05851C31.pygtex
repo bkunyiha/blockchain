@@ -1,0 +1,31 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{fn} \PYG{n+nf}{save\PYGZus{}to\PYGZus{}file}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{path}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{current\PYGZus{}dir}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{BtcError}::\PYG{n}{WalletsFilePathError}\PYG{p}{(}\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{join}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{get\PYGZus{}wallet\PYGZus{}file\PYGZus{}path}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{file}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{OpenOptions}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{create}\PYG{p}{(}\PYG{k+kc}{true}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{truncate}\PYG{p}{(}\PYG{k+kc}{true}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{write}\PYG{p}{(}\PYG{k+kc}{true}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{open}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{path}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{BtcError}::\PYG{n}{SavingWalletsError}\PYG{p}{(}\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{writer}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{BufWriter}::\PYG{n}{new}\PYG{p}{(}\PYG{n}{file}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{wallets\PYGZus{}bytes}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{bincode}::\PYG{n}{serde}::\PYG{n}{encode\PYGZus{}to\PYGZus{}vec}\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{wallets}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{bincode}::\PYG{n}{config}::\PYG{n}{standard}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{BtcError}::\PYG{n}{WalletsSerializationError}\PYG{p}{(}\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{writer}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{write\PYGZus{}all}\PYG{p}{(}\PYG{n}{wallets\PYGZus{}bytes}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{BtcError}::\PYG{n}{SavingWalletsError}\PYG{p}{(}\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{writer}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{flush}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{BtcError}::\PYG{n}{SavingWalletsError}\PYG{p}{(}\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

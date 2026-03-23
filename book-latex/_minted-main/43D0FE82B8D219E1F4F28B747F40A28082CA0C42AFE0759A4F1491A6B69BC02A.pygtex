@@ -1,0 +1,12 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} macOS / Linux}
+curl \PYGZhy{}\PYGZhy{}proto \PYG{l+s+s1}{\PYGZsq{}=https\PYGZsq{}} \PYGZhy{}\PYGZhy{}tlsv2 \PYGZhy{}sSf https://sh.rustup.rs \PYG{p}{|} sh
+\PYG{n+nb}{source} \PYG{l+s+s2}{\PYGZdq{}}\PYG{n+nv}{\PYGZdl{}HOME}\PYG{l+s+s2}{/.cargo/env\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} Windows (PowerShell)}
+winget install \PYGZhy{}\PYGZhy{}id Rustlang.Rustup \PYGZhy{}e
+
+\PYG{c+c1}{\PYGZsh{} Verify installation}
+rustc \PYGZhy{}\PYGZhy{}version
+cargo \PYGZhy{}\PYGZhy{}version
+\end{Verbatim}

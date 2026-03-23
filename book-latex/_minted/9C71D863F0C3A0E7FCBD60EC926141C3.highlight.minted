@@ -1,0 +1,9 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Source: bitcoin/src/chain/mod.rs}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{chainstate}\PYG{p}{;}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{utxo\PYGZus{}set}\PYG{p}{;}
+
+\PYG{c+c1}{// Re\PYGZhy{}export main types for convenience}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{use}\PYG{+w}{ }\PYG{n}{chainstate}\PYG{p}{::}\PYG{n}{BlockchainService}\PYG{p}{;}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{use}\PYG{+w}{ }\PYG{n}{utxo\PYGZus{}set}\PYG{p}{::}\PYG{n}{UTXOSet}\PYG{p}{;}
+\end{MintedVerbatim}

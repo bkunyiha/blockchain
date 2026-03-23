@@ -1,0 +1,114 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{api}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{app}\PYG{p}{::}\PYG{n}{WalletApp}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{database}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{runtime}\PYG{p}{::}\PYG{n}{spawn\PYGZus{}on\PYGZus{}tokio}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{types}\PYG{p}{::}\PYG{n}{Message}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{iced}\PYG{p}{::}\PYG{n}{Task}\PYG{p}{;}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{update}\PYG{p}{(}\PYG{n}{app}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{mut}\PYG{+w}{ }\PYG{n}{WalletApp}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{message}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Message}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{Task}\PYG{o}{\PYGZlt{}}\PYG{n}{Message}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{message}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{Message}\PYG{p}{::}\PYG{n}{TabChanged}\PYG{p}{(}\PYG{n}{tab}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{app}\PYG{p}{.}\PYG{n}{active\PYGZus{}tab}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tab}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{n}{Message}\PYG{p}{::}\PYG{n}{SelectWallet}\PYG{p}{(}\PYG{n}{wallet}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{app}\PYG{p}{.}\PYG{n}{current\PYGZus{}wallet}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{wallet}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{format!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Selected wallet: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{wallet}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{c+c1}{// Automatically fetch balance for the selected wallet}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{task\PYGZus{}fetch\PYGZus{}balance}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{perform}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{spawn\PYGZus{}on\PYGZus{}tokio}\PYG{p}{(}\PYG{n}{api}\PYG{p}{::}\PYG{n}{fetch\PYGZus{}balance}\PYG{p}{(}\PYG{n}{wallet}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{Message}\PYG{p}{::}\PYG{n}{BalanceLoaded}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{task\PYGZus{}fetch\PYGZus{}balance}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{n}{Message}\PYG{p}{::}\PYG{n}{FetchBalance}\PYG{p}{(}\PYG{n}{wallet\PYGZus{}addr}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{perform}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{spawn\PYGZus{}on\PYGZus{}tokio}\PYG{p}{(}\PYG{n}{api}\PYG{p}{::}\PYG{n}{fetch\PYGZus{}balance}\PYG{p}{(}\PYG{n}{wallet\PYGZus{}addr}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{Message}\PYG{p}{::}\PYG{n}{BalanceLoaded}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{n}{Message}\PYG{p}{::}\PYG{n}{BalanceLoaded}\PYG{p}{(}\PYG{n}{result}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{result}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{response}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n}{app}\PYG{p}{.}\PYG{n}{balance}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{response}\PYG{p}{.}\PYG{n}{balance}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{format!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Balance: \PYGZob{}\PYGZcb{} satoshis}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{response}\PYG{p}{.}\PYG{n}{balance}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{c+c1}{// Persist balance to database}
+\PYG{+w}{                    }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{k}{ref}\PYG{+w}{ }\PYG{n}{wallet}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{current\PYGZus{}wallet}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{wallet}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{wallet}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{balance}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{response}\PYG{p}{.}\PYG{n}{balance}\PYG{p}{;}
+\PYG{+w}{                        }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{perform}\PYG{p}{(}
+\PYG{+w}{                            }\PYG{n}{spawn\PYGZus{}on\PYGZus{}tokio}\PYG{p}{(}\PYG{k}{async}\PYG{+w}{ }\PYG{k}{move}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                                }\PYG{n}{database}\PYG{p}{::}\PYG{n}{save\PYGZus{}balance}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{wallet}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{balance}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{                            }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                            }\PYG{o}{|}\PYG{n}{result}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{Message}\PYG{p}{::}\PYG{n}{SaveToDatabase}\PYG{p}{(}\PYG{n}{result}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                        }\PYG{p}{)}
+\PYG{+w}{                    }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                        }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{                    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{e}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{format!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Error fetching balance: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{n}{Message}\PYG{p}{::}\PYG{n}{SendToChanged}\PYG{p}{(}\PYG{n}{address}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{app}\PYG{p}{.}\PYG{n}{input\PYGZus{}send\PYGZus{}to}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{address}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{n}{Message}\PYG{p}{::}\PYG{n}{AmountChanged}\PYG{p}{(}\PYG{n}{amount}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{app}\PYG{p}{.}\PYG{n}{input\PYGZus{}amount}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{amount}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{n}{Message}\PYG{p}{::}\PYG{n}{SendTransaction}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{k}{ref}\PYG{+w}{ }\PYG{n}{current\PYGZus{}wallet}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{current\PYGZus{}wallet}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{input\PYGZus{}send\PYGZus{}to}\PYG{p}{.}\PYG{n}{is\PYGZus{}empty}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{input\PYGZus{}amount}\PYG{p}{.}\PYG{n}{is\PYGZus{}empty}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Recipient and amount are required}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{                }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{from}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{current\PYGZus{}wallet}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{to}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{input\PYGZus{}send\PYGZus{}to}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{amount}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{u64}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{input\PYGZus{}amount}\PYG{p}{.}\PYG{n}{parse}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{a}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{,}
+\PYG{+w}{                    }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{\PYGZus{}}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                        }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Invalid amount}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{+w}{                }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{perform}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{n}{spawn\PYGZus{}on\PYGZus{}tokio}\PYG{p}{(}\PYG{n}{api}\PYG{p}{::}\PYG{n}{send\PYGZus{}transaction}\PYG{p}{(}\PYG{n}{from}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{to}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{amount}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                    }\PYG{n}{Message}\PYG{p}{::}\PYG{n}{TransactionSent}\PYG{p}{,}
+\PYG{+w}{                }\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{No wallet selected}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{n}{Message}\PYG{p}{::}\PYG{n}{TransactionSent}\PYG{p}{(}\PYG{n}{result}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{result}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{txid}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{format!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Transaction sent: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{txid}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{n}{app}\PYG{p}{.}\PYG{n}{input\PYGZus{}send\PYGZus{}to}\PYG{p}{.}\PYG{n}{clear}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{n}{app}\PYG{p}{.}\PYG{n}{input\PYGZus{}amount}\PYG{p}{.}\PYG{n}{clear}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{e}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{format!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Error sending transaction: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{Task}\PYG{p}{::}\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

@@ -1,0 +1,60 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{crypto}::\PYG{n}{keypair}::\PYG{p}{\PYGZob{}}\PYG{n}{get\PYGZus{}schnorr\PYGZus{}public\PYGZus{}key}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{new\PYGZus{}schnorr\PYGZus{}key\PYGZus{}pair}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{error}::\PYG{n+nb}{Result}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{serde}::\PYG{p}{\PYGZob{}}\PYG{n}{Deserialize}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Serialize}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Clone, Serialize, Deserialize)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{Wallet}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Stored as raw bytes; callers use these bytes as signing material}
+\PYG{+w}{    }\PYG{c+c1}{// elsewhere in the codebase.}
+\PYG{+w}{    }\PYG{n}{private\PYGZus{}key}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{c+c1}{// Stored as raw bytes; used for deriving addresses and for signature}
+\PYG{+w}{    }\PYG{c+c1}{// verification contexts.}
+\PYG{+w}{    }\PYG{n}{public\PYGZus{}key}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{Wallet}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{new}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{Wallet}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// 1) Create a new Schnorr secret key.}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{private\PYGZus{}key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{new\PYGZus{}schnorr\PYGZus{}key\PYGZus{}pair}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{// 2) Derive the corresponding Schnorr public key.}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{public\PYGZus{}key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{get\PYGZus{}schnorr\PYGZus{}public\PYGZus{}key}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{private\PYGZus{}key}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{Wallet}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{private\PYGZus{}key}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{public\PYGZus{}key}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}address}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{k}{super}::\PYG{n}{WalletAddress}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// 1) Hash the public key into the payload \PYGZdq{}data\PYGZdq{} bytes.}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{super}::\PYG{n}{hash\PYGZus{}pub\PYGZus{}key}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{public\PYGZus{}key}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{c+c1}{// 2) Construct and validate the final Base58 string.}
+\PYG{+w}{        }\PYG{k}{super}::\PYG{n}{convert\PYGZus{}address}\PYG{p}{(}\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}public\PYGZus{}key}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{public\PYGZus{}key}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}public\PYGZus{}key\PYGZus{}hash}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{super}::\PYG{n}{hash\PYGZus{}pub\PYGZus{}key}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{get\PYGZus{}public\PYGZus{}key}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}private\PYGZus{}key}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{private\PYGZus{}key}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}pkcs8}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Kept for compatibility with older signing code that expects}
+\PYG{+w}{        }\PYG{c+c1}{// \PYGZdq{}pkcs8\PYGZhy{}like\PYGZdq{} bytes.}
+\PYG{+w}{        }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{private\PYGZus{}key}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{hash\PYGZus{}pub\PYGZus{}key}\PYG{p}{(}\PYG{n}{pub\PYGZus{}key}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Taproot\PYGZhy{}oriented hashing (single SHA256\PYGZhy{}like digest).}
+\PYG{+w}{    }\PYG{c+c1}{// The concrete implementation is delegated to `crate::taproot\PYGZus{}hash`.}
+\PYG{+w}{    }\PYG{k}{crate}::\PYG{n}{taproot\PYGZus{}hash}\PYG{p}{(}\PYG{n}{pub\PYGZus{}key}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

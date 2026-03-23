@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Transaction}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{txid}: \PYG{n+nc}{vec}\PYG{o}{!}\PYG{p}{[}\PYG{l+m+mh}{0x23A}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mh}{0x2f}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mh}{0x3c}\PYG{p}{,}\PYG{+w}{ }\PYG{c+cm}{/*}\PYG{c+cm}{ ... }\PYG{c+cm}{*/}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{c+c1}{// ...}
+\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{c+c1}{// Different types:}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{a}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{id}\PYG{p}{;}\PYG{+w}{           }\PYG{c+c1}{// Reference to Vec}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{b}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{+w}{    }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{id}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Slice reference}
+\end{Verbatim}

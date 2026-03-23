@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Serialize, Deserialize, ToSchema)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{ErrorResponse}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{error}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{message}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{status\PYGZus{}code}: \PYG{k+kt}{u16}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{timestamp}: \PYG{n+nc}{DateTime}\PYG{o}{\PYGZlt{}}\PYG{n}{Utc}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

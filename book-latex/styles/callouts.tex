@@ -1,0 +1,142 @@
+% ──────────────────────────────────────────────────────────────
+%  callouts.tex — tcolorbox styles for all 16 canonical callout types
+% ──────────────────────────────────────────────────────────────
+%  Usage:  \begin{notebox} ... \end{notebox}
+%          \begin{infobox}{Methods involved} ... \end{infobox}
+%  Each box has a visual icon prefix in its title bar for instant
+%  recognition while scanning or flipping pages.
+% ──────────────────────────────────────────────────────────────
+
+\tcbuselibrary{skins,breakable}
+
+% ── Icon definitions (using text symbols for max compatibility) ─
+\newcommand{\iconinfo}{\textsf{\textbf{i}}\kern4pt}
+\newcommand{\iconnote}{\raisebox{0.5pt}{\footnotesize$\triangleright$}\kern4pt}
+\newcommand{\icontip}{\raisebox{-0.5pt}{\footnotesize$\star$}\kern4pt}
+\newcommand{\iconlearn}{\raisebox{-0.5pt}{\footnotesize$\vartriangleright$}\kern4pt}
+\newcommand{\iconwarn}{\raisebox{0pt}{\footnotesize$\blacktriangle$}\kern4pt}
+\newcommand{\iconimportant}{\raisebox{0pt}{\footnotesize$\blacklozenge$}\kern4pt}
+\newcommand{\iconprereq}{\raisebox{-0.5pt}{\footnotesize$\bullet\!\bullet\!\bullet$}\kern4pt}
+\newcommand{\iconexample}{\raisebox{-0.5pt}{\footnotesize$\rhd$}\kern4pt}
+\newcommand{\iconref}{\raisebox{0pt}{\footnotesize$\hookrightarrow$}\kern4pt}
+\newcommand{\iconcheckpoint}{\raisebox{0pt}{\footnotesize$\checkmark$}\kern4pt}
+\newcommand{\icontrouble}{\raisebox{0pt}{\footnotesize$\wr$}\kern4pt}
+
+% ── Shared base style ────────────────────────────────────────
+\tcbset{
+  calloutbase/.style={
+    enhanced,
+    breakable,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    boxrule=0pt,
+    leftrule=3pt,
+    arc=2pt,
+    fonttitle=\sffamily\bfseries\small,
+    fontupper=\small,
+    before upper={\parindent=0pt},
+    before skip=10pt plus 2pt,
+    after skip=10pt plus 2pt,
+  },
+}
+
+% ── Info (Methods involved, Source, Scope) ───────────────────
+\newtcolorbox{infobox}[1][]{
+  calloutbase,
+  colback=infobg,
+  colframe=infoframe,
+  coltitle=infotitle,
+  title={\iconinfo #1},
+}
+
+% ── Note ─────────────────────────────────────────────────────
+\newtcolorbox{notebox}[1][Note]{
+  calloutbase,
+  colback=notebg,
+  colframe=noteframe,
+  coltitle=notetitle,
+  title={\iconnote #1},
+}
+
+% ── Tip ──────────────────────────────────────────────────────
+\newtcolorbox{tipbox}[1][Tip]{
+  calloutbase,
+  colback=tipbg,
+  colframe=tipframe,
+  coltitle=tiptitle,
+  title={\icontip #1},
+}
+
+% ── Learning objectives (What you will learn) ────────────────
+\newtcolorbox{learnbox}[1][What you will learn in this chapter]{
+  calloutbase,
+  colback=learnbg,
+  colframe=learnframe,
+  coltitle=learntitle,
+  title={\iconlearn #1},
+}
+
+% ── Warning ──────────────────────────────────────────────────
+\newtcolorbox{warnbox}[1][Warning]{
+  calloutbase,
+  colback=warnbg,
+  colframe=warnframe,
+  coltitle=warntitle,
+  title={\iconwarn #1},
+}
+
+% ── Important ────────────────────────────────────────────────
+\newtcolorbox{importantbox}[1][Important]{
+  calloutbase,
+  colback=importantbg,
+  colframe=importantframe,
+  coltitle=importanttitle,
+  title={\iconimportant #1},
+}
+
+% ── Prerequisites ────────────────────────────────────────────
+\newtcolorbox{prereqbox}[1][Prerequisites]{
+  calloutbase,
+  colback=prereqbg,
+  colframe=prereqframe,
+  coltitle=prereqtitle,
+  title={\iconprereq #1},
+}
+
+% ── Example (See it in action, Implementation example, Framework Comparison) ─
+\newtcolorbox{examplebox}[1][]{
+  calloutbase,
+  colback=examplebg,
+  colframe=exampleframe,
+  coltitle=exampletitle,
+  title={\iconexample #1},
+}
+
+% ── Reference (See the full implementation, Companion Chapter) ─
+\newtcolorbox{refbox}[1][]{
+  calloutbase,
+  colback=refbg,
+  colframe=refframe,
+  coltitle=reftitle,
+  title={\iconref #1},
+}
+
+% ── Checkpoint ───────────────────────────────────────────────
+\newtcolorbox{checkpointbox}[1][Checkpoint]{
+  calloutbase,
+  colback=checkpointbg,
+  colframe=checkpointframe,
+  coltitle=checkpointtitle,
+  title={\iconcheckpoint #1},
+}
+
+% ── Troubleshooting (uses warning palette) ───────────────────
+\newtcolorbox{troublebox}[1][Troubleshooting]{
+  calloutbase,
+  colback=warnbg,
+  colframe=warnframe,
+  coltitle=warntitle,
+  title={\icontrouble #1},
+}

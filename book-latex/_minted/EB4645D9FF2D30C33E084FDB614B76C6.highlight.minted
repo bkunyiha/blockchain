@@ -1,0 +1,9 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{cd}\PYG{+w}{ }ci/docker\PYGZhy{}compose/configs
+
+\PYG{c+c1}{\PYGZsh{} Step 1: Generate override file}
+./generate\PYGZhy{}compose\PYGZhy{}ports.sh\PYG{+w}{ }\PYG{l+m}{3}\PYG{+w}{ }\PYG{l+m}{2}
+
+\PYG{c+c1}{\PYGZsh{} Step 2: Start services}
+docker\PYG{+w}{ }compose\PYG{+w}{ }up\PYG{+w}{ }\PYGZhy{}d\PYG{+w}{ }\PYGZhy{}\PYGZhy{}scale\PYG{+w}{ }\PYG{n+nv}{miner}\PYG{o}{=}\PYG{l+m}{3}\PYG{+w}{ }\PYGZhy{}\PYGZhy{}scale\PYG{+w}{ }\PYG{n+nv}{webserver}\PYG{o}{=}\PYG{l+m}{2}
+\end{MintedVerbatim}

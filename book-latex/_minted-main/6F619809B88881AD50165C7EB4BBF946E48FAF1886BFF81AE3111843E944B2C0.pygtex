@@ -1,0 +1,29 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+bitcoin/src/web/
++\PYGZhy{}\PYGZhy{} mod.rs              \PYGZsh{} Module exports
++\PYGZhy{}\PYGZhy{} server.rs           \PYGZsh{} Server initialization
++\PYGZhy{}\PYGZhy{} routes/             \PYGZsh{} Route definitions
+|   +\PYGZhy{}\PYGZhy{} mod.rs
+|   +\PYGZhy{}\PYGZhy{} api.rs          \PYGZsh{} API routes
+|   +\PYGZhy{}\PYGZhy{} web.rs          \PYGZsh{} Web UI routes
++\PYGZhy{}\PYGZhy{} handlers/           \PYGZsh{} Request handlers
+|   +\PYGZhy{}\PYGZhy{} mod.rs
+|   +\PYGZhy{}\PYGZhy{} blockchain.rs   \PYGZsh{} Blockchain endpoints
+|   +\PYGZhy{}\PYGZhy{} wallet.rs       \PYGZsh{} Wallet operations
+|   +\PYGZhy{}\PYGZhy{} transaction.rs  \PYGZsh{} Transaction management
+|   +\PYGZhy{}\PYGZhy{} mining.rs       \PYGZsh{} Mining operations
+|   +\PYGZhy{}\PYGZhy{} health.rs       \PYGZsh{} Health checks
+|   +\PYGZhy{}\PYGZhy{} validation.rs   \PYGZsh{} Request validation
++\PYGZhy{}\PYGZhy{} middleware/         \PYGZsh{} HTTP middleware
+|   +\PYGZhy{}\PYGZhy{} mod.rs
+|   +\PYGZhy{}\PYGZhy{} auth.rs         \PYGZsh{} Authentication
+|   +\PYGZhy{}\PYGZhy{} cors.rs         \PYGZsh{} CORS configuration
+|   +\PYGZhy{}\PYGZhy{} logging.rs      \PYGZsh{} Logging
+|   +\PYGZhy{}\PYGZhy{} rate\PYGZus{}limit.rs   \PYGZsh{} Rate limiting
++\PYGZhy{}\PYGZhy{} models/             \PYGZsh{} Data models
+|   +\PYGZhy{}\PYGZhy{} mod.rs
+|   +\PYGZhy{}\PYGZhy{} requests.rs     \PYGZsh{} Request structures
+|   +\PYGZhy{}\PYGZhy{} responses.rs    \PYGZsh{} Response structures
+|   +\PYGZhy{}\PYGZhy{} errors.rs       \PYGZsh{} Error models
++\PYGZhy{}\PYGZhy{} openapi.rs          \PYGZsh{} OpenAPI specification
+\end{Verbatim}

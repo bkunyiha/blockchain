@@ -1,0 +1,8 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+WalletService::create\PYGZus{}wallet
+   |
+   |\PYGZhy{}\PYGZhy{} Wallet::new()                 // generates keypair
+   |\PYGZhy{}\PYGZhy{} Wallet::get\PYGZus{}address()         // derives Base58 address from public key
+   |\PYGZhy{}\PYGZhy{} insert into HashMap           // address \PYGZhy{}\PYGZgt{} wallet
+   |\PYGZhy{}\PYGZhy{} save\PYGZus{}to\PYGZus{}file()                // bincode \PYGZhy{}\PYGZgt{} wallets.dat
+\end{MintedVerbatim}

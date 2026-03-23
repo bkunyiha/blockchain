@@ -1,0 +1,10 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} List volumes}
+docker\PYG{+w}{ }volume\PYG{+w}{ }ls\PYG{+w}{ }\PYG{p}{|}\PYG{+w}{ }grep\PYG{+w}{ }blockchain
+
+\PYG{c+c1}{\PYGZsh{} Inspect volume}
+docker\PYG{+w}{ }volume\PYG{+w}{ }inspect\PYG{+w}{ }blockchain\PYGZus{}miner\PYGZhy{}data
+
+\PYG{c+c1}{\PYGZsh{} Remove volumes (WARNING: deletes data)}
+docker\PYG{+w}{ }compose\PYG{+w}{ }down\PYG{+w}{ }\PYGZhy{}v
+\end{MintedVerbatim}

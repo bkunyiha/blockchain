@@ -1,0 +1,602 @@
+% ══════════════════════════════════════════════════════════════
+%  Section 9.5: Transaction Lifecycle --- Create → Sign → Verify → Mempool
+% ══════════════════════════════════════════════════════════════
+\chapter{Chain: Transaction Lifecycle}
+\label{ch:transaction-lifecycle}
+
+\begin{learnbox}
+\begin{itemize}
+  \item How a transaction flows from wallet creation through network propagation to mining boundary
+  \item Transaction construction: selecting inputs from UTXO set and creating outputs
+  \item Signing: the ``trimmed copy'' pattern that authorizes spending without circular signatures
+  \item Verification: checking signatures at the mining boundary
+  \item Mempool admission: accepting pending transactions and avoiding local conflicts
+  \item Mining trigger: when and how the system decides to start mining
+\end{itemize}
+\end{learnbox}
+
+When you want to send coins to someone, what actually happens behind the scenes? This section traces a \index{transaction}transaction through its complete \index{transaction!lifecycle}lifecycle---from the moment you decide to send coins, through \index{construction}construction and \index{digital signature!signing}signing, \index{verification}verification and \index{mempool}mempool admission, to \index{network!propagation}network propagation and eventual inclusion in a \index{block}block.
+
+% ──────────────────────────────────────────────────────────────
+\section{Overview: The Complete Transaction Journey}
+\label{sec:ch09-5-overview}
+
+A \index{transaction}transaction goes through several distinct \index{stage}stages, each handled by different parts of the \index{system}system:
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance = 1.0cm,
+  stage/.style = {rectangle, rounded corners=4pt, draw=sectioncolor, fill=sectioncolor!10,
+                  text width=4.2cm, align=center, minimum height=1.1cm, font=\sffamily\small},
+  code/.style = {font=\ttfamily\footnotesize, color=codekw},
+  arrow/.style = {-{Stealth[length=4pt,width=3pt]}, thick, color=brand},
+]
+
+% Wallet stage
+\node[stage] (wallet) at (0, 6) {
+  \textbf{Wallet} \\
+  \small construct \& sign
+};
+\node[font=\tiny\sffamily, right=0.3cm of wallet, text width=2cm, align=left] {
+  \code{new\_utxo\_tx}\\
+  \code{find\_spend}\\
+  \code{sign}
+};
+
+% Node mempool stage
+\node[stage] (mempool) at (0, 4.5) {
+  \textbf{Node} \\
+  \small add to mempool
+};
+\node[font=\tiny\sffamily, right=0.3cm of mempool, text width=2cm, align=left] {
+  \code{process\_tx}\\
+  \code{add\_to\_memory}
+};
+
+% Network broadcast stage
+\node[stage] (network) at (0, 3) {
+  \textbf{Network} \\
+  \small broadcast peers
+};
+\node[font=\tiny\sffamily, right=0.3cm of network, text width=2cm, align=left] {
+  \code{send\_inv}\\
+  (Tx, txid)
+};
+
+% Mining verification stage
+\node[stage] (mining) at (0, 1.5) {
+  \textbf{Mining} \\
+  \small verify transaction
+};
+\node[font=\tiny\sffamily, right=0.3cm of mining, text width=2cm, align=left] {
+  \code{mine\_block}\\
+  \code{verify}
+};
+
+% Confirmation stage
+\node[stage] (confirm) at (0, 0) {
+  \textbf{Confirmation} \\
+  \small in blockchain
+};
+\node[font=\tiny\sffamily, right=0.3cm of confirm, text width=2cm, align=left] {
+  \code{remove\_from}\\
+  \code{memory\_pool}
+};
+
+% Arrows
+\draw[arrow] (wallet) -- (mempool);
+\draw[arrow] (mempool) -- (network);
+\draw[arrow] (network) -- (mining);
+\draw[arrow] (mining) -- (confirm);
+
+\end{tikzpicture}
+\caption{Transaction Lifecycle: From Wallet to Blockchain Confirmation}
+\label{fig:ch09-5-tx-lifecycle}
+\end{figure}
+
+The complete flow: \textbf{\index{construction}construct \(\to\) \index{digital signature!signing}sign \(\to\) \index{submission}submit \(\to\) \index{mempool}mempool \(\to\) (async) \index{broadcast}broadcast/\index{mining}mining \(\to\) \index{verification}verify at \index{mining boundary}mining boundary \(\to\) \index{confirmation}confirmation}.
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 1: Entry Point --- Top-Level Send Payment}
+\label{sec:ch09-5-step1}
+
+This is the highest-level \index{orchestration}orchestration method: it creates a \index{transaction}transaction and hands it to the \index{node}node for \index{mempool}mempool/\index{networking}network processing.
+
+\begin{listing}[htbp]
+\caption{\code{NodeContext::btc\_transaction} --- send payment entry point}
+\label{lst:ch09-5-2}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: context.rs
+pub async fn btc_transaction(
+    &self,
+    wlt_frm_addr: &WalletAddress,
+    wlt_to_addr: &WalletAddress,
+    amount: i32,
+) -> Result<String> {
+    // Create a UTXOSet handle (derived-state accessor).
+    // Why: transaction construction needs coin selection;
+    // signing needs previous-tx lookups via chainstate.
+    let utxo_set = UTXOSet::new(self.blockchain.clone());
+
+    // Build + sign the transaction (wallet-side responsibility).
+    // Why: the node should not ``invent'' spends;
+    // it only accepts/relays what the wallet constructed.
+    let utxo = Transaction::new_utxo_transaction(
+        wlt_frm_addr, wlt_to_addr, amount, &utxo_set,
+    ).await?;
+
+    // Submit to the node's mempool/network pipeline.
+    // Why: once constructed, a tx must enter the node's
+    // pending set before it can be mined/relayed.
+    let addr_from = crate::GLOBAL_CONFIG.get_node_addr();
+    self.process_transaction(&addr_from, utxo).await
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+This method separates responsibilities: wallet-side work (construction + signing) is followed by node-side work (mempool/network processing). The return value is the transaction ID for the caller to track.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 2: Construct a Spending Transaction}
+\label{sec:ch09-5-step2}
+
+Now we see how the \index{transaction}transaction is actually built. This is where the \index{wallet}wallet selects which coins to spend, creates the payment and \index{change output}change outputs, computes the \index{txid}transaction ID, and \index{digital signature!signing}signs everything.
+
+\begin{listing}[htbp]
+\caption{\code{Transaction::new\_utxo\_transaction} --- build and sign}
+\label{lst:ch09-5-3}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: transaction.rs
+pub async fn new_utxo_transaction(
+    from_wlt_addr: &WalletAddress,
+    to_wlt_addr: &WalletAddress,
+    tx_amount: i32,
+    utxo_set: &UTXOSet,
+) -> Result<Transaction> {
+    let wallets = WalletService::new()?;
+    let from_wallet = wallets.get_wallet(from_wlt_addr)?;
+    let from_pub_key_hash = hash_pub_key(
+        from_wallet.get_public_key()
+    );
+    let (available_funds, valid_outputs) = utxo_set
+        .find_spendable_outputs(&from_pub_key_hash, tx_amount)
+        .await?;
+
+    if available_funds < tx_amount {
+        return Err(BtcError::NotEnoughFunds);
+    }
+
+    let mut inputs = vec![];
+    for (txid_hex, out_indexes) in valid_outputs {
+        let txid = HEXLOWER.decode(txid_hex.as_bytes())?;
+        for vout_idx in out_indexes {
+            inputs.push(TXInput::new(&txid, vout_idx));
+        }
+    }
+
+    let mut outputs = vec![TXOutput::new(tx_amount, to_wlt_addr)?];
+    if available_funds > tx_amount {
+        let change = available_funds - tx_amount;
+        outputs.push(TXOutput::new(change, from_wlt_addr)?);
+    }
+
+    let mut tx = Transaction {
+        id: vec![],
+        vin: inputs,
+        vout: outputs,
+    };
+    tx.id = tx.hash()?;
+    tx.sign(utxo_set.get_blockchain(), from_wallet.get_pkcs8())
+        .await?;
+    Ok(tx)
+}
+\end{minted}
+\end{listing}
+
+\begin{checkpointbox}
+This method:
+\begin{enumerate}
+  \item Loads the sender's \index{key}keys and derives the sender's \code{\index{public key}pub\_key\_hash}
+  \item Performs \index{coin selection}coin selection via \code{\index{UTXOSet!find\_spendable\_outputs}find\_spendable\_outputs}
+  \item Turns selected \index{outpoint}outpoints into \code{\index{TXInput}TXInput}s (empty \index{digital signature}signatures for now)
+  \item Builds \code{\index{TXOutput}TXOutput}s: payment plus optional \index{change output}change
+  \item Finalizes by computing \index{txid}txid (\code{\index{hash}tx.hash()}) and \index{digital signature!signing}signing (\code{\index{sign}tx.sign(...)})
+\end{enumerate}
+
+Change is a \emph{\index{new output}new output}, not ``leftover in an account'', because \index{UTXO}UTXO-based systems must explicitly create all spendable coins.
+\end{checkpointbox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 3: Sign and Verify (Trimmed Copy Pattern)}
+\label{sec:ch09-5-step3}
+\index{digital signature!signing}\index{trimmed copy}
+
+Once the \index{transaction}transaction is constructed, it must be \index{authorization}authorized. \index{digital signature}Signatures prove that the sender owns the coins being spent.
+
+\begin{listing}[htbp]
+\caption{Trimmed copy, signing, and verification}
+\label{lst:ch09-5-4}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: transaction.rs
+fn trimmed_copy(&self) -> Transaction {
+    let inputs = self.vin.iter()
+        .map(|i| TXInput::new(i.get_txid(), i.get_vout()))
+        .collect();
+    Transaction {
+        id: self.id.clone(),
+        vin: inputs,
+        vout: self.vout.clone()
+    }
+}
+
+async fn sign(
+    &mut self,
+    blockchain: &BlockchainService,
+    private_key: &[u8],
+) -> Result<()> {
+    let mut tx_copy = self.trimmed_copy();
+    for (idx, vin) in self.vin.iter_mut().enumerate() {
+        let prev_tx = blockchain
+            .find_transaction(vin.get_txid())
+            .await??;
+
+        // Temporarily inject the referenced output's lock
+        tx_copy.vin[idx].pub_key =
+            prev_tx.vout[vin.vout].pub_key_hash.clone();
+        tx_copy.id = tx_copy.hash()?;
+        let signature = schnorr_sign_digest(
+            private_key,
+            tx_copy.get_id()
+        )?;
+        vin.signature = signature;
+        tx_copy.vin[idx].pub_key = vec![];
+    }
+    Ok(())
+}
+
+pub async fn verify(
+    &self,
+    blockchain: &BlockchainService
+) -> Result<bool> {
+    if self.is_coinbase() { return Ok(true); }
+    let mut trimmed_copy = self.trimmed_copy();
+    for (idx, vin) in self.vin.iter().enumerate() {
+        let prev_tx = blockchain
+            .find_transaction(vin.get_txid())
+            .await??;
+        let pkh = prev_tx.vout[vin.vout]
+            .pub_key_hash.clone();
+        trimmed_copy.vin[idx].pub_key = pkh;
+        trimmed_copy.id = trimmed_copy.hash()?;
+        let is_valid = schnorr_sign_verify(
+            vin.get_pub_key(),
+            vin.get_signature(),
+            trimmed_copy.get_id(),
+        );
+        if !is_valid {
+            return Ok(false);
+        }
+        trimmed_copy.vin[idx].pub_key = vec![];
+    }
+    Ok(true)
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+\textbf{The trimmed copy pattern} avoids circular signing (the signature cannot sign itself):
+\begin{enumerate}
+  \item Create a copy with signatures cleared and other signing-related fields blank
+  \item For each input: inject the referenced output's \code{pub\_key\_hash} to bind the signature to the exact outpoint being spent
+  \item Hash that temporary copy
+  \item Sign the hash (which represents the transaction \emph{shape} and referenced outputs)
+  \item Verification recomputes that same digest and verifies the signature
+\end{enumerate}
+
+This ensures signatures commit to the exact outpoint and locking data, preventing signature reuse across different spends.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 4: Accept into Mempool and Spawn Background Work}
+\label{sec:ch09-5-step4}
+
+This is the node's acceptance boundary: reject duplicates, add to the mempool, then spawn propagation/mining trigger in the background.
+
+\begin{listing}[htbp]
+\caption{\code{NodeContext::process\_transaction} --- mempool acceptance}
+\label{lst:ch09-5-5}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: context.rs
+pub async fn process_transaction(
+    &self,
+    addr_from: &std::net::SocketAddr,
+    utxo: Transaction,
+) -> Result<String> {
+    if transaction_exists_in_pool(&utxo) {
+        let txid = utxo.get_tx_id_hex();
+        return Err(
+            BtcError::TransactionAlreadyExistsInMemoryPool(
+                txid
+            )
+        );
+    }
+    add_to_memory_pool(utxo.clone(), &self.blockchain)
+        .await?;
+
+    let context = self.clone();
+    let addr_copy = *addr_from;
+    let tx = utxo.clone();
+    tokio::spawn(async move {
+        let _ = context
+            .submit_transaction_for_mining(&addr_copy, tx)
+            .await;
+    });
+    Ok(utxo.get_tx_id_hex())
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+This method:
+\begin{itemize}
+  \item \textbf{Synchronously} checks for duplicate (by \code{txid})
+  \item \textbf{Synchronously} adds to mempool via \code{add\_to\_memory\_pool}
+  \item \textbf{Asynchronously} (spawns background task) propagates and triggers mining
+  \item Returns the \code{txid} immediately to the caller
+\end{itemize}
+
+Important: this method does \textbf{not} call \code{Transaction::verify} before storing. Signature verification is enforced at the \textbf{mining boundary} (\code{BlockchainService::mine\_block}). This is a learning simplification; production systems validate at mempool admission too.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 5: Mempool Internals}
+\label{sec:ch09-5-step5}
+
+How does the mempool store, track, and manage pending transactions?
+
+\begin{listing}[htbp]
+\caption{Mempool operations: add, remove, check existence}
+\label{lst:ch09-5-6}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: txmempool.rs
+pub async fn add_to_memory_pool(
+    tx: Transaction,
+    blockchain: &BlockchainService,
+) -> Result<()> {
+    let tx_id = tx.get_tx_id_hex();
+    if GLOBAL_MEMORY_POOL.lock().await.contains_key(&tx_id) {
+        return Err(BtcError::TransactionAlreadyExistsInMemoryPool(
+            tx_id
+        ));
+    }
+    GLOBAL_MEMORY_POOL
+        .lock()
+        .await
+        .insert(tx_id, tx.clone());
+
+    // Mark referenced inputs as reserved
+    let utxo_set = UTXOSet::new(blockchain.clone());
+    for input in tx.get_vin() {
+        if let Ok(Some(mut outputs)) =
+            utxo_set.find_utxo_by_txid(input.get_txid()).await
+        {
+            if input.vout < outputs.len() {
+                outputs[input.vout]
+                    .set_in_global_mem_pool(true);
+            }
+        }
+    }
+    Ok(())
+}
+
+pub fn transaction_exists_in_pool(tx: &Transaction) -> bool {
+    let tx_id = tx.get_tx_id_hex();
+    GLOBAL_MEMORY_POOL.blocking_lock().contains_key(&tx_id)
+}
+
+pub async fn remove_from_memory_pool(
+    tx: &Transaction,
+    blockchain: &BlockchainService,
+) -> Result<()> {
+    let tx_id = tx.get_tx_id_hex();
+    GLOBAL_MEMORY_POOL.lock().await.remove(&tx_id);
+
+    // Unmark referenced inputs
+    let utxo_set = UTXOSet::new(blockchain.clone());
+    for input in tx.get_vin() {
+        if let Ok(Some(mut outputs)) =
+            utxo_set.find_utxo_by_txid(input.get_txid()).await
+        {
+            if input.vout < outputs.len() {
+                outputs[input.vout]
+                    .set_in_global_mem_pool(false);
+            }
+        }
+    }
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+The mempool is a global in-memory map of \code{txid -> Transaction}. When a transaction is added:
+\begin{itemize}
+  \item It is stored in \code{GLOBAL\_MEMORY\_POOL}
+  \item Its referenced inputs are marked with \code{in\_global\_mem\_pool = true} to reserve them locally
+\end{itemize}
+
+When removed (after confirmation):
+\begin{itemize}
+  \item It is deleted from the mempool
+  \item Its referenced inputs are unmarked
+\end{itemize}
+
+This reservation mechanism reduces (but does not eliminate) the chance that the node builds conflicting pending spends.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 6: Propagation and Mining Trigger}
+\label{sec:ch09-5-step6}
+
+After mempool admission, a background task propagates the transaction to peers and may trigger mining.
+
+\begin{listing}[htbp]
+\caption{Background task: submit for mining and relay}
+\label{lst:ch09-5-7}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: context.rs (simplified)
+async fn submit_transaction_for_mining(
+    &self,
+    addr_from: &std::net::SocketAddr,
+    tx: Transaction,
+) -> Result<()> {
+    // Broadcast transaction to peers by sending INV message
+    self.send_inv_for_transaction(&tx).await?;
+
+    // If this is a mining node and mempool
+    // is large enough, trigger mining
+    let mempool_size = self.get_mempool_size()?;
+    if self.is_mining_enabled()
+        && mempool_size >= MINING_TRIGGER_THRESHOLD
+    {
+        self.trigger_mining_with_candidate_txs().await?;
+    }
+
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+The background task handles two concerns:
+\begin{enumerate}
+  \item \textbf{Propagation}: announces the transaction to peers via INV (inventory) message
+  \item \textbf{Mining trigger}: if mining is enabled and mempool exceeds a threshold, initiates mining with the pending transactions
+\end{enumerate}
+
+This decoupling (background task) allows the initial mempool submission to return immediately without waiting for network I/O or mining computation.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\needspace{3in}
+\section{Step 7: Mining Boundary --- Defensive Verification}
+\label{sec:ch09-5-step7}
+
+Before a transaction can be included in a block, it is verified again at the mining boundary.
+
+\begin{listing}[htbp]
+\caption{Mining boundary: verify each transaction before mining}
+\label{lst:ch09-5-8}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: chainstate.rs
+pub async fn mine_block(
+    &self,
+    transactions: &[Transaction],
+) -> Result<Block> {
+    // Gate: validate before mutating state.
+    for transaction in transactions {
+        let is_valid = transaction.verify(self).await?;
+        if !is_valid {
+            return Err(BtcError::InvalidTransaction);
+        }
+    }
+
+    // Acquire write lock
+    let blockchain_guard = self.0.write().await;
+
+    // Re-validate transaction inputs under the write lock
+    // (stale mining protection---see Chapter 11)
+    let db = blockchain_guard.get_db();
+    let utxo_tree = db.open_tree("chainstate")?;
+    for tx in transactions {
+        if tx.is_coinbase() { continue; }
+        for input in tx.get_vin() {
+            // Verify each input's UTXO still exists...
+        }
+    }
+
+    // Mining + persistence happens inside the storage layer.
+    blockchain_guard.mine_block(transactions).await
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+\textbf{The mining boundary} is the final defensive gate before blocks are created:
+\begin{enumerate}
+  \item \textbf{Pre-lock verification}: each transaction signature is checked before acquiring the exclusive write lock
+  \item \textbf{Lock acquisition}: the write lock is taken to ensure atomic block creation
+  \item \textbf{Stale-mining protection}: transaction inputs are re-checked under the lock to catch any inputs that were spent by a competing block between pre-lock and lock acquisition
+  \item \textbf{Persistence}: only after all checks pass is the block actually persisted and UTXO state updated
+\end{enumerate}
+
+This double-check pattern prevents the node from creating blocks with invalid or already-spent transactions.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 8: Mining Trigger Entry Points}
+\label{sec:ch09-5-step8}
+
+The system decides to start mining in response to two events:
+
+\begin{listing}[htbp]
+\caption{Mining trigger 1: mempool threshold}
+\label{lst:ch09-5-9}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Trigger 1: Mempool size reaches threshold
+if is_mining_enabled()
+    && get_mempool_size()
+        >= TRANSACTION_THRESHOLD
+{
+    prepare_candidate_txs_and_mine().await?;
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{Mining trigger 2: on-demand mining (manual trigger)}
+\label{lst:ch09-5-10}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Trigger 2: Manual/on-demand mining
+// (e.g., via API: POST /api/v1/mining/generatetoaddress)
+pub async fn generate_to_address(
+    State(node): State<Arc<NodeContext>>,
+    Json(req): Json<GenerateToAddressRequest>,
+) -> Result<Json<Block>> {
+    let block = node
+        .mine_block_to_address(&req.address)
+        .await?;
+    Ok(Json(block))
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+Mining is triggered in two ways:
+\begin{enumerate}
+  \item \textbf{Automatic}: when the mempool reaches a size threshold (e.g., during transaction flooding)
+  \item \textbf{On-demand}: via API request or other explicit signals (e.g., ``mine now to address X'')
+\end{enumerate}
+
+Once mining is triggered, the system prepares candidate transactions from the mempool, verifies them, and calls \code{BlockchainService::mine\_block}, which performs the final verification and persistent storage.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Summary}
+\label{sec:ch09-5-summary}
+
+\begin{chaptersummary}
+\item \textbf{Entry point}: \code{NodeContext::btc\_transaction} orchestrates wallet-side (construction + signing) and node-side (mempool/network) work
+\item \textbf{Construction}: \code{Transaction::new\_utxo\_transaction} selects inputs from UTXO set and creates outputs (payment + optional change)
+\item \textbf{Signing}: the \textbf{trimmed copy pattern} computes signatures without circular self-reference by temporarily injecting locking data, hashing, and signing
+\item \textbf{Mempool admission}: \code{process\_transaction} checks for duplicates, stores the transaction, and spawns background propagation/mining trigger
+\item \textbf{Reservation}: the \code{in\_global\_mem\_pool} flag is set on referenced outputs to reduce local double-selection
+\item \textbf{Propagation}: asynchronous task sends INV messages to peers to announce the transaction
+\item \textbf{Mining trigger}: automatic (mempool threshold) or on-demand (API request) initiation of block mining
+\item \textbf{Mining boundary}: \code{BlockchainService::mine\_block} performs defensive verification before creating and persisting the block
+\item \textbf{Stale-mining protection}: transaction inputs are re-verified under the write lock to catch competing blocks
+\item \textbf{Confirmation}: once a block is accepted, its transactions are removed from the mempool
+\end{chaptersummary}

@@ -1,0 +1,88 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{bitcoin\PYGZus{}api}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}\PYG{n}{AdminClient}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ApiConfig}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ApiResponse}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{BlockchainInfo}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{fetch\PYGZus{}info}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{ApiConfig}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{BlockchainInfo}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}
+\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// A new client is constructed per call; config contains base\PYGZus{}url + API key.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{AdminClient}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{)}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{client}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{get\PYGZus{}blockchain\PYGZus{}info}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{fetch\PYGZus{}blocks}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{ApiConfig}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{BlockSummary}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}
+\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{AdminClient}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{)}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{client}\PYG{p}{.}\PYG{n}{get\PYGZus{}latest\PYGZus{}blocks}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{fetch\PYGZus{}block\PYGZus{}by\PYGZus{}hash}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{cfg}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{ApiConfig}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{hash}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{AdminClient}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{)}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{client}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{get\PYGZus{}block\PYGZus{}by\PYGZus{}hash}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{hash}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{fetch\PYGZus{}mining\PYGZus{}info}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{ApiConfig}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}
+\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{AdminClient}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{)}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{client}\PYG{p}{.}\PYG{n}{get\PYGZus{}mining\PYGZus{}info}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{generate\PYGZus{}to\PYGZus{}address}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{cfg}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{ApiConfig}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{address}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{nblocks}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{u32}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{maxtries}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u32}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{AdminClient}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{)}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{client}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{generate\PYGZus{}to\PYGZus{}address}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{address}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{nblocks}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{maxtries}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{fetch\PYGZus{}health}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{ApiConfig}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}
+\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{AdminClient}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{)}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{client}\PYG{p}{.}\PYG{n}{health}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{fetch\PYGZus{}mempool}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{ApiConfig}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}
+\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{AdminClient}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{)}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{client}\PYG{p}{.}\PYG{n}{get\PYGZus{}mempool}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{create\PYGZus{}wallet\PYGZus{}admin}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{cfg}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{ApiConfig}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{req}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{CreateWalletRequest}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{CreateWalletResponse}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{AdminClient}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{)}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{client}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{create\PYGZus{}wallet\PYGZus{}admin}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{req}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{send\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{cfg}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{ApiConfig}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{req}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{SendTransactionRequest}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{SendTransactionResponse}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{AdminClient}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{)}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{client}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{send\PYGZus{}transaction\PYGZus{}admin}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{req}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

@@ -1,0 +1,5 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{if}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{request}\PYG{p}{.}\PYG{n}{validate}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{is\PYGZus{}ok}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{StatusCode}\PYG{p}{::}\PYG{n}{BAD\PYGZus{}REQUEST}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

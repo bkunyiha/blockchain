@@ -1,0 +1,13 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Run all tests}
+cargo\PYG{+w}{ }\PYG{n+nb}{test}
+
+\PYG{c+c1}{\PYGZsh{} Run tests with output}
+cargo\PYG{+w}{ }\PYG{n+nb}{test}\PYG{+w}{ }\PYGZhy{}\PYGZhy{}\PYG{+w}{ }\PYGZhy{}\PYGZhy{}nocapture
+
+\PYG{c+c1}{\PYGZsh{} Run a specific test}
+cargo\PYG{+w}{ }\PYG{n+nb}{test}\PYG{+w}{ }test\PYGZus{}transaction\PYGZus{}creation
+
+\PYG{c+c1}{\PYGZsh{} Run tests sequentially (for file\PYGZhy{}based databases)}
+cargo\PYG{+w}{ }\PYG{n+nb}{test}\PYG{+w}{ }\PYGZhy{}\PYGZhy{}\PYG{+w}{ }\PYGZhy{}\PYGZhy{}test\PYGZhy{}threads\PYG{o}{=}\PYG{l+m}{1}
+\end{MintedVerbatim}

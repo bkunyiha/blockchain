@@ -1,0 +1,19 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+Peer A has object (tx or block)
+  |
+  | 1) announce (hash only)
+  v
+INV(op\PYGZus{}type, [id]) \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZgt{} Peer B
+                             |
+                             | 2) request bytes
+                             v
+                          GETDATA \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZgt{} Peer A
+                                           |
+                                           | 3) send full bytes
+                                           v
+                                  (TX | BLOCK) \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZgt{} Peer B
+                                                        |
+                                                        | 4) hand to node
+                                                        v
+                                                 mempool / add\PYGZus{}block
+\end{MintedVerbatim}

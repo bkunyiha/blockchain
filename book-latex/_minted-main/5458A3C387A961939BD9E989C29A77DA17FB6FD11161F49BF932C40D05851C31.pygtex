@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{create\PYGZus{}cors\PYGZus{}layer}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{CorsLayer}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{CorsLayer}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{allow\PYGZus{}origin}\PYG{p}{(}\PYG{n}{Any}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{allow\PYGZus{}methods}\PYG{p}{(}\PYG{n}{Any}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{allow\PYGZus{}headers}\PYG{p}{(}\PYG{n}{Any}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{expose\PYGZus{}headers}\PYG{p}{(}\PYG{n}{Any}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{max\PYGZus{}age}\PYG{p}{(}\PYG{n}{std}::\PYG{n}{time}::\PYG{n}{Duration}::\PYG{n}{from\PYGZus{}secs}\PYG{p}{(}\PYG{l+m+mi}{86400}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

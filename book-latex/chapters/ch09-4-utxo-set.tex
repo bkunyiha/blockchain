@@ -1,0 +1,451 @@
+% ══════════════════════════════════════════════════════════════
+%  Section 9.4: UTXO Set --- The Spendability Database
+% ══════════════════════════════════════════════════════════════
+\chapter{Chain: UTXO Set}
+\label{ch:utxo-set}
+
+\begin{learnbox}
+\begin{itemize}
+  \item What a UTXO (Unspent Transaction Output) is and why Bitcoin tracks outputs, not accounts
+  \item How the UTXO set is persisted in sled: one tree with \code{txid\_bytes -> Vec<TXOutput>}
+  \item Coin selection: how \code{find\_spendable\_outputs} chooses which coins to spend
+  \item Block connection: updating the UTXO set when a block is accepted (remove spent, add created)
+  \item Chain reorg support: rolling back the UTXO set when a block is disconnected
+  \item Balance queries: deriving ``account balance'' from the collection of spendable UTXOs
+\end{itemize}
+\end{learnbox}
+
+In Bitcoin, a \textbf{\index{UTXO}UTXO} (Unspent \index{transaction}Transaction Output) is a \emph{specific coin} you can spend: an output created by some earlier \index{transaction}transaction that has not yet been referenced as an input by any later \index{transaction}transaction. Your ``balance'' is therefore not a single stored number; it is the sum of the values of all \index{UTXO}UTXOs you can unlock with your keys.
+
+The \textbf{\index{UTXO}UTXO set} is the node's \emph{current index of spendability}: the collection of all \index{UTXO}UTXOs that exist \textbf{right now} (keyed by \(txid, vout\) and mapping to output details). It is updated when \index{block}blocks are connected (remove spent outputs, add newly created outputs), and it is what \index{wallet}wallets and validators consult to answer ``is this input spendable?'' efficiently.
+
+This is different from the \textbf{\index{blockchain}blockchain}, which is an append-only history. The chain records \emph{what happened}; the \index{UTXO}UTXO set represents the \emph{resulting state} (what remains spendable after applying that history).
+
+% ──────────────────────────────────────────────────────────────
+\section{Storage Layout in sled}
+\label{sec:ch09-4-storage-layout}
+
+\index{sled}\code{sled} is an embedded key-value database written in Rust. There is no \code{\index{UTXO}UTXO} struct. The \index{UTXO}UTXO set is stored as a \index{sled}sled tree:
+
+\begin{itemize}
+  \item Tree name: \code{chainstate} (constant \code{\index{UTXO}UTXO\_TREE})
+  \item Key: \code{\index{transaction}txid} (raw bytes---the 32-byte \index{transaction}transaction hash)
+  \item Value: \code{Vec<TXOutput>} serialized via \code{Rust!serialization}\code{bincode}
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{UTXO tree structure and handle}
+\label{lst:ch09-4-1}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: utxo_set.rs
+const UTXO_TREE: &str = "chainstate";
+
+pub struct UTXOSet {
+    // handle used to access the DB and chain data
+    blockchain: BlockchainService,
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+We persist \textbf{derived state} as: \code{txid\_bytes -> bincode(Vec<TXOutput>)}. The \emph{outpoint} \((txid, vout)\) is interpreted as ``the output at index \code{vout} inside that stored \code{Vec<TXOutput>}''.
+
+We use bytes as the database key because it is the \textbf{canonical representation}, more space/time efficient, and avoids repeated hex encoding/decoding. When a transaction ID is displayed as hex in logs, that is the same value, just rendered for humans.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Core Data Types: TXInput and TXOutput}
+\label{sec:ch09-4-datatypes}
+
+Before we can understand the UTXO set, we need to understand what a transaction \emph{points at} and what an output \emph{contains}.
+
+\begin{listing}[htbp]
+\caption{\code{TXInput}: reference to a previous output and authorization}
+\label{lst:ch09-4-2}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: transaction.rs
+#[derive(Clone, Default, Serialize, Deserialize)]
+pub struct TXInput {
+    txid: Vec<u8>,                  // previous transaction hash
+    vout: usize,                    // output index in that transaction
+    signature: Vec<u8>,             // proof of authorization
+    pub_key: Vec<u8>,               // public key for verification
+}
+
+impl TXInput {
+    pub fn new(txid: &[u8], vout: usize) -> TXInput {
+        TXInput {
+            txid: txid.to_vec(),
+            vout,
+            signature: vec![],
+            pub_key: vec![],
+        }
+    }
+
+    pub fn uses_key(&self, pub_key_hash: &[u8]) -> bool {
+        let locking_hash = hash_pub_key(self.pub_key.as_slice());
+        locking_hash.eq(pub_key_hash)
+    }
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+An \textbf{outpoint} is the pair \((txid, vout)\) that identifies which previous output an input is spending. It does not store ``which address''; it stores the exact transaction and output index being consumed.
+\end{notebox}
+
+\begin{listing}[htbp]
+\caption{\code{TXOutput}: value and the ``in mempool'' flag}
+\label{lst:ch09-4-3}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: transaction.rs
+#[derive(Clone, Serialize, Deserialize)]
+pub struct TXOutput {
+    value: i32,                       // amount locked by this output
+    in_global_mem_pool: bool,         // local hint: reserved in mempool?
+    pub_key_hash: Vec<u8>,            // ``lock'': who can spend this
+}
+
+impl TXOutput {
+    pub fn new(
+        value: i32,
+        address: &WalletAddress
+    ) -> Result<TXOutput> {
+        let mut output = TXOutput {
+            value,
+            in_global_mem_pool: false,
+            pub_key_hash: vec![],
+        };
+        output.lock(address)?;
+        Ok(output)
+    }
+
+    fn lock(&mut self, address: &WalletAddress) -> Result<()> {
+        self.pub_key_hash = get_pub_key_hash(address)?;
+        Ok(())
+    }
+
+    pub fn set_in_global_mem_pool(&mut self, value: bool) {
+        self.in_global_mem_pool = value;
+    }
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+\code{pub\_key\_hash} is the ``lock''---it is what \code{is\_locked\_with\_key()} matches during coin selection. \code{in\_global\_mem\_pool} is \textbf{not} a Bitcoin consensus concept; it is a \emph{local hint} in this learning implementation used to avoid selecting an output already referenced in a pending transaction.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Coin Selection: Finding Spendable Outputs}
+\label{sec:ch09-4-coin-selection}
+
+When creating a transaction, the wallet needs to answer: ``Which outpoints locked to me can cover \(\mathit{amount}\), while avoiding outputs already used in the mempool?''
+
+\begin{listing}[htbp]
+\caption{\code{UTXOSet::find\_spendable\_outputs} --- scan and select}
+\label{lst:ch09-4-4}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: utxo_set.rs
+pub async fn find_spendable_outputs(
+    &self,
+    from_pub_key_hash: &[u8],
+    amount: i32,
+) -> Result<(i32, HashMap<String, Vec<usize>>)> {
+    let mut unspent_outputs_indexes = HashMap::new();
+    let mut accumulated = 0;
+    let db = self.blockchain.get_db().await?;
+    let utxo_tree = db.open_tree(UTXO_TREE)?;
+
+    for item in utxo_tree.iter() {
+        let (k, v) = item?;
+        let txid_hex = HEXLOWER.encode(k.as_ref());
+        let (tx_out, _) = bincode::serde::decode_from_slice(
+            v.as_ref(),
+            bincode::config::standard(),
+        )?;
+
+        for (vout_idx, out) in tx_out.iter().enumerate() {
+            if out.not_in_global_mem_pool()
+                && out.is_locked_with_key(from_pub_key_hash)
+                && accumulated < amount
+            {
+                accumulated += out.get_value();
+                unspent_outputs_indexes
+                    .entry(txid_hex.clone())
+                    .or_insert_with(Vec::new)
+                    .push(vout_idx);
+            }
+        }
+    }
+    Ok((accumulated, unspent_outputs_indexes))
+}
+\end{minted}
+\end{listing}
+
+\begin{checkpointbox}
+This method:
+\begin{itemize}
+  \item Opens the \code{UTXO\_TREE} and iterates the entire keyspace (this is \(O(N)\) over all stored outputs)
+  \item Deserializes each \code{Vec<TXOutput>} and checks each output for ownership and reservation status
+  \item Accumulates outputs until the sum covers the requested amount
+  \item Returns a \code{HashMap<txid\_hex -> [vout indexes]>} mapping transaction IDs to their selected output indices
+\end{itemize}
+\end{checkpointbox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Transaction Construction Using Selected Outputs}
+\label{sec:ch09-4-tx-construction}
+
+Coin selection results are used by \code{Transaction::new\_utxo\_transaction} to build the actual transaction:
+
+\begin{listing}[htbp]
+\caption{UTXO transaction construction}
+\label{lst:ch09-4-5}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: transaction.rs
+pub async fn new_utxo_transaction(
+    from_wlt_addr: &WalletAddress,
+    to_wlt_addr: &WalletAddress,
+    tx_amount: i32,
+    utxo_set: &UTXOSet,
+) -> Result<Transaction> {
+    let wallets = WalletService::new()?;
+    let from_wallet = wallets.get_wallet(from_wlt_addr)?;
+    let from_pub_key_hash = hash_pub_key(
+        from_wallet.get_public_key()
+    );
+    let (available_funds, valid_outputs) = utxo_set
+        .find_spendable_outputs(&from_pub_key_hash, tx_amount)
+        .await?;
+
+    if available_funds < tx_amount {
+        return Err(BtcError::NotEnoughFunds);
+    }
+
+    let mut inputs = vec![];
+    for (txid_hex, out_indexes) in valid_outputs {
+        let txid = HEXLOWER.decode(txid_hex.as_bytes())?;
+        for vout_idx in out_indexes {
+            inputs.push(TXInput::new(&txid, vout_idx));
+        }
+    }
+
+    let mut outputs = vec![TXOutput::new(tx_amount, to_wlt_addr)?];
+    if available_funds > tx_amount {
+        outputs.push(TXOutput::new(
+            available_funds - tx_amount,
+            from_wlt_addr,
+        )?);
+    }
+
+    let mut tx = Transaction {
+        id: vec![],
+        vin: inputs,
+        vout: outputs,
+    };
+    tx.id = tx.hash()?;
+    tx.sign(utxo_set.get_blockchain(), from_wallet.get_pkcs8())
+        .await?;
+    Ok(tx)
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+The selected outpoints become \code{TXInput}s, value is re-expressed as payment and optional change \code{TXOutput}s, then we compute a txid and sign. This is the \textbf{mechanical implementation of the UTXO model}: spending consumes entire outputs, so leftover value must be recreated as a new change output.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Updating After a Block (Block Connect)}
+\label{sec:ch09-4-block-connect}
+
+When a block is accepted, the UTXO set must be updated: spent outputs are removed, newly created outputs are added.
+
+\begin{listing}[htbp]
+\caption{Update the UTXO set when a block is connected}
+\label{lst:ch09-4-6}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: utxo_set.rs
+pub async fn update(&self, block: &Block) -> Result<()> {
+    let db = self.blockchain.get_db().await?;
+    let utxo_tree = db.open_tree(UTXO_TREE)?;
+
+    // Step 1: Remove (spend) inputs referenced by this block
+    for tx in block.get_transactions() {
+        if !tx.is_coinbase() {
+            for input in tx.get_vin() {
+                let txid = input.get_txid();
+                if let Ok(Some(mut outputs)) =
+                    self.find_utxo(txid)
+                {
+                    if input.vout < outputs.len() {
+                        outputs.remove(input.vout);
+                        if outputs.is_empty() {
+                            utxo_tree.remove(txid)?;
+                        } else {
+                            let data = bincode::serde::encode_to_vec(
+                                &outputs,
+                                bincode::config::standard(),
+                            )?;
+                            utxo_tree.insert(txid, data)?;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Step 2: Add (create) outputs produced by this block
+    for tx in block.get_transactions() {
+        let txid = tx.get_id();
+        let outputs = tx.get_vout();
+        let data = bincode::serde::encode_to_vec(
+            &outputs,
+            bincode::config::standard(),
+        )?;
+        utxo_tree.insert(txid, data)?;
+    }
+
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+Block connection is a two-step atomic transformation:
+\begin{enumerate}
+  \item \textbf{Spend phase}: for each input in each transaction, remove that output from the UTXO set (delete the txid key if all outputs are spent)
+  \item \textbf{Create phase}: for each transaction in the block, insert all its outputs into the UTXO set (keyed by the transaction's ID)
+\end{enumerate}
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Rollback: Disconnecting a Block (Reorg Support)}
+\label{sec:ch09-4-rollback}
+
+If a block must be disconnected (e.g., during a chain reorg), we undo its UTXO effects: remove created outputs, restore spent outputs.
+
+\begin{listing}[htbp]
+\caption{Rollback the UTXO set when a block is disconnected}
+\label{lst:ch09-4-7}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: utxo_set.rs
+pub async fn rollback_block(&self, block: &Block) -> Result<()> {
+    let db = self.blockchain.get_db().await?;
+    let utxo_tree = db.open_tree(UTXO_TREE)?;
+
+    // Step 1: Remove outputs created by this block
+    for tx in block.get_transactions() {
+        utxo_tree.remove(tx.get_id())?;
+    }
+
+    // Step 2: Restore outputs spent by this block
+    for tx in block.get_transactions() {
+        if !tx.is_coinbase() {
+            for input in tx.get_vin() {
+                let prev_txid = input.get_txid();
+                if let Ok(Some(prev_tx)) =
+                    self.blockchain.find_transaction(prev_txid)
+                {
+                    let data = bincode::serde::encode_to_vec(
+                        prev_tx.get_vout(),
+                        bincode::config::standard(),
+                    )?;
+                    utxo_tree.insert(prev_txid, data)?;
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+Rollback is the inverse of block connect:
+\begin{enumerate}
+  \item \textbf{Remove phase}: delete all transactions created by this block from the UTXO set
+  \item \textbf{Restore phase}: for each input spent by this block, look up the original transaction and restore its full output set to the UTXO tree
+\end{enumerate}
+
+This allows the node to support chain reorganizations: if a better chain is discovered, blocks can be disconnected from the old chain and reconnected to the new one, with UTXO state updated correctly each step.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Balance and UTXO Queries}
+\label{sec:ch09-4-queries}
+
+Beyond the core update/rollback loop, we provide higher-level query methods for wallets and debugging.
+
+\begin{listing}[htbp]
+\caption{Find UTXOs and compute balance}
+\label{lst:ch09-4-8}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: utxo_set.rs
+pub async fn find_utxo(
+    &self,
+    pub_key_hash: &[u8],
+) -> Result<Vec<TXOutput>> {
+    let mut result = Vec::new();
+    let db = self.blockchain.get_db().await?;
+    let utxo_tree = db.open_tree(UTXO_TREE)?;
+
+    for item in utxo_tree.iter() {
+        let (_, v) = item?;
+        let (tx_out, _) = bincode::serde::decode_from_slice(
+            v.as_ref(),
+            bincode::config::standard(),
+        )?;
+        for output in tx_out {
+            if output.is_locked_with_key(pub_key_hash) {
+                result.push(output);
+            }
+        }
+    }
+    Ok(result)
+}
+
+pub async fn get_balance(
+    &self,
+    address: &WalletAddress,
+) -> Result<i32> {
+    let pub_key_hash = get_pub_key_hash(address)?;
+    let utxos = self.find_utxo(&pub_key_hash).await?;
+    Ok(utxos.iter().map(|o| o.get_value()).sum())
+}
+
+pub async fn utxo_count(
+    &self,
+    address: &WalletAddress,
+) -> Result<usize> {
+    let pub_key_hash = get_pub_key_hash(address)?;
+    let utxos = self.find_utxo(&pub_key_hash).await?;
+    Ok(utxos.len())
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+These query methods iterate the UTXO tree and filter by ownership (\code{pub\_key\_hash}). They answer:
+\begin{itemize}
+  \item ``What UTXOs do I own?'' (\code{find\_utxo})
+  \item ``What is my total balance?'' (\code{get\_balance})
+  \item ``How many unspent coins do I have?'' (\code{utxo\_count})
+\end{itemize}
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Summary}
+\label{sec:ch09-4-summary}
+
+\begin{chaptersummary}
+\item \textbf{UTXO set} is the derived state that answers ``what is spendable right now?''
+\item \textbf{Storage}: sled tree \code{chainstate} with \code{txid\_bytes -> Vec<TXOutput>}
+\item \textbf{Coin selection}: \code{find\_spendable\_outputs} scans the UTXO tree, filtering by ownership and reservation status
+\item \textbf{Block connect}: two-phase update (spend inputs, create outputs)
+\item \textbf{Block disconnect}: two-phase rollback (remove created, restore spent) for reorg support
+\item \textbf{Balance queries}: derive wallet balance by summing owned UTXOs
+\item \textbf{Local mempool flag}: \code{in\_global\_mem\_pool} is a hint to avoid local double-selection, not a consensus rule
+\end{chaptersummary}

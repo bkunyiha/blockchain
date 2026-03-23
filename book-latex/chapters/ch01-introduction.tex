@@ -1,0 +1,263 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 1: Introduction & Overview
+% ══════════════════════════════════════════════════════════════
+\chapter{Introduction \& Overview}
+\label{ch:introduction}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Understand the project architecture and how every crate in the workspace fits together
+  \item Identify the role of each system layer, from primitives through networking to user interfaces
+  \item Trace the data flow from a user action through the REST API, node context, and blockchain state
+  \item Set up the development environment and run the project for the first time
+\end{itemize}
+\end{learnbox}
+
+\lettrine{T}{his} book is a complete, self-contained guide to building a full-stack \index{blockchain} system in Rust, following the architecture defined by Bitcoin. By the time you finish, you will have walked through every module, every function, and every design decision in a working implementation---from raw byte serialization and cryptographic primitives all the way up to desktop wallet UIs and containerized deployment. You will not need to clone the repository or read external documentation to understand the system; the book \emph{is} the documentation.
+
+The target audience is \textbf{intermediate to advanced Rust developers} who want to understand how blockchain works at the implementation level. We assume you are comfortable with \index{Rust!ownership}ownership, \index{Rust!trait}traits, generics, and \index{Rust!async}async/\index{Rust!await}await. If you need a refresher on any Rust concept, \textbf{Chapter~\ref{ch:rust-guide}: Rust Language Guide} at the end of the book serves as a standalone reference---read it before diving into the implementation chapters, or refer to it whenever you encounter unfamiliar syntax.
+
+\begin{notebox}
+This project runs entirely on \textbf{\index{tokio}Tokio}, the async runtime that powers most production Rust systems. You will use \code{async}/\code{await} throughout: spawning \index{mining}mining tasks, managing peer-to-peer TCP connections, orchestrating node subsystems with \index{Rust!channel}channels and \code{select!}, serving REST endpoints with \index{Axum}Axum, and handling IPC commands in \index{Tauri}Tauri. If you want to learn async Rust through real code rather than toy examples, this book provides that from Chapter~\ref{ch:domain-model} onward.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{How the Book Is Organized}
+\label{sec:book-organization}
+
+The book follows the same path data takes through a Bitcoin node:
+
+\begin{itemize}
+  \item \textbf{Part I (Chapters~\ref{ch:introduction}\textendash\ref{ch:web-admin-ui})} builds the system from the ground up. We start with the Bitcoin whitepaper (Chapters~\ref{ch:blockchain-intro}\textendash\ref{ch:whitepaper-rust}) to understand \emph{what} we are building and \emph{why}. Then we implement it in Rust: primitives and byte encodings (\ref{ch:primitives}\textendash\ref{ch:utilities}), \index{cryptography}cryptographic identity and authorization (\ref{ch:cryptography}), \index{blockchain}blockchain state and \index{consensus}consensus (\ref{ch:domain-model}\textendash\ref{ch:block-acceptance}), persistent storage (\ref{ch:storage}), \index{network layer}networking (\ref{ch:network}), \index{node orchestration}node orchestration (\ref{ch:node-orchestration}), \index{wallet}wallet (\ref{ch:wallet}), a \index{REST API}REST API (Chapter~\ref{ch:web-api}), and multiple frontend interfaces---desktop UIs in \index{Iced}Iced and \index{Tauri}Tauri (Chapters~\ref{ch:desktop-iced}\textendash\ref{ch:wallet-tauri}), an embedded encrypted database (Chapter~\ref{ch:embedded-db}), and a \index{React}React web admin panel (Chapter~\ref{ch:web-admin-ui}).
+  \item \textbf{Part II (Chapters~\ref{ch:docker-deployment}\textendash\ref{ch:k8s-deployment})} covers deployment with \index{Docker}Docker Compose and \index{Kubernetes}Kubernetes.
+  \item \textbf{Part III (Chapter~\ref{ch:rust-guide})} is the Rust language reference.
+\end{itemize}
+
+Each implementation chapter opens by explaining what problem the module solves, shows the complete annotated code, and closes by connecting forward to the next layer. The reading order is designed so that every concept is introduced before it is used.
+
+% ──────────────────────────────────────────────────────────────
+\section{System Architecture}
+\label{sec:system-architecture}
+
+The diagram below shows how every module in the system connects. Data flows upward from raw bytes to user-facing interfaces. Keep this picture in mind as you read---each chapter builds one layer of this stack.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  layer/.style = {rectangle, rounded corners=6pt, draw=sectioncolor, fill=sectioncolor!10,
+                  text width=10cm, align=center, minimum height=1cm, font=\sffamily\small},
+  component/.style = {rectangle, rounded corners=4pt, draw=sectioncolor, fill=codebg,
+                      text width=2.2cm, align=center, minimum height=0.8cm,
+                      font=\sffamily\footnotesize},
+  uicomp/.style = {rectangle, rounded corners=4pt, draw=sectioncolor, fill=codebg,
+                   text width=1.8cm, align=center, minimum height=0.8cm,
+                   font=\sffamily\footnotesize},
+  arrow/.style = {-{Stealth[length=4pt,width=3pt]}, thick, color=brand},
+]
+
+% Deployment layer
+\node[layer] (deployment) at (0, 12.2) {
+  \textbf{DEPLOYMENT (Part II)} \\[2pt]
+  Ch~22: Docker Compose \qquad Ch~23: Kubernetes
+};
+
+% User interfaces
+\node[uicomp] (iced) at (-2.8, 10.6) {\textbf{Ch~16} \\ Iced Desktop};
+\node[uicomp] (tauri) at (0, 10.6) {\textbf{Ch~17} \\ Tauri Desktop};
+\node[uicomp] (react) at (2.8, 10.6) {\textbf{Ch~21} \\ React Web UI};
+
+% Web API
+\node[layer] (webapi) at (0, 9.0) {
+  \textbf{Ch~15: Web API (Axum REST)}
+};
+
+% Node Orchestration
+\node[layer] (orchestration) at (0, 7.4) {
+  \textbf{Ch~13: Node Orchestration} \\[1pt]
+  {\small message dispatch, coordination}
+};
+
+% Core subsystems — wider spacing to prevent overlap
+\node[component] (wallet)    at (-3.6, 5.5) {\textbf{Ch~14} \\ Wallet};
+\node[component] (network)   at (-1.2, 5.5) {\textbf{Ch~12} \\ Network (TCP)};
+\node[component] (storage)   at (1.2, 5.5)  {\textbf{Ch~11} \\ Storage (sled)};
+\node[component] (consensus) at (3.6, 5.5)  {\textbf{Ch~9--10} \\ Chain + Consensus};
+
+% Cryptography layer
+\node[layer] (crypto) at (0, 3.6) {
+  \textbf{Ch~8: Cryptography} \\[1pt]
+  {\small SHA-256, ECDSA, key derivation}
+};
+
+% Primitives layer
+\node[layer] (primitives) at (0, 2.0) {
+  \textbf{Ch~6--7: Primitives + Utilities} \\[1pt]
+  {\small Block, Transaction, UTXO, helpers}
+};
+
+% Embedded DB
+\node[layer] (embdb) at (0, 0.5) {
+  \textbf{Ch~20: Embedded DB (SQLCipher)} --- used by wallet UIs
+};
+
+% Concepts and Rust Guide — side by side with proper widths
+\node[layer, text width=4.5cm] (concepts) at (-2.8, -1.2) {
+  \textbf{Ch~1--4: Concepts} \\[1pt]
+  {\small Whitepaper, Bitcoin Intro}
+};
+\node[layer, text width=4.5cm] (rustguide) at (2.8, -1.2) {
+  \textbf{Ch~24: Rust Guide} \\[1pt]
+  {\small Reference --- read anytime}
+};
+
+% Arrows — UI to Web API
+\draw[arrow] (iced.south) -- (webapi);
+\draw[arrow] (tauri.south) -- (webapi);
+\draw[arrow] (react.south) -- (webapi);
+
+% Web API to Orchestration
+\draw[arrow] (webapi) -- (orchestration);
+
+% Orchestration to subsystems
+\draw[arrow] (orchestration) -- (wallet);
+\draw[arrow] (orchestration) -- (network);
+\draw[arrow] (orchestration) -- (storage);
+\draw[arrow] (orchestration) -- (consensus);
+
+% Subsystems to Crypto
+\draw[arrow] (wallet.south) -- (crypto);
+\draw[arrow] (consensus.south) -- (crypto);
+\draw[arrow] (network.south) -- (crypto);
+\draw[arrow] (storage.south) -- (crypto);
+
+% Crypto to Primitives
+\draw[arrow] (crypto) -- (primitives);
+
+\end{tikzpicture}
+\caption{System Architecture: Layered Stack from Primitives to User Interfaces}
+\label{fig:ch01-architecture}
+\end{figure}
+
+% ──────────────────────────────────────────────────────────────
+\section{What This Book Does Not Cover}
+\label{sec:exclusions}
+
+This is an educational implementation, not a production Bitcoin client. To keep the book focused and the codebase readable, we deliberately exclude:
+
+\begin{itemize}
+  \item[\textbf{---}] \textbf{Production mining difficulty}---our proof-of-work uses a simplified difficulty target. Real Bitcoin's difficulty adjustment algorithm (recalculated every 2,016 blocks) is not implemented.
+  \item[\textbf{---}] \textbf{NAT traversal and peer discovery}---nodes connect via configured addresses. The DNS seeding, UPnP, and NAT hole-punching that production Bitcoin uses for peer discovery are outside our scope.
+  \item[\textbf{---}] \textbf{BIP-32 HD wallets}---our wallet generates standalone key pairs. Hierarchical Deterministic key derivation (BIP-32/39/44) is covered in the Further Reading section of the Wallet chapter.
+  \item[\textbf{---}] \textbf{Lightning Network}---layer-2 payment channels are an entirely separate protocol built on top of Bitcoin. We focus exclusively on the layer-1 blockchain.
+  \item[\textbf{---}] \textbf{Smart contracts and scripting}---Bitcoin's Script language for transaction conditions is not implemented. Our transactions use a simplified signature-based authorization model.
+  \item[\textbf{---}] \textbf{Multi-signature wallets}---all transactions require a single signature. Multi-sig (P2SH, P2WSH) is a natural extension but adds complexity beyond our teaching goals.
+\end{itemize}
+
+Each exclusion is a deliberate scope decision. The Further Reading sections at the end of relevant chapters point you to specifications and crates that cover these topics.
+
+% ──────────────────────────────────────────────────────────────
+\clearpage
+\section{Project Structure}
+\label{sec:project-structure}
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+blockchain/
++-- bitcoin/
+|   +-- src/
+|   |   +-- primitives/
+|   |   +-- node/
+|   |   +-- store/
+|   |   +-- web/
+|   +-- ...
++-- bitcoin-desktop-ui-iced/
++-- bitcoin-wallet-ui-iced/
++-- bitcoin-web-ui/
++-- ci/
+|   +-- docker-compose/
+|   +-- kubernetes/
++-- book-draft/
+\end{minted}
+
+\vspace{-0.5em}
+\noindent
+\begin{tabular}{@{}l l@{}}
+\toprule
+\textbf{Directory} & \textbf{Description} \\
+\midrule
+\code{bitcoin/}                & Core blockchain implementation \\
+\code{bitcoin/src/primitives/} & Transaction, Block, UTXO structures \\
+\code{bitcoin/src/node/}       & Node context and networking \\
+\code{bitcoin/src/store/}      & Blockchain storage (file system, database) \\
+\code{bitcoin/src/web/}        & REST API server (Axum) \\
+\code{bitcoin-desktop-ui-iced/} & Desktop admin interface (Iced) \\
+\code{bitcoin-wallet-ui-iced/} & Wallet user interface (Iced) \\
+\code{bitcoin-web-ui/}        & Web admin interface (React/TypeScript) \\
+\code{ci/docker-compose/}     & Docker Compose deployment \\
+\code{ci/kubernetes/}         & Kubernetes deployment \\
+\code{book-draft/}            & Book documentation \\
+\bottomrule
+\end{tabular}
+
+\begin{tipbox}
+If you want to see the system running before reading further, jump to Chapter~\ref{ch:quickstart}: Quick Start. You can return here afterward for the full architectural picture.
+\end{tipbox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Technical Stack}
+\label{sec:technical-stack}
+
+\subsection{Backend (Rust)}
+\label{subsec:backend}
+
+\begin{itemize}
+  \item \textbf{\index{tokio}Tokio}: Async runtime for non-blocking I/O
+  \item \textbf{\index{SQLCipher}SQLCipher}: Encrypted SQLite database
+  \item \textbf{\index{Rust!serialization}Serde}: Serialization framework
+  \item \textbf{\index{Axum}Axum}: Web framework for REST APIs
+\end{itemize}
+
+\subsection{Desktop UIs (Rust)}
+\label{subsec:desktop-uis}
+
+\begin{itemize}
+  \item \textbf{\index{Iced}Iced}: Cross-platform GUI framework
+  \item \textbf{Model-View-Update (MVU)}: Architecture pattern
+  \item \textbf{Desktop Admin Interface}: Admin UI for blockchain management (Iced)
+  \item \textbf{\index{wallet}Wallet User Interface}: User-facing wallet application (Iced)
+\end{itemize}
+
+\subsection{Web UI (TypeScript/React)}
+\label{subsec:web-ui}
+
+\begin{itemize}
+  \item \textbf{\index{React}React 18}: UI framework
+  \item \textbf{\index{TypeScript}TypeScript}: Type-safe JavaScript
+  \item \textbf{\index{WebSocket}Vite}: Build tool and dev server
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{What to Read Next}
+\label{sec:what-next}
+
+If you are reading the book front-to-back, continue to \textbf{Chapter~\ref{ch:blockchain-intro}: Introduction to Blockchain}---it builds the conceptual vocabulary (transactions, blocks, consensus, UTXO) that every implementation chapter depends on.
+
+If you want to brush up on Rust first, jump to \textbf{Chapter~\ref{ch:rust-guide}: Rust Language Guide} and return here when you are ready. The \textbf{Tokio Runtime Guide} is also useful preparation for the async code that appears from Chapter~\ref{ch:network} onward.
+
+% ──────────────────────────────────────────────────────────────
+\section{Further Reading}
+\label{sec:further-reading}
+
+\begin{itemize}
+  \item \textbf{The Rust Programming Language}---The official Rust book, covering everything from installation to advanced features. See \url{https://doc.rust-lang.org/book/}
+  \item \textbf{Cargo Reference}---Comprehensive guide to Rust's package manager and build system. See \url{https://doc.rust-lang.org/cargo/}
+  \item \textbf{Bitcoin Developer Guide}---Bitcoin.org's technical documentation for developers. See \url{https://developer.bitcoin.org/devguide/}
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+  \item We surveyed the full project architecture: a Cargo workspace of specialized crates spanning primitives, cryptography, chain logic, networking, storage, wallet, web API, and multiple UI frontends.
+  \item We identified the four system layers---core blockchain, API/services, desktop UIs, and deployment---and how data flows between them.
+  \item We outlined the technical stack: Rust for the backend, Iced and Tauri for desktop UIs, React/TypeScript for the web UI, and Docker Compose and Kubernetes for deployment.
+  \item We established the learning paths that guide different readers---first-timers, experienced developers, and operations teams---through the material.
+  \item In the next chapter, we explore the fundamental concepts of Bitcoin and blockchain technology---what they are, why they matter, and the cryptographic building blocks that make them work.
+\end{chaptersummary}

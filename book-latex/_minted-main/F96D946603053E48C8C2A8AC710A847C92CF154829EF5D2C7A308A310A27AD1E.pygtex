@@ -1,0 +1,62 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useState} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}react\PYGZsq{}}
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useCreateWallet} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../hooks/useApi\PYGZsq{}}
+\PYG{k}{import} \PYG{n+nx}{Button} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../components/Button\PYGZsq{}}
+\PYG{k}{import} \PYG{n+nx}{JsonViewer} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../components/JsonViewer\PYGZsq{}}
+
+\PYG{k}{export} \PYG{k}{default} \PYG{k+kd}{function} \PYG{n+nx}{CreateWallet}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{const} \PYG{p}{[}\PYG{n+nx}{label}\PYG{p}{,} \PYG{n+nx}{setLabel}\PYG{p}{]} \PYG{o}{=} \PYG{n+nx}{useState}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}\PYGZsq{}}\PYG{p}{)}
+  \PYG{k+kd}{const} \PYG{p}{\PYGZob{}} \PYG{n+nx}{mutate}\PYG{p}{,} \PYG{n+nx}{isLoading}\PYG{p}{,} \PYG{n+nx}{data}\PYG{p}{,} \PYG{n+nx}{error} \PYG{p}{\PYGZcb{}} \PYG{o}{=} \PYG{n+nx}{useCreateWallet}\PYG{p}{()}
+
+  \PYG{k+kd}{const} \PYG{n+nx}{handleCreate} \PYG{o}{=} \PYG{p}{()} \PYG{p}{=\PYGZgt{}} \PYG{p}{\PYGZob{}}
+    \PYG{k}{if} \PYG{p}{(}\PYG{o}{!}\PYG{n+nx}{label}\PYG{p}{.}\PYG{n+nx}{trim}\PYG{p}{())} \PYG{p}{\PYGZob{}}
+      \PYG{n+nx}{alert}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Please enter a label\PYGZsq{}}\PYG{p}{)}
+      \PYG{k}{return}
+    \PYG{p}{\PYGZcb{}}
+    \PYG{n+nx}{mutate}\PYG{p}{(}\PYG{n+nx}{label}\PYG{p}{)}
+  \PYG{p}{\PYGZcb{}}
+
+  \PYG{k}{return} \PYG{p}{(}
+    \PYG{o}{\PYGZlt{}}\PYG{n+nx}{div} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}max\PYGZhy{}w\PYGZhy{}2xl\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+      \PYG{o}{\PYGZlt{}}\PYG{n+nx}{h2} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}text\PYGZhy{}2xl font\PYGZhy{}bold mb\PYGZhy{}4\PYGZdq{}}\PYG{o}{\PYGZgt{}}\PYG{n+nx}{Create} \PYG{n+nx}{Wallet}\PYG{o}{\PYGZlt{}}\PYG{err}{/h2\PYGZgt{}}
+
+      \PYG{o}{\PYGZlt{}}\PYG{n+nx}{div} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}mb\PYGZhy{}4\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+        \PYG{o}{\PYGZlt{}}\PYG{n+nx}{label} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}block text\PYGZhy{}sm font\PYGZhy{}medium mb\PYGZhy{}2\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+          \PYG{n+nx}{Wallet} \PYG{n+nx}{Label}
+        \PYG{o}{\PYGZlt{}}\PYG{err}{/label\PYGZgt{}}
+        \PYG{o}{\PYGZlt{}}\PYG{n+nx}{input}
+          \PYG{k+kr}{type}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}text\PYGZdq{}}
+          \PYG{n+nx}{value}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{label}\PYG{p}{\PYGZcb{}}
+          \PYG{n+nx}{onChange}\PYG{o}{=}\PYG{p}{\PYGZob{}(}\PYG{n+nx}{e}\PYG{p}{)} \PYG{p}{=\PYGZgt{}} \PYG{n+nx}{setLabel}\PYG{p}{(}\PYG{n+nx}{e}\PYG{p}{.}\PYG{n+nx}{target}\PYG{p}{.}\PYG{n+nx}{value}\PYG{p}{)\PYGZcb{}}
+          \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}w\PYGZhy{}full px\PYGZhy{}3 py\PYGZhy{}2 border rounded\PYGZdq{}}
+          \PYG{n+nx}{placeholder}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}My Wallet\PYGZdq{}}
+        \PYG{o}{/\PYGZgt{}}
+      \PYG{o}{\PYGZlt{}}\PYG{err}{/div\PYGZgt{}}
+
+      \PYG{o}{\PYGZlt{}}\PYG{n+nx}{Button}
+        \PYG{n+nx}{onClick}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{handleCreate}\PYG{p}{\PYGZcb{}}
+        \PYG{n+nx}{disabled}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{isLoading}\PYG{p}{\PYGZcb{}}
+        \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}mb\PYGZhy{}6\PYGZdq{}}
+      \PYG{o}{\PYGZgt{}}
+        \PYG{p}{\PYGZob{}}\PYG{n+nx}{isLoading} \PYG{o}{?} \PYG{l+s+s1}{\PYGZsq{}Creating...\PYGZsq{}} \PYG{o}{:} \PYG{l+s+s1}{\PYGZsq{}Create Wallet\PYGZsq{}}\PYG{p}{\PYGZcb{}}
+      \PYG{o}{\PYGZlt{}}\PYG{err}{/Button\PYGZgt{}}
+
+      \PYG{p}{\PYGZob{}}\PYG{n+nx}{error} \PYG{o}{\PYGZam{}\PYGZam{}} \PYG{p}{(}
+        \PYG{o}{\PYGZlt{}}\PYG{n+nx}{div} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}bg\PYGZhy{}red\PYGZhy{}50 text\PYGZhy{}red\PYGZhy{}700 p\PYGZhy{}4 rounded mb\PYGZhy{}4\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+          \PYG{n+ne}{Error}\PYG{o}{:} \PYG{p}{\PYGZob{}}\PYG{n+nx}{error} \PYG{o+ow}{instanceof} \PYG{n+ne}{Error} \PYG{o}{?} \PYG{n+nx}{error}\PYG{p}{.}\PYG{n+nx}{message} \PYG{o}{:} \PYG{l+s+s1}{\PYGZsq{}Unknown error\PYGZsq{}}\PYG{p}{\PYGZcb{}}
+        \PYG{o}{\PYGZlt{}}\PYG{err}{/div\PYGZgt{}}
+      \PYG{p}{)\PYGZcb{}}
+
+      \PYG{p}{\PYGZob{}}\PYG{n+nx}{data} \PYG{o}{\PYGZam{}\PYGZam{}} \PYG{n+nx}{data}\PYG{p}{.}\PYG{n+nx}{data} \PYG{o}{\PYGZam{}\PYGZam{}} \PYG{p}{(}
+        \PYG{o}{\PYGZlt{}}\PYG{n+nx}{div}\PYG{o}{\PYGZgt{}}
+          \PYG{o}{\PYGZlt{}}\PYG{n+nx}{h3} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}font\PYGZhy{}semibold mb\PYGZhy{}2\PYGZdq{}}\PYG{o}{\PYGZgt{}}\PYG{n+nx}{New} \PYG{n+nx}{Wallet}\PYG{o}{\PYGZlt{}}\PYG{err}{/h3\PYGZgt{}}
+          \PYG{o}{\PYGZlt{}}\PYG{n+nx}{p} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}text\PYGZhy{}green\PYGZhy{}600 mb\PYGZhy{}2\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+            \PYG{n+nx}{Address}\PYG{o}{:} \PYG{p}{\PYGZob{}}\PYG{n+nx}{data}\PYG{p}{.}\PYG{n+nx}{data}\PYG{p}{.}\PYG{n+nx}{address}\PYG{p}{\PYGZcb{}}
+          \PYG{o}{\PYGZlt{}}\PYG{err}{/p\PYGZgt{}}
+          \PYG{o}{\PYGZlt{}}\PYG{n+nx}{JsonViewer} \PYG{n+nx}{data}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{data}\PYG{p}{.}\PYG{n+nx}{data}\PYG{p}{\PYGZcb{}} \PYG{o}{/\PYGZgt{}}
+        \PYG{o}{\PYGZlt{}}\PYG{err}{/div\PYGZgt{}}
+      \PYG{p}{)\PYGZcb{}}
+    \PYG{o}{\PYGZlt{}}\PYG{err}{/div\PYGZgt{}}
+  \PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

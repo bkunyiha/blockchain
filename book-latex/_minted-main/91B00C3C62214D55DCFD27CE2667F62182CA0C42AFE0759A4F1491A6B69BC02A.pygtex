@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Per\PYGZhy{}instance data directories}
+\PYG{n+nv}{DATA\PYGZus{}DIR}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}data}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{INSTANCE\PYGZus{}NUMBER}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}
+\PYG{n+nv}{BLOCKS\PYGZus{}TREE}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}blocks}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{INSTANCE\PYGZus{}NUMBER}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} Examples:}
+\PYG{c+c1}{\PYGZsh{} Instance 1: data1/, blocks1/}
+\PYG{c+c1}{\PYGZsh{} Instance 2: data2/, blocks2/}
+\PYG{c+c1}{\PYGZsh{} Instance 3: data3/, blocks3/}
+\end{Verbatim}

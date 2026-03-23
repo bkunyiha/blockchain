@@ -1,0 +1,40 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{std}\PYG{p}{::}\PYG{n}{sync}\PYG{p}{::}\PYG{n}{OnceLock}\PYG{p}{;}
+
+\PYG{c+c1}{// Store the Tokio runtime handle globally so tasks can access it}
+\PYG{k}{static}\PYG{+w}{ }\PYG{n}{TOKIO\PYGZus{}HANDLE}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{OnceLock}\PYG{o}{\PYGZlt{}}\PYG{n}{tokio}\PYG{p}{::}\PYG{n}{runtime}\PYG{p}{::}\PYG{n}{Handle}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{OnceLock}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{init\PYGZus{}runtime}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Create a Tokio runtime for async operations}
+\PYG{+w}{    }\PYG{c+c1}{// This must outlive the application to keep the reactor running}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{rt}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tokio}\PYG{p}{::}\PYG{n}{runtime}\PYG{p}{::}\PYG{n}{Runtime}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Failed to create Tokio runtime}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Store the handle globally so it can be accessed from any thread}
+\PYG{+w}{    }\PYG{n}{TOKIO\PYGZus{}HANDLE}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{rt}\PYG{p}{.}\PYG{n}{handle}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Failed to set Tokio handle}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Keep the runtime alive in a background thread}
+\PYG{+w}{    }\PYG{n}{std}\PYG{p}{::}\PYG{n}{thread}\PYG{p}{::}\PYG{n}{spawn}\PYG{p}{(}\PYG{k}{move}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{rt}\PYG{p}{.}\PYG{n}{block\PYGZus{}on}\PYG{p}{(}\PYG{k}{async}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{c+c1}{// Keep the runtime alive indefinitely}
+\PYG{+w}{            }\PYG{n}{std}\PYG{p}{::}\PYG{n}{future}\PYG{p}{::}\PYG{n}{pending}\PYG{p}{:}\PYG{p}{:}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Helper function to wrap a future to ensure it runs on Tokio runtime}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{spawn\PYGZus{}on\PYGZus{}tokio}\PYG{o}{\PYGZlt{}}\PYG{n}{F}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{n}{fut}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{F}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{impl}\PYG{+w}{ }\PYG{n}{std}\PYG{p}{::}\PYG{n}{future}\PYG{p}{::}\PYG{n}{Future}\PYG{o}{\PYGZlt{}}\PYG{n}{Output}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{F}\PYG{p}{::}\PYG{n}{Output}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n+nb}{Send}
+\PYG{k}{where}
+\PYG{+w}{    }\PYG{n}{F}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{std}\PYG{p}{::}\PYG{n}{future}\PYG{p}{::}\PYG{n}{Future}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n+nb}{Send}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{o}{\PYGZsq{}}\PYG{n+nb}{static}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{F}\PYG{p}{::}\PYG{n}{Output}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Send}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{o}{\PYGZsq{}}\PYG{n+nb}{static}\PYG{p}{,}
+\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{handle}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{TOKIO\PYGZus{}HANDLE}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Tokio runtime not initialized}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{move}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{handle}\PYG{p}{.}\PYG{n}{spawn}\PYG{p}{(}\PYG{n}{fut}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{.}\PYG{n}{unwrap}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

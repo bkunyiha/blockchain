@@ -1,0 +1,89 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{AdminApp}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{menu}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Menu}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{base\PYGZus{}url}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{api\PYGZus{}key}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{status}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{info}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{BlockchainInfo}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{blocks}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{BlockSummary}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Inputs for actions}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{block\PYGZus{}hash\PYGZus{}input}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{mining\PYGZus{}address\PYGZus{}input}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{mining\PYGZus{}nblocks\PYGZus{}input}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{txid\PYGZus{}input}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Wallet admin state}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{wallet\PYGZus{}label\PYGZus{}input}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{addresses}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{wallet\PYGZus{}info}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{wallet\PYGZus{}balance}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{created\PYGZus{}wallet\PYGZus{}address}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Send transaction state}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{send\PYGZus{}from\PYGZus{}address}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{send\PYGZus{}to\PYGZus{}address}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{send\PYGZus{}amount}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Navigation state}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{wallet\PYGZus{}section}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{WalletSection}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{transaction\PYGZus{}section}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{TransactionSection}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{blockchain\PYGZus{}section}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{BlockchainSection}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{mining\PYGZus{}section}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{MiningSection}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{health\PYGZus{}section}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{HealthSection}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Menu hover state for popups}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{blockchain\PYGZus{}menu\PYGZus{}hovered}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{wallet\PYGZus{}menu\PYGZus{}hovered}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{transaction\PYGZus{}menu\PYGZus{}hovered}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{mining\PYGZus{}menu\PYGZus{}hovered}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{health\PYGZus{}menu\PYGZus{}hovered}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Response data storage}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{blocks\PYGZus{}all\PYGZus{}data}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{block\PYGZus{}by\PYGZus{}hash\PYGZus{}data}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{mining\PYGZus{}info\PYGZus{}data}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{health\PYGZus{}data}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{mempool\PYGZus{}data}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{transactions\PYGZus{}data}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Text editor states for selectable JSON display}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{transactions\PYGZus{}editor}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{iced}\PYG{p}{::}\PYG{n}{widget}\PYG{p}{::}\PYG{n}{text\PYGZus{}editor}\PYG{p}{::}\PYG{n}{Content}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{mempool\PYGZus{}editor}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{iced}\PYG{p}{::}\PYG{n}{widget}\PYG{p}{::}\PYG{n}{text\PYGZus{}editor}\PYG{p}{::}\PYG{n}{Content}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{wallet\PYGZus{}info\PYGZus{}editor}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{iced}\PYG{p}{::}\PYG{n}{widget}\PYG{p}{::}\PYG{n}{text\PYGZus{}editor}\PYG{p}{::}\PYG{n}{Content}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{blockchain\PYGZus{}info\PYGZus{}editor}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{iced}\PYG{p}{::}\PYG{n}{widget}\PYG{p}{::}\PYG{n}{text\PYGZus{}editor}\PYG{p}{::}\PYG{n}{Content}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{AdminApp}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{new}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{(}\PYG{n+nb+bp}{Self}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{iced}\PYG{p}{::}\PYG{n}{Task}\PYG{o}{\PYGZlt{}}\PYG{n}{Message}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{p}{(}
+\PYG{+w}{            }\PYG{n+nb+bp}{Self}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{menu}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Menu}\PYG{p}{::}\PYG{n}{Blockchain}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{base\PYGZus{}url}\PYG{p}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{http://127.0.0.1:8080}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{into}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{api\PYGZus{}key}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{std}\PYG{p}{::}\PYG{n}{env}\PYG{p}{::}\PYG{n}{var}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{BITCOIN\PYGZus{}API\PYGZus{}ADMIN\PYGZus{}KEY}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{admin\PYGZhy{}secret}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{into}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{status}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{c+c1}{// ... (remaining fields initialized)}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{iced}\PYG{p}{::}\PYG{n}{Task}\PYG{p}{::}\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{l+s+sd}{/// Clear previously loaded data for a specific section}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{clear\PYGZus{}related\PYGZus{}data}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{k}{mut}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{section}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{DataSection}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// \PYGZdq{}Hygiene rule\PYGZdq{}: when we load one dataset, clear adjacent datasets}
+\PYG{+w}{        }\PYG{c+c1}{// so the UI doesn\PYGZsq{}t render stale JSON next to fresh JSON.}
+\PYG{+w}{        }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{section}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{DataSection}\PYG{p}{::}\PYG{n}{BlockchainInfo}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{blocks\PYGZus{}all\PYGZus{}data}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{None}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{block\PYGZus{}by\PYGZus{}hash\PYGZus{}data}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{None}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{n}{DataSection}\PYG{p}{::}\PYG{n}{BlocksAll}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{block\PYGZus{}by\PYGZus{}hash\PYGZus{}data}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{None}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{c+c1}{// ... (more cases)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

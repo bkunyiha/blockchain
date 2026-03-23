@@ -1,0 +1,670 @@
+% ══════════════════════════════════════════════════════════════
+%  preamble.tex — Rust Blockchain: A Full-Stack Implementation Guide
+%  Professional typesetting configuration for Crown Quarto
+% ══════════════════════════════════════════════════════════════
+
+% ── Overfull tolerance ──────────────────────────────────────
+%  Suppress overfull hbox warnings under 3pt (cosmetically invisible).
+%  Code listings with long lines will still overflow slightly into the margin.
+\hfuzz=3pt
+
+% ── Encoding & language ──────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+% ── Fonts ────────────────────────────────────────────────────
+%  Body: TeX Gyre Pagella (Palatino family — elegant, highly readable)
+%  Sans:  TeX Gyre Heros (Helvetica family — clean headings)
+%  Mono:  TeX Gyre Cursor scaled to match (Courier family, for inline code)
+%  Math:  Matching Palatino math via mathpazo
+\usepackage{tgpagella}           % Serif body
+\usepackage{tgheros}             % Sans-serif for headings
+\usepackage{tgcursor}               % Monospace for code
+\usepackage[sc]{mathpazo}        % Palatino math + small caps
+\linespread{1.05}                % Pagella reads better with slightly looser leading
+
+% ── Drop caps ──────────────────────────────────────────────
+\usepackage{lettrine}
+\renewcommand{\LettrineFontHook}{\sffamily\bfseries\color{brand}}
+\setcounter{DefaultLines}{3}
+\renewcommand{\DefaultLoversize}{0.1}
+\renewcommand{\DefaultLhang}{0.0}
+\setlength{\DefaultFindent}{3pt}
+\setlength{\DefaultNindent}{0pt}
+
+% ── Microtypography ──────────────────────────────────────────
+\usepackage[
+  activate={true,nocompatibility},
+  final,
+  tracking=true,
+  kerning=true,
+  spacing=true,
+  factor=1100,
+  stretch=10,
+  shrink=10
+]{microtype}
+\microtypecontext{spacing=nonfrench}
+\frenchspacing                   % Single space after periods (modern style)
+
+% ── Page geometry (Crown Quarto: 7.44" × 9.69") ─────────────
+%  IngramSpark print-ready: 0.125" bleed on all sides
+%  Stock = trim + 2×bleed = 7.69" × 9.94"
+\setstocksize{9.94in}{7.69in}
+\settrimmedsize{9.69in}{7.44in}{*}
+\settrims{0.125in}{0.125in}         % 0.125" bleed offset (top, foredge)
+
+% Generous margins for readability; centered text block on every page
+\settypeblocksize{7.5in}{5.0in}{*}
+\setbinding{0pt}                % No binding shift — text block is perfectly centered
+\setlrmargins{*}{*}{1}          % Equal inner/outer margins
+\setulmargins{0.85in}{*}{*}     % 0.85" top; bottom computed
+\setheadfoot{\baselineskip}{2\baselineskip}
+\setheaderspaces{*}{1.5\baselineskip}{*}
+\checkandfixthelayout
+
+% ── Orphan heading prevention ────────────────────────────────
+%  Ensure section/subsection headings never land at the page bottom
+%  without enough following content on the same page.
+\usepackage{needspace}
+\usepackage{etoolbox}
+\pretocmd{\section}{\needspace{1.8in}}{}{}
+\pretocmd{\subsection}{\needspace{1.3in}}{}{}
+\pretocmd{\subsubsection}{\needspace{1in}}{}{}
+
+% Prevent orphan chapter entries at the bottom of TOC/LOL pages:
+% Add vertical space before chapter-level TOC entries that also acts
+% as a needspace trigger — if less than 4 lines remain, push to next page.
+\setlength{\cftbeforechapterskip}{1.2em}          % visual gap before each chapter in TOC
+\renewcommand{\cftchapterbreak}{\needspace{6\baselineskip}}  % prevent orphan TOC entries
+
+% ── Part entries in TOC: large, bold, red, with generous spacing ──
+\renewcommand{\cftpartfont}{\sffamily\LARGE\bfseries\color{brand}}
+\renewcommand{\cftpartpagefont}{\sffamily\LARGE\bfseries\color{brand}}
+\renewcommand{\cftpartleader}{\hfill}    % clean fill (no dots) before page number
+\setlength{\cftbeforepartskip}{28pt}     % generous space above Part in TOC
+% Force a page break before each Part entry in the TOC to prevent orphans
+% and give Part headings visual prominence
+\renewcommand{\cftpartbreak}{\clearpage}
+
+% Discourage widows (last line of paragraph alone at top of page)
+% and orphans (first line of paragraph alone at bottom of page)
+\widowpenalty=10000
+\clubpenalty=10000
+
+% Prevent isolated lines before/after display environments (code, figures)
+\predisplaypenalty=10000
+\postdisplaypenalty=500
+
+% ── Colors ───────────────────────────────────────────────────
+\usepackage[dvipsnames,svgnames,x11names,table]{xcolor}
+\input{styles/colors}
+
+% ── Graphics and floats ──────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{
+  font={small,sf},
+  labelfont={bf,color=sectioncolor},
+  format=hang,
+  margin=10pt,
+}
+\captionsetup[listing]{
+  position=above,
+  skip=4pt,
+}
+
+% ── Tables ───────────────────────────────────────────────────
+\usepackage{booktabs}            % Professional table rules
+\usepackage{longtable}           % Multi-page tables
+\usepackage{array}               % Enhanced column types
+\usepackage{tabularx}            % Flexible-width columns
+\renewcommand{\arraystretch}{1.3}% Slightly more row spacing
+
+% ── Code listings (minted) ───────────────────────────────────
+% minted v3+ (TeX Live 2024+) auto-detects the output directory;
+% the old outputdir=build option is no longer accepted.
+\usepackage{minted}
+\usemintedstyle{friendly}        % Clean, readable style
+
+% Default minted settings for all languages
+\setminted{
+  fontsize=\small,
+  bgcolor=codebg,
+  frame=leftline,
+  framerule=2pt,
+  rulecolor=codeframe,
+  breaklines=true,
+  breakanywhere=true,
+  breaksymbol={},
+  breakbeforesymbolpre={},
+  breakaftersymbolpre={},
+  tabsize=4,
+  numbersep=8pt,
+  xleftmargin=14pt,
+}
+
+% Rust-specific overrides
+\setminted[rust]{
+  linenos=true,
+  escapeinside=@@,             % Allow LaTeX inside @...@ in code
+}
+
+% ── Inline code styling (background pill) ─────────────────────
+%  Renders inline code like  \code{BlockHeader}  with a subtle
+%  gray pill background so it pops from prose at a glance.
+%  Uses \colorbox which is robust in captions and moving arguments.
+\definecolor{inlinebg}{HTML}{F0F0F0}       % Subtle warm gray
+\definecolor{INLINEBG}{HTML}{F0F0F0}       % Alias for hyperref bookmark context
+\newcommand{\code}[1]{%
+  \texorpdfstring
+    {\colorbox{inlinebg}{\texttt{\small\vphantom{Ag}#1}}}%
+    {#1}%
+}
+
+% ── Listing float environment ─────────────────────────────────
+\newfloat{listing}{htbp}{lol}[chapter]
+\floatname{listing}{Listing}
+\renewcommand{\listoflistings}{\listof{listing}{List of Listings}}
+
+% Better spacing around listings
+\setlength{\intextsep}{12pt plus 4pt minus 2pt}   % Space around in-text floats
+\setlength{\textfloatsep}{16pt plus 4pt minus 3pt} % Space around top/bottom floats
+
+% ── Callout boxes (tcolorbox) ────────────────────────────────
+\usepackage[most]{tcolorbox}
+\input{styles/callouts}
+
+% ── Cross-references & hyperlinks ────────────────────────────
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=sectioncolor,
+  citecolor=sectioncolor,
+  urlcolor=brand,
+  bookmarksnumbered=true,
+  bookmarksopen=true,
+  bookmarksopenlevel=1,
+  pdfstartview=FitH,
+  pdftitle={Rust Blockchain: A Full-Stack Implementation Guide},
+  pdfauthor={Bill Kunyiha},
+  pdfsubject={Blockchain development with Rust},
+  pdfkeywords={Rust, Blockchain, Bitcoin, Tokio, Axum, Iced, Tauri},
+}
+\usepackage[nameinlink,capitalize]{cleveref} % Smart cross-references (\cref)
+\crefname{listing}{Listing}{Listings}
+\Crefname{listing}{Listing}{Listings}
+\crefformat{chapter}{Chapter~#2#1#3}
+\crefformat{section}{Section~#2#1#3}
+\crefformat{listing}{Listing~#2#1#3}
+
+% ── Bibliography ─────────────────────────────────────────────
+% Uncomment when bibliography.bib is ready:
+% \usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+% \addbibresource{backmatter/bibliography.bib}
+
+% ── Index ────────────────────────────────────────────────────
+\usepackage{makeidx}
+\makeindex
+
+% ── QR code ──────────────────────────────────────────────────
+\usepackage{qrcode}
+
+% ── Math ─────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ── Epigraphs (chapter-opening quotes) ───────────────────────
+\usepackage{epigraph}
+\setlength{\epigraphwidth}{0.75\textwidth}
+\setlength{\epigraphrule}{0pt}             % No rule under epigraph
+\renewcommand{\epigraphflush}{flushright}
+\renewcommand{\sourceflush}{flushright}
+\renewcommand{\epigraphsize}{\small\itshape}
+
+% ── Chapter mini-TOC ──────────────────────────────────────────
+%  A manual shaded box listing a chapter's sections for navigation.
+%  Usage:  \chapteroutline{
+%    \item Section title one
+%    \item Section title two
+%  }
+\newenvironment{chapteroutline}{%
+  \begin{tcolorbox}[
+    enhanced, breakable,
+    colback=codebg, colframe=codeframe,
+    boxrule=0.5pt, arc=3pt,
+    left=12pt, right=12pt, top=8pt, bottom=8pt,
+    title={\sffamily\small\bfseries\color{sectioncolor} In this chapter},
+    fonttitle=\sffamily\small\bfseries,
+    coltitle=sectioncolor,
+    before skip=8pt, after skip=14pt,
+  ]%
+  \small\sffamily
+  \begin{enumerate}[label={\color{brand}\arabic*.},leftmargin=1.5em,nosep,itemsep=2pt]%
+}{%
+  \end{enumerate}%
+  \end{tcolorbox}%
+}
+
+% ══════════════════════════════════════════════════════════════
+%  MEMOIR CHAPTER & SECTION STYLES
+% ══════════════════════════════════════════════════════════════
+
+% ── Chapter style: custom "blockchain" ───────────────────────
+\makechapterstyle{blockchain}{%
+  \renewcommand{\chapnamefont}{\sffamily\Large\bfseries\color{sectioncolor}}%
+  \renewcommand{\chapnumfont}{\sffamily\fontsize{56}{60}\selectfont\color{chapternum}}%
+  \renewcommand{\chaptitlefont}{\sffamily\HUGE\bfseries\color{chaptertitle}}%
+  \renewcommand{\printchaptername}{}%
+  \renewcommand{\chapternamenum}{}%
+  \renewcommand{\afterchapternum}{}%
+  \renewcommand{\printchapternum}{%
+    \begin{adjustwidth}{}{-10pt}%
+      \hfill\chapnumfont\thechapter%
+    \end{adjustwidth}%
+    \vspace{-18pt}%
+    \hfill{\color{rulecolor}\rule{0.85\textwidth}{2pt}}%
+    \vspace{12pt}%
+  }%
+  \renewcommand{\printchaptertitle}[1]{%
+    \begin{adjustwidth}{}{0pt}%
+      \raggedright\chaptitlefont ##1%
+    \end{adjustwidth}%
+  }%
+  \renewcommand{\afterchaptertitle}{%
+    \vskip 20pt%
+  }%
+}
+\chapterstyle{blockchain}
+
+% ── Section styles ───────────────────────────────────────────
+\setsecheadstyle{\sffamily\Large\bfseries\color{sectioncolor}}
+\setsubsecheadstyle{\sffamily\large\bfseries\color{sectioncolor}}
+\setsubsubsecheadstyle{\sffamily\normalsize\bfseries\color{sectioncolor}}
+
+% ── Paragraph indentation ────────────────────────────────────
+\setlength{\parindent}{1.2em}    % Standard paragraph indent
+\setlength{\parskip}{0pt plus 1pt} % No skip between paragraphs (book style)
+
+% ── Headers and footers ─────────────────────────────────────
+%  Verso (even): page number left, chapter title right
+%  Recto (odd):  section title left, page number right
+%  Thin rule underneath for clean separation
+\makepagestyle{blockchain}
+\makeevenhead{blockchain}%
+  {\small\sffamily\thepage}%
+  {}%
+  {\small\sffamily\itshape\textcolor{sectioncolor}{\leftmark}}
+\makeoddhead{blockchain}%
+  {\small\sffamily\itshape\textcolor{sectioncolor}{\rightmark}}%
+  {}%
+  {\small\sffamily\thepage}
+\makeevenfoot{blockchain}{}{}{}
+\makeoddfoot{blockchain}{}{}{}
+\makeheadrule{blockchain}{\textwidth}{0.3pt}
+\pagestyle{blockchain}
+
+% Alias for plain pages (chapter openings)
+\copypagestyle{plain}{blockchain}
+\makeevenhead{plain}{}{}{}
+\makeoddhead{plain}{}{}{}
+\makeevenfoot{plain}{}{\small\sffamily\thepage}{}
+\makeoddfoot{plain}{}{\small\sffamily\thepage}{}
+
+% ── Part page style ──────────────────────────────────────────
+\renewcommand{\partnamefont}{\sffamily\Huge\bfseries\color{sectioncolor}}
+\renewcommand{\partnumfont}{\sffamily\fontsize{72}{76}\selectfont\color{chapternum}}
+\renewcommand{\parttitlefont}{\sffamily\HUGE\bfseries\color{chaptertitle}}
+
+% Part overview: add description text below part title on the SAME page.
+% Usage:  \partoverview{Chapters 1--8 introduce...}
+%  Place immediately after \part{...}
+\makeatletter
+\newcommand{\bk@parttext}{}
+\newcommand{\partoverview}[1]{%
+  \gdef\bk@parttext{#1}%
+}
+\renewcommand{\afterpartskip}{%
+  \ifx\bk@parttext\empty\else
+    \vspace{20pt}%
+    \begin{center}
+      \begin{minipage}{0.75\textwidth}
+        \centering\sffamily\large\color{sectioncolor!80}%
+        \bk@parttext
+      \end{minipage}
+    \end{center}%
+    \gdef\bk@parttext{}%
+  \fi
+  \vfil\newpage
+}
+\makeatother
+
+% ── Miscellaneous ────────────────────────────────────────────
+\usepackage{changepage}          % adjustwidth environment
+\usepackage{enumitem}            % List customization
+\setlist{nosep,leftmargin=*}     % Tight lists, no extra spacing
+\setlist[itemize]{label={\color{brand}\textbullet}}
+\setlist[enumerate]{label={\color{brand}\arabic*.}}
+
+% ── Widow, orphan, and page-break control ─────────────────────
+\widowpenalty=10000
+\clubpenalty=10000
+\brokenpenalty=4991               % Discourage hyphenation across pages
+\predisplaypenalty=10000          % Avoid page breaks just before display math
+\postdisplaypenalty=0
+
+% ── Vertical rhythm helpers ───────────────────────────────────
+%  Consistent spacing before/after section headings
+\setbeforesecskip{-2.5ex plus -1ex minus -.2ex}
+\setaftersecskip{1.3ex plus .2ex}
+\setbeforesubsecskip{-2.25ex plus -1ex minus -.2ex}
+\setaftersubsecskip{1ex plus .2ex}
+
+% ── "Key term" command for first-use definitions ──────────────
+%  Prints bold + adds to index:  \keyterm{UTXO} → UTXO (bold, indexed)
+\newcommand{\keyterm}[1]{\textbf{#1}\index{#1}}
+
+% ── Separator between logical sections within a chapter ───────
+%  A centered *** ornament for thematic breaks
+\newcommand{\scenbreak}{\bigskip\par\noindent\centerline{*\quad*\quad*}\bigskip\par}
+
+% ── Margin notes ────────────────────────────────────────────
+%  Usage:  \marginnote{See also §4.2}  or  \marginnote{New in v0.3}
+%  Prints a small annotation in the outer margin.
+\newcommand{\marginnote}[1]{%
+  \marginpar{\raggedright\footnotesize\sffamily\color{sectioncolor}#1}%
+}
+
+% ── Code annotation callouts (Manning-style) ────────────────
+%  Numbered circles in code listings with matching explanations.
+%  Usage in code: // \cmark{1}
+%  Usage below listing:
+%    \begin{codeannotations}
+%      \annotate{1}{Creates the block header with timestamp}
+%      \annotate{2}{Runs proof-of-work to find valid nonce}
+%    \end{codeannotations}
+\newcommand{\cmark}[1]{%
+  \tikz[baseline=(char.base)]{%
+    \node[circle,fill=brand,text=white,inner sep=1pt,font=\sffamily\bfseries\tiny,minimum size=12pt] (char) {#1};%
+  }%
+}
+\newenvironment{codeannotations}{%
+  \vspace{-4pt}%
+  \begin{description}[
+    font=\normalfont,
+    leftmargin=2.5em,
+    labelwidth=2em,
+    labelsep=0.5em,
+    nosep,
+    itemsep=3pt,
+  ]%
+}{%
+  \end{description}%
+  \vspace{4pt}%
+}
+\newcommand{\annotate}[2]{%
+  \item[\cmark{#1}] {\small #2}%
+}
+
+% ── Muted code line numbers ─────────────────────────────────
+%  Override minted line number color to muted gray
+\renewcommand{\theFancyVerbLine}{%
+  {\small\sffamily\textcolor{codelinenum}{\arabic{FancyVerbLine}}}%
+}
+
+% ── Chapter-end summary box ─────────────────────────────────
+%  Usage:
+%    \begin{chaptersummary}
+%      \item Blocks link via \code{pre\_block\_hash}
+%      \item The UTXO set tracks spendability
+%    \end{chaptersummary}
+\newtcolorbox{chaptersummarybox}{
+  enhanced, breakable,
+  colback=brandlight,
+  colframe=brand,
+  boxrule=1pt,
+  arc=4pt,
+  left=12pt, right=12pt, top=8pt, bottom=8pt,
+  title={\sffamily\bfseries\color{white} Key Takeaways},
+  fonttitle=\sffamily\bfseries,
+  coltitle=white,
+  colbacktitle=brand,
+  before skip=14pt, after skip=10pt,
+}
+\newenvironment{chaptersummary}{%
+  \begin{chaptersummarybox}%
+  \small
+  \begin{itemize}[nosep,itemsep=3pt,leftmargin=1.2em,label={\color{brand}\checkmark}]%
+}{%
+  \end{itemize}%
+  \end{chaptersummarybox}%
+}
+
+% ── Glossary support ────────────────────────────────────────
+%  Using glossaries-extra for auto-linked term definitions.
+%  Terms are defined in backmatter/glossary.tex and used via
+%  \gls{utxo}, \glspl{utxo} (plural), \Gls{utxo} (capitalized)
+\usepackage[toc,acronym,nonumberlist,nogroupskip]{glossaries-extra}
+\setabbreviationstyle[acronym]{long-short}
+\renewcommand{\glsnamefont}[1]{\sffamily\bfseries\color{sectioncolor}#1}
+\makeglossaries
+
+% ── Thumb index tabs ────────────────────────────────────────
+%  Colored edge tabs by part, appearing on recto page trim edges.
+%  Each \setparttab{color} call updates the active tab color.
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning,shapes.geometric,arrows.meta,backgrounds,fit}
+
+\newcounter{thumbtab}
+\newlength{\thumbtabheight}
+\setlength{\thumbtabheight}{1.8cm}
+\newlength{\thumbtabwidth}
+\setlength{\thumbtabwidth}{0.5cm}
+\newlength{\thumbtabsep}
+\setlength{\thumbtabsep}{0.1cm}
+
+% Color for current part's tab — updated by \setparttab
+\colorlet{currenttab}{brand}
+
+\newcommand{\setparttab}[2]{%
+  \setcounter{thumbtab}{#1}%
+  \colorlet{currenttab}{#2}%
+}
+
+% Draw the thumb tab on each page via eso-pic
+\usepackage{eso-pic}
+\newcommand{\thumbmark}{%
+  \ifodd\value{page}%
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[currenttab,rounded corners=2pt]
+        ([yshift=-{(\value{thumbtab}-1)*(\thumbtabheight+\thumbtabsep)+0.5cm}]current page.north east)
+        rectangle
+        +(-\thumbtabwidth,-\thumbtabheight);
+    \end{tikzpicture}%
+  \fi
+}
+\AddToShipoutPictureBG{\thumbmark}
+
+% ── Alternating table row shading ───────────────────────────
+%  Usage:  \rowcolors{2}{white}{tableshade} before a tabular
+\definecolor{tableshade}{HTML}{F5F6FA}  % Very subtle blue-gray
+
+% ── TikZ diagram style guide ───────────────────────────────
+%  Consistent styles for all architecture diagrams in the book.
+\tikzset{
+  % Node styles
+  blockchain node/.style={
+    rectangle, rounded corners=4pt,
+    draw=sectioncolor, fill=codebg,
+    thick, font=\sffamily\small,
+    minimum height=2em, minimum width=4em,
+    text centered,
+  },
+  blockchain component/.style={
+    rectangle, rounded corners=6pt,
+    draw=brand, fill=brandlight,
+    thick, font=\sffamily\small\bfseries,
+    minimum height=2.5em, minimum width=5em,
+    text centered,
+  },
+  blockchain data/.style={
+    rectangle,
+    draw=codeframe, fill=codebg,
+    font=\ttfamily\small,
+    minimum height=2em,
+    inner sep=6pt,
+  },
+  blockchain group/.style={
+    rectangle, rounded corners=8pt,
+    draw=sectioncolor!50, dashed,
+    fill=sectioncolor!5,
+    inner sep=10pt,
+    label={[font=\sffamily\small\bfseries\color{sectioncolor}]above:#1},
+  },
+  % Arrow styles
+  blockchain arrow/.style={
+    -{Stealth[length=6pt,width=4pt]},
+    thick, color=sectioncolor,
+  },
+  blockchain dotted/.style={
+    -{Stealth[length=6pt,width=4pt]},
+    thick, dashed, color=sectioncolor!60,
+  },
+  data flow/.style={
+    -{Stealth[length=6pt,width=4pt]},
+    thick, color=brand,
+  },
+}
+
+% ── Pull quotes ─────────────────────────────────────────────
+%  Large, styled callout for key one-liner insights mid-chapter.
+%  Usage:  \pullquote{The UTXO set is derived state, not history.}
+\newcommand{\pullquote}[1]{%
+  \begin{center}
+  \begin{minipage}{0.82\textwidth}
+    \vspace{8pt}%
+    {\color{brand}\rule{\linewidth}{1.5pt}}\\[6pt]
+    {\large\sffamily\itshape\color{sectioncolor}%
+      \hspace{0.5em}``#1''}\\[6pt]
+    {\color{brand}\rule{\linewidth}{1.5pt}}%
+    \vspace{8pt}%
+  \end{minipage}
+  \end{center}
+}
+
+% ── Deep dive sidebar ───────────────────────────────────────
+%  A full-width shaded aside for optional advanced content.
+%  Readers can skip without losing the main thread.
+%  Usage:
+%    \begin{deepdive}{Why Merkle trees matter}
+%      Advanced explanation here...
+%    \end{deepdive}
+\newtcolorbox{deepdive}[1]{
+  enhanced, breakable,
+  colback=sectioncolor!5,
+  colframe=sectioncolor!40,
+  boxrule=0.5pt,
+  arc=4pt,
+  left=12pt, right=12pt, top=8pt, bottom=8pt,
+  title={\sffamily\bfseries\small\color{white}\raisebox{-0.5pt}{\footnotesize$\vartriangleright$}\kern4pt Deep Dive:\enspace #1},
+  fonttitle=\sffamily\bfseries\small,
+  coltitle=white,
+  colbacktitle=sectioncolor,
+  fontupper=\small,
+  before skip=12pt, after skip=12pt,
+  borderline south={1pt}{0pt}{sectioncolor!40},
+}
+
+% ── Step-by-step tutorial environment ───────────────────────
+%  Distinct visual style for tutorial walkthroughs.
+%  Usage:
+%    \begin{steps}
+%      \step{Clone the repository}
+%        Run \code{git clone ...} to get started.
+%      \step{Build the project}
+%        Run \code{cargo build --release}.
+%    \end{steps}
+\newcounter{stepcount}
+\newsavebox{\stepbox}
+\newcommand{\makesteplabel}[1]{%
+  \sbox{\stepbox}{\colorbox{brand}{\color{white}\sffamily\bfseries\small\strut\enspace Step #1\enspace}}%
+  \usebox{\stepbox}%
+}
+\newenvironment{steps}{%
+  \setcounter{stepcount}{0}%
+  \begin{list}{}{%
+    \setlength{\leftmargin}{4.5em}%
+    \setlength{\labelwidth}{4.2em}%
+    \setlength{\labelsep}{0.3em}%
+    \setlength{\itemsep}{8pt plus 2pt}%
+    \setlength{\parsep}{3pt plus 1pt}%
+    \setlength{\topsep}{6pt plus 2pt}%
+  }%
+}{%
+  \end{list}%
+}
+\newcommand{\step}[1]{%
+  \stepcounter{stepcount}%
+  \item[\makesteplabel{\thestepcount}]%
+  {\sffamily\bfseries\color{sectioncolor}#1}\par\nopagebreak
+}
+
+% ── Footnote styling ────────────────────────────────────────
+%  Brand-colored markers with hanging indent and thin separator
+\renewcommand{\footnoterule}{%
+  \kern-3pt
+  {\color{brand}\hrule width 0.3\textwidth height 0.4pt}%
+  \kern 2.6pt
+}
+\renewcommand{\thefootnote}{%
+  {\color{brand}\sffamily\arabic{footnote}}%
+}
+\renewcommand{\footnotesize}{\small}
+
+% ── API reference table style ──────────────────────────────
+%  Standardized format for method signatures.
+%  Usage:  \apitable{StructName}{rows}  where rows use \apirow
+%  Example:
+%    \apitable{BlockchainService}{%
+%      \apirow{add\_block}{block: Block}{Result<()>}{Validates and appends a block}
+%      \apirow{get\_tip}{---}{Option<Block>}{Returns the chain tip}
+%    }
+\newcommand{\apitable}[2]{%
+  \begin{table}[H]
+  \caption{API Reference: \code{#1}}
+  \centering\small
+  \rowcolors{2}{white}{tableshade}%
+  \begin{tabular}{@{} l l l p{4.8cm} @{}}
+  \toprule
+  \textbf{Method} & \textbf{Parameters} & \textbf{Returns} & \textbf{Description} \\
+  \midrule
+  #2
+  \bottomrule
+  \end{tabular}
+  \end{table}
+}
+\newcommand{\apirow}[4]{%
+  \code{#1} & \texttt{#2} & \texttt{#3} & #4 \\
+}
+
+% ── Crop marks for print production ─────────────────────────
+%  IngramSpark print-ready: crop marks enabled with 0.125" bleed
+%  Paper: Cream/natural 60lb  |  Trim: 7.44" × 9.69" (Crown Quarto)
+%  Spine width (698 pages, cream 60lb): ~1.12"
+\trimmarks  % Adds crop marks at corners
+%
+%  Spine width reference (698 pages):
+%    50lb white: 0.89" (23mm)  |  60lb white: 1.05" (27mm)  |  Cream 60lb: 1.12" (28mm)
+
+% ── PDF metadata ────────────────────────────────────────────
+\hypersetup{
+  pdftitle={Rust Blockchain: A Full-Stack Implementation Guide},
+  pdfauthor={Bill Kunyiha},
+  pdfsubject={Blockchain implementation in Rust with Tokio, Axum, Iced, Tauri 2, Docker, and Kubernetes},
+  pdfkeywords={Rust, blockchain, Bitcoin, cryptocurrency, distributed systems, Docker, Kubernetes},
+  pdfcreator={LaTeX with memoir class},
+  pdfproducer={pdfTeX},
+}
+
+% ── End of preamble ──────────────────────────────────────────

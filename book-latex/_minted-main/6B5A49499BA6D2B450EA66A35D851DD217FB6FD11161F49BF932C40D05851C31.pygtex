@@ -1,0 +1,17 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{struct} \PYG{n+nc}{TestDatabaseGuard}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{db\PYGZus{}path}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n+nb}{Drop}\PYG{+w}{ }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{TestDatabaseGuard}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{fn} \PYG{n+nf}{drop}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{k}{mut}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{std}::\PYG{n}{fs}::\PYG{n}{remove\PYGZus{}dir\PYGZus{}all}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{db\PYGZus{}path}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{test}\PYG{c+cp}{]}
+\PYG{k}{fn} \PYG{n+nf}{test\PYGZus{}with\PYGZus{}database}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}guard}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{TestDatabaseGuard}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{// Guard automatically cleans up when test ends}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

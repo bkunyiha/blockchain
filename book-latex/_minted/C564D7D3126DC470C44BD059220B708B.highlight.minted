@@ -1,0 +1,10 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{tower\PYGZus{}http}\PYG{p}{::}\PYG{n}{cors}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}\PYG{n}{CorsLayer}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Any}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{cors}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{CorsLayer}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{allow\PYGZus{}origin}\PYG{p}{(}\PYG{n}{Any}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{allow\PYGZus{}methods}\PYG{p}{(}\PYG{n}{Any}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{allow\PYGZus{}headers}\PYG{p}{(}\PYG{n}{Any}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{n}{app}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{layer}\PYG{p}{(}\PYG{n}{cors}\PYG{p}{)}\PYG{p}{;}
+\end{MintedVerbatim}

@@ -1,0 +1,23 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+User interaction                     Component state
+  │                                   │
+  │ enter label + click \PYGZdq{}Create\PYGZdq{}      │
+  │─────────────────────────────────\PYGZgt{}│
+  │                                   │ validate label.trim()
+  │                                   │ call mutate(\PYGZob{} label \PYGZcb{})
+  │                                   │
+  │                                   Hook lifecycle
+  │                                   │
+  │                                   │ call ApiClient.POST
+  │                                   │─────────────────────────\PYGZgt{} HTTP Request
+  │                                   │                           │
+  │                                   │ receive response          │ Rust node
+  │                                   │\PYGZlt{}────────────────────────\PYGZlt{}─│
+  │                                   │
+  │                                   │ invalidateQueries
+  │                                   │ show toast success
+  │                                   │
+  │ render new address + JSON        \PYGZlt{}─
+  │ show toast success
+  │
+\end{MintedVerbatim}

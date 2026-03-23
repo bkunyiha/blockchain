@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{send\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{State}\PYG{p}{(}\PYG{n}{node}\PYG{p}{)}: \PYG{n+nc}{State}\PYG{o}{\PYGZlt{}}\PYG{n}{Arc}\PYG{o}{\PYGZlt{}}\PYG{n}{NodeContext}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Json}\PYG{p}{(}\PYG{n}{request}\PYG{p}{)}: \PYG{n+nc}{Json}\PYG{o}{\PYGZlt{}}\PYG{n}{SendTransactionRequest}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{Json}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{SendBitCoinResponse}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{StatusCode}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// request is automatically deserialized}
+\PYG{+w}{    }\PYG{c+c1}{// Validation via validator crate happens here}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,8 @@
+// Good: Type-safe wrappers prevent mixing up types
+pub struct WalletAddress(String);
+pub struct TransactionId(Vec<u8>);
+pub struct BlockHash(Vec<u8>);
+
+// Bad: Raw types can be confused
+fn process_tx(id: Vec<u8>) { }
+fn process_block(hash: Vec<u8>) { }

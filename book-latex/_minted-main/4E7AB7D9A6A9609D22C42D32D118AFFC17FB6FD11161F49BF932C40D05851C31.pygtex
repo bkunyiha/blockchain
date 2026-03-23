@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// [OK] Protocol messages use binary}
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{send\PYGZus{}transaction\PYGZus{}inv}\PYG{p}{(}\PYG{n}{peer}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{txid}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{inv\PYGZus{}msg}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Message}::\PYG{n}{Inv}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{inv\PYGZus{}type}: \PYG{n+nc}{InvType}::\PYG{n}{Tx}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{hash}: \PYG{n+nc}{txid}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{  }\PYG{c+c1}{// Binary}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{send\PYGZus{}message}\PYG{p}{(}\PYG{n}{peer}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{inv\PYGZus{}msg}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

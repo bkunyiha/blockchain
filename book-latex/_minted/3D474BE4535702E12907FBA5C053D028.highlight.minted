@@ -1,0 +1,34 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{useQuery}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{useMutation}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}@tanstack/react\PYGZhy{}query\PYGZsq{}}\PYG{p}{;}
+\PYG{k}{import}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{k+kr}{as}\PYG{+w}{ }\PYG{n+nx}{commands}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}../commands\PYGZsq{}}\PYG{p}{;}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{useWalletList}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{useQuery}\PYG{p}{(}\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nx}{queryKey}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}wallets\PYGZsq{}}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{queryFn}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{listWallets}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{staleTime}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{30000}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{useBalance}\PYG{p}{(}\PYG{n+nx}{address}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{+w}{ }\PYG{o}{|}\PYG{+w}{ }\PYG{k+kc}{null}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{useQuery}\PYG{p}{(}\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nx}{queryKey}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}balance\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{address}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{queryFn}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{n+nx}{address}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{getBalance}\PYG{p}{(}\PYG{n+nx}{address}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{p}{.}\PYG{n+nx}{resolve}\PYG{p}{(}\PYG{l+m+mf}{0}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{enabled}\PYG{o}{:}\PYG{+w}{ }\PYG{o}{!}\PYG{o}{!}\PYG{n+nx}{address}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{staleTime}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{10000}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{useSendTransaction}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{useMutation}\PYG{p}{(}\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nx}{mutationFn}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{n+nx}{params}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{from}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{ }\PYG{n+nx}{to}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{ }\PYG{n+nx}{amount}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{number}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}
+\PYG{+w}{            }\PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{sendTransaction}\PYG{p}{(}\PYG{n+nx}{params}\PYG{p}{.}\PYG{k+kr}{from}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{params}\PYG{p}{.}\PYG{n+nx}{to}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{params}\PYG{p}{.}\PYG{n+nx}{amount}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{useCreateWallet}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{useMutation}\PYG{p}{(}\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nx}{mutationFn}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{n+nx}{label?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{createWallet}\PYG{p}{(}\PYG{n+nx}{label}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

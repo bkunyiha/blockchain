@@ -1,0 +1,21 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n+nt}{apiVersion}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{autoscaling/v2}
+\PYG{n+nt}{kind}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{HorizontalPodAutoscaler}
+\PYG{n+nt}{metadata}\PYG{p}{:}
+\PYG{+w}{  }\PYG{n+nt}{name}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{webserver\PYGZhy{}hpa}
+\PYG{+w}{  }\PYG{n+nt}{namespace}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{blockchain}
+\PYG{n+nt}{spec}\PYG{p}{:}
+\PYG{+w}{  }\PYG{n+nt}{scaleTargetRef}\PYG{p}{:}
+\PYG{+w}{    }\PYG{n+nt}{apiVersion}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{apps/v1}
+\PYG{+w}{    }\PYG{n+nt}{kind}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{StatefulSet}
+\PYG{+w}{    }\PYG{n+nt}{name}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{webserver}
+\PYG{+w}{  }\PYG{n+nt}{minReplicas}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{1}
+\PYG{+w}{  }\PYG{n+nt}{maxReplicas}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{10}
+\PYG{+w}{  }\PYG{n+nt}{metrics}\PYG{p}{:}
+\PYG{+w}{  }\PYG{p+pIndicator}{\PYGZhy{}}\PYG{+w}{ }\PYG{n+nt}{type}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{Resource}
+\PYG{+w}{    }\PYG{n+nt}{resource}\PYG{p}{:}
+\PYG{+w}{      }\PYG{n+nt}{name}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{cpu}
+\PYG{+w}{      }\PYG{n+nt}{target}\PYG{p}{:}
+\PYG{+w}{        }\PYG{n+nt}{type}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{Utilization}
+\PYG{+w}{        }\PYG{n+nt}{averageUtilization}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{70}
+\end{MintedVerbatim}

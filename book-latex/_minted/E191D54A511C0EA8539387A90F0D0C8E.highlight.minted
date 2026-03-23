@@ -1,0 +1,20 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+Client HTTP Request
+  |
+  ├─\PYGZgt{} GET /api/balance?address=1A1zP1eP...
+  |
+  └─\PYGZgt{} Web Handler
+        |
+        └─\PYGZgt{} NodeContext::get\PYGZus{}balance(address)
+              |
+              └─\PYGZgt{} BlockchainService
+                    |
+                    └─\PYGZgt{} UTXOSet::get\PYGZus{}balance(address)
+                          |
+                          ├─\PYGZgt{} Query UTXO set (sled DB)
+                          └─\PYGZgt{} Sum output values
+                                |
+                                └─\PYGZgt{} Return balance (satoshis)
+                                      |
+                                      └─\PYGZgt{} HTTP Response
+\end{MintedVerbatim}

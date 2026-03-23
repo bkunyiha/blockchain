@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Source: file\PYGZus{}system\PYGZus{}db\PYGZus{}chain.rs}
+\PYG{c+c1}{// persisted head pointer (sled key)}
+\PYG{k}{const}\PYG{+w}{ }\PYG{n}{DEFAULT\PYGZus{}TIP\PYGZus{}BLOCK\PYGZus{}HASH\PYGZus{}KEY}: \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str} \PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{tip\PYGZus{}block\PYGZus{}hash}\PYG{l+s}{\PYGZdq{}}\PYG{p}{;}
+\PYG{c+c1}{// sled tree: \PYGZdq{}\PYGZlt{}block\PYGZus{}hash\PYGZgt{}\PYGZdq{} \PYGZhy{}\PYGZgt{} bytes(Block)}
+\PYG{k}{const}\PYG{+w}{ }\PYG{n}{DEFAULT\PYGZus{}BLOCKS\PYGZus{}TREE}: \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str} \PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{blocks1}\PYG{l+s}{\PYGZdq{}}\PYG{p}{;}
+\PYG{c+c1}{// on\PYGZhy{}disk directory for the default sled DB}
+\PYG{k}{const}\PYG{+w}{ }\PYG{n}{DEFAULT\PYGZus{}TREE\PYGZus{}DIR}: \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str} \PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{data1}\PYG{l+s}{\PYGZdq{}}\PYG{p}{;}
+\end{Verbatim}

@@ -1,0 +1,48 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{start\PYGZus{}node}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{is\PYGZus{}miner}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{IsMiner}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{is\PYGZus{}web\PYGZus{}server}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{IsWebServer}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{connect\PYGZus{}nodes}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{ConnectNode}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{wlt\PYGZus{}mining\PYGZus{}addr}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Configure the process\PYGZhy{}level GLOBAL\PYGZus{}CONFIG}
+\PYG{+w}{    }\PYG{n}{validate\PYGZus{}miner\PYGZus{}config}\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n}{wlt\PYGZus{}mining\PYGZus{}addr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n}{is\PYGZus{}miner}\PYG{p}{,}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n}{is\PYGZus{}web\PYGZus{}server}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Open or create blockchain}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{open\PYGZus{}or\PYGZus{}create\PYGZus{}blockchain}\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n}{wlt\PYGZus{}mining\PYGZus{}addr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n}{connect\PYGZus{}nodes}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{node\PYGZus{}context}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{NodeContext}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{blockchain}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{socket\PYGZus{}addr}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Convert CLI nodes into a set for bootstrapping}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{connect\PYGZus{}nodes\PYGZus{}set}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{HashSet}\PYG{o}{\PYGZlt{}}\PYG{n}{ConnectNode}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{        }\PYG{n}{connect\PYGZus{}nodes}\PYG{p}{.}\PYG{n}{into\PYGZus{}iter}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{collect}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Create shutdown signal channel}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{shutdown\PYGZus{}tx}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{        }\PYG{n}{tokio}\PYG{p}{::}\PYG{n}{sync}\PYG{p}{::}\PYG{n}{broadcast}\PYG{p}{::}\PYG{n}{channel}\PYG{p}{:}\PYG{p}{:}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Start the P2P network server}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{network\PYGZus{}server}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Server}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}
+\PYG{+w}{        }\PYG{n}{node\PYGZus{}context}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{net\PYGZus{}shutdown\PYGZus{}rx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{shutdown\PYGZus{}tx}\PYG{p}{.}\PYG{n}{subscribe}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{network\PYGZus{}handle}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tokio}\PYG{p}{::}\PYG{n}{spawn}\PYG{p}{(}\PYG{k}{async}\PYG{+w}{ }\PYG{k}{move}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{network\PYGZus{}server}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{run\PYGZus{}with\PYGZus{}shutdown}\PYG{p}{(}
+\PYG{+w}{                }\PYG{o}{\PYGZam{}}\PYG{n}{socket\PYGZus{}addr}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{connect\PYGZus{}nodes\PYGZus{}set}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{net\PYGZus{}shutdown\PYGZus{}rx}
+\PYG{+w}{            }\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// ... (continue with optional web server)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

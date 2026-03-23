@@ -1,0 +1,7 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Docker Compose}
+\PYG{n+nv}{NODE\PYGZus{}CONNECT\PYGZus{}NODES}\PYG{o}{=}miner\PYGZus{}1:2001
+
+\PYG{c+c1}{\PYGZsh{} Kubernetes}
+\PYG{n+nv}{NODE\PYGZus{}CONNECT\PYGZus{}NODES}\PYG{o}{=}miner\PYGZhy{}service.blockchain.svc.cluster.local:2001
+\end{MintedVerbatim}

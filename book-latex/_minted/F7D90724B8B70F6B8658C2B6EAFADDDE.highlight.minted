@@ -1,0 +1,10 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{wallet\PYGZus{}impl}\PYG{p}{;}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{wallet\PYGZus{}service}\PYG{p}{;}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{use}\PYG{+w}{ }\PYG{n}{wallet\PYGZus{}impl}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Wallet}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{WalletAddress}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{convert\PYGZus{}address}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{hash\PYGZus{}pub\PYGZus{}key}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{use}\PYG{+w}{ }\PYG{n}{wallet\PYGZus{}service}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}\PYG{n}{WalletService}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\end{MintedVerbatim}

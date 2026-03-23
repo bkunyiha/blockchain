@@ -1,0 +1,27 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Source: context.rs}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{btc\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{wlt\PYGZus{}frm\PYGZus{}addr}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{wlt\PYGZus{}to\PYGZus{}addr}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{amount}: \PYG{k+kt}{i32}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Create a UTXOSet handle (derived\PYGZhy{}state accessor).}
+\PYG{+w}{    }\PYG{c+c1}{// Why: transaction construction needs coin selection;}
+\PYG{+w}{    }\PYG{c+c1}{// signing needs previous\PYGZhy{}tx lookups via chainstate.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{utxo\PYGZus{}set}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UTXOSet}::\PYG{n}{new}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{blockchain}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Build + sign the transaction (wallet\PYGZhy{}side responsibility).}
+\PYG{+w}{    }\PYG{c+c1}{// Why: the node should not ``invent\PYGZsq{}\PYGZsq{} spends;}
+\PYG{+w}{    }\PYG{c+c1}{// it only accepts/relays what the wallet constructed.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{utxo}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Transaction}::\PYG{n}{new\PYGZus{}utxo\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{        }\PYG{n}{wlt\PYGZus{}frm\PYGZus{}addr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{wlt\PYGZus{}to\PYGZus{}addr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{amount}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{utxo\PYGZus{}set}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Submit to the node\PYGZsq{}s mempool/network pipeline.}
+\PYG{+w}{    }\PYG{c+c1}{// Why: once constructed, a tx must enter the node\PYGZsq{}s}
+\PYG{+w}{    }\PYG{c+c1}{// pending set before it can be mined/relayed.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{addr\PYGZus{}from}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{process\PYGZus{}transaction}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{utxo}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

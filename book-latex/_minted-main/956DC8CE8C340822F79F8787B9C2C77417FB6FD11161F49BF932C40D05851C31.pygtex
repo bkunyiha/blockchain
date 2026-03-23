@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Trigger 1: Mempool size reaches threshold}
+\PYG{k}{if}\PYG{+w}{ }\PYG{n}{is\PYGZus{}mining\PYGZus{}enabled}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{get\PYGZus{}mempool\PYGZus{}size}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{o}{\PYGZgt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{TRANSACTION\PYGZus{}THRESHOLD}
+\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{prepare\PYGZus{}candidate\PYGZus{}txs\PYGZus{}and\PYGZus{}mine}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

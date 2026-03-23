@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{[rate\PYGZus{}limiter]}
+\PYG{n}{redis\PYGZus{}addr}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}127.0.0.1:6379\PYGZdq{}}
+\PYG{n}{ip\PYGZus{}whitelist}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{[}\PYG{l+s}{\PYGZdq{}127.0.0.1\PYGZdq{}}\PYG{p}{]}
+\end{Verbatim}

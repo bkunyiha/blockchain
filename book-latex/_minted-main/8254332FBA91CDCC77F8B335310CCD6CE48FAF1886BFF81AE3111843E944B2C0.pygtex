@@ -1,0 +1,17 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+blockchain/
++\PYGZhy{}\PYGZhy{} bitcoin/
+|   +\PYGZhy{}\PYGZhy{} src/
+|   |   +\PYGZhy{}\PYGZhy{} primitives/
+|   |   +\PYGZhy{}\PYGZhy{} node/
+|   |   +\PYGZhy{}\PYGZhy{} store/
+|   |   +\PYGZhy{}\PYGZhy{} web/
+|   +\PYGZhy{}\PYGZhy{} ...
++\PYGZhy{}\PYGZhy{} bitcoin\PYGZhy{}desktop\PYGZhy{}ui\PYGZhy{}iced/
++\PYGZhy{}\PYGZhy{} bitcoin\PYGZhy{}wallet\PYGZhy{}ui\PYGZhy{}iced/
++\PYGZhy{}\PYGZhy{} bitcoin\PYGZhy{}web\PYGZhy{}ui/
++\PYGZhy{}\PYGZhy{} ci/
+|   +\PYGZhy{}\PYGZhy{} docker\PYGZhy{}compose/
+|   +\PYGZhy{}\PYGZhy{} kubernetes/
++\PYGZhy{}\PYGZhy{} book\PYGZhy{}draft/
+\end{Verbatim}

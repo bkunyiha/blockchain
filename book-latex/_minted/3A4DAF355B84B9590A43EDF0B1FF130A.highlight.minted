@@ -1,0 +1,15 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{require\PYGZus{}admin}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{req}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{axum}\PYG{p}{::}\PYG{n}{http}\PYG{p}{::}\PYG{n}{Request}\PYG{o}{\PYGZlt{}}\PYG{n}{axum}\PYG{p}{::}\PYG{n}{body}\PYG{p}{::}\PYG{n}{Body}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{next}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{axum}\PYG{p}{::}\PYG{n}{middleware}\PYG{p}{::}\PYG{n}{Next}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{axum}\PYG{p}{::}\PYG{n}{response}\PYG{p}{::}\PYG{n}{Response}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{StatusCode}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{require\PYGZus{}role}\PYG{p}{(}\PYG{n}{req}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Role}\PYG{p}{::}\PYG{n}{Admin}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{next}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{require\PYGZus{}wallet}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{req}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{axum}\PYG{p}{::}\PYG{n}{http}\PYG{p}{::}\PYG{n}{Request}\PYG{o}{\PYGZlt{}}\PYG{n}{axum}\PYG{p}{::}\PYG{n}{body}\PYG{p}{::}\PYG{n}{Body}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{next}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{axum}\PYG{p}{::}\PYG{n}{middleware}\PYG{p}{::}\PYG{n}{Next}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{axum}\PYG{p}{::}\PYG{n}{response}\PYG{p}{::}\PYG{n}{Response}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{StatusCode}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{require\PYGZus{}role}\PYG{p}{(}\PYG{n}{req}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Role}\PYG{p}{::}\PYG{n}{Wallet}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{next}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

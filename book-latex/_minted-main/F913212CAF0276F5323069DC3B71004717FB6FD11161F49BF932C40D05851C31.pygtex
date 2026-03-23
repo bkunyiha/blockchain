@@ -1,0 +1,46 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{tauri}::\PYG{n}{State}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{std}::\PYG{n}{sync}::\PYG{n}{RwLock}\PYG{p}{;}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Clone, serde::Serialize, serde::Deserialize)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{AppState}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{base\PYGZus{}url}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{api\PYGZus{}key}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{fn} \PYG{n+nf}{main}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{tauri}::\PYG{n}{Builder}::\PYG{n}{default}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{c+c1}{// Initialize AppState with default values}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{manage}\PYG{p}{(}\PYG{n}{AppState}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{base\PYGZus{}url}: \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{http://127.0.0.1:8080}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{api\PYGZus{}key}: \PYG{n+nc}{std}::\PYG{n}{env}::\PYG{n}{var}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{BITCOIN\PYGZus{}API\PYGZus{}ADMIN\PYGZus{}KEY}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{                }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{admin\PYGZhy{}secret}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{+w}{        }\PYG{c+c1}{// Register all command handlers}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{invoke\PYGZus{}handler}\PYG{p}{(}\PYG{n}{tauri}::\PYG{n}{generate\PYGZus{}handler}\PYG{o}{!}\PYG{p}{[}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}blockchain\PYGZus{}info}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}latest\PYGZus{}blocks}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}blocks}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}block\PYGZus{}by\PYGZus{}hash}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}mining\PYGZus{}info}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}generate\PYGZus{}to\PYGZus{}address}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}health}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}liveness}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}readiness}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}mempool}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}mempool\PYGZus{}transaction}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}transactions}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}address\PYGZus{}transactions}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}create\PYGZus{}wallet\PYGZus{}admin}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}addresses\PYGZus{}admin}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}wallet\PYGZus{}info\PYGZus{}admin}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}balance\PYGZus{}admin}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}send\PYGZus{}transaction\PYGZus{}admin}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}set\PYGZus{}base\PYGZus{}url}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}set\PYGZus{}api\PYGZus{}key}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{cmd\PYGZus{}get\PYGZus{}config}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{]}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{run}\PYG{p}{(}\PYG{n}{tauri}::\PYG{n}{generate\PYGZus{}context}\PYG{o}{!}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{error while running tauri application}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

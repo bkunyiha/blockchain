@@ -1,0 +1,9 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Edit ConfigMap}
+kubectl\PYG{+w}{ }edit\PYG{+w}{ }configmap\PYG{+w}{ }blockchain\PYGZhy{}config\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain
+
+\PYG{c+c1}{\PYGZsh{} Restart pods to pick up changes}
+kubectl\PYG{+w}{ }rollout\PYG{+w}{ }restart\PYG{+w}{ }statefulset/webserver\PYG{+w}{ }\PYG{l+s+se}{\PYGZbs{}}
+\PYG{+w}{  }\PYGZhy{}n\PYG{+w}{ }blockchain
+kubectl\PYG{+w}{ }rollout\PYG{+w}{ }restart\PYG{+w}{ }statefulset/miner\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain
+\end{MintedVerbatim}

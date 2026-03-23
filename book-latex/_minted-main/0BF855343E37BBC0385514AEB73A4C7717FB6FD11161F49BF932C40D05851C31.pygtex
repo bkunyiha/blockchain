@@ -1,0 +1,49 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Clone)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{NodeContext}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Reference to the shared blockchain service}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{blockchain}: \PYG{n+nc}{BlockchainService}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{NodeContext}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{new}\PYG{p}{(}\PYG{n}{blockchain}: \PYG{n+nc}{BlockchainService}\PYG{p}{)}
+\PYG{+w}{        }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{Self}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{NodeContext}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// Coordinate transaction creation and submission}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{btc\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{from\PYGZus{}addr}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{to\PYGZus{}addr}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{amount}: \PYG{k+kt}{i32}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// ... (builds + submits transaction)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// Entry point for all transaction admission}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{process\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{tx}: \PYG{n+nc}{Transaction}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// ... (mempool acceptance)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// Entry point for all block admission}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{add\PYGZus{}block}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{block}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Block}\PYG{p}{)}
+\PYG{+w}{        }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// ... (blockchain validation + persistence)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// Query methods}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}balance}\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{address}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}
+\PYG{+w}{    }\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{i32}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// ... (UTXO query)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

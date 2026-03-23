@@ -1,0 +1,5 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{[}\PYG{k}{rate\PYGZus{}limiter}\PYG{k}{]}
+\PYG{n}{redis\PYGZus{}addr}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{127.0.0.1:6379}\PYG{l+s+s2}{\PYGZdq{}}
+\PYG{n}{ip\PYGZus{}whitelist}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{127.0.0.1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}
+\end{MintedVerbatim}

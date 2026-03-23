@@ -1,0 +1,84 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{add\PYGZus{}block}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{k}{mut}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{new\PYGZus{}block}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Block}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block\PYGZus{}tree}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{blockchain}\PYG{p}{.}\PYG{n}{db}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{open\PYGZus{}tree}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{get\PYGZus{}blocks\PYGZus{}tree\PYGZus{}path}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 1) Empty chain: first block always becomes tip}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{is\PYGZus{}empty}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{c+cm}{/*}\PYG{c+cm}{ ... accept and update UTXO ... }\PYG{c+cm}{*/}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// 2) Dedup: skip if already present}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{block\PYGZus{}tree}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{is\PYGZus{}some}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// 3) Persist inside sled transaction (block is now in DB}
+\PYG{+w}{    }\PYG{c+c1}{// regardless of fork choice)}
+\PYG{+w}{    }\PYG{n}{block\PYGZus{}tree}\PYG{p}{.}\PYG{n}{transaction}\PYG{p}{(}\PYG{o}{|}\PYG{n}{tx}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{serialize}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}
+\PYG{+w}{        }\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 4) Fork\PYGZhy{}choice: three\PYGZhy{}level consensus hierarchy}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{current\PYGZus{}tip}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{get\PYGZus{}tip\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{current\PYGZus{}height}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{get\PYGZus{}best\PYGZus{}height}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}height}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{cmp}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{current\PYGZus{}height}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{Ordering}::\PYG{n}{Greater}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}pre\PYGZus{}block\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{                }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{current\PYGZus{}tip}
+\PYG{+w}{            }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{c+c1}{// Normal case: extends our current chain}
+\PYG{+w}{                }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{set\PYGZus{}tip\PYGZus{}hash}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{update\PYGZus{}utxo\PYGZus{}set}\PYG{p}{(}\PYG{n}{new\PYGZus{}block}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{c+c1}{// FORK: reorganize to rollback old}
+\PYG{+w}{                }\PYG{c+c1}{// branch\PYGZsq{}s UTXO}
+\PYG{+w}{                }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{reorganize\PYGZus{}chain}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{Ordering}::\PYG{n}{Equal}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}pre\PYGZus{}block\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{                }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{current\PYGZus{}tip}
+\PYG{+w}{            }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{current\PYGZus{}work}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}
+\PYG{+w}{                }\PYG{p}{.}\PYG{n}{get\PYGZus{}chain\PYGZus{}work}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{current\PYGZus{}tip}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{new\PYGZus{}work}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}
+\PYG{+w}{                }\PYG{p}{.}\PYG{n}{get\PYGZus{}chain\PYGZus{}work}\PYG{p}{(}\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{                }\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{new\PYGZus{}work}\PYG{p}{.}\PYG{n}{cmp}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{current\PYGZus{}work}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{Ordering}::\PYG{n}{Greater}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{reorganize\PYGZus{}chain}\PYG{p}{(}
+\PYG{+w}{                        }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{n}{Ordering}::\PYG{n}{Equal}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{k}{if}\PYG{+w}{ }\PYG{n+nb+bp}{self}
+\PYG{+w}{                        }\PYG{p}{.}\PYG{n}{accept\PYGZus{}new\PYGZus{}block\PYGZus{}tie\PYGZus{}break}\PYG{p}{(}
+\PYG{+w}{                            }\PYG{n}{new\PYGZus{}block}\PYG{p}{,}
+\PYG{+w}{                            }\PYG{o}{\PYGZam{}}\PYG{n}{current\PYGZus{}tip}
+\PYG{+w}{                        }\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}
+\PYG{+w}{                    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                        }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{reorganize\PYGZus{}chain}\PYG{p}{(}
+\PYG{+w}{                            }\PYG{n}{new\PYGZus{}block}\PYG{p}{.}\PYG{n}{get\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{n}{Ordering}::\PYG{n}{Less}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{c+cm}{/*}\PYG{c+cm}{ weaker chain }\PYG{c+cm}{*/}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{Ordering}::\PYG{n}{Less}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{c+c1}{// Block stored but not accepted as tip}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

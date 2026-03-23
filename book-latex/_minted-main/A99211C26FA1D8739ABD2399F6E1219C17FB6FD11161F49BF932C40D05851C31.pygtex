@@ -1,0 +1,20 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{broadcast\PYGZus{}transaction\PYGZus{}to\PYGZus{}nodes}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{nodes}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{n}{Node}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{txid}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// For each peer, spawn a task that sends}
+\PYG{+w}{    }\PYG{c+c1}{// an INV message. INV is a lightweight}
+\PYG{+w}{    }\PYG{c+c1}{// announcement: ``I have txid\PYGZsq{}\PYGZsq{}.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{txid\PYGZus{}clone}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{txid}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{nodes}\PYG{p}{.}\PYG{n}{iter}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{for\PYGZus{}each}\PYG{p}{(}\PYG{o}{|}\PYG{n}{node}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{node\PYGZus{}addr}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{node}\PYG{p}{.}\PYG{n}{get\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{txid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{txid\PYGZus{}clone}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{tokio}::\PYG{n}{spawn}\PYG{p}{(}\PYG{k}{async}\PYG{+w}{ }\PYG{k}{move}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{send\PYGZus{}inv}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{node\PYGZus{}addr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{OpType}::\PYG{n}{Tx}\PYG{p}{,}
+\PYG{+w}{                }\PYG{o}{\PYGZam{}}\PYG{p}{[}\PYG{n}{txid}\PYG{p}{]}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

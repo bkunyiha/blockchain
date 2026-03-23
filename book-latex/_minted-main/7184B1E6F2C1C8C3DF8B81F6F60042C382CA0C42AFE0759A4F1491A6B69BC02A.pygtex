@@ -1,0 +1,13 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} View HPA status}
+kubectl describe hpa webserver\PYGZhy{}hpa \PYGZhy{}n blockchain
+
+\PYG{c+c1}{\PYGZsh{} Check current resource usage}
+kubectl top pods \PYGZhy{}n blockchain
+
+\PYG{c+c1}{\PYGZsh{} If \PYGZbs{}`kubectl top\PYGZbs{}` fails, enable metrics\PYGZhy{}server:}
+minikube addons \PYG{n+nb}{enable} metrics\PYGZhy{}server
+
+\PYG{c+c1}{\PYGZsh{} Verify Metrics API is available}
+kubectl get apiservices \PYG{p}{|} grep metrics
+\end{Verbatim}

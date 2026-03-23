@@ -1,0 +1,205 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 4: Bitcoin Whitepaper in Rust
+% ══════════════════════════════════════════════════════════════
+\chapter{Bitcoin Whitepaper in Rust}
+\label{ch:whitepaper-rust}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Map each Bitcoin whitepaper concept to a concrete Rust data structure
+  \item Explain the hashing and serialization rules that connect whitepaper theory to working code
+  \item Trace how each whitepaper section corresponds to modules in the repository
+  \item Understand the business objects that form the foundation of the implementation
+\end{itemize}
+\end{learnbox}
+
+\lettrine{N}{ow} that we've walked through the Bitcoin \index{whitepaper}whitepaper, we switch from \textbf{theory to implementation}. In the sections that follow, we translate the \index{whitepaper}whitepaper's ideas into \textbf{concrete \index{Rust!modules}Rust modules and methods}, with complete code listings and explanations---calling out what we implement exactly, what we intentionally simplify, and where real-world Bitcoin Core adds additional rules.
+
+\begin{notebox}
+\textbf{Tip:} Read this chapter alongside Chapter~4 (Bitcoin Whitepaper Summary). Each section here maps directly to a whitepaper section, and understanding the theory first makes the Rust encoding decisions much clearer.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Rust Refresher (Optional)}
+\label{sec:rust-refresher}
+\index{Rust!introduction}
+
+If we want to brush up on Rust before working through the implementations, we read the Rust guide:
+
+\begin{itemize}
+  \item \textbf{Chapter~\ref{ch:rust-guide}: Rust Language Guide} --- start with \textbf{Rust Installation \& Setup}, then continue to \textbf{Introduction}.
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Read Options}
+\label{sec:read-options}
+
+\textbf{Split sections (recommended)}: use the links below.
+
+% ──────────────────────────────────────────────────────────────
+\section{Split Sections (0--12 Plus Appendices)}
+\label{sec:split-sections}
+
+The material in this chapter is organized as follows:
+
+\begin{itemize}
+  \item Business objects
+  \item Introduction --- Bitcoin Whitepaper Section 1
+  \item Transactions chain of signatures --- Bitcoin Whitepaper Section 2
+  \item Timestamp server block header chaining --- Bitcoin Whitepaper Section 3
+  \item Proof of work --- Bitcoin Whitepaper Section 4
+  \item Network operation --- Bitcoin Whitepaper Section 5
+  \item Incentive mechanism --- Bitcoin Whitepaper Section 6
+  \item Reclaiming disk space --- Bitcoin Whitepaper Section 7
+  \item Merkle trees and SPV --- Bitcoin Whitepaper Sections 7--8
+  \item Combining splitting value --- Bitcoin Whitepaper Section 9
+  \item Privacy --- Bitcoin Whitepaper Section 10
+  \item Confirmations and attacker probability --- Bitcoin Whitepaper Section 11
+  \item Conclusion --- Bitcoin Whitepaper Section 12
+  \item Appendix A: Object connectivity end to end flow
+  \item Appendix B: Mapping to this repository
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{How to Read This Section (Node Lifecycle)}
+\label{sec:node-lifecycle}
+
+We structure this section around the core node pipeline, from parsing bytes to committing state. In Rust terms, the data path is:
+
+\[\text{\textbf{bytes} \(\to\) \textbf{structs} \(\to\) \textbf{canonical bytes} \(\to\) \textbf{hashes} \(\to\) \textbf{validation} \(\to\) \textbf{state update}}\]
+
+\begin{itemize}
+  \item \textbf{We accept a \index{transaction}transaction}: parse bytes into \code{\index{transaction}Transaction} \(\to\) serialize canonically \(\to\) compute \code{\index{txid}txid} \(\to\) validate (authorization + value rules) \(\to\) check inputs are unspent in our \index{UTXO}UTXO view \(\to\) add to \index{mempool}mempool \(\to\) relay.
+  \item \textbf{We accept a \index{block}block}: parse into \code{\index{block}Block} \(\to\) validate \code{\index{block header}BlockHeader} (prev link + PoW target) \(\to\) validate tx set (including ``not already spent'') \(\to\) apply \index{UTXO}UTXO transition atomically \(\to\) maybe reorg \(\to\) relay.
+\end{itemize}
+
+When we feel lost, we come back to this Rust checklist (whitepaper phrase \(\to\) concrete implementation question):
+
+\begin{itemize}
+  \item \textbf{Whitepaper says ``hash''}: ``What exact bytes are hashed, in what order, and with what endianness?'' (consensus serialization)
+  \item \textbf{Whitepaper says ``sign''}: ``What exact digest do we sign/verify per-input, and what prevout/script context is included?'' (signature hashing / script context)
+  \item \textbf{Whitepaper says ``not already spent''}: ``Does \code{TxIn.previous\_output: OutPoint} exist in our UTXO view at this tip?'' (state + double-spend prevention)
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Implementation Roadmap (With Rust Encoding)}
+\label{sec:implementation-roadmap}
+
+\begin{steps}
+\step{Bytes (canonical encoding)} Implement \index{CompactSize}CompactSize/varints and deterministic \index{serialization}serialization for the core objects. Outcome: ``same object \(\to\) same bytes'' (always).
+
+\step{Identity (hashes as IDs)} Implement \code{\index{SHA-256}sha256d}, \code{\index{txid}txid}, \index{Merkle tree}Merkle root, and \code{\index{block hash}block\_hash}. Outcome: ``same bytes \(\to\) same IDs'' across nodes.
+
+\step{Authorization (spends are permitted)} Implement \index{script}script/\index{digital signature}signature verification using the referenced output as the spend context. Outcome: ``only the key-holder can spend'' (no forged spends).
+
+\step{State (UTXO transitions)} Implement \index{UTXO}UTXO updates as a pure state transition: spend inputs, create outputs. Outcome: ``not already spent'' is enforceable at the state layer.
+
+\step{Consensus (block acceptance + best chain)} Implement \index{block!validation}block validation and \index{chain selection}chain selection (and \index{reorg}reorg handling if needed). Outcome: nodes converge on the same history under the \index{longest chain rule}longest/most-work rule.
+\end{steps}
+
+% ──────────────────────────────────────────────────────────────
+\section{What the Whitepaper Specifies (and What It Doesn't)}
+\label{sec:whitepaper-scope}
+
+In the summary chapter we focused on \emph{what} the paper says. Here we focus on \emph{how that becomes code} without losing the paper's intent and meaning.
+
+The whitepaper specifies the \emph{core relationships}:
+
+\begin{itemize}
+  \item \textbf{Transactions} are transfers of ownership via digital signatures (Bitcoin Whitepaper Section 2).
+  \item \textbf{Blocks} timestamp transactions by hashing them into a chain (Bitcoin Whitepaper Section 3).
+  \item \textbf{Proof-of-work} makes rewriting history computationally impractical (Bitcoin Whitepaper Section 4).
+  \item \textbf{Nodes} broadcast transactions and blocks and converge on the ``longest'' chain (Bitcoin Whitepaper Section 5).
+  \item \textbf{Merkle trees} enable compact commitments and SPV proofs (Bitcoin Whitepaper Sections 7--8).
+\end{itemize}
+
+The deployed Bitcoin protocol adds important concrete details beyond the paper (still consistent with it), such as:
+
+\begin{itemize}
+  \item \textbf{double-SHA256} (``hash twice'') for txids and block hashes
+  \item \textbf{CompactSize/varints} and strict little-endian \textbf{consensus serialization}
+  \item \textbf{Script} (e.g., P2PKH/P2WPKH; see description in next section) and signature hashing (``sighash'') rules
+  \item a real P2P message protocol (inv/getdata, headers, etc.)
+\end{itemize}
+
+The whitepaper itself does \textbf{not} fully specify:
+
+\begin{itemize}
+  \item exact wire encodings (byte-for-byte consensus serialization)
+  \item Script details, signature hashing rules, and full validation edge cases
+  \item production P2P protocol message formats
+\end{itemize}
+
+That's fine for learning: the whitepaper is the conceptual contract, and implementations supply the missing exactness. Our goal is to make the missing pieces explicit (especially byte encoding), because consensus is ultimately ``agree on bytes''.
+
+% ──────────────────────────────────────────────────────────────
+\section{Script: P2PKH vs P2WPKH}
+\label{sec:p2pkh-p2wpkh}
+\index{script}\index{P2PKH}\index{P2WPKH}
+
+In Bitcoin, most outputs are ``locked'' by a \textbf{\index{scriptPubKey}scriptPubKey} (a small stack program). Spending an output means providing data that makes that program succeed. Two common standard output types are:
+
+\begin{deepdive}{P2PKH (Pay-to-PubKey-Hash)}
+
+\textbf{\index{P2PKH}P2PKH (Pay-to-PubKey-Hash)}: the output commits to a 20-byte \code{\index{HASH160}HASH160(pubkey)} and can be spent by providing a \index{digital signature}signature and the corresponding \index{public key}public key.
+
+\textbf{Locking form (scriptPubKey)}:
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+OP_DUP OP_HASH160 <20-byte pubKeyHash> OP_EQUALVERIFY OP_CHECKSIG
+\end{minted}
+
+\textbf{Spending data (conceptually)}: \code{<sig> <pubkey>} (the node hashes \code{pubkey} to check it matches \code{pubKeyHash}, then verifies \code{sig} under the signature-hash rules).
+
+\textbf{Common address encoding}: legacy Base58 addresses that start with \code{1...} on mainnet.
+
+\end{deepdive}
+
+\begin{infobox}{Why \code{HASH160(pubkey)} and not just \code{SHA256(pubkey)}?}
+
+In standard \textbf{\index{script}Script/address constructions} (like \index{P2PKH}P2PKH/\index{P2WPKH}P2WPKH), Bitcoin uses \code{\index{HASH160}HASH160 = \index{RIPEMD160}RIPEMD160(\index{SHA-256}SHA256(x))} for pubkey hashes largely because:
+
+\begin{itemize}
+  \item It is \textbf{smaller} (20 bytes vs 32 bytes), which reduces output sizes and UTXO set footprint.
+  \item It provides \textbf{defense in depth} by combining two hash functions (a practical break would need to affect both).
+  \item It is a \textbf{historical standard} baked into early script/address conventions (changing it would be a broad compatibility and consensus break).
+\end{itemize}
+
+Note: this is separate from block/tx identifiers. \textbf{txids} (and \textbf{block hashes}) are computed with \textbf{double-SHA256} (i.e., \code{SHA256(SHA256(bytes))}) over consensus-serialized data (tx serialization for txids; block header serialization for block hashes).
+
+\end{infobox}
+
+\begin{deepdive}{P2WPKH (Pay-to-Witness-PubKey-Hash, SegWit v0)}
+
+\textbf{\index{P2WPKH}P2WPKH (Pay-to-Witness-PubKey-Hash, \index{SegWit}SegWit v0)}: the same ownership model as \index{P2PKH}P2PKH (pubkey hash), but \index{digital signature}signatures and pubkeys are carried in \textbf{\index{witness}witness} data (\index{SegWit}SegWit), not the legacy \index{scriptSig}scriptSig path.
+
+\textbf{Locking form (witness program)}:
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+0 <20-byte pubKeyHash>
+\end{minted}
+
+\textbf{Spending data}: witness stack provides \code{<sig> <pubkey>} (native P2WPKH has an empty \code{scriptSig}).
+
+\textbf{Why it matters}: witness data is excluded from the legacy txid, which eliminates third-party malleability for signature data and makes blocks more space-efficient under weight rules.
+
+\textbf{Common address encoding}: Bech32 addresses that start with \code{bc1q...} on mainnet. (For compatibility there is also P2SH-wrapped P2WPKH, often starting with \code{3...}.)
+
+\end{deepdive}
+
+% ──────────────────────────────────────────────────────────────
+\section{Further Reading}
+\label{sec:ch04-further-reading}
+
+\begin{itemize}
+  \item \textbf{Bitcoin Whitepaper} --- Read alongside this chapter for the full context behind each Rust encoding. See \url{https://bitcoin.org/bitcoin.pdf}
+  \item \textbf{serde Documentation} --- The serialization framework used throughout the implementation. See \url{https://serde.rs/}
+  \item \textbf{Bitcoin Developer Reference} --- Technical specifications for Bitcoin data structures. See \url{https://developer.bitcoin.org/reference/}
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+  \item We mapped every Bitcoin whitepaper concept to a concrete Rust data structure, showing how theory translates into working code.
+  \item We defined the core business objects --- Block, Transaction, BlockHeader, and their supporting types --- that form the implementation's foundation.
+  \item We traced hashing and serialization rules from whitepaper descriptions to Rust implementations using SHA-256 and serde.
+  \item We established the mapping between whitepaper sections and repository modules, creating a bridge between concept and code.
+  \item In the next chapter, we examine how the Rust project is organized --- the crate workspace, dependency graph, and build configuration that make all of this compile and run.
+\end{chaptersummary}

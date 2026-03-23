@@ -1,0 +1,16 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// ✅ Binary: Compact 32\PYGZhy{}byte keys}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{sled}\PYG{p}{::}\PYG{n}{Db}\PYG{p}{;}
+
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{db}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Db}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{sled}\PYG{p}{::}\PYG{n}{open}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{blockchain.db}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{c+c1}{// Store with binary key}
+\PYG{n}{db}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{serialized\PYGZus{}tx}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// 32\PYGZhy{}byte key}
+
+\PYG{c+c1}{// Lookup with binary key}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{db}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{id}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// Fast lookup}
+
+\PYG{c+c1}{// ❌ String: Bloated 64\PYGZhy{}byte keys}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{hex\PYGZus{}key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{hex}\PYG{p}{::}\PYG{n}{encode}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{id}\PYG{p}{)}\PYG{p}{;}
+\PYG{n}{db}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{n}{hex\PYGZus{}key}\PYG{p}{.}\PYG{n}{as\PYGZus{}bytes}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{serialized\PYGZus{}tx}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// 64\PYGZhy{}byte key (2x space!)}
+\end{MintedVerbatim}

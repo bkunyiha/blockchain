@@ -1,0 +1,68 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{process\PYGZus{}stream}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{node\PYGZus{}context}: \PYG{n+nc}{Arc}\PYG{o}{\PYGZlt{}}\PYG{n}{NodeContext}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{stream}: \PYG{n+nc}{std}::\PYG{n}{net}::\PYG{n}{TcpStream}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{loop}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Deserialize a message from the peer}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pkg}: \PYG{n+nc}{Package}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{deserialize}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{stream}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{pkg}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{c+c1}{// Peer announces a transaction}
+\PYG{+w}{            }\PYG{n}{Package}::\PYG{n}{Inv}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{op\PYGZus{}type}: \PYG{n+nc}{OpType}::\PYG{n}{Tx}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{items}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{txid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{items}\PYG{p}{.}\PYG{n}{first}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{INV items empty}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                }\PYG{k}{if}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{contains}\PYG{p}{(}\PYG{n}{txid\PYGZus{}hex}\PYG{p}{.}\PYG{n}{as\PYGZus{}str}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}
+\PYG{+w}{                }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n}{send\PYGZus{}get\PYGZus{}data}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}
+\PYG{+w}{                        }\PYG{n}{OpType}::\PYG{n}{Tx}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{txid}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{            }\PYG{c+c1}{// Peer sends a transaction}
+\PYG{+w}{            }\PYG{n}{Package}::\PYG{n}{Tx}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{transaction}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Transaction}
+\PYG{+w}{                    }::\PYG{n}{deserialize}\PYG{p}{(}
+\PYG{+w}{                        }\PYG{n}{transaction}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{                }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{node\PYGZus{}context}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{process\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{                        }\PYG{o}{\PYGZam{}}\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{            }\PYG{c+c1}{// Peer announces a block}
+\PYG{+w}{            }\PYG{n}{Package}::\PYG{n}{Inv}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{op\PYGZus{}type}: \PYG{n+nc}{OpType}::\PYG{n}{Block}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{items}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block\PYGZus{}hash}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{items}\PYG{p}{.}\PYG{n}{first}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{INV items empty}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n}{send\PYGZus{}get\PYGZus{}data}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}
+\PYG{+w}{                    }\PYG{n}{OpType}::\PYG{n}{Block}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{block\PYGZus{}hash}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{            }\PYG{c+c1}{// Peer sends a block}
+\PYG{+w}{            }\PYG{n}{Package}::\PYG{n}{Block}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{block}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Block}
+\PYG{+w}{                    }::\PYG{n}{deserialize}\PYG{p}{(}
+\PYG{+w}{                        }\PYG{n}{block}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n}{node\PYGZus{}context}\PYG{p}{.}\PYG{n}{add\PYGZus{}block}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{block}\PYG{p}{)}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{            }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

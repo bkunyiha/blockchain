@@ -1,0 +1,33 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+View
+  view(\PYGZam{}WalletApp) \PYGZhy{}\PYGZgt{} Element\PYGZlt{}Message\PYGZgt{}
+  |
+  +\PYGZhy{}\PYGZhy{} User action produces Message
+  |
+  v
+Update
+  update(\PYGZam{}mut WalletApp, Message) \PYGZhy{}\PYGZgt{} Task\PYGZlt{}Message\PYGZgt{}
+  |
+  +\PYGZhy{}\PYGZhy{} Mutates model (WalletApp)
+  +\PYGZhy{}\PYGZhy{} Returns Task for async work
+  |
+  v
+Model
+  WalletApp
+  +\PYGZhy{}\PYGZhy{} in\PYGZhy{}memory state (addresses, balances, tx history)
+  +\PYGZhy{}\PYGZhy{} references to database for persistence
+  |
+  v
+Task\PYGZlt{}Message\PYGZgt{}
+  +\PYGZhy{}\PYGZhy{} spawn\PYGZus{}on\PYGZus{}tokio(...) for async work
+  |
+  v
+Tokio bridge
+  +\PYGZhy{}\PYGZhy{} Database queries (Chapter 29)
+  +\PYGZhy{}\PYGZhy{} API calls to WalletClient HTTP
+  |
+  v
+Persistent Storage + Node API
+  +\PYGZhy{}\PYGZhy{} Encrypted database (SQLite with XChaCha20)
+  +\PYGZhy{}\PYGZhy{} Bitcoin Node API (Chapter 23)
+\end{Verbatim}

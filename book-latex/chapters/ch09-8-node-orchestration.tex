@@ -1,0 +1,758 @@
+% ══════════════════════════════════════════════════════════════
+%  Section 9.8: Node Orchestration
+% ══════════════════════════════════════════════════════════════
+\chapter{Chain: Node Orchestration}
+\label{ch:chain-node-orchestration}
+
+\begin{learnbox}
+\begin{itemize}
+  \item What a blockchain node is and how it maintains its own copy of the blockchain
+  \item Node orchestration: the coordination layer that wires subsystems together
+  \item Global singletons: \code{GLOBAL\_MEMORY\_POOL}, \code{GLOBAL\_NODES}, \code{GLOBAL\_BLOCKS\_IN\_TRANSIT}
+  \item How \code{NodeContext} serves as the central coordination API
+  \item Runtime event flow: web/network messages route to the right handlers
+  \item How background tasks (broadcast, mining) run concurrently with API responses
+\end{itemize}
+\end{learnbox}
+
+In the previous chapters, we've explored how \index{transaction}transactions are \index{construction}constructed and \index{digital signature!signing}signed (Chapter~14), how \index{block}blocks are \index{mining}mined and \index{persistence}persisted (Chapter~15), and how the \index{UTXO}UTXO set tracks spendable \index{output}outputs (Chapter~13). But how does all of this come together at \index{runtime}runtime? How does a \index{node}node coordinate between \index{incoming}incoming \index{network!message}network \index{message}messages, the \index{mempool}mempool, \index{mining}mining operations, and \index{blockchain!state}blockchain \index{state}state updates?
+
+\section{What Is a Node?}
+\label{sec:ch09-8-whatisnode}
+\index{node}
+
+A \index{blockchain}blockchain \index{node}node is a running \index{instance}instance of the \index{blockchain}blockchain \index{software}software that maintains its own local copy of the \index{blockchain}blockchain, \index{validation}validates \index{transaction}transactions and \index{block}blocks, participates in the \index{peer-to-peer}peer-to-peer \index{network}network, and (optionally) \index{mining}mines new \index{block}blocks.
+
+This is a crucial \index{distributed systems}distributed systems concept: \textbf{each \index{node}node stores its own complete copy of the \index{blockchain}blockchain} (as we saw in Chapter~12, where \code{\index{BlockchainFileSystem}BlockchainFileSystem} persists \index{block}blocks to a local \index{sled}sled \index{database}database). \index{node}Nodes synchronize with each other by exchanging \index{block}blocks and \index{transaction}transactions over the \index{network}network, but each \index{node}node's \index{storage}storage is independent---there's no \index{central database}central \index{database}database that all \index{node}nodes share. This \index{decentralization}decentralization is what makes \index{blockchain}blockchains resilient: even if some \index{node}nodes go offline, others continue operating with their own copies.
+
+In our \index{implementation}implementation, a \index{node}node is the complete \index{runtime}runtime \index{system}system that coordinates \index{blockchain!state}blockchain \index{state}state (stored locally in \code{\index{BlockchainFileSystem}BlockchainFileSystem}), \index{transaction}transaction \index{mempool}mempool, \index{network}network \index{communication}communication, and \index{mining}mining \index{operation}operations.
+
+\section{Node Orchestration}
+\label{sec:ch09-8-orchestration}
+
+\textbf{Node orchestration} is the coordination layer that wires these subsystems together---it routes network messages to the right handlers, manages shared state (like the mempool and peer list), coordinates between mining and network propagation, and ensures all components work together as a cohesive system. Think of it as the ``conductor'' that directs when and how different parts of the node interact.
+
+This section answers those questions by walking through the \textbf{node orchestration layer}---the code that wires everything together and makes the blockchain node function as a cohesive system. We'll trace how external events (network messages, API requests) flow through the system, how global state is managed, and how different subsystems coordinate their work.
+
+\textbf{What we'll learn}: How the node runtime coordinates blockchain operations, how global singletons manage shared state, how \code{NodeContext} serves as the central coordination point, and how network messages route into the appropriate subsystems. We'll understand the complete runtime architecture and be able to trace any operation from entry point to completion.
+
+\begin{infobox}[Primary code files]
+\begin{itemize}
+  \item \code{bitcoin/src/node/server.rs} --- global singletons and TCP server loop
+  \item \code{bitcoin/src/node/context.rs} --- central coordination API (\code{NodeContext})
+  \item \code{bitcoin/src/net/net\_processing.rs} --- network message routing and handling
+  \item \code{bitcoin/src/node/txmempool.rs} --- mempool management
+  \item \code{bitcoin/src/node/miner.rs} --- mining coordination
+\end{itemize}
+\end{infobox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Scope}
+\label{sec:ch09-8-scope}
+
+This chapter covers the \textbf{orchestration layer} that coordinates \textbf{Steps 4--8} of the blockchain pipeline (from transaction to block acceptance): how web/network events route into mempool admission, mining triggers, propagation, and block acceptance. While previous chapters focused on \emph{what} happens (transaction lifecycle, block mining), this chapter focuses on \emph{how} it all connects at runtime.
+
+% ──────────────────────────────────────────────────────────────
+\section{Runtime Event Flow Diagram}
+\label{sec:ch09-8-eventflow}
+
+This diagram shows how external events flow through the orchestration layer and get routed to the appropriate subsystems:
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance = 0.8cm and 1.2cm,
+  event/.style = {rectangle, rounded corners=3pt, draw=brand, fill=brandlight,
+                  text width=2.5cm, align=center, minimum height=0.7cm, font=\sffamily\footnotesize},
+  handler/.style = {rectangle, rounded corners=3pt, draw=sectioncolor, fill=codebg,
+                    text width=2.2cm, align=center, minimum height=0.65cm, font=\sffamily\tiny},
+  arrow/.style = {-{Stealth[length=3pt,width=2pt]}, thick, color=brand},
+]
+
+% Root event
+\node[event] (root) at (0, 8) {
+  External \\
+  Events
+};
+
+% Web API branch
+\node[event] (web) at (-3, 6.5) {
+  Web API \\
+  (HTTP)
+};
+
+% Network branch
+\node[event] (net) at (3, 6.5) {
+  Network \\
+  (P2P)
+};
+
+% Web handlers
+\node[handler] (balance) at (-4, 5) {
+  GET /balance
+};
+\node[handler] (txpost) at (-2, 5) {
+  POST /tx
+};
+
+% Network handlers
+\node[handler] (pkg_tx) at (1.5, 5) {
+  Pkg::Tx
+};
+\node[handler] (pkg_block) at (3, 5) {
+  Pkg::Block
+};
+\node[handler] (pkg_inv) at (4.5, 5) {
+  Pkg::Inv
+};
+
+% Handler logic
+\node[handler] (bal_logic) at (-4, 3.3) {
+  ChainService \\
+  → UTXOSet
+};
+
+\node[handler] (tx_logic) at (-2, 3.3) {
+  Check dup \\
+  → mempool
+};
+
+\node[handler] (net_tx) at (1.5, 3.3) {
+  process\_ \\
+  transaction
+};
+
+\node[handler] (net_block) at (3, 3.3) {
+  add\_block \\
+  → update
+};
+
+\node[handler] (net_inv) at (4.5, 3.3) {
+  request \\
+  via GETDATA
+};
+
+% Main arrows from root
+\draw[arrow] (root) -- (web);
+\draw[arrow] (root) -- (net);
+
+% Web API handlers
+\draw[arrow] (web) -- (balance);
+\draw[arrow] (web) -- (txpost);
+
+% Network handlers
+\draw[arrow] (net) -- (pkg_tx);
+\draw[arrow] (net) -- (pkg_block);
+\draw[arrow] (net) -- (pkg_inv);
+
+% Handler logic
+\draw[arrow] (balance) -- (bal_logic);
+\draw[arrow] (txpost) -- (tx_logic);
+\draw[arrow] (pkg_tx) -- (net_tx);
+\draw[arrow] (pkg_block) -- (net_block);
+\draw[arrow] (pkg_inv) -- (net_inv);
+
+\end{tikzpicture}
+\caption{Node Orchestration: Event Routing Through Web API and Network Layers}
+\label{fig:ch09-8-orchestration}
+\end{figure}
+
+\textbf{What this diagram shows}: The orchestration layer (\code{NodeContext} and \code{process\_stream}) acts as a \textbf{message router and coordinator} that:
+
+\begin{itemize}
+  \item \textbf{Receives events from multiple sources}: Web API requests (HTTP handlers) and network messages (P2P peers) arrive concurrently and need routing to the right handlers.
+
+  \item \textbf{Routes events to appropriate subsystems}:
+    \begin{itemize}
+      \item Transaction events \textrightarrow\ mempool admission (\code{add\_to\_memory\_pool}) \textrightarrow\ background broadcast/mining
+      \item Block events \textrightarrow\ blockchain validation (\code{add\_block}) \textrightarrow\ mempool cleanup \textrightarrow\ chain state update
+      \item Query events \textrightarrow\ blockchain reads (\code{get\_balance}, \code{get\_blockchain\_height}) \textrightarrow\ UTXO set queries
+    \end{itemize}
+
+  \item \textbf{Coordinates background work asynchronously}: Long-running operations (network broadcast, mining) are spawned as separate tasks using \code{tokio::spawn}, allowing the node to respond immediately to API requests while background work continues.
+
+  \item \textbf{Manages shared state}: Global singletons (\code{GLOBAL\_MEMORY\_POOL}, \code{GLOBAL\_NODES}, \code{GLOBAL\_BLOCKS\_IN\_TRANSIT}) are accessed by multiple subsystems concurrently, and the orchestration layer ensures consistent access patterns.
+
+  \item \textbf{Handles concurrency}: Multiple peers can send messages simultaneously, multiple API requests can arrive concurrently, and mining/broadcast tasks run in parallel---the orchestration layer coordinates all of this safely.
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Node Architecture at a Glance}
+\label{sec:ch09-8-arch}
+
+Before diving into the code, we first lay out the big picture. A blockchain node is fundamentally a \textbf{coordinator} that manages multiple subsystems: blockchain state, transaction mempool, network communication, and mining operations. Understanding how these pieces fit together will make our detailed code walkthrough much easier to follow.
+
+\subsection{High-Level Architecture Diagram}
+\label{sec:ch09-8-arch-diagram}
+
+This diagram shows the overall architecture: external interfaces communicate with \code{NodeContext}, which coordinates between subsystems, and all persistent state ultimately lives in the storage layer.
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
++--------------------------------------------+
+|      External Interfaces                   |
+|  +----------+  +----------+  +----------+ |
+|  | Web API  |  | Admin UI |  | Network  | |
+|  | (HTTP)   |  |          |  | (P2P)    | |
+|  +-----+----+  +-----+----+  +-----+----+ |
++--------+-------------+--------------+------+
+         |             |              |
+         +-------------+--------------+
+                       |
+            +----------v------------+
+            |   NodeContext         |
+            |  (Coordination)       |
+            +----+-------------+----+
+                 |             |
+        +--------v--+     +----v----+
+        | Chain     |     | Mempool  |
+        | Service   |     |          |
+        | - Blocks  |     | - Pending|
+        | - UTXO    |     |   TXs    |
+        | - State   |     +----------+
+        +----+------+
+             |
+        +----v----------+
+        | Storage Layer |
+        |  (sled DB)    |
+        +---------------+
+\end{minted}
+
+\textbf{What this diagram shows}: The separation of concerns in our implementation. External interfaces (web API, network peers) all communicate through \code{NodeContext}, which acts as a central coordinator. \code{NodeContext} delegates to specialized subsystems (chain state, mempool), and all persistent data ultimately lives in the storage layer.
+
+\subsection{Call Hierarchy and Shared State}
+\label{sec:ch09-8-call-hierarchy}
+
+This diagram shows the call relationships: how external code calls \code{NodeContext}, how \code{NodeContext} delegates to subsystems, and where global state is accessed.
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+External Layer (web/clients/network)
+  |
+  +-> NodeContext (central API)
+  |     |
+  |     +-> BlockchainService (chain state)
+  |     |     +-> UTXOSet (query/update)
+  |     |
+  |     +-> GLOBAL_MEMORY_POOL (via txmempool)
+  |     |
+  |     +-> miner functions
+  |     |     +-> should_trigger_mining
+  |     |     +-> prepare_mining_utxo
+  |     |     +-> process_mine_block
+  |     |
+  |     +-> net_processing
+  |           +-> send_inv
+  |           +-> send_block
+  |           +-> send_tx
+  |
+  +-> Server::run_with_shutdown (TCP loop)
+        +-> net_processing::process_stream
+
+Global Singletons (shared state):
+  +-> GLOBAL_MEMORY_POOL (pending txs)
+  +-> GLOBAL_NODES (peer list)
+  +-> GLOBAL_BLOCKS_IN_TRANSIT (download queue)
+  +-> CENTERAL_NODE (bootstrap node)
+
+Persistent storage:
+  +-> BlockchainFileSystem (sled database)
+\end{minted}
+
+\textbf{What this diagram shows}: The call hierarchy and shared state. \code{NodeContext} is the primary entry point, but subsystems also access global singletons directly (e.g., \code{GLOBAL\_MEMORY\_POOL}). The server loop spawns per-connection tasks that handle network messages.
+
+% ──────────────────────────────────────────────────────────────
+\section{Concrete Example Flows}
+\label{sec:ch09-8-examples}
+
+\subsection{Example 1: Get Balance Query}
+\label{sec:ch09-8-balance}
+
+This diagram traces how a balance query flows from the web API through the system.
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+Client HTTP Request
+  |
+  +-> GET /api/balance?address=1A1zP1eP...
+  |
+  +-> Web Handler
+        |
+        +-> NodeContext::get_balance(address)
+              |
+              +-> BlockchainService
+                    |
+                    +-> UTXOSet::get_balance(address)
+                          |
+                          +-> Query UTXO set (sled DB)
+                          +-> Sum output values
+                                |
+                                +-> Return balance (satoshis)
+                                      |
+                                      +-> HTTP Response
+\end{minted}
+
+\textbf{What this shows}: A simple read operation that doesn't modify state. The query flows through \code{NodeContext} to the blockchain service, which queries the UTXO set, and the result flows back up the same path.
+
+\subsection{Example 2: Send Bitcoin Transaction}
+\label{sec:ch09-8-sendtx}
+
+This diagram traces a concrete write operation: create a signed transaction spending UTXOs from \emph{A} to \emph{B}, accept it into the mempool, then propagate it to peers.
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+Wallet UI
+  |
+  +-> POST /api/v1/transactions
+  |     body: { from: "A", to: "B", amount: N }
+  |
+  +-> send_transaction (HTTP handler)
+        |
+        +-> NodeContext::btc_transaction(A, B, amount)
+        |     |
+        |     +-> UTXOSet::new (UTXO view)
+        |     +-> Transaction::new_utxo_transaction (build and sign)
+        |     |     +-> Select spendable UTXOs from A
+        |     |     +-> Create outputs (to B, change to A)
+        |     |     +-> Sign inputs
+        |     |
+        |     +-> NodeContext::process_transaction (mempool)
+        |           |
+        |           +-> transaction_exists_in_pool (dedup)
+        |           +-> add_to_memory_pool
+        |           |     +-> GLOBAL_MEMORY_POOL.add(tx)
+        |           |     +-> Mark inputs as reserved
+        |           |
+        |           +-> tokio::spawn background task
+        |                 +-> broadcast_transaction_to_nodes
+        |                 |     +-> send_inv (to all peers)
+        |                 |
+        |                 +-> (optional) process_mine_block
+        |
+        +-> Return txid (HTTP 202)
+\end{minted}
+
+\textbf{What this shows}: A state-changing write path. The API handler delegates to \code{NodeContext::btc\_transaction}, which builds a signed UTXO transaction, accepts it into the global mempool, and then uses a background task to broadcast an INV to peers and optionally trigger mining.
+
+% ──────────────────────────────────────────────────────────────
+\section{Step-by-Step Code Walkthrough}
+\label{sec:ch09-8-walkthrough}
+
+Now that we understand the architecture, we walk through the code that implements it. We'll start with global state management, then examine the coordination API, and finally trace the runtime paths for transactions, blocks, and mining.
+
+\textbf{Our goal}: Understand the runtime wiring---where global state lives, which entry points receive network messages, and how those messages route into chainstate/mempool/mining.
+
+\subsection{Roadmap}
+\label{sec:ch09-8-roadmap}
+
+Here's the path we'll follow through the code. Each step leads naturally to the next:
+
+\begin{itemize}
+  \item \textbf{Step 1}: Global singletons (\code{GLOBAL\_MEMORY\_POOL}, \code{GLOBAL\_NODES}, etc.) \textrightarrow\ Listing~\ref{lst:9-8-1}
+  \item \textbf{Step 2}: \code{NodeContext} initialization and structure \textrightarrow\ Listing~\ref{lst:9-8-2}
+  \item \textbf{Step 3}: Transaction processing path (\code{process\_transaction}) \textrightarrow\ Listing~\ref{lst:9-8-3}
+  \item \textbf{Step 4}: Block processing path (\code{add\_block}) \textrightarrow\ Listing~\ref{lst:9-8-4}
+  \item \textbf{Step 5}: Network message routing (\code{process\_stream}) \textrightarrow\ Listing~\ref{lst:9-8-5}
+  \item \textbf{Step 6}: Server runtime loop (\code{run\_with\_shutdown}) \textrightarrow\ Listing~\ref{lst:9-8-6}
+\end{itemize}
+
+\subsection{Step 1 --- Global Singletons}
+\label{sec:ch09-8-step1}
+
+\textbf{Node runtime globals code}: \code{bitcoin/src/node/server.rs}
+
+The node uses several process-wide singletons that are shared across all subsystems. These globals provide a single source of truth for shared state like the mempool, peer list, and blocks in transit.
+
+\begin{listing}[htbp]
+\caption{Global state singletons (\code{server.rs})}
+\label{lst:9-8-1}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use once_cell::sync::Lazy;
+use parking_lot::RwLock;
+
+// The global memory pool: all pending transactions
+// accepted by this node but not yet confirmed
+pub static GLOBAL_MEMORY_POOL: Lazy<
+    Arc<Mutex<MemoryPool>>
+> = Lazy::new(|| {
+    Arc::new(Mutex::new(MemoryPool::new()))
+});
+
+// The global node peer list: addresses of all
+// connected peers in the network
+pub static GLOBAL_NODES: Lazy<
+    Arc<RwLock<Vec<Node>>>
+> = Lazy::new(|| {
+    Arc::new(RwLock::new(Vec::new()))
+});
+
+// Blocks in transit: tracking which blocks we've
+// asked for but haven't received yet
+pub static GLOBAL_BLOCKS_IN_TRANSIT: Lazy<
+    Arc<Mutex<Vec<Vec<u8>>>>
+> = Lazy::new(|| {
+    Arc::new(Mutex::new(Vec::new()))
+});
+
+// The bootstrap/central node address
+pub static CENTERAL_NODE: SocketAddr =
+    SocketAddr::from(([127, 0, 0, 1], 3000));
+\end{minted}
+\end{listing}
+
+\textbf{What to notice}:
+\begin{itemize}
+  \item These are \code{static} variables that are lazily initialized on first access using \code{once\_cell::sync::Lazy}.
+  \item Each is wrapped in an \code{Arc} for shared ownership across async tasks and threads.
+  \item Mutexes and RwLocks protect concurrent access.
+  \item These globals are accessed from multiple parts of the codebase without passing through function parameters.
+\end{itemize}
+
+\subsection{Step 2 --- NodeContext}
+\label{sec:ch09-8-step2}
+
+\textbf{Central coordination API code}: \code{bitcoin/src/node/context.rs}
+
+\code{NodeContext} is the primary coordination point. It holds references to the blockchain service and provides methods that route requests to appropriate subsystems.
+
+\begin{listing}[htbp]
+\caption{NodeContext structure (\code{context.rs})}
+\label{lst:9-8-2}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Clone)]
+pub struct NodeContext {
+    // Reference to the shared blockchain service
+    pub blockchain: BlockchainService,
+}
+
+impl NodeContext {
+    pub fn new(blockchain: BlockchainService)
+        -> Self
+    {
+        NodeContext { blockchain }
+    }
+
+    // Coordinate transaction creation and submission
+    pub async fn btc_transaction(
+        &self,
+        from_addr: &WalletAddress,
+        to_addr: &WalletAddress,
+        amount: i32,
+    ) -> Result<String> {
+        // ... (builds + submits transaction)
+    }
+
+    // Entry point for all transaction admission
+    pub async fn process_transaction(
+        &self,
+        addr_from: &SocketAddr,
+        tx: Transaction,
+    ) -> Result<String> {
+        // ... (mempool acceptance)
+    }
+
+    // Entry point for all block admission
+    pub async fn add_block(&self, block: &Block)
+        -> Result<()>
+    {
+        // ... (blockchain validation + persistence)
+    }
+
+    // Query methods
+    pub async fn get_balance(
+        &self,
+        address: &WalletAddress
+    ) -> Result<i32> {
+        // ... (UTXO query)
+    }
+}
+\end{minted}
+\end{listing}
+
+\textbf{What to notice}:
+\begin{itemize}
+  \item \code{NodeContext} is \code{Clone}, allowing cheap sharing via \code{Arc<NodeContext>} across tasks.
+  \item All major operations (\code{btc\_transaction}, \code{process\_transaction}, \code{add\_block}) are async.
+  \item Methods delegate to subsystems (blockchain service, mempool, miner) without implementing the logic directly.
+\end{itemize}
+
+\subsection{Step 3 --- Transaction Processing}
+\label{sec:ch09-8-step3}
+
+\textbf{Transaction submission code}: \code{bitcoin/src/node/context.rs}
+
+\begin{listing}[H]
+\caption{Mempool acceptance entry point (\code{NodeContext::process\_transaction})}
+\label{lst:9-8-3}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn process_transaction(
+    &self,
+    addr_from: &std::net::SocketAddr,
+    utxo: Transaction,
+) -> Result<String> {
+    // 1) Reject duplicates early (important to
+    // prevent loops and redundant work)
+    if transaction_exists_in_pool(&utxo) {
+        return Err(
+            BtcError::TransactionAlreadyExistsInMemoryPool(
+                utxo.get_tx_id_hex()
+            )
+        );
+    }
+
+    // 2) Add to the global mempool and mark outputs
+    // as "reserved" by mempool policy
+    add_to_memory_pool(utxo.clone(),
+        &self.blockchain).await?;
+
+    // 3) Background work: propagation and
+    // (if this node is a miner) mining trigger
+    // Spawned so caller (HTTP handler or P2P handler)
+    // returns quickly
+    let context = self.clone();
+    let addr_copy = *addr_from;
+    let tx = utxo.clone();
+    tokio::spawn(async move {
+        let _ = context
+            .submit_transaction_for_mining(
+                &addr_copy, tx).await;
+    });
+
+    // 4) Return txid immediately (accept-to-mempool)
+    Ok(utxo.get_tx_id_hex())
+}
+\end{minted}
+\end{listing}
+
+\textbf{What to notice}:
+\begin{itemize}
+  \item Duplicate detection happens early to prevent redundant work.
+  \item The mempool admit operation is \code{await}ed (synchronous from the caller's perspective).
+  \item Background broadcast/mining is spawned with \code{tokio::spawn}, allowing the function to return immediately.
+  \item The caller gets a txid right away, even before broadcast completes.
+\end{itemize}
+
+\subsection{Step 4 --- Block Processing}
+\label{sec:ch09-8-step4}
+
+\textbf{Block submission code}: \code{bitcoin/src/node/context.rs}
+
+\begin{listing}[H]
+\caption{Block acceptance entry point (\code{NodeContext::add\_block})}
+\label{lst:9-8-4}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn add_block(&self, block: &Block)
+    -> Result<()>
+{
+    // Delegate to blockchain service for validation
+    // and persistence
+    self.blockchain.add_block(block).await?;
+
+    // Remove confirmed txs from the mempool
+    for tx in block.get_transactions() {
+        if !tx.is_coinbase() {
+            remove_from_memory_pool(tx, &self.blockchain)
+                .await;
+        }
+    }
+
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\textbf{What to notice}:
+\begin{itemize}
+  \item Block validation is delegated to the blockchain service (which checks signatures, PoW, fork choice).
+  \item After a block is accepted, its transactions are removed from the mempool (they are now confirmed).
+  \item This ensures the mempool contains only unconfirmed transactions.
+\end{itemize}
+
+\subsection{Step 5 --- Network Message Routing}
+\label{sec:ch09-8-step5}
+
+\textbf{P2P message dispatch code}: \code{bitcoin/src/net/net\_processing.rs}
+
+Each TCP connection to a peer is handled by a task that calls \code{process\_stream}. This function deserializes messages and routes them based on type.
+
+\begin{listing}[htbp]
+\caption{P2P message dispatcher (\code{process\_stream})}
+\label{lst:9-8-5}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn process_stream(
+    node_context: Arc<NodeContext>,
+    mut stream: std::net::TcpStream,
+) -> Result<()> {
+    loop {
+        // Deserialize a message from the peer
+        let pkg: Package = deserialize(&stream)?;
+
+        match pkg {
+            // Peer announces a transaction
+            Package::Inv {
+                addr_from,
+                op_type: OpType::Tx,
+                items
+            } => {
+                let txid = items.first()
+                    .expect("INV items empty");
+                if !GLOBAL_MEMORY_POOL
+                    .contains(txid_hex.as_str())?
+                {
+                    send_get_data(&addr_from,
+                        OpType::Tx, txid).await;
+                }
+            }
+
+            // Peer sends a transaction
+            Package::Tx {
+                addr_from,
+                transaction
+            } => {
+                let tx = Transaction
+                    ::deserialize(
+                        transaction.as_slice())?;
+                let _ = node_context
+                    .process_transaction(
+                        &addr_from, tx).await;
+            }
+
+            // Peer announces a block
+            Package::Inv {
+                addr_from,
+                op_type: OpType::Block,
+                items
+            } => {
+                let block_hash = items.first()
+                    .expect("INV items empty");
+                send_get_data(&addr_from,
+                    OpType::Block, block_hash).await;
+            }
+
+            // Peer sends a block
+            Package::Block {
+                addr_from,
+                block
+            } => {
+                let block = Block
+                    ::deserialize(
+                        block.as_slice())?;
+                node_context.add_block(&block)
+                    .await?;
+            }
+
+            _ => {}
+        }
+    }
+}
+\end{minted}
+\end{listing}
+
+\textbf{What to notice}:
+\begin{itemize}
+  \item This is the central message dispatcher for incoming P2P messages.
+  \item Transaction INVs trigger GETDATA requests; transaction bodies trigger \code{process\_transaction}.
+  \item Block INVs trigger GETDATA requests; block bodies trigger \code{add\_block}.
+  \item All routes eventually call methods on \code{node\_context}, which coordinates the actual work.
+\end{itemize}
+
+\subsection{Step 6 --- Server Runtime Loop}
+\label{sec:ch09-8-step6}
+
+\textbf{TCP server code}: \code{bitcoin/src/node/server.rs}
+
+\begin{listing}[H]
+\caption{P2P accept loop (\code{Server::run\_with\_shutdown})}
+\label{lst:9-8-6}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn run_with_shutdown(
+    &self,
+    addrs: &SocketAddr,
+    connect_nodes: HashSet<ConnectNode>,
+    mut shutdown: tokio::sync::broadcast
+        ::Receiver<()>,
+) {
+    // Bind the TCP listener
+    let listener = TcpListener::bind(addrs)
+        .await
+        .expect("TcpListener bind error");
+
+    // Bootstrap: if not central node, send version
+    if !addrs.eq(&CENTERAL_NODE) {
+        let best_height = self.node_context
+            .get_blockchain_height().await
+            .expect("Blockchain read error");
+        send_version(&CENTERAL_NODE, best_height)
+            .await;
+    }
+
+    loop {
+        tokio::select! {
+            _ = shutdown.recv() => break,
+            accept_res = listener.accept() => {
+                if let Ok((stream, _)) = accept_res {
+                    let blockchain = self
+                        .node_context.clone();
+                    tokio::spawn(async move {
+                        if let Ok(std_stream) =
+                            stream.into_std()
+                        {
+                            let _ =
+                                net_processing
+                                ::process_stream(
+                                    blockchain,
+                                    std_stream
+                                ).await;
+                        }
+                    });
+                }
+            }
+        }
+    }
+}
+\end{minted}
+\end{listing}
+
+\textbf{What to notice}:
+\begin{itemize}
+  \item The server binds to a TCP socket and accepts incoming connections in a loop.
+  \item Each accepted connection is handled by a separate task spawned with \code{tokio::spawn}.
+  \item \code{tokio::select!} waits for either a shutdown signal or a new connection.
+  \item This allows the server to accept multiple concurrent peer connections.
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Rust Concepts We'll Encounter}
+\label{sec:ch09-8-rust-concepts}
+
+This section uses several Rust-specific patterns that are essential for async network programming:
+
+\begin{itemize}
+  \item \textbf{\code{async}/\code{await}}: Functions marked \code{async} return \code{Future}s. The \code{await} keyword suspends execution until the future completes, allowing other tasks to run. This enables efficient concurrent I/O without blocking threads.
+
+  \item \textbf{\code{tokio::spawn}}: Spawns a new async task that runs concurrently. Tasks are lightweight (unlike OS threads) and can number in the thousands.
+
+  \item \textbf{\code{tokio::select!}}: A macro that waits for multiple futures and executes the branch for the first one that completes. Used for handling multiple concurrent events (e.g., shutdown signal vs incoming connection).
+
+  \item \textbf{\code{Lazy}} (from \code{once\_cell}): Thread-safe lazy initialization of static variables. Initializes on first access and ensures single initialization.
+
+  \item \textbf{\code{Clone}}: Allows copying types. In async Rust, we often clone values to move them into closures/tasks. \code{NodeContext} implements \code{Clone} to allow sharing across tasks.
+
+  \item \textbf{\code{Send + Sync}}: Marker traits for thread safety. \code{Send} means a type can be moved between threads. \code{Sync} means a type can be shared between threads via \code{\&T}.
+
+  \item \textbf{Pattern matching (\code{match})}: Exhaustively handles enum variants. Used extensively for routing network messages based on their type.
+
+  \item \textbf{\code{Result<T, E>}}: Rust's error handling type. \code{Ok(T)} for success, \code{Err(E)} for errors. The \code{?} operator propagates errors.
+
+  \item \textbf{Iterator chains}: Rust's iterator API (\code{iter()}, \code{filter()}, \code{map()}, \code{collect()}) provides a functional programming style for data transformations.
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Summary}
+\label{sec:ch09-8-summary}
+
+\begin{chaptersummary}
+  \item A blockchain node is a complete runtime system that maintains its own copy of the blockchain and participates in the peer-to-peer network.
+  \item Node orchestration wires together multiple subsystems: blockchain state, mempool, network I/O, and optional mining.
+  \item Global singletons (\code{GLOBAL\_MEMORY\_POOL}, \code{GLOBAL\_NODES}, etc.) provide shared state that is accessed by multiple subsystems concurrently.
+  \item \code{NodeContext} is the central coordination API that routes external events (web API requests, P2P messages) to the appropriate subsystems.
+  \item External events flow through \code{NodeContext} and \code{process\_stream}, which dispatch them to blockchain/mempool/miner handlers.
+  \item Background tasks (broadcast, mining) run concurrently with API responses, enabled by \code{tokio::spawn}.
+  \item The P2P server loop uses \code{tokio::select!} to multiplex between accepting new connections and handling shutdown signals.
+\end{chaptersummary}

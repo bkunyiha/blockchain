@@ -1,0 +1,19 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+UI layer: routes + components
++\PYGZhy{} App.tsx
+|  +\PYGZhy{} routes + providers
+|  +\PYGZhy{} Screens
+|     +\PYGZhy{} Dashboard / Wallet / Mining / ...
+|
+Data layer: React Query hooks
++\PYGZhy{} useApi.ts
+|  +\PYGZhy{} useQuery / useMutation
+|  +\PYGZhy{} cache keys + invalidation
+|
+HTTP boundary
++\PYGZhy{} ApiClient (Axios)
+|  +\PYGZhy{} one method per endpoint
+|
+Rust node
++\PYGZhy{} /api/admin/* endpoints
+\end{Verbatim}

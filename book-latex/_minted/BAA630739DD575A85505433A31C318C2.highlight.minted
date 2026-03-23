@@ -1,0 +1,96 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Clone)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{Server}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{node\PYGZus{}context}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{NodeContext}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{Server}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{new}\PYG{p}{(}\PYG{n}{blockchain}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{NodeContext}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{Server}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{Server}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{node\PYGZus{}context}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{blockchain}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{run\PYGZus{}with\PYGZus{}shutdown}\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{addrs}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{connect\PYGZus{}nodes}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{HashSet}\PYG{o}{\PYGZlt{}}\PYG{n}{ConnectNode}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{shutdown}\PYG{p}{:}
+\PYG{+w}{            }\PYG{n+nc}{tokio}\PYG{p}{::}\PYG{n}{sync}\PYG{p}{::}\PYG{n}{broadcast}\PYG{p}{::}\PYG{n}{Receiver}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{listener}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{TcpListener}\PYG{p}{::}\PYG{n}{bind}\PYG{p}{(}\PYG{n}{addrs}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{TcpListener bind error}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{info}\PYG{o}{!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Server listening on \PYGZob{}:?\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{listener}\PYG{p}{.}\PYG{n}{local\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{addrs}\PYG{p}{.}\PYG{n}{eq}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{CENTERAL\PYGZus{}NODE}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{best\PYGZus{}height}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}
+\PYG{+w}{                }\PYG{p}{.}\PYG{n}{node\PYGZus{}context}
+\PYG{+w}{                }\PYG{p}{.}\PYG{n}{get\PYGZus{}blockchain\PYGZus{}height}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{                }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{                }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Blockchain read error}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{send\PYGZus{}version}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{CENTERAL\PYGZus{}NODE}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{best\PYGZus{}height}\PYG{p}{)}
+\PYG{+w}{                }\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{remote\PYGZus{}nodes}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{HashSet}\PYG{o}{\PYGZlt{}}\PYG{n}{SocketAddr}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{                }\PYG{n}{connect\PYGZus{}nodes}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{iter}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{filter}\PYG{p}{(}\PYG{o}{|}\PYG{n}{node}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{node}\PYG{p}{.}\PYG{n}{is\PYGZus{}remote}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{map}\PYG{p}{(}\PYG{o}{|}\PYG{n}{node}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{node}\PYG{p}{.}\PYG{n}{get\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{collect}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{            }\PYG{n}{GLOBAL\PYGZus{}NODES}
+\PYG{+w}{                }\PYG{p}{.}\PYG{n}{add\PYGZus{}nodes}\PYG{p}{(}\PYG{n}{remote\PYGZus{}nodes}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{                }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Global nodes add error}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{c+c1}{// Serve incoming connections with}
+\PYG{+w}{        }\PYG{c+c1}{// graceful shutdown.}
+\PYG{+w}{        }\PYG{k}{loop}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{tokio}\PYG{p}{::}\PYG{n}{select}\PYG{o}{!}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{shutdown}\PYG{p}{.}\PYG{n}{recv}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n}{info}\PYG{o}{!}\PYG{p}{(}
+\PYG{+w}{                        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Network server shutdown signal received}\PYG{l+s}{\PYGZdq{}}
+\PYG{+w}{                    }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{k}{break}\PYG{p}{;}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{n}{accept\PYGZus{}res}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{listener}\PYG{p}{.}\PYG{n}{accept}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{accept\PYGZus{}res}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{n}{stream}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{\PYGZus{}peer}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{                                }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{node\PYGZus{}context}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                            }\PYG{n}{tokio}\PYG{p}{::}\PYG{n}{spawn}\PYG{p}{(}\PYG{k}{async}\PYG{+w}{ }\PYG{k}{move}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                                }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{stream}\PYG{p}{.}\PYG{n}{into\PYGZus{}std}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                                    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{std\PYGZus{}stream}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                                        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{std\PYGZus{}stream}
+\PYG{+w}{                                            }\PYG{p}{.}\PYG{n}{set\PYGZus{}nonblocking}\PYG{p}{(}\PYG{k+kc}{false}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                                        }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{e}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{                                            }\PYG{n}{net\PYGZus{}processing}
+\PYG{+w}{                                            }\PYG{p}{::}\PYG{n}{process\PYGZus{}stream}\PYG{p}{(}
+\PYG{+w}{                                                }\PYG{n}{blockchain}\PYG{p}{,}
+\PYG{+w}{                                                }\PYG{n}{std\PYGZus{}stream}\PYG{p}{,}
+\PYG{+w}{                                            }\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                                            }\PYG{n}{error}\PYG{o}{!}\PYG{p}{(}
+\PYG{+w}{                                                }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Serve error: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{                                                }\PYG{n}{e}
+\PYG{+w}{                                            }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                                        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                                    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                                    }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{e}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                                        }\PYG{n}{error}\PYG{o}{!}\PYG{p}{(}
+\PYG{+w}{                                            }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Stream conversion error: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{                                            }\PYG{n}{e}
+\PYG{+w}{                                        }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                                    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                            }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                        }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{e}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                            }\PYG{n}{error}\PYG{o}{!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Accept error: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

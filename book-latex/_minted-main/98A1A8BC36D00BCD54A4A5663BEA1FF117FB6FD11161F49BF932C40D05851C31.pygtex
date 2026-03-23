@@ -1,0 +1,98 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{app}::\PYG{n}{AdminApp}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{types}::\PYG{p}{\PYGZob{}}\PYG{n}{Menu}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Message}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{BlockchainSection}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{iced}::\PYG{n}{Element}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{iced}::\PYG{n}{widget}::\PYG{p}{\PYGZob{}}\PYG{n}{button}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{column}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{container}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{row}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{text}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{text\PYGZus{}input}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{view}\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZsq{}}\PYG{n+na}{a}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{n}{app}: \PYG{k+kp}{\PYGZam{}}\PYG{o}{\PYGZsq{}}\PYG{n+na}{a} \PYG{n+nc}{AdminApp}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{Element}\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZsq{}}\PYG{n+na}{a}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Message}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// The view is (mostly) pure: it reads app and returns an Element\PYGZlt{}Message\PYGZgt{}.}
+\PYG{+w}{    }\PYG{c+c1}{// Any \PYGZdq{}actions\PYGZdq{} are triggered by Messages, handled in update.rs.}
+
+\PYG{+w}{    }\PYG{c+c1}{// Toolbar: configure base\PYGZus{}url and api\PYGZus{}key}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{toolbar}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{row}\PYG{o}{!}\PYG{p}{[}
+\PYG{+w}{        }\PYG{n}{text}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Base URL:}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{.}\PYG{n}{size}\PYG{p}{(}\PYG{l+m+mi}{12}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{text\PYGZus{}input}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{http://127.0.0.1:8080}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{app}\PYG{p}{.}\PYG{n}{base\PYGZus{}url}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{on\PYGZus{}input}\PYG{p}{(}\PYG{n}{Message}::\PYG{n}{BaseUrlChanged}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{width}\PYG{p}{(}\PYG{n}{iced}::\PYG{n}{Length}::\PYG{n}{Fixed}\PYG{p}{(}\PYG{l+m+mf}{250.0}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{text}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Admin Key:}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{.}\PYG{n}{size}\PYG{p}{(}\PYG{l+m+mi}{12}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{text\PYGZus{}input}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{admin\PYGZhy{}secret}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{app}\PYG{p}{.}\PYG{n}{api\PYGZus{}key}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{on\PYGZus{}input}\PYG{p}{(}\PYG{n}{Message}::\PYG{n}{ApiKeyChanged}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{width}\PYG{p}{(}\PYG{n}{iced}::\PYG{n}{Length}::\PYG{n}{Fixed}\PYG{p}{(}\PYG{l+m+mf}{200.0}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{text}\PYG{p}{(}\PYG{n+nf+fm}{format!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Status: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{size}\PYG{p}{(}\PYG{l+m+mi}{12}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{width}\PYG{p}{(}\PYG{n}{iced}::\PYG{n}{Length}::\PYG{n}{Fill}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{]}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{spacing}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{padding}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Left navigation menu}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{nav\PYGZus{}buttons}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{column!}\PYG{p}{[}
+\PYG{+w}{        }\PYG{n}{button}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Blockchain}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{on\PYGZus{}press}\PYG{p}{(}\PYG{n}{Message}::\PYG{n}{MenuChanged}\PYG{p}{(}\PYG{n}{Menu}::\PYG{n}{Blockchain}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{button}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Wallet}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{on\PYGZus{}press}\PYG{p}{(}\PYG{n}{Message}::\PYG{n}{MenuChanged}\PYG{p}{(}\PYG{n}{Menu}::\PYG{n}{Wallet}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{button}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Transactions}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{on\PYGZus{}press}\PYG{p}{(}\PYG{n}{Message}::\PYG{n}{MenuChanged}\PYG{p}{(}\PYG{n}{Menu}::\PYG{n}{Transactions}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{button}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Mining}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{on\PYGZus{}press}\PYG{p}{(}\PYG{n}{Message}::\PYG{n}{MenuChanged}\PYG{p}{(}\PYG{n}{Menu}::\PYG{n}{Mining}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{button}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Health}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{on\PYGZus{}press}\PYG{p}{(}\PYG{n}{Message}::\PYG{n}{MenuChanged}\PYG{p}{(}\PYG{n}{Menu}::\PYG{n}{Health}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{]}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{spacing}\PYG{p}{(}\PYG{l+m+mi}{4}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{padding}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Main content panel: dispatch to view\PYGZus{}* functions by menu}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{content}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{menu}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{Menu}::\PYG{n}{Blockchain}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{view\PYGZus{}blockchain}\PYG{p}{(}\PYG{n}{app}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{Menu}::\PYG{n}{Wallet}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{view\PYGZus{}wallet}\PYG{p}{(}\PYG{n}{app}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{Menu}::\PYG{n}{Transactions}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{view\PYGZus{}transactions}\PYG{p}{(}\PYG{n}{app}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{Menu}::\PYG{n}{Mining}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{view\PYGZus{}mining}\PYG{p}{(}\PYG{n}{app}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{Menu}::\PYG{n}{Health}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{view\PYGZus{}health}\PYG{p}{(}\PYG{n}{app}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Assemble: toolbar + (nav + content)}
+\PYG{+w}{    }\PYG{n}{container}\PYG{p}{(}
+\PYG{+w}{        }\PYG{n+nf+fm}{column!}\PYG{p}{[}
+\PYG{+w}{            }\PYG{n}{toolbar}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{row}\PYG{o}{!}\PYG{p}{[}
+\PYG{+w}{                }\PYG{n}{container}\PYG{p}{(}\PYG{n}{nav\PYGZus{}buttons}\PYG{p}{)}\PYG{p}{.}\PYG{n}{width}\PYG{p}{(}\PYG{n}{iced}::\PYG{n}{Length}::\PYG{n}{Fixed}\PYG{p}{(}\PYG{l+m+mf}{150.0}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{container}\PYG{p}{(}\PYG{n}{content}\PYG{p}{)}\PYG{p}{.}\PYG{n}{width}\PYG{p}{(}\PYG{n}{iced}::\PYG{n}{Length}::\PYG{n}{Fill}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{]}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{spacing}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{height}\PYG{p}{(}\PYG{n}{iced}::\PYG{n}{Length}::\PYG{n}{Fill}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{]}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{spacing}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{padding}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{into}\PYG{p}{(}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Helper: render the Blockchain section}
+\PYG{k}{fn} \PYG{n+nf}{view\PYGZus{}blockchain}\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZsq{}}\PYG{n+na}{a}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{n}{app}: \PYG{k+kp}{\PYGZam{}}\PYG{o}{\PYGZsq{}}\PYG{n+na}{a} \PYG{n+nc}{AdminApp}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{Element}\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZsq{}}\PYG{n+na}{a}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Message}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{blockchain\PYGZus{}section}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{BlockchainSection}::\PYG{n}{Info}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n+nf+fm}{column!}\PYG{p}{[}
+\PYG{+w}{                }\PYG{n}{button}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Fetch Info}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{.}\PYG{n}{on\PYGZus{}press}\PYG{p}{(}\PYG{n}{Message}::\PYG{n}{FetchInfo}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{text\PYGZus{}editor}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{app}\PYG{p}{.}\PYG{n}{blockchain\PYGZus{}info\PYGZus{}editor}\PYG{p}{)}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{on\PYGZus{}action}\PYG{p}{(}\PYG{n}{Message}::\PYG{n}{BlockchainInfoEditorAction}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{]}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{spacing}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{into}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{BlockchainSection}::\PYG{n}{LatestBlocks}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n+nf+fm}{column!}\PYG{p}{[}
+\PYG{+w}{                }\PYG{n}{button}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Fetch Blocks}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{.}\PYG{n}{on\PYGZus{}press}\PYG{p}{(}\PYG{n}{Message}::\PYG{n}{FetchBlocks}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{row}\PYG{o}{!}\PYG{p}{[}
+\PYG{+w}{                    }\PYG{n}{text}\PYG{p}{(}\PYG{n+nf+fm}{format!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Loaded: \PYGZob{}\PYGZcb{} blocks}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{blocks}\PYG{p}{.}\PYG{n}{len}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{p}{]}
+\PYG{+w}{                }\PYG{p}{.}\PYG{n}{spacing}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{]}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{spacing}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{into}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{container}\PYG{p}{(}\PYG{n}{text}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Select a section}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{n}{into}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Similar for view\PYGZus{}wallet, view\PYGZus{}transactions, view\PYGZus{}mining, view\PYGZus{}health...}
+\end{Verbatim}

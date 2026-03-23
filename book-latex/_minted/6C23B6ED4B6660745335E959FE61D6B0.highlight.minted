@@ -1,0 +1,12 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+Memory for 1 million transaction IDs:
+
+Vec\PYGZlt{}u8\PYGZgt{} storage:
+1,000,000 txids × 32 bytes = 32 MB
+
+String storage:
+1,000,000 txids × 64 bytes = 64 MB
+Plus String overhead = \PYGZti{}88 MB total
+
+SAVINGS: 56 MB (64\PYGZpc{} reduction!)
+\end{MintedVerbatim}

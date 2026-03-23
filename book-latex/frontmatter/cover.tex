@@ -1,0 +1,16 @@
+% ══════════════════════════════════════════════════════════════
+%  Front Cover — full-bleed image filling the entire page
+% ══════════════════════════════════════════════════════════════
+\thispagestyle{empty}
+\AddToShipoutPictureBG*{%
+  \put(0,0){%
+    \parbox[b][\stockheight]{\stockwidth}{%
+      \vfill
+      \centering
+      \includegraphics[width=\stockwidth,height=\stockheight]{images/front-cover}%
+      \vfill
+    }%
+  }%
+}
+\null
+\cleardoublepage

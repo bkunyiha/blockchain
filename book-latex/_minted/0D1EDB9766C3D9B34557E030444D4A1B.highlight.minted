@@ -1,0 +1,29 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+bitcoin/src/web/
+├── mod.rs              \PYGZsh{} Module exports
+├── server.rs           \PYGZsh{} Server initialization
+├── routes/             \PYGZsh{} Route definitions
+│   ├── mod.rs
+│   ├── api.rs          \PYGZsh{} API routes
+│   └── web.rs          \PYGZsh{} Web UI routes
+├── handlers/           \PYGZsh{} Request handlers
+│   ├── mod.rs
+│   ├── blockchain.rs   \PYGZsh{} Blockchain endpoints
+│   ├── wallet.rs       \PYGZsh{} Wallet operations
+│   ├── transaction.rs  \PYGZsh{} Transaction management
+│   ├── mining.rs       \PYGZsh{} Mining operations
+│   ├── health.rs       \PYGZsh{} Health checks
+│   └── validation.rs   \PYGZsh{} Request validation
+├── middleware/         \PYGZsh{} HTTP middleware
+│   ├── mod.rs
+│   ├── auth.rs         \PYGZsh{} Authentication
+│   ├── cors.rs         \PYGZsh{} CORS configuration
+│   ├── logging.rs      \PYGZsh{} Logging
+│   └── rate\PYGZus{}limit.rs   \PYGZsh{} Rate limiting
+├── models/             \PYGZsh{} Data models
+│   ├── mod.rs
+│   ├── requests.rs     \PYGZsh{} Request structures
+│   ├── responses.rs    \PYGZsh{} Response structures
+│   └── errors.rs       \PYGZsh{} Error models
+└── openapi.rs          \PYGZsh{} OpenAPI specification
+\end{MintedVerbatim}

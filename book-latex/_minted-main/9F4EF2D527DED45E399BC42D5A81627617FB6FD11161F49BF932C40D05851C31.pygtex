@@ -1,0 +1,22 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Source: context.rs (simplified)}
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{submit\PYGZus{}transaction\PYGZus{}for\PYGZus{}mining}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{addr\PYGZus{}from}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{std}::\PYG{n}{net}::\PYG{n}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{tx}: \PYG{n+nc}{Transaction}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Broadcast transaction to peers by sending INV message}
+\PYG{+w}{    }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{send\PYGZus{}inv\PYGZus{}for\PYGZus{}transaction}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{tx}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// If this is a mining node and mempool}
+\PYG{+w}{    }\PYG{c+c1}{// is large enough, trigger mining}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{mempool\PYGZus{}size}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{get\PYGZus{}mempool\PYGZus{}size}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{is\PYGZus{}mining\PYGZus{}enabled}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{mempool\PYGZus{}size}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{MINING\PYGZus{}TRIGGER\PYGZus{}THRESHOLD}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{trigger\PYGZus{}mining\PYGZus{}with\PYGZus{}candidate\PYGZus{}txs}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

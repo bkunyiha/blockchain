@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+kubectl apply \PYGZhy{}f \PYG{l+m}{02}\PYGZhy{}configmap.yaml
+kubectl apply \PYGZhy{}f \PYG{l+m}{03}\PYGZhy{}secrets.yaml
+kubectl apply \PYGZhy{}f \PYG{l+m}{14}\PYGZhy{}configmap\PYGZhy{}rate\PYGZhy{}limit.yaml
+\end{Verbatim}

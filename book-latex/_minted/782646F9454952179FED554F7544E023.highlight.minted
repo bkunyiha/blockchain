@@ -1,0 +1,10 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+1. docker\PYGZhy{}compose.yml (Docker Compose reads configuration)
+   ↓
+2. Dockerfile (builds the blockchain binary into an image)
+   ↓
+3. docker\PYGZhy{}entrypoint.sh (Container startup script)
+   ├─ wait\PYGZhy{}for\PYGZhy{}node.sh (if sequential startup requires waiting)
+   ↓
+4. /app/blockchain startnode ... (Rust binary entry point)
+\end{MintedVerbatim}

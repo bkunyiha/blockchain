@@ -1,0 +1,46 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{fn} \PYG{n+nf}{run\PYGZus{}migrations}\PYG{p}{(}\PYG{n}{conn}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Connection}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{SqliteResult}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{current\PYGZus{}version}: \PYG{k+kt}{i32} \PYG{o}{=}\PYG{+w}{ }\PYG{n}{conn}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{query\PYGZus{}row}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{SELECT version FROM schema\PYGZus{}version LIMIT 1}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{[}\PYG{p}{]}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{|}\PYG{n}{row}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Migration 1 \PYGZhy{}\PYGZgt{} 2: detect old column and recreate table}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{current\PYGZus{}version}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{table\PYGZus{}info}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{prepare}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{PRAGMA table\PYGZus{}info(users)}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{has\PYGZus{}old\PYGZus{}column}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{table\PYGZus{}info}\PYG{p}{.}\PYG{n}{exists}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{has\PYGZus{}old\PYGZus{}column}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute\PYGZus{}batch}\PYG{p}{(}
+\PYG{+w}{                }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{BEGIN TRANSACTION;}
+\PYG{l+s}{                 CREATE TABLE users\PYGZus{}new (}
+\PYG{l+s}{                     id INTEGER PRIMARY KEY CHECK (id = 1),}
+\PYG{l+s}{                     first\PYGZus{}name TEXT,}
+\PYG{l+s}{                     last\PYGZus{}name TEXT,}
+\PYG{l+s}{                     profile\PYGZus{}picture BLOB,}
+\PYG{l+s}{                     created\PYGZus{}at TEXT NOT NULL,}
+\PYG{l+s}{                     updated\PYGZus{}at TEXT NOT NULL}
+\PYG{l+s}{                 );}
+\PYG{l+s}{                 INSERT INTO users\PYGZus{}new}
+\PYG{l+s}{                   SELECT id, first\PYGZus{}name, last\PYGZus{}name, NULL,}
+\PYG{l+s}{                          created\PYGZus{}at, updated\PYGZus{}at FROM users;}
+\PYG{l+s}{                 DROP TABLE users;}
+\PYG{l+s}{                 ALTER TABLE users\PYGZus{}new RENAME TO users;}
+\PYG{l+s}{                 COMMIT;}\PYG{l+s}{\PYGZdq{}}
+\PYG{+w}{            }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{UPDATE schema\PYGZus{}version SET version = ?}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{params}\PYG{o}{!}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{current\PYGZus{}version}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{SCHEMA\PYGZus{}VERSION}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{            }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{UPDATE schema\PYGZus{}version SET version = ?}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{params}\PYG{o}{!}\PYG{p}{[}\PYG{n}{SCHEMA\PYGZus{}VERSION}\PYG{p}{]}
+\PYG{+w}{        }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,48 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Source: bitcoin/src/net/net\PYGZus{}processing.rs}
+\PYG{k}{match}\PYG{+w}{ }\PYG{n}{pkg}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Peer says: \PYGZdq{}I have txid\PYGZdq{}}
+\PYG{+w}{    }\PYG{n}{Package}::\PYG{n}{Inv}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{op\PYGZus{}type}: \PYG{n+nc}{OpType}::\PYG{n}{Tx}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{items}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{txid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{items}\PYG{p}{.}\PYG{n}{first}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{INV items empty}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{txid\PYGZus{}hex}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{HEXLOWER}\PYG{p}{.}\PYG{n}{encode}\PYG{p}{(}\PYG{n}{txid}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{c+c1}{// If not already in mempool, request}
+\PYG{+w}{        }\PYG{c+c1}{// the full tx bytes}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{contains}\PYG{p}{(}\PYG{n}{txid\PYGZus{}hex}\PYG{p}{.}\PYG{n}{as\PYGZus{}str}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{mempool contains error}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{send\PYGZus{}get\PYGZus{}data}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{OpType}::\PYG{n}{Tx}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{txid}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// Peer sends: full tx bytes}
+\PYG{+w}{    }\PYG{n}{Package}::\PYG{n}{Tx}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{transaction}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Transaction}::\PYG{n}{deserialize}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{transaction}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Transaction deserialization}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{c+c1}{// Admit to mempool; may also trigger mining}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{node\PYGZus{}context}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{process\PYGZus{}transaction}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// Peer sends: full block bytes}
+\PYG{+w}{    }\PYG{n}{Package}::\PYG{n}{Block}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{block}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Block}::\PYG{n}{deserialize}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{block}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Block deserialization}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{node\PYGZus{}context}\PYG{p}{.}\PYG{n}{add\PYGZus{}block}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{block}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{expect}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Blockchain write error}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

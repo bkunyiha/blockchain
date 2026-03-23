@@ -1,0 +1,40 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{import} \PYG{n+nx}{React}\PYG{p}{,} \PYG{p}{\PYGZob{}} \PYG{n+nx}{createContext}\PYG{p}{,} \PYG{n+nx}{useState}\PYG{p}{,} \PYG{n+nx}{useEffect}\PYG{p}{,} \PYG{n+nx}{ReactNode} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}react\PYGZsq{}}
+
+\PYG{k+kd}{interface} \PYG{n+nx}{ApiConfig} \PYG{p}{\PYGZob{}}
+  \PYG{n+nx}{baseURL}: \PYG{k+kt}{string}
+  \PYG{n+nx}{apiKey}: \PYG{k+kt}{string}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export} \PYG{k+kd}{const} \PYG{n+nx}{ApiConfigContext} \PYG{o}{=} \PYG{n+nx}{createContext}\PYG{o}{\PYGZlt{}}\PYG{p}{\PYGZob{}}
+  \PYG{n+nx}{config}: \PYG{k+kt}{ApiConfig}
+  \PYG{n+nx}{setConfig}\PYG{o}{:} \PYG{p}{(}\PYG{n+nx}{config}: \PYG{k+kt}{ApiConfig}\PYG{p}{)} \PYG{p}{=\PYGZgt{}} \PYG{o+ow}{void}
+\PYG{p}{\PYGZcb{}} \PYG{o}{|} \PYG{k+kc}{undefined}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{k+kc}{undefined}\PYG{p}{)}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{ApiConfigProvider}\PYG{p}{(\PYGZob{}} \PYG{n+nx}{children} \PYG{p}{\PYGZcb{}}\PYG{o}{:} \PYG{p}{\PYGZob{}} \PYG{n+nx}{children}: \PYG{k+kt}{ReactNode} \PYG{p}{\PYGZcb{})} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{const} \PYG{p}{[}\PYG{n+nx}{config}\PYG{p}{,} \PYG{n+nx}{setConfig}\PYG{p}{]} \PYG{o}{=} \PYG{n+nx}{useState}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiConfig}\PYG{o}{\PYGZgt{}}\PYG{p}{(()} \PYG{p}{=\PYGZgt{}} \PYG{p}{\PYGZob{}}
+    \PYG{k+kd}{const} \PYG{n+nx}{saved} \PYG{o}{=} \PYG{n+nx}{localStorage}\PYG{p}{.}\PYG{n+nx}{getItem}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}apiConfig\PYGZsq{}}\PYG{p}{)}
+    \PYG{k}{return} \PYG{n+nx}{saved}
+      \PYG{o}{?} \PYG{n+nb}{JSON}\PYG{p}{.}\PYG{n+nx}{parse}\PYG{p}{(}\PYG{n+nx}{saved}\PYG{p}{)}
+      \PYG{o}{:} \PYG{p}{\PYGZob{}} \PYG{n+nx}{baseURL}\PYG{o}{:} \PYG{l+s+s1}{\PYGZsq{}http://127.0.0.1:8080\PYGZsq{}}\PYG{p}{,} \PYG{n+nx}{apiKey}\PYG{o}{:} \PYG{l+s+s1}{\PYGZsq{}\PYGZsq{}} \PYG{p}{\PYGZcb{}}
+  \PYG{p}{\PYGZcb{})}
+
+  \PYG{n+nx}{useEffect}\PYG{p}{(()} \PYG{p}{=\PYGZgt{}} \PYG{p}{\PYGZob{}}
+    \PYG{n+nx}{localStorage}\PYG{p}{.}\PYG{n+nx}{setItem}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}apiConfig\PYGZsq{}}\PYG{p}{,} \PYG{n+nb}{JSON}\PYG{p}{.}\PYG{n+nx}{stringify}\PYG{p}{(}\PYG{n+nx}{config}\PYG{p}{))}
+  \PYG{p}{\PYGZcb{},} \PYG{p}{[}\PYG{n+nx}{config}\PYG{p}{])}
+
+  \PYG{k}{return} \PYG{p}{(}
+    \PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiConfigContext}\PYG{p}{.}\PYG{n+nx}{Provider} \PYG{n+nx}{value}\PYG{o}{=}\PYG{p}{\PYGZob{}\PYGZob{}} \PYG{n+nx}{config}\PYG{p}{,} \PYG{n+nx}{setConfig} \PYG{p}{\PYGZcb{}\PYGZcb{}}\PYG{o}{\PYGZgt{}}
+      \PYG{p}{\PYGZob{}}\PYG{n+nx}{children}\PYG{p}{\PYGZcb{}}
+    \PYG{o}{\PYGZlt{}}\PYG{err}{/ApiConfigContext.Provider\PYGZgt{}}
+  \PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{useApiConfig}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{const} \PYG{n+nx}{context} \PYG{o}{=} \PYG{n+nx}{React}\PYG{p}{.}\PYG{n+nx}{useContext}\PYG{p}{(}\PYG{n+nx}{ApiConfigContext}\PYG{p}{)}
+  \PYG{k}{if} \PYG{p}{(}\PYG{o}{!}\PYG{n+nx}{context}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{k}{throw} \PYG{o+ow}{new} \PYG{n+ne}{Error}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}useApiConfig must be used within ApiConfigProvider\PYGZsq{}}\PYG{p}{)}
+  \PYG{p}{\PYGZcb{}}
+  \PYG{k}{return} \PYG{n+nx}{context}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

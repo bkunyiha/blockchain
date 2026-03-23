@@ -1,0 +1,23 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{create\PYGZus{}wallet}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{State}\PYG{p}{(}\PYG{n}{\PYGZus{}node}\PYG{p}{)}: \PYG{n+nc}{State}\PYG{o}{\PYGZlt{}}\PYG{n}{Arc}\PYG{o}{\PYGZlt{}}\PYG{n}{NodeContext}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Json}\PYG{p}{(}\PYG{n}{\PYGZus{}request}\PYG{p}{)}: \PYG{n+nc}{Json}\PYG{o}{\PYGZlt{}}\PYG{n}{CreateWalletRequest}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{Json}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{WalletResponse}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{StatusCode}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{wallet\PYGZus{}service}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{WalletService}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{StatusCode}::\PYG{n}{INTERNAL\PYGZus{}SERVER\PYGZus{}ERROR}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{address}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{wallet\PYGZus{}service}\PYG{p}{.}\PYG{n}{create\PYGZus{}wallet}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{StatusCode}::\PYG{n}{INTERNAL\PYGZus{}SERVER\PYGZus{}ERROR}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{wallet}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{wallet\PYGZus{}service}\PYG{p}{.}\PYG{n}{get\PYGZus{}wallet}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{address}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{ok\PYGZus{}or}\PYG{p}{(}\PYG{n}{StatusCode}::\PYG{n}{INTERNAL\PYGZus{}SERVER\PYGZus{}ERROR}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{response}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{WalletResponse}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{address}: \PYG{n+nc}{address}\PYG{p}{.}\PYG{n}{as\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{public\PYGZus{}key}: \PYG{n+nc}{HEXLOWER}\PYG{p}{.}\PYG{n}{encode}\PYG{p}{(}\PYG{n}{wallet}\PYG{p}{.}\PYG{n}{get\PYGZus{}public\PYGZus{}key}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{created\PYGZus{}at}: \PYG{n+nc}{chrono}::\PYG{n}{Utc}::\PYG{n}{now}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{Json}\PYG{p}{(}\PYG{n}{ApiResponse}::\PYG{n}{success}\PYG{p}{(}\PYG{n}{response}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

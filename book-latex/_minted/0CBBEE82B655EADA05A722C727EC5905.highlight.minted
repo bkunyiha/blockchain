@@ -1,0 +1,9 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Describe pod to see probe failures}
+kubectl\PYG{+w}{ }describe\PYG{+w}{ }pod\PYG{+w}{ }miner\PYGZhy{}0\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain
+
+\PYG{c+c1}{\PYGZsh{} Common causes:}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{} Port mismatches between container and probe}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{} Process not listening on expected port}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{} Application startup delay}
+\end{MintedVerbatim}

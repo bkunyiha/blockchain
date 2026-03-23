@@ -1,0 +1,19 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{Peer}\PYG{+w}{ }\PYG{n}{A}\PYG{+w}{ }\PYG{n}{has}\PYG{+w}{ }\PYG{n}{object}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{tx}\PYG{+w}{ }\PYG{n}{or}\PYG{+w}{ }\PYG{n}{block}\PYG{p}{)}
+\PYG{+w}{  }\PYG{o}{|}
+\PYG{+w}{  }\PYG{o}{|}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{announce}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{hash}\PYG{+w}{ }\PYG{n}{only}\PYG{p}{)}
+\PYG{+w}{  }\PYG{n}{v}
+\PYG{n}{INV}\PYG{p}{(}\PYG{n}{op\PYGZus{}type}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{[}\PYG{n}{id}\PYG{p}{]}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYGZhy{}\PYGZgt{} \PYG{n+nc}{Peer}\PYG{+w}{ }\PYG{n}{B}
+\PYG{+w}{                             }\PYG{o}{|}
+\PYG{+w}{                             }\PYG{o}{|}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{request}\PYG{+w}{ }\PYG{n}{bytes}
+\PYG{+w}{                             }\PYG{n}{v}
+\PYG{+w}{                          }\PYG{n}{GETDATA}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYGZhy{}\PYGZgt{} \PYG{n+nc}{Peer}\PYG{+w}{ }\PYG{n}{A}
+\PYG{+w}{                                           }\PYG{o}{|}
+\PYG{+w}{                                           }\PYG{o}{|}\PYG{+w}{ }\PYG{l+m+mi}{3}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{send}\PYG{+w}{ }\PYG{n}{full}\PYG{+w}{ }\PYG{n}{bytes}
+\PYG{+w}{                                           }\PYG{n}{v}
+\PYG{+w}{                                  }\PYG{p}{(}\PYG{n}{TX}\PYG{+w}{ }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{BLOCK}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYGZhy{}\PYGZgt{} \PYG{n+nc}{Peer}\PYG{+w}{ }\PYG{n}{B}
+\PYG{+w}{                                                        }\PYG{o}{|}
+\PYG{+w}{                                                        }\PYG{o}{|}\PYG{+w}{ }\PYG{l+m+mi}{4}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{hand}\PYG{+w}{ }\PYG{n}{to}\PYG{+w}{ }\PYG{n}{node}
+\PYG{+w}{                                                        }\PYG{n}{v}
+\PYG{+w}{                                                 }\PYG{n}{mempool}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{add\PYGZus{}block}
+\end{Verbatim}

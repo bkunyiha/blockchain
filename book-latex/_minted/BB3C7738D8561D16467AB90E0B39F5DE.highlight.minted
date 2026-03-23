@@ -1,0 +1,10 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{TryFrom}\PYG{o}{\PYGZlt{}}\PYG{n}{Block}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{IVec}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{type}\PYG{+w}{ }\PYG{n+nc}{Error}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{BtcError}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{try\PYGZus{}from}\PYG{p}{(}\PYG{n}{block}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Block}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb+bp}{Self}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb+bp}{Self}\PYG{p}{::}\PYG{n}{Error}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{serialized}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{block}\PYG{p}{.}\PYG{n}{serialize}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{IVec}\PYG{p}{::}\PYG{n}{from}\PYG{p}{(}\PYG{n}{serialized}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

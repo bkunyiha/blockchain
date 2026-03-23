@@ -1,0 +1,26 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{+w}{    }\PYG{k}{match}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{is\PYGZus{}web\PYGZus{}server}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{is\PYGZus{}miner}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{p}{(}\PYG{n}{IsWebServer}\PYG{p}{::}\PYG{n}{Yes}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{IsMiner}\PYG{p}{::}\PYG{n}{No}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{web\PYGZus{}server}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{                }\PYG{n}{create\PYGZus{}web\PYGZus{}server}\PYG{p}{(}\PYG{n}{node\PYGZus{}context}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{web\PYGZus{}handle}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tokio}\PYG{p}{::}\PYG{n}{spawn}\PYG{p}{(}\PYG{k}{async}\PYG{+w}{ }\PYG{k}{move}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{web\PYGZus{}server}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{start\PYGZus{}with\PYGZus{}shutdown}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{c+c1}{// ... (wait for Ctrl+C or task completion)}
+\PYG{+w}{            }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{(}\PYG{n}{IsWebServer}\PYG{p}{::}\PYG{n}{Yes}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{BtcError}\PYG{p}{::}\PYG{n}{InvalidConfiguration}\PYG{p}{(}
+\PYG{+w}{                }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Web server and miner cannot }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{                 be enabled at the same time}\PYG{l+s}{\PYGZdq{}}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{c+c1}{// ... (wait for Ctrl+C or task completion)}
+\PYG{+w}{            }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

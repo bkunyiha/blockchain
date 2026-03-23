@@ -1,0 +1,100 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}@tauri\PYGZhy{}apps/api/core\PYGZsq{}}\PYG{p}{;}
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{BlockchainInfo}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{BlockSummary}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{ApiResponse}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}./types\PYGZsq{}}\PYG{p}{;}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getBlockchainInfo}\PYG{p}{(}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{BlockchainInfo}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{BlockchainInfo}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}blockchain\PYGZus{}info\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getLatestBlocks}\PYG{p}{(}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{BlockSummary}\PYG{p}{[}\PYG{p}{]}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{BlockSummary}\PYG{p}{[}\PYG{p}{]}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}latest\PYGZus{}blocks\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getBlocks}\PYG{p}{(}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}blocks\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getBlockByHash}\PYG{p}{(}\PYG{n+nx}{hash}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}block\PYGZus{}by\PYGZus{}hash\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{hash}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getMiningInfo}\PYG{p}{(}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}mining\PYGZus{}info\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{generateToAddress}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n+nx}{address}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{nblocks}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{number}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{maxtries?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{number}\PYG{p}{,}
+\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}generate\PYGZus{}to\PYGZus{}address\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nx}{address}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{nblocks}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{maxtries}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getHealth}\PYG{p}{(}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}health\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getLiveness}\PYG{p}{(}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}liveness\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getReadiness}\PYG{p}{(}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}readiness\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getMempool}\PYG{p}{(}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}mempool\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getMempoolTransaction}\PYG{p}{(}\PYG{n+nx}{txid}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}mempool\PYGZus{}transaction\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{txid}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getTransactions}\PYG{p}{(}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}transactions\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getAddressTransactions}\PYG{p}{(}\PYG{n+nx}{address}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}address\PYGZus{}transactions\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{address}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{createWalletAdmin}\PYG{p}{(}\PYG{n+nx}{label?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}create\PYGZus{}wallet\PYGZus{}admin\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{label}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getAddressesAdmin}\PYG{p}{(}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}addresses\PYGZus{}admin\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getWalletInfoAdmin}\PYG{p}{(}\PYG{n+nx}{address}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}wallet\PYGZus{}info\PYGZus{}admin\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{address}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getBalanceAdmin}\PYG{p}{(}\PYG{n+nx}{address}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}balance\PYGZus{}admin\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{address}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{sendTransactionAdmin}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n+nx}{from}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{to}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{amount}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{number}\PYG{p}{,}
+\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{any}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}send\PYGZus{}transaction\PYGZus{}admin\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{to}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{amount}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{setBaseUrl}\PYG{p}{(}\PYG{n+nx}{url}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{o+ow}{void}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{o+ow}{void}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}set\PYGZus{}base\PYGZus{}url\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{url}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{setApiKey}\PYG{p}{(}\PYG{n+nx}{key}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{o+ow}{void}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{o+ow}{void}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}set\PYGZus{}api\PYGZus{}key\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{key}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getConfig}\PYG{p}{(}\PYG{p}{)}\PYG{o}{:}\PYG{+w}{ }\PYG{n+nb}{Promise}\PYG{o}{\PYGZlt{}}\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{baseUrl}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{ }\PYG{n+nx}{apiKey}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{invoke}\PYG{o}{\PYGZlt{}}\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{baseUrl}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{ }\PYG{n+nx}{apiKey}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}cmd\PYGZus{}get\PYGZus{}config\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

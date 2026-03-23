@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{tracing}::\PYG{n}{instrument}\PYG{p}{;}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{instrument}\PYG{c+cp}{]}
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{process\PYGZus{}transaction}\PYG{p}{(}\PYG{n}{txid}: \PYG{n+nb}{String}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Automatic span creation with function name}
+\PYG{+w}{    }\PYG{c+c1}{// All logs include span context}
+\PYG{+w}{    }\PYG{n}{info}\PYG{o}{!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Processing transaction}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

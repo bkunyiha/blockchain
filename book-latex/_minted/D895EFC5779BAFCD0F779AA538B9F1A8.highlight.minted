@@ -1,0 +1,8 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+update (sync)        runtime (tokio)           api (async)
+─────────────        ───────────────           ───────────
+Task::perform(   spawn\PYGZus{}on\PYGZus{}tokio(fut)  \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZgt{}  AdminClient::new()
+  spawn\PYGZus{}on\PYGZus{}tokio,     .await                .endpoint().await
+  Message::Loaded                          .send()
+)
+\end{MintedVerbatim}

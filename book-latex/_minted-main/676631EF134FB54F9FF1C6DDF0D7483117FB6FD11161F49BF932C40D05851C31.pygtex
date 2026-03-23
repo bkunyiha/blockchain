@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Serialize, Deserialize, ToSchema)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{TransactionResponse}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{txid}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{is\PYGZus{}coinbase}: \PYG{k+kt}{bool}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{input\PYGZus{}count}: \PYG{k+kt}{usize}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{output\PYGZus{}count}: \PYG{k+kt}{usize}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{total\PYGZus{}input\PYGZus{}value}: \PYG{k+kt}{i32}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{total\PYGZus{}output\PYGZus{}value}: \PYG{k+kt}{i32}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{fee}: \PYG{k+kt}{i32}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{timestamp}: \PYG{n+nc}{DateTime}\PYG{o}{\PYGZlt{}}\PYG{n}{Utc}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{size\PYGZus{}bytes}: \PYG{k+kt}{usize}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

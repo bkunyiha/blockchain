@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Good: Type\PYGZhy{}safe wrappers prevent mixing up types}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{WalletAddress}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{;}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{TransactionId}\PYG{p}{(}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{BlockHash}\PYG{p}{(}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// Bad: Raw types can be confused}
+\PYG{k}{fn} \PYG{n+nf}{process\PYGZus{}tx}\PYG{p}{(}\PYG{n}{id}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{k}{fn} \PYG{n+nf}{process\PYGZus{}block}\PYG{p}{(}\PYG{n}{hash}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

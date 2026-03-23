@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+cargo build \PYGZhy{}\PYGZhy{}release
+cargo \PYG{n+nb}{test} \PYGZhy{}\PYGZhy{} \PYGZhy{}\PYGZhy{}nocapture
+docker compose up \PYGZhy{}d
+\end{Verbatim}

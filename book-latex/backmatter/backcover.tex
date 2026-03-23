@@ -1,0 +1,18 @@
+% ══════════════════════════════════════════════════════════════
+%  Back Cover — full-bleed image filling the entire page
+% ══════════════════════════════════════════════════════════════
+\cleardoublepage
+\thispagestyle{empty}
+% Ensure verso (left) page for the back cover
+\ifodd\value{page}\hbox{}\thispagestyle{empty}\newpage\fi
+\AddToShipoutPictureBG*{%
+  \put(0,0){%
+    \parbox[b][\stockheight]{\stockwidth}{%
+      \vfill
+      \centering
+      \includegraphics[width=\stockwidth,height=\stockheight]{images/back-cover}%
+      \vfill
+    }%
+  }%
+}
+\null

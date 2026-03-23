@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{nodes\PYGZus{}to\PYGZus{}add}\PYG{p}{.}\PYG{n}{iter}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{for\PYGZus{}each}\PYG{p}{(}\PYG{o}{|}\PYG{n}{node}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{node\PYGZus{}addr}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{node}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{tokio}::\PYG{n}{spawn}\PYG{p}{(}\PYG{k}{async}\PYG{+w}{ }\PYG{k}{move}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{send\PYGZus{}known\PYGZus{}nodes}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{node\PYGZus{}addr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{all\PYGZus{}nodes}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\end{Verbatim}

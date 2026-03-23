@@ -1,0 +1,19 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{[}\PYG{k}{rate\PYGZus{}limiter}\PYG{k}{]}
+\PYG{n}{redis\PYGZus{}addr}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{127.0.0.1:6379}\PYG{l+s+s2}{\PYGZdq{}}
+\PYG{n}{ip\PYGZus{}whitelist}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{127.0.0.1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}
+
+\PYG{c+c1}{\PYGZsh{} Per\PYGZhy{}IP limit: bursts of 20, refill 1 token per 6 sec}
+\PYG{k}{[[}\PYG{k}{rate\PYGZus{}limiter}\PYG{k}{.}\PYG{k}{limiter}\PYG{k}{]]}
+\PYG{n}{strategy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{ip}\PYG{l+s+s2}{\PYGZdq{}}
+\PYG{n}{global\PYGZus{}bucket}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{tokens\PYGZus{}count}\PYG{+w}{ }\PYG{p}{=}\PYG{+w}{ }\PYG{l+m+mi}{20}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{add\PYGZus{}tokens\PYGZus{}every}\PYG{+w}{ }\PYG{p}{=}\PYG{+w}{ }\PYG{l+m+mi}{6}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{\PYGZsh{} Tighten specific expensive endpoints}
+\PYG{k}{[[}\PYG{k}{rate\PYGZus{}limiter}\PYG{k}{.}\PYG{k}{limiter}\PYG{k}{]]}
+\PYG{n}{strategy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{url}\PYG{l+s+s2}{\PYGZdq{}}
+\PYG{n}{global\PYGZus{}bucket}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{tokens\PYGZus{}count}\PYG{+w}{ }\PYG{p}{=}\PYG{+w}{ }\PYG{l+m+mi}{60}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{add\PYGZus{}tokens\PYGZus{}every}\PYG{+w}{ }\PYG{p}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{n}{buckets\PYGZus{}per\PYGZus{}value}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{[}
+\PYG{+w}{  }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{value}\PYG{+w}{ }\PYG{p}{=}\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{/api/mining/generate}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{tokens\PYGZus{}count}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{err}{,}\PYG{+w}{ }\PYG{n}{add\PYGZus{}tokens\PYGZus{}every}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{60}\PYG{+w}{ }\PYG{err}{\PYGZcb{}}\PYG{err}{,}
+\PYG{err}{]}
+\end{MintedVerbatim}

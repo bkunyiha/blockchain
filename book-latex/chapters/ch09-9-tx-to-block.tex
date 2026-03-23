@@ -1,0 +1,847 @@
+% ══════════════════════════════════════════════════════════════
+%  Section 9.9: Transaction to Block (End-to-End Walkthrough)
+% ══════════════════════════════════════════════════════════════
+\chapter{Chain: Transaction to Block}
+\label{ch:tx-to-block}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Follow the complete path from user input to mined block
+  \item Understand how two-node architecture separates web server (API) from miner
+  \item Runtime wiring: entry points, message flow, and coordination
+  \item The HTTP API entry point and method dispatch
+  \item How transactions propagate over P2P and reach miners
+  \item Mining triggers, block construction, and broadcast
+  \item The complete end-to-end path from \code{main()} to block creation
+\end{itemize}
+\end{learnbox}
+
+This section is the \textbf{final \index{code walkthrough}code walkthrough} for the \code{\index{chain}chain/} chapter series. The goal is explicit:
+
+\begin{quote}
+Follow the first \index{instruction}instruction executed in \code{\index{main}main}, and trace the \index{call chain}call chain all the way to a \index{block}block being created.
+\end{quote}
+
+Unlike earlier sections (which focus on individual \index{subsystem}subsystems), this chapter is about \textbf{\index{wiring}wiring and \index{flow}flow}: the \index{runtime}runtime \index{entry point}entrypoints, the \index{message}message boundaries, and the concrete method-to-method path that turns ``a user wants to send \index{bitcoin}bitcoin'' into ``a \index{miner}miner produces a new \index{block}block''.
+
+% ──────────────────────────────────────────────────────────────
+\section{A Practical Constraint: Web and Miner Are Separate Roles}
+\label{sec:ch09-9-separation}
+
+In \code{\index{main}bitcoin/src/main.rs}, \code{\index{startnode}startnode} enforces that \textbf{a \index{node}node cannot run the \index{web server}web server and be a \index{miner}miner at the same time}. \index{Mining}Mining only runs on \index{node}nodes started with \code{\index{is\_miner}is\_miner=yes}, while \index{HTTP}HTTP \index{transaction}transaction creation requires \code{\index{is\_web\_server}is\_web\_server=yes}.
+
+Therefore, the end-to-end story naturally involves two \index{process}processes:
+
+\begin{itemize}
+  \item \textbf{\index{node}Node A (\index{web server}Web/API \index{node}node)}: accepts an \index{HTTP}HTTP \index{request}request and creates a \index{transaction}transaction, then propagates it over \index{peer-to-peer}P2P.
+  \item \textbf{\index{node}Node B (\index{miner}Miner \index{node}node)}: receives the \index{transaction}transaction over \index{peer-to-peer}P2P, places it in the \index{mempool}mempool, and \index{mining}mines a \index{block}block once \index{mining}mining is triggered.
+\end{itemize}
+
+This is not a \index{limitation}limitation of \index{Bitcoin}Bitcoin as a \index{protocol}protocol---it is simply how this learning \index{implementation}implementation is configured in \code{\index{main}main}.
+
+% ──────────────────────────────────────────────────────────────
+\section{Diagram: The Full Pipeline}
+\label{sec:ch09-9-pipeline}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance = 0.7cm and 1.0cm,
+  web node/.style = {rectangle, rounded corners=5pt, draw=brand, fill=brandlight,
+                     text width=2.8cm, align=center, font=\sffamily\small},
+  miner node/.style = {rectangle, rounded corners=5pt, draw=sectioncolor, fill=sectioncolor!10,
+                       text width=2.8cm, align=center, font=\sffamily\small},
+  arrow/.style = {-{Stealth[length=4pt,width=3pt]}, thick, color=brand},
+  net arrow/.style = {-{Stealth[length=4pt,width=3pt]}, thick, color=codeframe, dashed},
+]
+
+% Node A (Web)
+\node[web node] (web_header) at (0, 8.5) {
+  \textbf{Node A} \\
+  \small Web/API node
+};
+
+% Node B (Miner)
+\node[miner node] (miner_header) at (6, 8.5) {
+  \textbf{Node B} \\
+  \small Miner node
+};
+
+% Node A steps
+\node[web node, minimum height=0.6cm] (http) at (0, 7.5) {
+  HTTP POST /tx
+};
+\node[web node, minimum height=0.6cm] (handler) at (0, 6.5) {
+  send\_transaction
+};
+\node[web node, minimum height=0.6cm] (btc_tx) at (0, 5.5) {
+  btc\_transaction
+};
+\node[web node, minimum height=0.6cm] (process_tx) at (0, 4.5) {
+  process\_transaction
+};
+\node[web node, minimum height=0.6cm] (mempool) at (0, 3.5) {
+  add\_to\_memory\_pool
+};
+\node[web node, minimum height=0.6cm] (send_inv) at (0, 2.5) {
+  send\_inv(Tx)
+};
+
+% Node B steps
+\node[miner node, minimum height=0.6cm] (recv_inv) at (6, 2.5) {
+  receive INV
+};
+\node[miner node, minimum height=0.6cm] (process_stream) at (6, 1.8) {
+  process\_stream
+};
+\node[miner node, minimum height=0.6cm] (recv_tx) at (6, 1.1) {
+  receive Tx
+};
+\node[miner node, minimum height=0.6cm] (mine_trigger) at (6, 0.4) {
+  process\_mine\_block
+};
+\node[miner node, minimum height=0.6cm] (pow) at (6, -0.3) {
+  ProofOfWork::run
+};
+
+% Node A arrows
+\draw[arrow] (http) -- (handler);
+\draw[arrow] (handler) -- (btc_tx);
+\draw[arrow] (btc_tx) -- (process_tx);
+\draw[arrow] (process_tx) -- (mempool);
+\draw[arrow] (mempool) -- (send_inv);
+
+% Network arrow
+\draw[net arrow] (send_inv) -- (recv_inv)
+  node[midway, above, font=\small\sffamily] {P2P};
+
+% Node B arrows
+\draw[arrow] (recv_inv) -- (process_stream);
+\draw[arrow] (process_stream) -- (recv_tx);
+\draw[arrow] (recv_tx) -- (mine_trigger);
+\draw[arrow] (mine_trigger) -- (pow);
+
+\end{tikzpicture}
+\caption{End-to-End Flow: Transaction from Web API Node to Miner Block Creation}
+\label{fig:ch09-9-tx-to-block}
+\end{figure}
+
+% ──────────────────────────────────────────────────────────────
+\section{Method Index}
+\label{sec:ch09-9-index}
+
+We will walk these methods, in the order you reach them at runtime:
+
+\begin{itemize}
+  \item \code{bitcoin/src/main.rs}
+    \begin{itemize}
+      \item \code{main}
+      \item \code{process\_command}
+      \item \code{start\_node}
+    \end{itemize}
+
+  \item \code{bitcoin/src/node/server.rs}
+    \begin{itemize}
+      \item \code{Server::run\_with\_shutdown}
+    \end{itemize}
+
+  \item \code{bitcoin/src/net/net\_processing.rs}
+    \begin{itemize}
+      \item \code{process\_stream} (only the message arms relevant to tx/block flow)
+      \item \code{send\_inv}, \code{send\_get\_data}, \code{send\_tx}, \code{send\_block}
+    \end{itemize}
+
+  \item \code{bitcoin/src/web/server.rs} + \code{bitcoin/src/web/routes/api.rs} + \code{bitcoin/src/web/handlers/transaction.rs}
+    \begin{itemize}
+      \item \code{WebServer::start\_with\_shutdown}
+      \item \code{create\_api\_routes} (the POST \code{/transactions} route)
+      \item \code{send\_transaction} (HTTP handler)
+    \end{itemize}
+
+  \item \code{bitcoin/src/node/context.rs}
+    \begin{itemize}
+      \item \code{NodeContext::btc\_transaction}
+      \item \code{NodeContext::process\_transaction}
+      \item \code{NodeContext::submit\_transaction\_for\_mining}
+      \item \code{NodeContext::broadcast\_transaction\_to\_nodes}
+    \end{itemize}
+
+  \item \code{bitcoin/src/node/txmempool.rs}
+    \begin{itemize}
+      \item \code{add\_to\_memory\_pool}
+    \end{itemize}
+
+  \item \code{bitcoin/src/node/miner.rs}
+    \begin{itemize}
+      \item \code{should\_trigger\_mining}
+      \item \code{prepare\_mining\_utxo}
+      \item \code{process\_mine\_block}
+    \end{itemize}
+\end{itemize}
+
+Throughout, we omit unrelated class/struct definitions and focus only on the methods that form the end-to-end chain.
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 1 --- The Process Starts}
+\label{sec:ch09-9-step1}
+
+The first executed instructions in the node runtime are in \code{main}. From there, we parse the CLI and route into \code{start\_node(...)}.
+
+\begin{listing}[htbp]
+\caption{Process entrypoint (\code{main})}
+\label{lst:9-9-1}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[tokio::main]
+#[deny(unused_must_use)]
+async fn main() {
+    // 1) Initialize the global tracing subscriber
+    // so later components can log.
+    initialize_logging();
+
+    // 2) Parse CLI args (subcommands like
+    // startnode/createwallet/etc.).
+    let opt = Opt::parse();
+
+    // 3) Dispatch the selected command.
+    // For end-to-end node runtime, we care about
+    // Command::StartNode.
+    if let Err(e) = process_command(opt.command).await
+    {
+        eprintln!("Error: {}", e);
+        std::process::exit(1);
+    }
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{CLI dispatch (\code{process\_command})}
+\label{lst:9-9-2}
+\begin{minted}[fontsize=\footnotesize]{rust}
+async fn process_command(command: Command)
+    -> Result<()>
+{
+    match command {
+        // ... other commands omitted
+        Command::StartNode {
+            is_miner,
+            is_web_server,
+            connect_nodes,
+            wlt_mining_addr,
+        } => {
+            // Validate and normalize mining address
+            let validated_addr =
+                WalletAddress::validate(
+                    wlt_mining_addr)?;
+
+            // Enter the runtime wiring path
+            start_node(
+                is_miner,
+                is_web_server,
+                connect_nodes,
+                validated_addr
+            ).await
+        }
+        _ => Ok(()),
+    }
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{Wiring the node runtime (\code{start\_node})}
+\label{lst:9-9-3}
+\begin{minted}[fontsize=\footnotesize]{rust}
+async fn start_node(
+    is_miner: IsMiner,
+    is_web_server: IsWebServer,
+    connect_nodes: Vec<ConnectNode>,
+    wlt_mining_addr: WalletAddress,
+) -> Result<()> {
+    // Configure the process-level GLOBAL_CONFIG
+    validate_miner_config(
+        &wlt_mining_addr,
+        &is_miner,
+        &is_web_server
+    )?;
+
+    // Open or create blockchain
+    let blockchain = open_or_create_blockchain(
+        &wlt_mining_addr,
+        &connect_nodes
+    ).await?;
+
+    let node_context = NodeContext::new(blockchain);
+    let socket_addr = GLOBAL_CONFIG.get_node_addr();
+
+    // Convert CLI nodes into a set for bootstrapping
+    let connect_nodes_set: HashSet<ConnectNode> =
+        connect_nodes.into_iter().collect();
+
+    // Create shutdown signal channel
+    let (shutdown_tx, _) =
+        tokio::sync::broadcast::channel::<()>(1);
+
+    // Start the P2P network server
+    let network_server = Server::new(
+        node_context.clone());
+    let net_shutdown_rx = shutdown_tx.subscribe();
+    let network_handle = tokio::spawn(async move {
+        network_server
+            .run_with_shutdown(
+                &socket_addr,
+                connect_nodes_set,
+                net_shutdown_rx
+            )
+            .await;
+    });
+
+    // ... (continue with optional web server)
+}
+\end{minted}
+\end{listing}
+
+Once the network server is initialized, the function checks whether to launch an optional HTTP web server (for wallet nodes) or handle miner-only mode. Both paths wait for a shutdown signal:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{rust}
+    match (is_web_server, is_miner) {
+        (IsWebServer::Yes, IsMiner::No) => {
+            let web_server =
+                create_web_server(node_context);
+            let web_handle = tokio::spawn(async move {
+                let _ = web_server
+                    .start_with_shutdown().await;
+            });
+            // ... (wait for Ctrl+C or task completion)
+            Ok(())
+        }
+        (IsWebServer::Yes, _) => {
+            Err(BtcError::InvalidConfiguration(
+                "Web server and miner cannot \
+                 be enabled at the same time"
+                    .to_string(),
+            ))
+        }
+        _ => {
+            // ... (wait for Ctrl+C or task completion)
+            Ok(())
+        }
+    }
+}
+\end{minted}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 2 --- The P2P Runtime Loop}
+\label{sec:ch09-9-step2}
+
+Once \code{start\_node} runs, the P2P server is spawned and begins accepting TCP connections. Each accepted stream is handed to the P2P message dispatcher \code{net\_processing::process\_stream}.
+
+\begin{listing}[htbp]
+\caption{P2P accept loop (\code{Server::run\_with\_shutdown})}
+\label{lst:9-9-4}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn run_with_shutdown(
+    &self,
+    addrs: &SocketAddr,
+    connect_nodes: HashSet<ConnectNode>,
+    mut shutdown: tokio::sync::broadcast
+        ::Receiver<()>,
+) {
+    // Bind the TCP listener
+    let listener = TcpListener::bind(addrs)
+        .await
+        .expect("TcpListener bind error");
+
+    // Bootstrap: if not central node,
+    // send version handshake
+    if !addrs.eq(&CENTERAL_NODE) {
+        let best_height = self.node_context
+            .get_blockchain_height().await
+            .expect("Blockchain read error");
+        send_version(&CENTERAL_NODE, best_height)
+            .await;
+    }
+    // ... (collect and share known nodes)
+
+    loop {
+        tokio::select! {
+            _ = shutdown.recv() => break,
+            accept_res = listener.accept() => {
+                if let Ok((stream, _)) = accept_res {
+                    let blockchain = self
+                        .node_context.clone();
+                    tokio::spawn(async move {
+                        if let Ok(std_stream) =
+                            stream.into_std()
+                        {
+                            let _ =
+                                net_processing
+                                ::process_stream(
+                                    blockchain,
+                                    std_stream
+                                ).await;
+                        }
+                    });
+                }
+            }
+        }
+    }
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 3 --- The HTTP Entrypoint (Node A)}
+\label{sec:ch09-9-step3}
+
+The web server is only enabled for non-miner nodes. Its purpose is to provide a client-friendly HTTP API for creating wallets, querying balances, and creating transactions.
+
+\begin{listing}[htbp]
+\caption{Web server startup (\code{WebServer::start\_with\_shutdown})}
+\label{lst:9-9-5}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn start_with_shutdown(
+    &self,
+) -> Result<(), Box<dyn std::error::Error
+                            + Send + Sync>>
+{
+    let app = self.create_app()?;
+    let addr = SocketAddr::from((
+        [0, 0, 0, 0],
+        self.config.port
+    ));
+    let listener = tokio::net::TcpListener
+        ::bind(addr).await?;
+    let shutdown_signal = async {
+        tokio::signal::ctrl_c().await?
+    };
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<
+            SocketAddr
+        >()
+    )
+        .with_graceful_shutdown(shutdown_signal)
+        .await?;
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{Route mapping: POST \code{/api/v1/transactions}}
+\label{lst:9-9-6}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn create_api_routes()
+    -> Router<Arc<NodeContext>>
+{
+    Router::new()
+        // ... other routes omitted ...
+        .route(
+            "/transactions",
+            post(transaction::send_transaction)
+        )
+        // ... other routes omitted ...
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{HTTP handler: \code{send\_transaction}}
+\label{lst:9-9-7}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn send_transaction(
+    State(node): State<Arc<NodeContext>>,
+    Json(request): Json<SendTransactionRequest>,
+) -> Result<
+    Json<ApiResponse<SendBitCoinResponse>>,
+    StatusCode
+> {
+    let txid = node
+        .btc_transaction(
+            &request.from_address,
+            &request.to_address,
+            request.amount
+        )
+        .await
+        .map_err(|_| StatusCode::BAD_REQUEST)?;
+    let response = SendBitCoinResponse {
+        txid,
+        timestamp: chrono::Utc::now(),
+    };
+    Ok(Json(ApiResponse::success(response)))
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 4 --- From Send to Mempool Accept}
+\label{sec:ch09-9-step4}
+
+Now we enter the core node orchestration API.
+
+\begin{listing}[htbp]
+\caption{Create and submit signed UTXO transaction (\code{NodeContext::btc\_transaction})}
+\label{lst:9-9-8}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn btc_transaction(
+    &self,
+    wlt_frm_addr: &WalletAddress,
+    wlt_to_addr: &WalletAddress,
+    amount: i32,
+) -> Result<String> {
+    // 1) Build a UTXO view over the current
+    // chain state. This is used to select
+    // spendable outputs owned by the sender.
+    let utxo_set = UTXOSet::new(
+        self.blockchain.clone());
+
+    // 2) Construct and sign the transaction.
+    // Transaction::new_utxo_transaction selects
+    // inputs, creates outputs (including change),
+    // and signs the inputs using sender's key.
+    let tx = Transaction::new_utxo_transaction(
+        wlt_frm_addr,
+        wlt_to_addr,
+        amount,
+        &utxo_set
+    ).await?;
+
+    // 3) Submit to mempool + propagation via
+    // shared processing entrypoint.
+    let addr_from = crate::GLOBAL_CONFIG
+        .get_node_addr();
+    self.process_transaction(&addr_from, tx).await
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{Mempool acceptance entrypoint (\code{NodeContext::process\_transaction})}
+\label{lst:9-9-9}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn process_transaction(
+    &self,
+    addr_from: &std::net::SocketAddr,
+    utxo: Transaction,
+) -> Result<String> {
+    // 1) Reject duplicates early
+    if transaction_exists_in_pool(&utxo) {
+        return Err(
+            BtcError
+            ::TransactionAlreadyExistsInMemoryPool(
+                utxo.get_tx_id_hex()
+            )
+        );
+    }
+
+    // 2) Add to the global mempool and mark
+    // outputs as ``reserved'' by mempool policy
+    add_to_memory_pool(utxo.clone(),
+        &self.blockchain).await?;
+
+    // 3) Background work: propagation and
+    // (if miner) mining trigger
+    let context = self.clone();
+    let addr_copy = *addr_from;
+    let tx = utxo.clone();
+    tokio::spawn(async move {
+        let _ = context
+            .submit_transaction_for_mining(
+                &addr_copy, tx).await;
+    });
+
+    // 4) Return txid immediately (accept-to-mempool)
+    Ok(utxo.get_tx_id_hex())
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{Mempool insert (\code{txmempool::add\_to\_memory\_pool})}
+\label{lst:9-9-10}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn add_to_memory_pool(
+    tx: Transaction,
+    blockchain_service: &BlockchainService,
+) -> Result<()> {
+    // 1) Store the transaction in the global
+    // in-memory pool.
+    GLOBAL_MEMORY_POOL.add(tx.clone())
+        .expect("Memory pool add error");
+
+    // 2) Mark referenced outputs as ``in mempool''
+    // inside the UTXO view. This is a local
+    // double-spend protection mechanism: it prevents
+    // two mempool txs from spending the same output
+    // concurrently.
+    let utxo_set = UTXOSet::new(
+        blockchain_service.clone());
+    utxo_set.set_global_mem_pool_flag(
+        &tx.clone(), true).await?;
+
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 5 --- P2P Propagation: INV \texorpdfstring{$\to$}{->} GETDATA \texorpdfstring{$\to$}{->} TX}
+\label{sec:ch09-9-step5}
+
+Transactions propagate over the P2P layer, not the HTTP layer. The web layer exists only for local clients (UIs/admin tooling).
+
+\begin{listing}[htbp]
+\caption{Background ``after accept'' hook (\code{submit\_transaction\_for\_mining})}
+\label{lst:9-9-11}
+\begin{minted}[fontsize=\footnotesize]{rust}
+async fn submit_transaction_for_mining(
+    &self,
+    addr_from: &std::net::SocketAddr,
+    utxo: Transaction,
+) -> Result<()> {
+    // Propagate tx to peers if this is central node
+    if GLOBAL_CONFIG.get_node_addr()
+        .eq(&CENTERAL_NODE)
+    {
+        let nodes = self
+            .get_nodes_excluding_sender(addr_from)
+            .await?;
+        self.broadcast_transaction_to_nodes(
+            &nodes,
+            utxo.get_id_bytes()
+        ).await;
+    }
+    // Trigger mining if threshold met
+    if should_trigger_mining() {
+        if let Some(mining_address) =
+            GLOBAL_CONFIG.get_mining_addr()
+        {
+            if let Ok(txs) =
+                prepare_mining_utxo(&mining_address)
+            {
+                if !txs.is_empty() {
+                    process_mine_block(txs,
+                        &self.blockchain).await?;
+                }
+            }
+        }
+    }
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{Broadcast tx inventory to peers (\code{broadcast\_transaction\_to\_nodes})}
+\label{lst:9-9-12}
+\begin{minted}[fontsize=\footnotesize]{rust}
+async fn broadcast_transaction_to_nodes(
+    &self,
+    nodes: &[Node],
+    txid: Vec<u8>
+) {
+    // For each peer, spawn a task that sends
+    // an INV message. INV is a lightweight
+    // announcement: ``I have txid''.
+    let txid_clone = txid.clone();
+    nodes.iter().for_each(|node| {
+        let node_addr = node.get_addr();
+        let txid = txid_clone.clone();
+        tokio::spawn(async move {
+            send_inv(&node_addr, OpType::Tx,
+                &[txid]).await;
+        });
+    });
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{P2P send primitives (\code{send\_inv}, \code{send\_get\_data}, \code{send\_tx}, \code{send\_block})}
+\label{lst:9-9-13}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn send_get_data(
+    addr_to: &SocketAddr,
+    op_type: OpType,
+    id: &[u8]
+) {
+    send_data(addr_to, Package::GetData {
+        addr_from: GLOBAL_CONFIG.get_node_addr(),
+        op_type,
+        id: id.to_vec(),
+    }).await;
+}
+
+pub async fn send_inv(
+    addr_to: &SocketAddr,
+    op_type: OpType,
+    blocks: &[Vec<u8>],
+) {
+    send_data(addr_to, Package::Inv {
+        addr_from: GLOBAL_CONFIG.get_node_addr(),
+        op_type,
+        items: blocks.to_vec(),
+    }).await;
+}
+
+pub async fn send_tx(
+    addr_to: &SocketAddr,
+    tx: &Transaction
+) {
+    send_data(addr_to, Package::Tx {
+        addr_from: GLOBAL_CONFIG.get_node_addr(),
+        transaction: tx.serialize()
+            .expect("Serialization error"),
+    }).await;
+}
+
+pub async fn send_block(
+    addr_to: &SocketAddr,
+    block: &Block
+) {
+    send_data(addr_to, Package::Block {
+        addr_from: GLOBAL_CONFIG.get_node_addr(),
+        block: block.serialize()
+            .expect("Serialization error"),
+    }).await;
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{P2P receive: miner gets full tx (\code{process\_stream}, tx-related arms)}
+\label{lst:9-9-14}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: bitcoin/src/net/net_processing.rs
+match pkg {
+    // Peer says: "I have txid"
+    Package::Inv {
+        addr_from,
+        op_type: OpType::Tx,
+        items
+    } => {
+        let txid = items.first()
+            .expect("INV items empty");
+        let txid_hex = HEXLOWER.encode(txid);
+
+        // If not already in mempool, request
+        // the full tx bytes
+        if !GLOBAL_MEMORY_POOL
+            .contains(txid_hex.as_str())
+            .expect("mempool contains error")
+        {
+            send_get_data(&addr_from, OpType::Tx,
+                txid).await;
+        }
+    }
+
+    // Peer sends: full tx bytes
+    Package::Tx { addr_from, transaction } => {
+        let tx = Transaction::deserialize(
+            transaction.as_slice())
+            .expect("Transaction deserialization");
+
+        // Admit to mempool; may also trigger mining
+        let _ = node_context
+            .process_transaction(&addr_from, tx)
+            .await;
+    }
+
+    // Peer sends: full block bytes
+    Package::Block { addr_from, block } => {
+        let block = Block::deserialize(
+            block.as_slice())
+            .expect("Block deserialization");
+        node_context.add_block(&block).await
+            .expect("Blockchain write error");
+    }
+
+    _ => {}
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 6 --- Mining: Mempool to Block}
+\label{sec:ch09-9-step6}
+
+The mining module is the last step in the pipeline. It is only active when the process is started as a miner (\code{GLOBAL\_CONFIG.is\_miner()}).
+
+\begin{listing}[htbp]
+\caption{Mining trigger and block assembly (\code{miner::*})}
+\label{lst:9-9-15}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn should_trigger_mining() -> bool {
+    let pool_size = GLOBAL_MEMORY_POOL.len()
+        .expect("Memory pool length error");
+    let is_miner = GLOBAL_CONFIG.is_miner();
+    pool_size >= TRANSACTION_THRESHOLD && is_miner
+}
+
+pub fn prepare_mining_utxo(
+    mining_address: &WalletAddress,
+) -> Result<Vec<Transaction>> {
+    // Pull all mempool txs and append a
+    // coinbase tx for the miner reward
+    let txs = GLOBAL_MEMORY_POOL.get_all()?;
+    let coinbase_tx =
+        Transaction::new_coinbase_tx(mining_address)?;
+    let mut final_txs = txs;
+    final_txs.push(coinbase_tx);
+    Ok(final_txs)
+}
+
+pub async fn process_mine_block(
+    txs: Vec<Transaction>,
+    blockchain: &BlockchainService,
+) -> Result<Block> {
+    // Construct+mine a new block on the
+    // current tip
+    let new_block = blockchain.mine_block(&txs)
+        .await?;
+
+    // Remove txs from mempool once mined
+    for tx in &txs {
+        remove_from_memory_pool(
+            tx.clone(), blockchain).await;
+    }
+
+    // Announce new block hash to peers (INV)
+    broadcast_new_block(&new_block).await?;
+    Ok(new_block)
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\subsection{Where the Block Is Actually Created}
+\label{sec:ch09-9-where-created}
+
+The exact method call edge where a ``block comes into existence'' is:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+miner::process_mine_block
+  +-> BlockchainService::mine_block
+        +-> BlockchainFileSystem::mine_block
+              +-> Block::new_block
+                    +-> ProofOfWork::run
+\end{minted}
+
+You have already studied these methods in detail in \textbf{Chapter~16 (Consensus and Validation)}; this chapter's purpose is to show \textbf{how we reach them at runtime} from \code{main}.
+
+% ──────────────────────────────────────────────────────────────
+\section{Summary}
+\label{sec:ch09-9-summary}
+
+\begin{chaptersummary}
+  \item The end-to-end flow from user input to block creation spans two separate nodes: a web/API node and a miner node.
+  \item \code{main()} parses CLI arguments and dispatches to \code{start\_node}, which initializes the blockchain and spawns P2P and optional web servers.
+  \item The HTTP API receives a POST request, constructs a signed UTXO transaction, and submits it to the mempool via \code{NodeContext::process\_transaction}.
+  \item Transactions propagate over P2P using INV/GETDATA/TX messages, reaching other nodes including miners.
+  \item When the mempool reaches a threshold size and the node is a miner, \code{should\_trigger\_mining} initiates mining.
+  \item \code{prepare\_mining\_utxo} snapshots the mempool and appends a coinbase transaction for the block.
+  \item \code{Block::new\_block} constructs the header and runs proof-of-work via \code{ProofOfWork::run}.
+  \item Once mining completes, the mined block is broadcast via INV/GETDATA/BLOCK messages to peers.
+  \item Understanding this end-to-end path clarifies how individual subsystems (transaction construction, signing, mining, consensus) integrate into a complete node runtime.
+\end{chaptersummary}

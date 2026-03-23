@@ -1,0 +1,21 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{health\PYGZus{}check}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{State}\PYG{p}{(}\PYG{n}{node}\PYG{p}{)}: \PYG{n+nc}{State}\PYG{o}{\PYGZlt{}}\PYG{n}{Arc}\PYG{o}{\PYGZlt{}}\PYG{n}{NodeContext}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{Json}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{HealthResponse}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{StatusCode}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{height}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{node}\PYG{p}{.}\PYG{n}{get\PYGZus{}blockchain\PYGZus{}height}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{StatusCode}::\PYG{n}{INTERNAL\PYGZus{}SERVER\PYGZus{}ERROR}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{connected\PYGZus{}peers}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{node}\PYG{p}{.}\PYG{n}{get\PYGZus{}peer\PYGZus{}count}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{health\PYGZus{}response}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{HealthResponse}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{status}: \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{healthy}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{version}: \PYG{n+nc}{env}\PYG{o}{!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{CARGO\PYGZus{}PKG\PYGZus{}VERSION}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{uptime\PYGZus{}seconds}: \PYG{c+cm}{/*}\PYG{c+cm}{ ... }\PYG{c+cm}{*/}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{blockchain\PYGZus{}height}: \PYG{n+nc}{height}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{connected\PYGZus{}peers}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{memory\PYGZus{}usage\PYGZus{}mb}: \PYG{l+m+mf}{0.0}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{Json}\PYG{p}{(}\PYG{n}{ApiResponse}::\PYG{n}{success}\PYG{p}{(}\PYG{n}{health\PYGZus{}response}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

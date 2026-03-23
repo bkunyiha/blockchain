@@ -1,0 +1,16 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{cd}\PYG{+w}{ }ci/docker\PYGZhy{}compose/configs
+
+\PYG{c+c1}{\PYGZsh{} Set up address pool (at least 5 addresses)}
+\PYG{n+nb}{export}\PYG{+w}{ }\PYG{n+nv}{WALLET\PYGZus{}ADDRESS\PYGZus{}POOL}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}addr1,addr2,addr3,addr4,addr5\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} Scale to 3 miners and 2 webservers}
+./docker\PYGZhy{}compose.scale.sh\PYG{+w}{ }\PYG{l+m}{3}\PYG{+w}{ }\PYG{l+m}{2}
+
+\PYG{c+c1}{\PYGZsh{} Results:}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{} miner\PYGZus{}1 → addr1 (port 2001)}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{} miner\PYGZus{}2 → addr2 (port 2002)}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{} miner\PYGZus{}3 → addr3 (port 2003)}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{} webserver\PYGZus{}1 → addr4 (port 8080, P2P 2101)}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{} webserver\PYGZus{}2 → addr5 (port 8081, P2P 2102)}
+\end{MintedVerbatim}

@@ -1,0 +1,74 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{chain}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}\PYG{n}{BlockchainService}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{UTXOSet}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{error}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}\PYG{n}{BtcError}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{node}\PYG{p}{::}\PYG{n}{miner}\PYG{p}{:}\PYG{p}{:}\PYG{o}{*}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{node}\PYG{p}{::}\PYG{n}{txmempool}\PYG{p}{:}\PYG{p}{:}\PYG{o}{*}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{node}\PYG{p}{::}\PYG{n}{GLOBAL\PYGZus{}NODES}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}\PYG{n}{Block}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Transaction}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{WalletAddress}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{std}\PYG{p}{::}\PYG{n}{net}\PYG{p}{::}\PYG{n}{SocketAddr}\PYG{p}{;}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Clone, Debug)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{NodeContext}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{blockchain}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{BlockchainService}\PYG{p}{,}\PYG{+w}{  }\PYG{c+c1}{// Only owned dependency}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{NodeContext}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{new}\PYG{p}{(}\PYG{n}{blockchain}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{BlockchainService}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{Self}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb+bp}{Self}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{btc\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{wlt\PYGZus{}frm\PYGZus{}addr}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{wlt\PYGZus{}to\PYGZus{}addr}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{amount}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{i32}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{utxo\PYGZus{}set}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UTXOSet}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{blockchain}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{utxo}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Transaction}\PYG{p}{::}\PYG{n}{new\PYGZus{}utxo\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{wlt\PYGZus{}frm\PYGZus{}addr}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{wlt\PYGZus{}to\PYGZus{}addr}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{amount}\PYG{p}{,}
+\PYG{+w}{            }\PYG{o}{\PYGZam{}}\PYG{n}{utxo\PYGZus{}set}
+\PYG{+w}{        }\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{addr\PYGZus{}from}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{            }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{process\PYGZus{}transaction}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{utxo}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{process\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{utxo}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Transaction}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// 1) Dedupe check}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{transaction\PYGZus{}exists\PYGZus{}in\PYGZus{}pool}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{utxo}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{BtcError}
+\PYG{+w}{                }\PYG{p}{::}\PYG{n}{TransactionAlreadyExistsInMemoryPool}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{n}{utxo}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{c+c1}{// 2) Accept into mempool}
+\PYG{+w}{        }\PYG{c+c1}{// (flags outputs as \PYGZdq{}in mempool\PYGZdq{})}
+\PYG{+w}{        }\PYG{n}{add\PYGZus{}to\PYGZus{}memory\PYGZus{}pool}\PYG{p}{(}\PYG{n}{utxo}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{blockchain}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{c+c1}{// 3) Fire\PYGZhy{}and\PYGZhy{}forget: broadcast + mining}
+\PYG{+w}{        }\PYG{c+c1}{// in background task}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{context}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{addr\PYGZus{}copy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{addr\PYGZus{}from}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{utxo}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{tokio}\PYG{p}{::}\PYG{n}{spawn}\PYG{p}{(}\PYG{k}{async}\PYG{+w}{ }\PYG{k}{move}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{context}
+\PYG{+w}{                }\PYG{p}{.}\PYG{n}{submit\PYGZus{}transaction\PYGZus{}for\PYGZus{}mining}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{o}{\PYGZam{}}\PYG{n}{addr\PYGZus{}copy}\PYG{p}{,}
+\PYG{+w}{                    }\PYG{n}{tx}
+\PYG{+w}{                }\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{utxo}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

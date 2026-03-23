@@ -1,0 +1,30 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{const}\PYG{+w}{ }\PYG{n}{TRANSACTION\PYGZus{}THRESHOLD}: \PYG{k+kt}{usize} \PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{3}\PYG{p}{;}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{should\PYGZus{}trigger\PYGZus{}mining}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{k+kt}{bool} \PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Policy: mine if miner configured AND}
+\PYG{+w}{    }\PYG{c+c1}{// mempool size exceeds threshold}
+\PYG{+w}{    }\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}\PYG{p}{.}\PYG{n}{len}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{+w}{        }\PYG{o}{\PYGZgt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{TRANSACTION\PYGZus{}THRESHOLD}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{is\PYGZus{}miner}\PYG{p}{(}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{prepare\PYGZus{}mining\PYGZus{}utxo}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{mining\PYGZus{}address}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{Transaction}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Snapshot mempool and validate each tx\PYGZsq{}s inputs}
+\PYG{+w}{    }\PYG{c+c1}{// are still unspent. This prevents mining blocks}
+\PYG{+w}{    }\PYG{c+c1}{// with already\PYGZhy{}spent inputs when a competing block}
+\PYG{+w}{    }\PYG{c+c1}{// has been accepted during the race between miners.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{txs}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}\PYG{p}{.}\PYG{n}{get\PYGZus{}all}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{valid\PYGZus{}txs}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{Vec}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n}{txs}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{is\PYGZus{}coinbase}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{continue}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{c+c1}{// ... (validate each input exists in UTXO tree)}
+\PYG{+w}{        }\PYG{c+c1}{// Stale transactions are removed from mempool}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n}{valid\PYGZus{}txs}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}
+\PYG{+w}{        }\PYG{n}{Transaction}::\PYG{n}{new\PYGZus{}coinbase\PYGZus{}tx}\PYG{p}{(}\PYG{n}{mining\PYGZus{}address}\PYG{p}{)}\PYG{o}{?}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{valid\PYGZus{}txs}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

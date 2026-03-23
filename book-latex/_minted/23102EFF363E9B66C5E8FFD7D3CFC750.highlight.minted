@@ -1,0 +1,9 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Serialize, Deserialize, ToSchema)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{ErrorResponse}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{error}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{message}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{status\PYGZus{}code}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{u16}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{timestamp}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{DateTime}\PYG{o}{\PYGZlt{}}\PYG{n}{Utc}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

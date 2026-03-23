@@ -1,0 +1,5 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{cd}\PYG{+w}{ }ci/docker\PYGZhy{}compose/configs
+\PYG{n+nb}{export}\PYG{+w}{ }\PYG{n+nv}{NODE\PYGZus{}MINING\PYGZus{}ADDRESS}\PYG{o}{=}3npBNyKSEwhCQWTXHFjwR8Rb66kjq6khfZSdmLPm8Gde9XoTwW
+docker\PYG{+w}{ }compose\PYG{+w}{ }up\PYG{+w}{ }\PYGZhy{}d
+\end{MintedVerbatim}

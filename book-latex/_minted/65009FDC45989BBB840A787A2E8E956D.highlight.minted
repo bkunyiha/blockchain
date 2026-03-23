@@ -1,0 +1,41 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{useBlockchainInfo}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}../hooks/useApi\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{n+nx}{StatCard}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}../components/StatCard\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{n+nx}{LoadingSpinner}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}../components/LoadingSpinner\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{n+nx}{ErrorMessage}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}../components/ErrorMessage\PYGZsq{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{default}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{Dashboard}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{data}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{isLoading}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{error}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{useBlockchainInfo}\PYG{p}{(}\PYG{l+m+mf}{5000}\PYG{p}{)}
+
+\PYG{+w}{  }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n+nx}{isLoading}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{LoadingSpinner}\PYG{+w}{ }\PYG{o}{/}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{  }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n+nx}{error}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ErrorMessage}\PYG{+w}{ }\PYG{n+nx}{error}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{error}\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{/}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{  }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n+nx}{data}\PYG{o}{?}\PYG{p}{.}\PYG{n+nx}{data}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{div}\PYG{o}{\PYGZgt{}}\PYG{n+nx}{No}\PYG{+w}{ }\PYG{n+nx}{data}\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{d}\PYG{err}{i}\PYG{err}{v}\PYG{err}{\PYGZgt{}}
+
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{info}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{data}\PYG{p}{.}\PYG{n+nx}{data}
+
+\PYG{+w}{  }\PYG{k}{return}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{div}\PYG{+w}{ }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}grid grid\PYGZhy{}cols\PYGZhy{}1 md:grid\PYGZhy{}cols\PYGZhy{}4 gap\PYGZhy{}4\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{StatCard}
+\PYG{+w}{        }\PYG{n+nx}{title}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}Block Height\PYGZdq{}}
+\PYG{+w}{        }\PYG{n+nx}{value}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{info}\PYG{p}{.}\PYG{n+nx}{height}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n+nx}{description}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+sb}{`}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nx}{info}\PYG{p}{.}\PYG{n+nx}{total\PYGZus{}transactions}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+sb}{ txs}\PYG{l+s+sb}{`}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{      }\PYG{o}{/}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{StatCard}
+\PYG{+w}{        }\PYG{n+nx}{title}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}Pending Transactions\PYGZdq{}}
+\PYG{+w}{        }\PYG{n+nx}{value}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{info}\PYG{p}{.}\PYG{n+nx}{pending\PYGZus{}transaction\PYGZus{}count}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n+nx}{description}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}in mempool\PYGZdq{}}
+\PYG{+w}{      }\PYG{o}{/}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{StatCard}
+\PYG{+w}{        }\PYG{n+nx}{title}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}Difficulty\PYGZdq{}}
+\PYG{+w}{        }\PYG{n+nx}{value}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{info}\PYG{p}{.}\PYG{n+nx}{difficulty}\PYG{p}{.}\PYG{n+nx}{toFixed}\PYG{p}{(}\PYG{l+m+mf}{4}\PYG{p}{)}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n+nx}{description}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}current target\PYGZdq{}}
+\PYG{+w}{      }\PYG{o}{/}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{StatCard}
+\PYG{+w}{        }\PYG{n+nx}{title}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}Total Supply\PYGZdq{}}
+\PYG{+w}{        }\PYG{n+nx}{value}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+sb}{`}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{p}{(}\PYG{n+nx}{info}\PYG{p}{.}\PYG{n+nx}{total\PYGZus{}supply}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{l+m+mf}{1e8}\PYG{p}{)}\PYG{p}{.}\PYG{n+nx}{toFixed}\PYG{p}{(}\PYG{l+m+mf}{4}\PYG{p}{)}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+sb}{ BTC}\PYG{l+s+sb}{`}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n+nx}{description}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}all time\PYGZdq{}}
+\PYG{+w}{      }\PYG{o}{/}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{    }\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{d}\PYG{err}{i}\PYG{err}{v}\PYG{err}{\PYGZgt{}}
+\PYG{+w}{  }\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

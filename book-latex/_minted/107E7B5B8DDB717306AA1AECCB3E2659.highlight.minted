@@ -1,0 +1,4 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// bitcoin/src/primitives/block.rs}
+\PYG{n}{timestamp}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{crate}\PYG{p}{::}\PYG{n}{current\PYGZus{}timestamp}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\end{MintedVerbatim}

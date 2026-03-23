@@ -1,0 +1,23 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{delete\PYGZus{}wallet\PYGZus{}address\PYGZus{}db}\PYG{p}{(}\PYG{n}{address}: \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{SqliteResult}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{get\PYGZus{}connection}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{DELETE FROM wallet\PYGZus{}addresses WHERE address = ?}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{params}\PYG{o}{!}\PYG{p}{[}\PYG{n}{address}\PYG{p}{]}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{update\PYGZus{}wallet\PYGZus{}label\PYGZus{}db}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{address}: \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{label}: \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{SqliteResult}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{get\PYGZus{}connection}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{UPDATE wallet\PYGZus{}addresses SET }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{         label = ?, }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{         updated\PYGZus{}at = datetime(\PYGZsq{}now\PYGZsq{}) }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{         WHERE address = ?}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{params}\PYG{o}{!}\PYG{p}{[}\PYG{n}{label}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{address}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

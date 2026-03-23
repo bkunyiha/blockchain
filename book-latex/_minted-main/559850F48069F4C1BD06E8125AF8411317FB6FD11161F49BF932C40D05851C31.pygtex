@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{ring}::\PYG{n}{digest}::\PYG{p}{\PYGZob{}}\PYG{n}{Context}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{SHA256}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{sha256\PYGZus{}digest}\PYG{p}{(}\PYG{n}{data}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{context}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Context}::\PYG{n}{new}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{SHA256}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{context}\PYG{p}{.}\PYG{n}{update}\PYG{p}{(}\PYG{n}{data}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{digest}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{context}\PYG{p}{.}\PYG{n}{finish}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{digest}\PYG{p}{.}\PYG{n}{as\PYGZus{}ref}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

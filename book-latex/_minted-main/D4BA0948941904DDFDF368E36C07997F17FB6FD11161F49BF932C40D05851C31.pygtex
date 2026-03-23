@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{payload}\PYG{+w}{ }\PYG{n}{bytes}:
+  \PYG{p}{[}\PYG{+w}{ }\PYG{n}{version}: \PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{n}{byte}\PYG{+w}{ }\PYG{p}{]}\PYG{+w}{ }\PYG{p}{[}\PYG{+w}{ }\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}: \PYG{n+nc}{N}\PYG{+w}{ }\PYG{n}{bytes}\PYG{+w}{ }\PYG{p}{]}\PYG{+w}{ }\PYG{p}{[}\PYG{+w}{ }\PYG{n}{checksum}: \PYG{l+m+mi}{4}\PYG{+w}{ }\PYG{n}{bytes}\PYG{+w}{ }\PYG{p}{]}
+
+\PYG{n}{encoded}\PYG{+w}{ }\PYG{k}{as}:
+  \PYG{n+nc}{Base58}\PYG{p}{(}\PYG{n}{payload}\PYG{p}{)}
+\end{Verbatim}

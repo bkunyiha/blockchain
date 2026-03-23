@@ -1,0 +1,11 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} View logs from crashed container}
+kubectl logs \PYGZhy{}n blockchain miner\PYGZhy{}0 \PYGZhy{}\PYGZhy{}previous \PYG{l+s+se}{\PYGZbs{}}
+  \PYGZhy{}\PYGZhy{}tail \PYG{l+m}{200}
+
+\PYG{c+c1}{\PYGZsh{} Describe pod for events and probe failures}
+kubectl describe pod miner\PYGZhy{}0 \PYGZhy{}n blockchain
+
+\PYG{c+c1}{\PYGZsh{} Common cause: invalid MINER\PYGZbs{}\PYGZus{}ADDRESS}
+\PYG{c+c1}{\PYGZsh{} Fix: remove placeholder or set real address}
+\end{Verbatim}

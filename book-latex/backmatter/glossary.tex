@@ -1,0 +1,500 @@
+% ══════════════════════════════════════════════════════════════
+%  glossary.tex — Term definitions for Rust Blockchain book
+%  Usage: \gls{utxo}, \glspl{utxo} (plural), \Gls{utxo} (cap)
+% ══════════════════════════════════════════════════════════════
+
+% ── Acronyms ────────────────────────────────────────────────
+\newacronym{pow}{PoW}{Proof of Work}
+\newacronym{p2p}{P2P}{Peer-to-Peer}
+\newacronym{rpc}{RPC}{Remote Procedure Call}
+\newacronym{api}{API}{Application Programming Interface}
+\newacronym{gui}{GUI}{Graphical User Interface}
+\newacronym{cli}{CLI}{Command-Line Interface}
+\newacronym{mvu}{MVU}{Model--View--Update}
+\newacronym{spv}{SPV}{Simplified Payment Verification}
+\newacronym{txid}{txid}{Transaction Identifier}
+\newacronym{rest}{REST}{Representational State Transfer}
+\newacronym{ipc}{IPC}{Inter-Process Communication}
+\newacronym{mvp}{MVP}{Minimum Viable Product}
+
+% ── Blockchain Fundamentals ──────────────────────────────────
+\newglossaryentry{blockchain}{
+  name={blockchain},
+  description={An append-only linked list of blocks, where each block
+    references the cryptographic hash of the previous block, forming
+    a tamper-evident chain of transaction history}
+}
+
+\newglossaryentry{block}{
+  name={block},
+  description={A data structure containing a block header, a list of transactions,
+    and (optionally) a timestamp. Blocks are linked sequentially via hash references
+    and serve as the atomic unit of consensus in a blockchain}
+}
+
+\newglossaryentry{transaction}{
+  name={transaction},
+  description={A digital record of the transfer of value on a blockchain, consisting
+    of inputs (references to previous outputs), outputs (new spending commitments),
+    and signatures proving authorization by the spender}
+}
+
+\newglossaryentry{block-header}{
+  name={block header},
+  description={The metadata portion of a block containing the timestamp,
+    previous block hash, nonce, and block hash. The header is the input
+    to the proof-of-work mining loop}
+}
+
+\newglossaryentry{block-height}{
+  name={block height},
+  description={The sequential position of a block in the blockchain, starting from 0 for the
+    genesis block. Block height is used to reference specific blocks and measure chain progression}
+}
+
+\newglossaryentry{block-reward}{
+  name={block reward},
+  description={The newly created cryptocurrency awarded to a miner for successfully
+    mining a block, consisting of a base block subsidy plus transaction fees collected
+    from all transactions in the block}
+}
+
+\newglossaryentry{chain-tip}{
+  name={chain tip},
+  description={The most recent valid block in a blockchain, representing the current
+    head of the canonical chain. Nodes synchronize to the chain tip during network synchronization}
+}
+
+\newglossaryentry{nonce}{
+  name={nonce},
+  description={A number used once: the field miners increment until the
+    block hash meets the difficulty target}
+}
+
+\newglossaryentry{merkle-root}{
+  name={Merkle root},
+  description={A single hash summarizing all transactions in a block
+    via a binary hash tree. Our implementation uses a simplified
+    concatenation approach instead}
+}
+
+\newglossaryentry{merkle-tree}{
+  name={Merkle tree},
+  description={A binary hash tree where leaf nodes represent transaction hashes and parent nodes
+    represent the hash of concatenated children. Merkle trees enable efficient verification of
+    transaction membership without downloading all transaction data}
+}
+
+\newglossaryentry{genesis-block}{
+  name={genesis block},
+  description={The first block in a blockchain (height 0), hardcoded
+    with no parent. It bootstraps the chain and is never validated
+    against a previous block}
+}
+
+\newglossaryentry{mempool}{
+  name={mempool},
+  description={The memory pool: a node's collection of valid but
+    unconfirmed transactions waiting to be included in a block}
+}
+
+\newglossaryentry{outpoint}{
+  name={outpoint},
+  description={A reference to a specific transaction output, identified
+    by a (txid, vout) pair — the transaction ID and the output index}
+}
+
+% ── Proof-of-Work & Mining ───────────────────────────────────
+\newglossaryentry{proof-of-work}{
+  name={proof of work},
+  description={A consensus mechanism in which miners compete to solve a cryptographic puzzle
+    (finding a hash below a difficulty target) to earn the right to add a new block to the blockchain.
+    The computational work required makes the blockchain resistant to tampering and double-spending}
+}
+
+\newglossaryentry{mining}{
+  name={mining},
+  description={The process of constructing candidate blocks and iterating the nonce until
+    the block header hash satisfies the difficulty target, thereby earning the block reward
+    and transaction fees}
+}
+
+\newglossaryentry{difficulty}{
+  name={difficulty},
+  description={A measure of how hard it is to find a hash that satisfies the proof-of-work
+    target. Difficulty is adjusted periodically to keep average block interval constant
+    regardless of changes in total network hash rate}
+}
+
+\newglossaryentry{target}{
+  name={target},
+  description={A 256-bit threshold value: a valid proof-of-work block must have a header hash
+    that is numerically less than the target. Lower targets require more computational work}
+}
+
+\newglossaryentry{coinbase-transaction}{
+  name={coinbase transaction},
+  description={The first transaction in a block, which has no inputs and creates new coin supply
+    as the block reward. The coinbase transaction output(s) pay the miner or mining pool}
+}
+
+\newglossaryentry{halving}{
+  name={halving},
+  description={A scheduled event in Bitcoin (and similar systems) where the block reward is
+    divided by two, occurring approximately every four years (or every 210,000 blocks)}
+}
+
+% ── Consensus & Chain Management ─────────────────────────────
+\newglossaryentry{consensus}{
+  name={consensus},
+  description={The mechanism by which distributed nodes agree on the canonical blockchain history
+    and the validity of new blocks and transactions. In proof-of-work systems, consensus is
+    achieved through the longest chain rule}
+}
+
+\newglossaryentry{longest-chain-rule}{
+  name={longest chain rule},
+  description={The fork choice rule in proof-of-work blockchains where nodes adopt the chain
+    with the most cumulative work (not necessarily the longest in block count) as canonical.
+    This rule incentivizes honest mining and protects against reversals of recent transactions}
+}
+
+\newglossaryentry{fork}{
+  name={fork},
+  description={A temporary divergence in the blockchain where two or more valid chains coexist,
+    typically caused by network partitions or miners creating blocks on competing tips simultaneously}
+}
+
+\newglossaryentry{reorganization}{
+  name={reorganization (reorg)},
+  description={The process of replacing a suffix of the canonical blockchain with an alternative
+    chain that has greater cumulative work. During a reorg, transactions in detached blocks are
+    returned to the mempool and previously unconfirmed transactions may become confirmed}
+}
+
+\newglossaryentry{orphan-block}{
+  name={orphan block},
+  description={A valid block whose parent has not yet been received or validated by a node.
+    Orphan blocks are stored temporarily and integrated into the chain once their parent arrives}
+}
+
+\newglossaryentry{confirmation}{
+  name={confirmation},
+  description={The inclusion of a transaction in a block and the subsequent mining of additional
+    blocks on top of it. More confirmations indicate stronger finality as the cost to reverse
+    the transaction increases exponentially with each new block}
+}
+
+\newglossaryentry{double-spend}{
+  name={double-spend},
+  description={An attempt to spend the same output twice by creating two conflicting transactions.
+    Proof-of-work consensus makes double-spending economically infeasible once a transaction receives
+    sufficient confirmations}
+}
+
+\newglossaryentry{utxo}{
+  name={UTXO},
+  description={Unspent Transaction Output: a transaction output that has not yet been spent
+    as an input to another transaction. UTXOs represent the coins available to an address and
+    are the fundamental accounting unit in Bitcoin}
+}
+
+\newglossaryentry{utxo-set}{
+  name={UTXO set},
+  description={The complete collection of all unspent transaction outputs at a given block height,
+    maintained in the full node for efficient validation of new transactions and prevention of
+    double-spending}
+}
+
+% ── Network & P2P ────────────────────────────────────────────
+\newglossaryentry{peer-to-peer}{
+  name={peer-to-peer},
+  description={A network architecture where nodes interact as equal peers without a central server.
+    In a P2P blockchain, every node can propose transactions and blocks, participate in consensus,
+    and relay information to other nodes}
+}
+
+\newglossaryentry{gossip-protocol}{
+  name={gossip protocol},
+  description={A decentralized communication pattern where nodes announce and propagate information
+    (like new transactions or blocks) to their peers, which then forward it further. This enables
+    network-wide dissemination without central coordination}
+}
+
+\newglossaryentry{inv-message}{
+  name={INV message},
+  description={A peer-to-peer network message that announces the availability of a transaction or block
+    by sending only its hash. The receiving peer may request the full object data using a GETDATA message}
+}
+
+\newglossaryentry{getdata-message}{
+  name={GETDATA message},
+  description={A peer-to-peer network message requesting the full data of a previously announced
+    transaction or block, identified by its hash. This completes the second phase of the gossip-and-fetch pattern}
+}
+
+\newglossaryentry{block-propagation}{
+  name={block propagation},
+  description={The process by which a newly mined block spreads through the P2P network from its creator
+    to all nodes, enabling consensus on the latest canonical block}
+}
+
+% ── Cryptography ─────────────────────────────────────────────
+\newglossaryentry{hash}{
+  name={hash (or digest)},
+  description={The fixed-size output (typically 32 bytes for SHA-256) of a hash function,
+    serving as a compact, deterministic fingerprint of arbitrary input data. Hashes enable efficient
+    identification and tampering detection in blockchain systems}
+}
+
+\newglossaryentry{sha256}{
+  name={SHA-256},
+  description={Secure Hash Algorithm 256-bit: a cryptographic hash function that maps any input
+    to a 256-bit output. SHA-256 is used throughout Bitcoin for transaction IDs, block hashes,
+    and proof-of-work}
+}
+
+\newglossaryentry{digital-signature}{
+  name={digital signature},
+  description={A cryptographic proof that the holder of a private key authorized a specific message
+    or transaction. Digital signatures enable authentication and non-repudiation without revealing
+    the private key}
+}
+
+\newglossaryentry{ecdsa}{
+  name={ECDSA},
+  description={Elliptic Curve Digital Signature Algorithm: a digital signature scheme based on
+    elliptic curve cryptography, used in Bitcoin to authorize transaction spends}
+}
+
+\newglossaryentry{secp256k1}{
+  name={secp256k1},
+  description={A standardized elliptic curve used for key generation and digital signatures in Bitcoin.
+    The curve parameters are well-studied and provide 256-bit security}
+}
+
+\newglossaryentry{schnorr-signature}{
+  name={Schnorr signature},
+  description={A digital signature scheme noted for its simplicity and efficiency. In modern Bitcoin
+    and this implementation, Schnorr signatures enable various cryptographic optimizations and
+    are used for key derivation and transaction authorization}
+}
+
+\newglossaryentry{public-key}{
+  name={public key},
+  description={The cryptographic counterpart of a private key, used to verify signatures created by
+    the private key. Public keys are derived from private keys and can be freely shared without
+    compromising security}
+}
+
+\newglossaryentry{private-key}{
+  name={private key},
+  description={A secret cryptographic value from which public keys and signatures are derived.
+    Possession of the private key proves ownership of Bitcoin and the right to spend associated outputs.
+    Private keys must never be shared}
+}
+
+\newglossaryentry{key-pair}{
+  name={key pair},
+  description={A related public key and private key generated together. The public key is derived
+    from the private key using elliptic curve mathematics, and only the private key holder can
+    create valid signatures}
+}
+
+\newglossaryentry{key-derivation}{
+  name={key derivation},
+  description={The process of generating child keys from a parent key using a deterministic function
+    and a derivation path. Key derivation enables wallet software to manage many addresses from a
+    single seed without storing multiple secrets}
+}
+
+\newglossaryentry{address}{
+  name={address},
+  description={A human-readable identifier representing a destination for Bitcoin payments, typically
+    derived from a public key through hashing and encoding. Addresses enable users to receive funds
+    without exposing their public key}
+}
+
+\newglossaryentry{base58}{
+  name={Base58},
+  description={A binary-to-text encoding scheme using 58 alphanumeric characters (excluding 0, O, I, l
+    to avoid confusion). Base58Check adds a checksum to Base58-encoded data for error detection}
+}
+
+\newglossaryentry{checksum}{
+  name={checksum},
+  description={A short value (typically 4 bytes for Bitcoin) derived from data using a hash function.
+    Checksums enable error detection: a corrupted address will have an invalid checksum}
+}
+
+% ── Rust Language Concepts ───────────────────────────────────
+\newglossaryentry{ownership}{
+  name={ownership},
+  description={Rust's core memory management principle where each value has a single owner.
+    When the owner goes out of scope, the value is dropped. Ownership enables memory safety
+    without garbage collection}
+}
+
+\newglossaryentry{borrowing}{
+  name={borrowing},
+  description={The practice of lending a reference to a value to another part of the code
+    without transferring ownership. Borrowing can be immutable (\code{\&T}) or mutable (\code{\&mut T}),
+    and Rust's compiler enforces rules to prevent data races}
+}
+
+\newglossaryentry{lifetime}{
+  name={lifetime},
+  description={An explicit annotation (e.g., \code{'a}) that tells the Rust compiler how long
+    a reference is valid. Lifetimes enable the compiler to prove that references do not outlive
+    the data they point to, preventing dangling pointers}
+}
+
+\newglossaryentry{trait}{
+  name={trait},
+  description={An abstract interface defining a set of methods and associated types.
+    Traits enable polymorphism and composition in Rust without inheritance.
+    Multiple traits can be implemented for a single type}
+}
+
+\newglossaryentry{async-await}{
+  name={async/await},
+  description={Language features enabling asynchronous, non-blocking code without explicit callbacks.
+    \code{async} marks a function as returning a \code{Future}, while \code{await} suspends execution
+    until the future completes}
+}
+
+\newglossaryentry{tokio}{
+  name={Tokio},
+  description={A Rust runtime and async library providing work-stealing thread pools, timers,
+    and I/O utilities. Tokio powers concurrent network I/O and task scheduling in this blockchain
+    implementation}
+}
+
+\newglossaryentry{sled}{
+  name={sled},
+  description={An embedded key-value database written in pure Rust with ACID transactions and
+    crash safety. This implementation uses sled for persistent storage of blockchain state}
+}
+
+\newglossaryentry{axum}{
+  name={Axum},
+  description={A modular and ergonomic web framework built on Tokio, providing typed request
+    handlers, extractors, middleware, and routing. Axum powers the REST API layer in this blockchain}
+}
+
+\newglossaryentry{middleware}{
+  name={middleware},
+  description={A software component that intercepts and processes requests and responses in a
+    web application. Common middleware functions include authentication, logging, CORS handling,
+    and rate limiting}
+}
+
+\newglossaryentry{rest-api}{
+  name={REST API},
+  description={Representational State Transfer API: a web service using HTTP methods (GET, POST, PUT, DELETE)
+    to manipulate resources identified by URLs. REST APIs are stateless, cacheable, and easy to
+    understand and test}
+}
+
+\newglossaryentry{websocket}{
+  name={WebSocket},
+  description={A protocol providing full-duplex communication channels over a single TCP connection.
+    WebSockets enable real-time, bidirectional communication ideal for blockchain event streaming
+    and live updates}
+}
+
+\newglossaryentry{serialization}{
+  name={serialization},
+  description={The process of converting Rust data structures into a byte representation suitable
+    for storage or transmission (e.g., JSON, bincode). Serialization enables interoperability
+    between different systems}
+}
+
+\newglossaryentry{deserialization}{
+  name={deserialization},
+  description={The process of parsing a byte representation back into Rust data structures.
+    Deserialization reverses serialization and enables reading stored or transmitted data}
+}
+
+% ── Deployment & Infrastructure ──────────────────────────────
+\newglossaryentry{docker}{
+  name={Docker},
+  description={A containerization platform that packages applications and their dependencies
+    into lightweight, isolated containers. Containers are portable across environments, simplifying
+    deployment and enabling reproducible builds}
+}
+
+\newglossaryentry{kubernetes}{
+  name={Kubernetes},
+  description={An orchestration platform for managing containerized applications at scale.
+    Kubernetes automates deployment, scaling, and networking for services across clusters}
+}
+
+\newglossaryentry{pod}{
+  name={pod},
+  description={The smallest deployable unit in Kubernetes, typically wrapping a single container
+    (though multi-container pods exist for tightly coupled services). Pods manage networking and
+    storage for containers}
+}
+
+\newglossaryentry{deployment}{
+  name={deployment},
+  description={A Kubernetes resource declaring the desired state of an application, including
+    the container image, replica count, and update strategy. Kubernetes continuously reconciles
+    actual state toward the desired state}
+}
+
+\newglossaryentry{service}{
+  name={service},
+  description={A Kubernetes abstraction exposing a set of pods as a stable network endpoint.
+    Services enable load balancing, service discovery, and internal communication between pods}
+}
+
+\newglossaryentry{configmap}{
+  name={ConfigMap},
+  description={A Kubernetes resource storing configuration data (non-sensitive key-value pairs)
+    that can be injected into pods as environment variables or volume mounts, enabling environment-specific
+    configuration without rebuilding containers}
+}
+
+\newglossaryentry{docker-compose}{
+  name={Docker Compose},
+  description={A tool for defining and running multi-container Docker applications using a
+    declarative YAML file. Docker Compose simplifies local development and small-scale deployments}
+}
+
+% ── Desktop UI Frameworks ────────────────────────────────────
+\newglossaryentry{iced}{
+  name={Iced},
+  description={A cross-platform GUI framework written in Rust based on the Elm architecture.
+    Iced enables building native desktop applications with reactive, functional-style code and
+    strong type safety}
+}
+
+\newglossaryentry{tauri}{
+  name={Tauri},
+  description={A lightweight framework for building desktop applications with a web-based frontend
+    (HTML, CSS, JavaScript) and a Rust backend. Tauri provides smaller binary sizes and lower memory
+    overhead than Electron}
+}
+
+\newglossaryentry{ipc-inter-process}{
+  name={IPC (Inter-Process Communication)},
+  description={Mechanisms enabling separate processes to exchange data and signals. In Tauri,
+    IPC enables the JavaScript frontend to invoke Rust backend functions and vice versa}
+}
+
+% ── Database & Storage ───────────────────────────────────────
+\newglossaryentry{sqlcipher}{
+  name={SQLCipher},
+  description={An extension of SQLite adding transparent AES-256 encryption to database files.
+    SQLCipher enables encrypted-at-rest storage without additional infrastructure, used in this
+    implementation for secure wallet persistence}
+}
+
+\newglossaryentry{migration}{
+  name={migration},
+  description={A programmatic change to database schema enabling version-safe evolution of database
+    structure over time. Migrations allow adding columns, creating tables, and restructuring data
+    while preserving existing data}
+}

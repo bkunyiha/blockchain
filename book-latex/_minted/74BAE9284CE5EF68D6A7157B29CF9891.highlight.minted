@@ -1,0 +1,5 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+candidate\PYGZus{}txs =
+  GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL.get\PYGZus{}all()
+  + [Transaction::new\PYGZus{}coinbase\PYGZus{}tx(mining\PYGZus{}address)]
+\end{MintedVerbatim}

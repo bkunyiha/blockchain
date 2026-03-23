@@ -1,0 +1,34 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useQuery}\PYG{p}{,} \PYG{n+nx}{useMutation} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}@tanstack/react\PYGZhy{}query\PYGZsq{}}\PYG{p}{;}
+\PYG{k}{import} \PYG{o}{*} \PYG{k+kr}{as} \PYG{n+nx}{commands} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../commands\PYGZsq{}}\PYG{p}{;}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{useWalletList}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{k}{return} \PYG{n+nx}{useQuery}\PYG{p}{(\PYGZob{}}
+        \PYG{n+nx}{queryKey}\PYG{o}{:} \PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}wallets\PYGZsq{}}\PYG{p}{],}
+        \PYG{n+nx}{queryFn}\PYG{o}{:} \PYG{p}{()} \PYG{p}{=\PYGZgt{}} \PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{listWallets}\PYG{p}{(),}
+        \PYG{n+nx}{staleTime}: \PYG{k+kt}{30000}\PYG{p}{,}
+    \PYG{p}{\PYGZcb{});}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{useBalance}\PYG{p}{(}\PYG{n+nx}{address}: \PYG{k+kt}{string} \PYG{o}{|} \PYG{k+kc}{null}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{k}{return} \PYG{n+nx}{useQuery}\PYG{p}{(\PYGZob{}}
+        \PYG{n+nx}{queryKey}\PYG{o}{:} \PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}balance\PYGZsq{}}\PYG{p}{,} \PYG{n+nx}{address}\PYG{p}{],}
+        \PYG{n+nx}{queryFn}\PYG{o}{:} \PYG{p}{()} \PYG{p}{=\PYGZgt{}} \PYG{n+nx}{address} \PYG{o}{?} \PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{getBalance}\PYG{p}{(}\PYG{n+nx}{address}\PYG{p}{)} \PYG{o}{:} \PYG{n+nb}{Promise}\PYG{p}{.}\PYG{n+nx}{resolve}\PYG{p}{(}\PYG{l+m+mf}{0}\PYG{p}{),}
+        \PYG{n+nx}{enabled}\PYG{o}{:} \PYG{o}{!!}\PYG{n+nx}{address}\PYG{p}{,}
+        \PYG{n+nx}{staleTime}: \PYG{k+kt}{10000}\PYG{p}{,}
+    \PYG{p}{\PYGZcb{});}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{useSendTransaction}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{k}{return} \PYG{n+nx}{useMutation}\PYG{p}{(\PYGZob{}}
+        \PYG{n+nx}{mutationFn}\PYG{o}{:} \PYG{p}{(}\PYG{n+nx}{params}\PYG{o}{:} \PYG{p}{\PYGZob{}} \PYG{n+nx}{from}: \PYG{k+kt}{string}\PYG{p}{;} \PYG{n+nx}{to}: \PYG{k+kt}{string}\PYG{p}{;} \PYG{n+nx}{amount}: \PYG{k+kt}{number} \PYG{p}{\PYGZcb{})} \PYG{p}{=\PYGZgt{}}
+            \PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{sendTransaction}\PYG{p}{(}\PYG{n+nx}{params}\PYG{p}{.}\PYG{k+kr}{from}\PYG{p}{,} \PYG{n+nx}{params}\PYG{p}{.}\PYG{n+nx}{to}\PYG{p}{,} \PYG{n+nx}{params}\PYG{p}{.}\PYG{n+nx}{amount}\PYG{p}{),}
+    \PYG{p}{\PYGZcb{});}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{useCreateWallet}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{k}{return} \PYG{n+nx}{useMutation}\PYG{p}{(\PYGZob{}}
+        \PYG{n+nx}{mutationFn}\PYG{o}{:} \PYG{p}{(}\PYG{n+nx}{label?}: \PYG{k+kt}{string}\PYG{p}{)} \PYG{p}{=\PYGZgt{}} \PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{createWallet}\PYG{p}{(}\PYG{n+nx}{label}\PYG{p}{),}
+    \PYG{p}{\PYGZcb{});}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

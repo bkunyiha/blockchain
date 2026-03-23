@@ -1,0 +1,21 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{// Bitcoin Core: src/rpc/rawtransaction.cpp}
+\PYG{n}{UniValue}\PYG{+w}{ }\PYG{n+nf}{getrawtransaction}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{JSONRPCRequest}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{request}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{uint256}\PYG{+w}{ }\PYG{n}{hash}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ParseHashV}\PYG{p}{(}\PYG{n}{request}\PYG{p}{.}\PYG{n}{params}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{txid}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{//             \PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}}
+\PYG{+w}{    }\PYG{c+c1}{//             Parse hex from RPC → binary uint256}
+
+\PYG{+w}{    }\PYG{n}{CTransactionRef}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{GetTransaction}\PYG{p}{(}\PYG{n}{hash}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{.}\PYG{p}{.}\PYG{p}{.}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{//               \PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}}
+\PYG{+w}{        }\PYG{c+c1}{//               Use binary for lookup}
+\PYG{+w}{        }\PYG{k}{throw}\PYG{+w}{ }\PYG{n}{JSONRPCError}\PYG{p}{(}\PYG{n}{RPC\PYGZus{}INVALID\PYGZus{}ADDRESS\PYGZus{}OR\PYGZus{}KEY}\PYG{p}{,}
+\PYG{+w}{                          }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{No such transaction}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// Return hex to user}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{EncodeHexTx}\PYG{p}{(}\PYG{o}{*}\PYG{n}{tx}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{//     \PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}}
+\PYG{+w}{    }\PYG{c+c1}{//     Convert back to hex for RPC response}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

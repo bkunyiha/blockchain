@@ -1,0 +1,11 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Clone)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{WebServerConfig}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{host}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{port}: \PYG{k+kt}{u16}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{enable\PYGZus{}cors}: \PYG{k+kt}{bool}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{enable\PYGZus{}rate\PYGZus{}limiting}: \PYG{k+kt}{bool}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{rate\PYGZus{}limit\PYGZus{}requests\PYGZus{}per\PYGZus{}second}: \PYG{k+kt}{u32}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{rate\PYGZus{}limit\PYGZus{}burst\PYGZus{}size}: \PYG{k+kt}{u32}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,5 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{new}\PYG{p}{(}\PYG{n}{blockchain}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{BlockchainService}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{NodeContext}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{NodeContext}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{  }\PYG{c+c1}{// Move, not copy}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

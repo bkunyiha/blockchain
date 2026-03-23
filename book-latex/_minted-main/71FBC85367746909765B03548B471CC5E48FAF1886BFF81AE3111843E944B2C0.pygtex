@@ -1,0 +1,29 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+1. HTTP Request arrives
+   v
+2. CORS Middleware (if enabled)
+   \PYGZhy{} Handles preflight requests
+   v
+3. Compression Middleware
+   \PYGZhy{} Decompresses/prepares compression
+   v
+4. Error Handling Middleware
+   \PYGZhy{} Catches and formats errors
+   v
+5. Route Matching
+   \PYGZhy{} Extracts path parameters
+   v
+6. Authentication Middleware (if required)
+   \PYGZhy{} Validates API key
+   v
+7. Handler Execution
+   \PYGZhy{} Extracts request data
+   \PYGZhy{} Executes business logic
+   v
+8. Response Processing
+   \PYGZhy{} Compression applied
+   \PYGZhy{} Error handling formatted
+   \PYGZhy{} JSON serialization
+   v
+9. HTTP Response sent to client
+\end{Verbatim}

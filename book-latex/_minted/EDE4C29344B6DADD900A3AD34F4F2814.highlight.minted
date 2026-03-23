@@ -1,0 +1,32 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{once\PYGZus{}cell}\PYG{p}{::}\PYG{n}{sync}\PYG{p}{::}\PYG{n}{Lazy}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{parking\PYGZus{}lot}\PYG{p}{::}\PYG{n}{RwLock}\PYG{p}{;}
+
+\PYG{c+c1}{// The global memory pool: all pending transactions}
+\PYG{c+c1}{// accepted by this node but not yet confirmed}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{static}\PYG{+w}{ }\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Lazy}\PYG{o}{\PYGZlt{}}
+\PYG{+w}{    }\PYG{n}{Arc}\PYG{o}{\PYGZlt{}}\PYG{n}{Mutex}\PYG{o}{\PYGZlt{}}\PYG{n}{MemoryPool}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}
+\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Lazy}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Arc}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{Mutex}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{MemoryPool}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// The global node peer list: addresses of all}
+\PYG{c+c1}{// connected peers in the network}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{static}\PYG{+w}{ }\PYG{n}{GLOBAL\PYGZus{}NODES}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Lazy}\PYG{o}{\PYGZlt{}}
+\PYG{+w}{    }\PYG{n}{Arc}\PYG{o}{\PYGZlt{}}\PYG{n}{RwLock}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{Node}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}
+\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Lazy}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Arc}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{RwLock}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n+nb}{Vec}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// Blocks in transit: tracking which blocks we\PYGZsq{}ve}
+\PYG{c+c1}{// asked for but haven\PYGZsq{}t received yet}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{static}\PYG{+w}{ }\PYG{n}{GLOBAL\PYGZus{}BLOCKS\PYGZus{}IN\PYGZus{}TRANSIT}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Lazy}\PYG{o}{\PYGZlt{}}
+\PYG{+w}{    }\PYG{n}{Arc}\PYG{o}{\PYGZlt{}}\PYG{n}{Mutex}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}
+\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Lazy}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Arc}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{Mutex}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n+nb}{Vec}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// The bootstrap/central node address}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{static}\PYG{+w}{ }\PYG{n}{CENTERAL\PYGZus{}NODE}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{SocketAddr}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{    }\PYG{n}{SocketAddr}\PYG{p}{::}\PYG{n}{from}\PYG{p}{(}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mi}{127}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{3000}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\end{MintedVerbatim}

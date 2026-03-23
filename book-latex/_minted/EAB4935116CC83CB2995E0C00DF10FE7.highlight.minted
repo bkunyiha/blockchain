@@ -1,0 +1,30 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+Kubernetes Cluster
+├── Namespace: blockchain
+│   ├── StatefulSet: miner
+│   │   ├── miner\PYGZhy{}0 (Pod)
+│   │   ├── miner\PYGZhy{}1 (Pod)
+│   │   └── per\PYGZhy{}pod PVCs for each miner
+│   │
+│   ├── StatefulSet: webserver
+│   │   ├── webserver\PYGZhy{}0 (Pod)
+│   │   ├── webserver\PYGZhy{}1 (Pod)
+│   │   └── per\PYGZhy{}pod PVCs for each webserver
+│   │
+│   ├── Deployment: redis (rate limiting backend)
+│   │
+│   ├── Services:
+│   │   ├── miner\PYGZhy{}headless (per\PYGZhy{}pod DNS)
+│   │   ├── miner\PYGZhy{}service (ClusterIP, stable endpoint)
+│   │   ├── webserver\PYGZhy{}headless (per\PYGZhy{}pod DNS)
+│   │   ├── webserver\PYGZhy{}service (LoadBalancer/NodePort)
+│   │   └── redis (ClusterIP)
+│   │
+│   ├── HPA: webserver\PYGZhy{}hpa, miner\PYGZhy{}hpa (autoscaling)
+│   │
+│   ├── ConfigMaps:
+│   │   ├── blockchain\PYGZhy{}config (node settings)
+│   │   └── rate\PYGZhy{}limit\PYGZhy{}settings (Settings.toml)
+│   │
+│   └── Secrets: blockchain\PYGZhy{}secrets (API keys, optional MINER\PYGZbs{}\PYGZus{}ADDRESS)
+\end{MintedVerbatim}

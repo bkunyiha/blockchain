@@ -1,0 +1,20 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{tracing}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}\PYG{n}{error}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{info}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{c+c1}{// Good: Structured logging with context}
+\PYG{n}{info}\PYG{o}{!}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{txid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{\PYGZpc{}}\PYG{n}{txid}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{from}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{\PYGZpc{}}\PYG{n}{from\PYGZus{}address}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{to}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{\PYGZpc{}}\PYG{n}{to\PYGZus{}address}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{amount}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{amount}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Transaction submitted successfully}\PYG{l+s}{\PYGZdq{}}
+\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// Good: Error logging with full context}
+\PYG{n}{error}\PYG{o}{!}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{error}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{\PYGZpc{}}\PYG{n}{e}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{txid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{\PYGZpc{}}\PYG{n}{txid}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{from}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{\PYGZpc{}}\PYG{n}{from\PYGZus{}address}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Failed to process transaction}\PYG{l+s}{\PYGZdq{}}
+\PYG{p}{)}\PYG{p}{;}
+\end{MintedVerbatim}

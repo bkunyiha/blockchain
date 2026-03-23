@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+brew install kubectl
+brew install minikube
+brew install docker
+\end{Verbatim}

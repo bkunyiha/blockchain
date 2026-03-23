@@ -1,0 +1,8 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+UTXO: (txA, vout=0) locked to Alice
+
+tx1: spends (txA,0) \PYGZhy{}\PYGZgt{} pays Bob
+tx2: spends (txA,0) \PYGZhy{}\PYGZgt{} pays Mallory
+
+Both cannot be accepted into the same canonical history.
+\end{MintedVerbatim}

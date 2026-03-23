@@ -1,0 +1,62 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{useState}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}react\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{useCreateWallet}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}../hooks/useApi\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{n+nx}{Button}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}../components/Button\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{n+nx}{JsonViewer}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}../components/JsonViewer\PYGZsq{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{default}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{CreateWallet}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{p}{[}\PYG{n+nx}{label}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{setLabel}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{useState}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}\PYGZsq{}}\PYG{p}{)}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{mutate}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{isLoading}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{data}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{error}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{useCreateWallet}\PYG{p}{(}\PYG{p}{)}
+
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{handleCreate}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n+nx}{label}\PYG{p}{.}\PYG{n+nx}{trim}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n+nx}{alert}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Please enter a label\PYGZsq{}}\PYG{p}{)}
+\PYG{+w}{      }\PYG{k}{return}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n+nx}{mutate}\PYG{p}{(}\PYG{n+nx}{label}\PYG{p}{)}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{  }\PYG{k}{return}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{div}\PYG{+w}{ }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}max\PYGZhy{}w\PYGZhy{}2xl\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{h2}\PYG{+w}{ }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}text\PYGZhy{}2xl font\PYGZhy{}bold mb\PYGZhy{}4\PYGZdq{}}\PYG{o}{\PYGZgt{}}\PYG{n+nx}{Create}\PYG{+w}{ }\PYG{n+nx}{Wallet}\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{h}\PYG{err}{2}\PYG{err}{\PYGZgt{}}
+
+\PYG{+w}{      }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{div}\PYG{+w}{ }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}mb\PYGZhy{}4\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{        }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{label}\PYG{+w}{ }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}block text\PYGZhy{}sm font\PYGZhy{}medium mb\PYGZhy{}2\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{          }\PYG{n+nx}{Wallet}\PYG{+w}{ }\PYG{n+nx}{Label}
+\PYG{+w}{        }\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{l}\PYG{err}{a}\PYG{err}{b}\PYG{err}{e}\PYG{err}{l}\PYG{err}{\PYGZgt{}}
+\PYG{+w}{        }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{input}
+\PYG{+w}{          }\PYG{k+kr}{type}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}text\PYGZdq{}}
+\PYG{+w}{          }\PYG{n+nx}{value}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{label}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{          }\PYG{n+nx}{onChange}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{p}{(}\PYG{n+nx}{e}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{n+nx}{setLabel}\PYG{p}{(}\PYG{n+nx}{e}\PYG{p}{.}\PYG{n+nx}{target}\PYG{p}{.}\PYG{n+nx}{value}\PYG{p}{)}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{          }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}w\PYGZhy{}full px\PYGZhy{}3 py\PYGZhy{}2 border rounded\PYGZdq{}}
+\PYG{+w}{          }\PYG{n+nx}{placeholder}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}My Wallet\PYGZdq{}}
+\PYG{+w}{        }\PYG{o}{/}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{d}\PYG{err}{i}\PYG{err}{v}\PYG{err}{\PYGZgt{}}
+
+\PYG{+w}{      }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{Button}
+\PYG{+w}{        }\PYG{n+nx}{onClick}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{handleCreate}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n+nx}{disabled}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{isLoading}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}mb\PYGZhy{}6\PYGZdq{}}
+\PYG{+w}{      }\PYG{o}{\PYGZgt{}}
+\PYG{+w}{        }\PYG{p}{\PYGZob{}}\PYG{n+nx}{isLoading}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}Creating...\PYGZsq{}}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}Create Wallet\PYGZsq{}}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{      }\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{B}\PYG{err}{u}\PYG{err}{t}\PYG{err}{t}\PYG{err}{o}\PYG{err}{n}\PYG{err}{\PYGZgt{}}
+
+\PYG{+w}{      }\PYG{p}{\PYGZob{}}\PYG{n+nx}{error}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{div}\PYG{+w}{ }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}bg\PYGZhy{}red\PYGZhy{}50 text\PYGZhy{}red\PYGZhy{}700 p\PYGZhy{}4 rounded mb\PYGZhy{}4\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{          }\PYG{n+ne}{Error}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{n+nx}{error}\PYG{+w}{ }\PYG{o+ow}{instanceof}\PYG{+w}{ }\PYG{n+ne}{Error}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{n+nx}{error}\PYG{p}{.}\PYG{n+nx}{message}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}Unknown error\PYGZsq{}}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{d}\PYG{err}{i}\PYG{err}{v}\PYG{err}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{p}{)}\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{      }\PYG{p}{\PYGZob{}}\PYG{n+nx}{data}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{n+nx}{data}\PYG{p}{.}\PYG{n+nx}{data}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{        }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{div}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{          }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{h3}\PYG{+w}{ }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}font\PYGZhy{}semibold mb\PYGZhy{}2\PYGZdq{}}\PYG{o}{\PYGZgt{}}\PYG{n+nx}{New}\PYG{+w}{ }\PYG{n+nx}{Wallet}\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{h}\PYG{err}{3}\PYG{err}{\PYGZgt{}}
+\PYG{+w}{          }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{p}\PYG{+w}{ }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}text\PYGZhy{}green\PYGZhy{}600 mb\PYGZhy{}2\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{            }\PYG{n+nx}{Address}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{n+nx}{data}\PYG{p}{.}\PYG{n+nx}{data}\PYG{p}{.}\PYG{n+nx}{address}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{          }\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{p}\PYG{err}{\PYGZgt{}}
+\PYG{+w}{          }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{JsonViewer}\PYG{+w}{ }\PYG{n+nx}{data}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{data}\PYG{p}{.}\PYG{n+nx}{data}\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{/}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{        }\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{d}\PYG{err}{i}\PYG{err}{v}\PYG{err}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{p}{)}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{d}\PYG{err}{i}\PYG{err}{v}\PYG{err}{\PYGZgt{}}
+\PYG{+w}{  }\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

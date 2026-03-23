@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+TCP \PYGZhy{}\PYGZgt{} Package \PYGZhy{}\PYGZgt{} NodeContext \PYGZhy{}\PYGZgt{} (mempool | add\PYGZbs{}\PYGZus{}block | mining | relay)
+\end{Verbatim}

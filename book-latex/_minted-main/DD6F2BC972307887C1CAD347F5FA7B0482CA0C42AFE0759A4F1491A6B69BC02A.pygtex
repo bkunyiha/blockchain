@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+kubectl apply \PYGZhy{}f \PYG{l+m}{01}\PYGZhy{}namespace.yaml
+\end{Verbatim}

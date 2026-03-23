@@ -48,7 +48,7 @@
 
 ### Part III: Language Reference
 
-38. <a href=”README.md”>Chapter 24: Rust Language Guide</a>
+38. <a href=”README.md”>Chapter 33: Rust Language Guide</a>
 
 </details>
 

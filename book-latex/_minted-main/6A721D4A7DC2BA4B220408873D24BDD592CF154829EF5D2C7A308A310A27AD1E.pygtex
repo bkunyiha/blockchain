@@ -1,0 +1,28 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useQuery} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}@tanstack/react\PYGZhy{}query\PYGZsq{}}\PYG{p}{;}
+\PYG{k}{import} \PYG{o}{*} \PYG{k+kr}{as} \PYG{n+nx}{commands} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../commands\PYGZsq{}}\PYG{p}{;}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{useBlockchainInfo}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{k}{return} \PYG{n+nx}{useQuery}\PYG{p}{(\PYGZob{}}
+        \PYG{n+nx}{queryKey}\PYG{o}{:} \PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}blockchainInfo\PYGZsq{}}\PYG{p}{],}
+        \PYG{n+nx}{queryFn}\PYG{o}{:} \PYG{p}{()} \PYG{p}{=\PYGZgt{}} \PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{getBlockchainInfo}\PYG{p}{(),}
+        \PYG{n+nx}{staleTime}: \PYG{k+kt}{10000}\PYG{p}{,} \PYG{c+c1}{// 10 seconds}
+    \PYG{p}{\PYGZcb{});}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{useLatestBlocks}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{k}{return} \PYG{n+nx}{useQuery}\PYG{p}{(\PYGZob{}}
+        \PYG{n+nx}{queryKey}\PYG{o}{:} \PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}latestBlocks\PYGZsq{}}\PYG{p}{],}
+        \PYG{n+nx}{queryFn}\PYG{o}{:} \PYG{p}{()} \PYG{p}{=\PYGZgt{}} \PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{getLatestBlocks}\PYG{p}{(),}
+        \PYG{n+nx}{staleTime}: \PYG{k+kt}{10000}\PYG{p}{,}
+    \PYG{p}{\PYGZcb{});}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{useMiningInfo}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{k}{return} \PYG{n+nx}{useQuery}\PYG{p}{(\PYGZob{}}
+        \PYG{n+nx}{queryKey}\PYG{o}{:} \PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}miningInfo\PYGZsq{}}\PYG{p}{],}
+        \PYG{n+nx}{queryFn}\PYG{o}{:} \PYG{p}{()} \PYG{p}{=\PYGZgt{}} \PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{getMiningInfo}\PYG{p}{(),}
+        \PYG{n+nx}{staleTime}: \PYG{k+kt}{30000}\PYG{p}{,} \PYG{c+c1}{// 30 seconds}
+    \PYG{p}{\PYGZcb{});}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,341 @@
+% ══════════════════════════════════════════════════════════════
+%  Section 9.1: Domain Model --- Blocks, Transactions, and the UTXO Worldview
+% ══════════════════════════════════════════════════════════════
+\chapter{Chain: Domain Model}
+\label{ch:domain-model}
+
+\begin{learnbox}
+\begin{itemize}
+  \item How blocks and block headers encode the whitepaper's chain of hashes
+  \item The UTXO model: why Bitcoin tracks \emph{outputs}, not accounts
+  \item How \code{TXInput}, \code{TXOutput}, and \code{Transaction} encode spending
+  \item Where ``unspent vs.\ spent'' is tracked (the UTXO set, not the output itself)
+\end{itemize}
+\end{learnbox}
+
+In this section, we walk through the project's Rust types that represent
+Bitcoin's core domain objects. Our goal is to confidently answer ``what
+does this type \emph{mean} in whitepaper terms?'' and ``where is it used
+in the implementation?''
+
+As we walk through the code, we use these files as our primary reference:
+
+\begin{itemize}
+  \item \code{bitcoin/src/primitives/\index{block}block.rs}
+  \item \code{bitcoin/src/primitives/\index{transaction}transaction.rs}
+  \item \code{bitcoin/src/chain/\index{UTXO}utxo\_set.rs} (for how outputs become ``spendable'')
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Whitepaper Term \texorpdfstring{$\to$}{→} Rust Type Map}
+\label{sec:wp-rust-map}
+
+\begin{table}[htbp]
+\caption{Whitepaper concepts mapped to Rust types}
+\label{tab:wp-rust-map}
+\centering\small
+\begin{tabularx}{0.92\textwidth}{llX}
+\toprule
+\textbf{Whitepaper Concept} & \textbf{Rust Type / Field} \\
+\midrule
+Block header          & \code{BlockHeader}                 \\
+Previous block hash   & \code{BlockHeader.pre\_block\_hash} \\
+Nonce                 & \code{BlockHeader.nonce}            \\
+Block hash            & \code{BlockHeader.hash}             \\
+Transaction           & \code{Transaction}                  \\
+Transaction ID        & \code{Transaction.id}               \\
+Input (spend)         & \code{TXInput}                      \\
+Output (new coin)     & \code{TXOutput}                     \\
+Locking condition     & \code{TXOutput.pub\_key\_hash}       \\
+Signature             & \code{TXInput.signature}            \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ──────────────────────────────────────────────────────────────
+\section{Domain Object Diagrams}
+\label{sec:domain-diagrams}
+
+The diagram below shows the \emph{runtime relationship} between the main
+state buckets: the \textbf{\index{blockchain}blockchain} (append-only history), the
+\textbf{\index{UTXO}UTXO set} (derived ``what is spendable right now'' state), and
+\textbf{\index{transaction}transactions} (which consume old outputs and create new ones).
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance = 1.8cm,
+  blockchain/.style = {rectangle, rounded corners=6pt, draw=sectioncolor, fill=codebg,
+                       text width=6cm, align=center, minimum height=1.2cm, font=\sffamily\small},
+  utxo/.style = {rectangle, rounded corners=6pt, draw=brand, fill=brandlight,
+                 text width=2.4cm, align=center, minimum height=1cm, font=\sffamily\small},
+  arrow/.style = {-{Stealth[length=5pt,width=3.5pt]}, thick, color=brand},
+]
+
+% Blockchain
+\node[blockchain] (chain) at (0, 3) {
+  \textbf{Blockchain} \\[4pt]
+  Block 0 (Genesis) \\
+  \quad \(\to\) Block 1 \\
+  \quad\quad \(\to\) Block 2 \\
+  \quad\quad\quad \(\to\) Block N (Tip)
+};
+
+% UTXO Set
+\node[utxo] (utxo) at (0, 0.5) {
+  \textbf{UTXO Set} \\[4pt]
+  \texttt{(txid, vout)} \\
+  \quad \(\to\) TXOutput \\
+  \texttt{(txid, vout)} \\
+  \quad \(\to\) TXOutput
+};
+
+% Connecting arrow and label
+\draw[arrow] (chain.south) -- (utxo.north);
+\node[font=\small\sffamily\itshape, color=sectioncolor, align=center, right=0.3cm of chain.south] {
+  maintains \\ derived state
+};
+
+\end{tikzpicture}
+\caption{Blockchain Domain Model: Chain History and Derived UTXO State}
+\label{fig:ch09-1-domain-model}
+\end{figure}
+
+% ──────────────────────────────────────────────────────────────
+\section{Key Code Reading Checklist}
+\label{sec:reading-checklist}
+
+As we follow the Rust code, we should be able to answer these questions
+from the structs alone:
+
+\begin{itemize}
+  \item Where does the txid come from? (Search for \code{Transaction::hash()}.)
+  \item Where does the signature live? (Look at \code{TXInput.signature}.)
+  \item What does an output lock to? (\code{TXOutput.pub\_key\_hash}.)
+  \item Where is ``unspent vs.\ spent'' tracked? (Not on the output---in \code{UTXOSet}.)
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step-by-Step Code Walkthrough}
+\label{sec:walkthrough}
+
+\textbf{Goal}: build a correct mental model of what the core structs
+\emph{mean}, and how the bytes flow between modules.
+
+\begin{infobox}{Source}
+\code{bitcoin/src/primitives/block.rs},
+\code{bitcoin/src/primitives/transaction.rs},
+\code{bitcoin/src/chain/utxo\_set.rs}
+\end{infobox}
+
+% ── Step 1: Block and BlockHeader ────────────────────────────
+\subsection{Step 1: Block and BlockHeader}
+\label{sec:step1-block}
+
+In the Bitcoin whitepaper, a block is a \textbf{timestamped commitment}
+to two things: the previous block (so the history is tamper-evident by
+hash chaining) and a set of transactions (so the block anchors ownership
+transfers into the history).
+
+In our implementation, \code{BlockHeader} is the smallest header we need
+to make those ideas concrete in code. In practice, the header matters
+because it defines the \textbf{proof-of-work input}: mining repeatedly
+hashes a byte sequence derived from the header (plus a transaction
+commitment) until it finds a valid \code{nonce}.
+
+Those bytes are assembled from the header fields in
+\code{ProofOfWork::prepare\_data(...)}, which is why \code{BlockHeader}
+contains exactly the fields it does. We cover the proof-of-work loop
+and the exact hashed byte layout in Chapter~15 (Block Lifecycle and
+Mining).
+
+\begin{listing}[htbp]
+\caption{Block and BlockHeader struct layout (\code{block.rs})}
+\label{lst:9-1}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub struct BlockHeader {
+    timestamp: i64,
+    pre_block_hash: String,
+    hash: String,
+    nonce: i64,
+    height: usize,
+}
+
+pub struct Block {
+    header: BlockHeader,
+    transactions: Vec<Transaction>,
+}
+\end{minted}
+\end{listing}
+
+What the fields mean:
+\begin{itemize}
+  \item \code{pre\_block\_hash}: link to the previous block (whitepaper \S3/\S4).
+  \item \code{nonce} + \code{hash}: PoW search result (whitepaper \S4).
+  \item \code{timestamp}: ordering signal; also part of the PoW header bytes.
+  \item \code{height}: convenience for iteration/selection; not a Bitcoin header field.
+\end{itemize}
+
+\begin{notebox}[Project-specific note]
+In our implementation we do not use a \textbf{Merkle root} field. We
+instead concatenate transaction IDs and hash once using
+\code{Block::hash\_transactions()}. This keeps the code readable but
+does not support Merkle proofs or SPV.
+\end{notebox}
+
+Creating a new block: in our implementation,
+\code{Block::new\_block(pre\_block\_hash, transactions, height)} is the
+entry point that \emph{defines} the header boundary. It takes the parent
+link and the transaction list as inputs, sets derived header fields such
+as \code{timestamp}, and then finalizes \code{nonce} and \code{hash} by
+running PoW.
+
+\begin{listing}[htbp]
+\caption{\code{Block::new\_block} --- creating and mining a block}
+\label{lst:9-1-2}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn new_block(
+    pre_block_hash: String,
+    transactions: &[Transaction],
+    height: usize
+) -> Block {
+    let header = BlockHeader {
+        timestamp: crate::current_timestamp(),
+        pre_block_hash,
+        hash: String::new(),
+        nonce: 0,
+        height,
+    };
+    let mut block = Block {
+        header,
+        transactions: transactions.to_vec(),
+    };
+    let pow = ProofOfWork::new_proof_of_work(block.clone());
+    let (nonce, hash) = pow.run();
+    block.header.nonce = nonce;
+    block.header.hash = hash;
+    block
+}
+\end{minted}
+\end{listing}
+
+\begin{checkpointbox}
+\code{pre\_block\_hash} is the chain link. \code{nonce} and \code{hash}
+are filled by PoW (\code{ProofOfWork::run()}), not supplied by the
+caller. \code{height} lives in the header as a convenience (not a
+Bitcoin header field).
+\end{checkpointbox}
+
+% ── Step 2: Transaction, Inputs, Outputs ─────────────────────
+\subsection{Step 2: Transaction, Inputs, and Outputs}
+\label{sec:step2-transaction}
+
+Bitcoin is not an ``account system.'' It is a system of \textbf{outputs},
+and spending means consuming previous outputs as inputs.
+
+\begin{infobox}{Methods involved}
+\code{Transaction::new\_utxo\_transaction()},
+\code{Transaction::hash()},
+\code{Transaction::sign()}
+\end{infobox}
+
+In this step, we do two things: (1)~define what a transaction \emph{is}
+by reading the struct fields, and (2)~show how a spending transaction is
+\emph{constructed} in code.
+
+\begin{listing}[htbp]
+\caption{Transaction, TXInput, and TXOutput structs (\code{transaction.rs})}
+\label{lst:9-2-structs}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Clone, Default, Serialize, Deserialize)]
+pub struct TXInput {
+    txid: Vec<u8>,
+    vout: usize,
+    signature: Vec<u8>,
+    pub_key: Vec<u8>,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct TXOutput {
+    value: i32,
+    in_global_mem_pool: bool,
+    pub_key_hash: Vec<u8>,
+}
+
+#[derive(Clone, Default, Serialize, Deserialize)]
+pub struct Transaction {
+    id: Vec<u8>,
+    vin: Vec<TXInput>,
+    vout: Vec<TXOutput>,
+}
+\end{minted}
+\end{listing}
+
+They reveal the project's UTXO worldview: a transaction spends prior
+outputs by referencing an outpoint $(txid, vout)$ in \code{TXInput}, and
+it creates new spendable outputs in \code{TXOutput}.
+
+\begin{itemize}
+  \item A spend is identified by an outpoint $(txid, vout)$: \code{TXInput.\{txid, vout\}}.
+  \item Authorization is per-input: \code{TXInput.signature} + \code{TXInput.pub\_key}.
+  \item Outputs are locked by a pubkey-hash: \code{TXOutput.pub\_key\_hash} (no script engine).
+\end{itemize}
+
+How a spending transaction is constructed:
+\begin{enumerate}
+  \item \textbf{Select spendable outputs}: query the UTXO set for outpoints locked to the sender.
+  \item \textbf{Create inputs}: for each selected outpoint, create a \code{TXInput}.
+  \item \textbf{Create outputs}: payment to recipient, plus optional change back to sender.
+  \item \textbf{Compute the txid}: hash a serialized copy with \code{id = []} (non-circular).
+  \item \textbf{Sign}: produce per-input signatures and store into \code{TXInput.signature}.
+\end{enumerate}
+
+The concrete entry point is \code{Transaction::new\_utxo\_transaction(...)}
+(full implementation in Chapter~14: Transaction Lifecycle).
+
+% ── Step 3: UTXO Set ────────────────────────────────────────
+\subsection{Step 3: History vs.\ Derived State (the UTXO Set)}
+\label{sec:step3-utxo}
+
+\textbf{UTXO (Unspent Transaction Output)}: a specific transaction
+output that is currently spendable---an output identified by an outpoint
+$(txid, vout)$ that has \textbf{not} been consumed by any later
+transaction input.
+
+The \textbf{blockchain} is the append-only history (blocks and the
+transactions they contain). The \textbf{UTXO set} is derived state: a
+compact, query-friendly view of ``what is spendable right now?'' computed
+from that history.
+
+We keep the UTXO set separate so the node can answer spendability
+questions efficiently without rescanning the entire chain every time it
+validates a transaction or connects a block.
+
+\begin{listing}[htbp]
+\caption{UTXOSet struct (\code{utxo\_set.rs})}
+\label{lst:9-3-utxo}
+\begin{minted}[fontsize=\footnotesize]{rust}
+const UTXO_TREE: &str = "chainstate";
+
+pub struct UTXOSet {
+    blockchain: BlockchainService,
+}
+
+impl UTXOSet {
+    pub fn new(blockchain: BlockchainService) -> UTXOSet {
+        UTXOSet { blockchain }
+    }
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+Spendability is not a field on \code{TXOutput}; it is tracked by
+membership in the UTXO database. This is the same design Bitcoin Core
+uses: the \code{chainstate} LevelDB stores only unspent outputs.
+\end{notebox}
+
+\begin{refbox}{See the full implementation}
+The complete \code{find\_spendable\_outputs()} method, UTXO rebuild
+logic, and rollback handling are covered in Chapter~13 (UTXO Set).
+\end{refbox}

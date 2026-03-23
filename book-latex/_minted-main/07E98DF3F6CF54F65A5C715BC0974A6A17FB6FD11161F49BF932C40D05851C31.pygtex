@@ -1,0 +1,19 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{validate\PYGZus{}address}\PYG{p}{(}\PYG{n}{address}: \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{bool}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// 1. Decode Base58}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{payload}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{base58\PYGZus{}decode}\PYG{p}{(}\PYG{n}{address}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 2. Extract components}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{actual\PYGZus{}checksum}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{payload}\PYG{p}{[}\PYG{n}{payload}\PYG{p}{.}\PYG{n}{len}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{4}\PYG{o}{..}\PYG{p}{]}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{version}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{payload}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{payload}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{o}{..}\PYG{n}{payload}\PYG{p}{.}\PYG{n}{len}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{4}\PYG{p}{]}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 3. Recompute checksum from version + hash}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{target\PYGZus{}vec}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{vec!}\PYG{p}{[}\PYG{n}{version}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{target\PYGZus{}vec}\PYG{p}{.}\PYG{n}{extend}\PYG{p}{(}\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{target\PYGZus{}checksum}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{checksum}\PYG{p}{(}\PYG{n}{target\PYGZus{}vec}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 4. Compare checksums}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{actual\PYGZus{}checksum}\PYG{p}{.}\PYG{n}{eq}\PYG{p}{(}\PYG{n}{target\PYGZus{}checksum}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,11 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+sled::Db at ./\PYGZlt{}TREE\PYGZus{}DIR\PYGZgt{}/
+  |
+  +\PYGZhy{} Tree \PYGZdq{}\PYGZlt{}BLOCKS\PYGZus{}TREE\PYGZgt{}\PYGZdq{}  (default: \PYGZdq{}blocks1\PYGZdq{})
+       |
+       |\PYGZhy{}\PYGZhy{} key: \PYGZdq{}\PYGZlt{}block\PYGZus{}hash\PYGZus{}string\PYGZgt{}\PYGZdq{}
+       |    \PYGZhy{}\PYGZgt{} value: serialized Block (bytes)
+       |
+       +\PYGZhy{}\PYGZhy{} key: \PYGZdq{}tip\PYGZus{}block\PYGZus{}hash\PYGZdq{}
+            \PYGZhy{}\PYGZgt{} value: \PYGZdq{}\PYGZlt{}block\PYGZus{}hash\PYGZus{}string\PYGZgt{}\PYGZdq{} (bytes)
+\end{Verbatim}

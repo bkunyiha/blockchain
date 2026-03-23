@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{react\PYGZus{}app\PYGZus{}not\PYGZus{}built}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{Html}\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZsq{}}\PYG{n+nb}{static}\PYG{+w}{ }\PYG{k+kt}{str}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Html}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{r\PYGZsh{}\PYGZdq{}}
+\PYG{l+s}{        \PYGZlt{}!DOCTYPE html\PYGZgt{}}
+\PYG{l+s}{        ...}
+\PYG{l+s}{        \PYGZdq{}\PYGZsh{}}
+\PYG{+w}{    }\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

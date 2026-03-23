@@ -1,0 +1,28 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{new\PYGZus{}block}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{pre\PYGZus{}block\PYGZus{}hash}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{transactions}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{n}{Transaction}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{height}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{usize}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{Block}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{header}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{BlockHeader}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{timestamp}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{crate}\PYG{p}{::}\PYG{n}{current\PYGZus{}timestamp}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{pre\PYGZus{}block\PYGZus{}hash}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{hash}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{nonce}\PYG{p}{:}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{height}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{block}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Block}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{header}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{transactions}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{transactions}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{// Run PoW to find nonce such that}
+\PYG{+w}{    }\PYG{c+c1}{// hash \PYGZlt{} target difficulty}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pow}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ProofOfWork}\PYG{p}{::}\PYG{n}{new\PYGZus{}proof\PYGZus{}of\PYGZus{}work}\PYG{p}{(}
+\PYG{+w}{        }\PYG{n}{block}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{nonce}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{hash}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{pow}\PYG{p}{.}\PYG{n}{run}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{block}\PYG{p}{.}\PYG{n}{header}\PYG{p}{.}\PYG{n}{nonce}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{nonce}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{block}\PYG{p}{.}\PYG{n}{header}\PYG{p}{.}\PYG{n}{hash}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{hash}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{block}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

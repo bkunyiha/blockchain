@@ -1,0 +1,9 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{admin\PYGZus{}routes}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Router}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{route}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/users}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{get}\PYG{p}{(}\PYG{n}{list\PYGZus{}users}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{route}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/users/:id}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{delete}\PYG{p}{(}\PYG{n}{delete\PYGZus{}user}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{n}{Router}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{nest}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/api/admin}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{admin\PYGZus{}routes}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{route}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/health}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{get}\PYG{p}{(}\PYG{n}{health}\PYG{p}{)}\PYG{p}{)}
+\end{MintedVerbatim}

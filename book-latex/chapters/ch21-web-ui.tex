@@ -1,0 +1,791 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 21: Web Admin Interface
+% ══════════════════════════════════════════════════════════════
+\chapter{Web Admin Interface}
+\label{ch:web-admin-ui}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Build a React/TypeScript web admin interface with modern component architecture
+  \item Implement state management with React Query and authentication patterns
+  \item Structure the frontend build process and deployment pipeline
+  \item Apply TypeScript type safety to API integration and response handling
+\end{itemize}
+\end{learnbox}
+
+\lettrine{T}{his} chapter explains the \index{Web}Web \index{Admin}Admin UI in \code{\index{bitcoin-web-ui}bitcoin-web-ui/}: a \index{React}React + \index{TypeScript}TypeScript \index{single-page application}single-page \index{application}application (SPA) that calls the \index{Rust!backend}Rust \index{node}node's \textbf{\index{admin API}admin API} (\code{/api/admin/*}) and renders a professional \index{administrative}administrative \index{interface}interface.
+
+If you have read Chapters~\ref{ch:desktop-tauri} or~\ref{ch:wallet-tauri} (the \index{Tauri}Tauri \index{admin dashboard}admin and \index{wallet}wallet UIs), you will recognize the same \index{React Query}React Query \index{pattern}patterns and \index{component}component \index{architecture}architecture used here. The key \index{difference}difference is \index{transport}transport: this chapter uses \index{HTTP}HTTP \index{REST API}REST calls via \index{Axios}Axios rather than \index{Tauri}Tauri's \index{IPC}IPC bridge. Everything on the \index{React}React \index{side}side --- \index{hook}hooks, \index{cache}cache \index{management}management, \index{component}component \index{structure}structure --- transfers directly.
+
+\begin{infobox}[Three ways to build the admin UI]
+This book implements the same \index{admin dashboard}admin \index{functionality}functionality three ways: Chapter~\ref{ch:desktop-iced} (\index{Iced}Iced) uses pure \index{Rust!backend}Rust with the \index{MVU}Model-View-Update \index{pattern}pattern. Chapter~\ref{ch:desktop-tauri} (\index{Tauri}Tauri) uses a \index{Rust!backend}Rust \index{backend}backend with a \index{React}React \index{frontend}frontend connected by \index{IPC}IPC. This chapter uses a standalone \index{React}React \index{frontend}frontend calling the \index{REST API}REST API over \index{HTTP}HTTP. All three consume the same \code{\index{bitcoin-api}bitcoin-api} \index{Cargo!crate}crate. The \index{difference}differences are purely in \index{transport}transport (\index{IPC}IPC vs.\ \index{HTTP}HTTP) and \index{runtime}runtime (desktop vs.\ browser).
+\end{infobox}
+
+---
+
+\section{Overview and architectural spine}
+\label{sec:web-ui-overview}
+
+To understand the entire application quickly, read the code in this order:
+
+\begin{enumerate}
+  \item \textbf{\code{src/main.tsx}}: bootstraps React into the DOM.
+  \item \textbf{\code{src/App.tsx}}: composes providers \code{+} routes \code{+} layout.
+  \item \textbf{\code{src/contexts/ApiConfigContext.tsx}}: the ``global config'' for base URL and API key.
+  \item \textbf{\code{src/services/api.ts}}: the HTTP boundary (one method per endpoint).
+  \item \textbf{\code{src/hooks/useApi.ts}}: the ``query/mutation surface'' used by components.
+  \item \textbf{Feature components} (Dashboard, Blockchain screens, Wallet screens): each is a thin layer that calls hooks and renders results.
+\end{enumerate}
+
+---
+
+\section{Layer boundaries diagram}
+\label{sec:layer-boundaries}
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+UI layer: routes + components
++- App.tsx
+|  +- routes + providers
+|  +- Screens
+|     +- Dashboard / Wallet / Mining / ...
+|
+Data layer: React Query hooks
++- useApi.ts
+|  +- useQuery / useMutation
+|  +- cache keys + invalidation
+|
+HTTP boundary
++- ApiClient (Axios)
+|  +- one method per endpoint
+|
+Rust node
++- /api/admin/* endpoints
+\end{minted}
+
+The payoff of this structure is local reasoning: each layer has a single responsibility, and we can understand each without reading the others.
+
+\begin{itemize}
+  \item A component answers: ``what do we render?''
+  \item A hook answers: ``how do we fetch/cache/invalidate?''
+  \item The API client answers: ``what URL, what HTTP verb, what headers, what types?''
+\end{itemize}
+
+---
+
+\section{End-to-end data flow}
+\label{sec:data-flow}
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+User navigates to "/"
+    v
+Component calls useBlockchainInfo(5000)
+    v
+Hook calls getApiClient().getBlockchainInfo()
+    v
+ApiClient makes GET /api/admin/blockchain (with X-API-Key)
+    v
+Rust node API returns ApiResponse<BlockchainInfo>
+    v
+Hook receives response.data
+    v
+Component receives { data, isLoading, error }
+    v
+Component renders StatCards + details
+\end{minted}
+
+The key design decision is separation of concerns:
+
+\begin{itemize}
+  \item \textbf{Components} render UI and own local form state.
+  \item \textbf{Hooks} define cache keys, enablement, invalidation, and mutation feedback.
+  \item \textbf{ApiClient} performs the HTTP requests and returns typed responses.
+\end{itemize}
+
+---
+
+\section{Entry point: \texttt{src/main.tsx}}
+\label{sec:entry-point}
+
+\code{main.tsx} is intentionally minimal: it mounts the app and imports global CSS. We get a key architectural advantage: a single composition root (\code{App}) and a single place where all providers and routing are defined.
+
+\begin{listing}[htbp]
+\caption{Browser entry point --- mounting React}
+\label{lst:ch21-main}
+\begin{minted}[fontsize=\footnotesize]{typescript}
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
+
+ReactDOM.createRoot(document.getElementById('root')!)
+  .render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+  )
+\end{minted}
+\end{listing}
+
+---
+
+\section{Composition root: providers + routes}
+\label{sec:composition-root}
+
+\code{App.tsx} is the most important file for ``what exists'' in the UI:
+
+\begin{itemize}
+  \item It defines the global \textbf{React Query client} (retry policy, focus refetch behavior).
+  \item It enables global \textbf{API configuration} via \code{ApiConfigProvider}.
+  \item It creates the \textbf{routing table} for all screens.
+  \item It mounts the \code{Layout}, which provides the consistent navbar \code{+} sidebar.
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{Application root with providers and routing}
+\label{lst:ch21-app}
+\begin{minted}[fontsize=\footnotesize]{typescript}
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { ApiConfigProvider } from './contexts/ApiConfigContext'
+import Layout from './components/Layout'
+import Dashboard from './pages/Dashboard'
+// ... other page imports
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 min
+    },
+  },
+})
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ApiConfigProvider>
+        <Router>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/blockchain" element={<BlockchainScreen />} />
+              <Route path="/wallet" element={<WalletScreen />} />
+              {/* ... more routes */}
+            </Routes>
+          </Layout>
+        </Router>
+      </ApiConfigProvider>
+    </QueryClientProvider>
+  )
+}
+\end{minted}
+\end{listing}
+
+---
+
+\section{Global configuration: API settings}
+\label{sec:api-config}
+
+The web UI cannot assume a fixed backend address or key in all deployments. The solution is:
+
+\begin{itemize}
+  \item store \code{baseURL} and \code{apiKey} in \textbf{React Context},
+  \item persist them to \textbf{localStorage},
+  \item and update the API client singleton when they change.
+\end{itemize}
+
+This yields a simple rule for the rest of the codebase:
+
+\begin{itemize}
+  \item Components do \textbf{not} pass \code{baseURL}/\code{apiKey} around as props.
+  \item API calls always go through \code{getApiClient()} and therefore always use the latest config.
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{API configuration context and persistence}
+\label{lst:ch21-api-config}
+\begin{minted}[fontsize=\footnotesize]{typescript}
+import React, { createContext, useState, useEffect, ReactNode } from 'react'
+
+interface ApiConfig {
+  baseURL: string
+  apiKey: string
+}
+
+export const ApiConfigContext = createContext<{
+  config: ApiConfig
+  setConfig: (config: ApiConfig) => void
+} | undefined>(undefined)
+
+export function ApiConfigProvider({ children }: { children: ReactNode }) {
+  const [config, setConfig] = useState<ApiConfig>(() => {
+    const saved = localStorage.getItem('apiConfig')
+    return saved
+      ? JSON.parse(saved)
+      : { baseURL: 'http://127.0.0.1:8080', apiKey: '' }
+  })
+
+  useEffect(() => {
+    localStorage.setItem('apiConfig', JSON.stringify(config))
+  }, [config])
+
+  return (
+    <ApiConfigContext.Provider value={{ config, setConfig }}>
+      {children}
+    </ApiConfigContext.Provider>
+  )
+}
+
+export function useApiConfig() {
+  const context = React.useContext(ApiConfigContext)
+  if (!context) {
+    throw new Error('useApiConfig must be used within ApiConfigProvider')
+  }
+  return context
+}
+\end{minted}
+\end{listing}
+
+---
+
+\section{The HTTP boundary: \texttt{ApiClient}}
+\label{sec:api-client}
+
+This module is the only place that ``knows'' about:
+
+\begin{itemize}
+  \item endpoint paths (\code{/api/admin/...}),
+  \item request shape (GET vs POST),
+  \item and authentication header injection (\code{X-API-Key}).
+\end{itemize}
+
+Everything above it (hooks/components) is \emph{business/UI logic}; everything below it is \emph{HTTP transport}.
+
+\begin{listing}[htbp]
+\caption{API client --- HTTP wrapper with Axios}
+\label{lst:ch21-api-client}
+\begin{minted}[fontsize=\footnotesize]{typescript}
+import axios, { AxiosInstance } from 'axios'
+import { useApiConfig } from '../contexts/ApiConfigContext'
+
+interface ApiResponse<T> {
+  success: boolean
+  data?: T
+  error?: string
+}
+
+class ApiClient {
+  private instance: AxiosInstance
+
+  constructor(baseURL: string = 'http://127.0.0.1:8080',
+              apiKey: string = '') {
+    this.instance = axios.create({
+      baseURL,
+      timeout: 10000,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (apiKey) {
+      this.instance.defaults.headers.common['X-API-Key'] = apiKey
+    }
+  }
+
+  async getBlockchainInfo() {
+    const res = await this.instance.get<ApiResponse<BlockchainInfo>>(
+      '/api/admin/blockchain'
+    )
+    return res.data
+  }
+
+  async getAllBlocks(limit?: number, offset?: number) {
+    const res = await this.instance.get<ApiResponse<BlockList>>(
+      '/api/admin/blocks',
+      { params: { limit, offset } }
+    )
+    return res.data
+  }
+
+  async createWallet(label?: string) {
+    const res = await this.instance.post<ApiResponse<CreateWalletResponse>>(
+      '/api/admin/wallet',
+      { label }
+    )
+    return res.data
+  }
+
+  async sendTransaction(from: string, to: string, amount: number) {
+    const res = await this.instance.post<ApiResponse<SendTxResponse>>(
+      '/api/admin/send-transaction',
+      { from, to, amount }
+    )
+    return res.data
+  }
+}
+
+let clientInstance: ApiClient | null = null
+
+export function getApiClient(baseURL?: string, apiKey?: string) {
+  if (!clientInstance || baseURL || apiKey) {
+    clientInstance = new ApiClient(baseURL, apiKey)
+  }
+  return clientInstance
+}
+\end{minted}
+\end{listing}
+
+\begin{warnbox}[Security note]
+The default web admin configuration does not include rate limiting or CSRF protection. Before deploying to a production environment, add these middleware layers to the API gateway. See Chapter~\ref{ch:web-api} for details on the middleware stack.
+\end{warnbox}
+
+---
+
+\section{The data-access surface: React Query hooks}
+\label{sec:react-query-hooks}
+
+Each hook defines the UI's public ``data layer.'' We express:
+
+\begin{itemize}
+  \item a \textbf{query key} for cache identity,
+  \item a \textbf{query function} to call an ApiClient method,
+  \item optional behavior like:
+    \begin{itemize}
+      \item \code{enabled} to gate requests until input exists,
+      \item \code{refetchInterval} for auto-refresh,
+      \item \code{onSuccess} to invalidate caches and trigger feedback toast messages for mutations.
+    \end{itemize}
+\end{itemize}
+
+The most important hooks to understand first are:
+
+\begin{itemize}
+  \item \code{useBlockchainInfo(refetchInterval?)} for dashboards and global status.
+  \item \code{useCreateWallet}, \code{useSendTransaction}, \code{useGenerateBlocks} for mutations.
+  \item \code{useAllBlocks} and \code{useAllTransactions} for on-demand ``bulk'' screens (\code{enabled: false}).
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{React Query hooks --- the data/caching surface}
+\label{lst:ch21-hooks}
+\begin{minted}[fontsize=\footnotesize]{typescript}
+import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { getApiClient } from '../services/api'
+import { useApiConfig } from '../contexts/ApiConfigContext'
+
+export function useBlockchainInfo(refetchInterval?: number) {
+  const { config } = useApiConfig()
+  const client = getApiClient(config.baseURL, config.apiKey)
+
+  return useQuery({
+    queryKey: ['blockchain', 'info'],
+    queryFn: () => client.getBlockchainInfo(),
+    refetchInterval,
+  })
+}
+
+export function useCreateWallet() {
+  const queryClient = useQueryClient()
+  const { config } = useApiConfig()
+  const client = getApiClient(config.baseURL, config.apiKey)
+
+  return useMutation(
+    async (label?: string) => client.createWallet(label),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['wallet', 'addresses'])
+        // Show toast success
+      },
+      onError: (error: any) => {
+        // Show toast error
+      },
+    }
+  )
+}
+
+export function useSendTransaction() {
+  const queryClient = useQueryClient()
+  const { config } = useApiConfig()
+  const client = getApiClient(config.baseURL, config.apiKey)
+
+  return useMutation(
+    async (params: { from: string; to: string; amount: number }) =>
+      client.sendTransaction(params.from, params.to, params.amount),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['blockchain', 'info'])
+        queryClient.invalidateQueries(['transactions'])
+      },
+    }
+  )
+}
+
+export function useAllBlocks(enabled: boolean = false) {
+  const { config } = useApiConfig()
+  const client = getApiClient(config.baseURL, config.apiKey)
+
+  return useQuery({
+    queryKey: ['blocks', 'all'],
+    queryFn: () => client.getAllBlocks(),
+    enabled,
+  })
+}
+\end{minted}
+\end{listing}
+
+---
+
+\section{The UI shell: layout + navigation}
+\label{sec:layout-shell}
+
+The UI shell lets the rest of the code stay ``page focused.'' Two aspects matter most:
+
+\begin{itemize}
+  \item \textbf{API configuration UX} is concentrated in the navbar. That means any page can assume the API client is configured; it does not need its own base-url inputs.
+  \item \textbf{Sidebar state tracks the current route}, so deep links keep the correct menu open (\code{openMenuPath} is derived from \code{location.pathname}).
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{Layout component with navbar and sidebar}
+\label{lst:ch21-layout}
+\begin{minted}[fontsize=\footnotesize]{typescript}
+import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import Navbar from './Navbar'
+import Sidebar from './Sidebar'
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  const location = useLocation()
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+
+  return (
+    <div className="flex h-screen">
+      {sidebarOpen && <Sidebar currentPath={location.pathname} />}
+      <div className="flex-1 flex flex-col">
+        <Navbar
+          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+        />
+        <main className="flex-1 overflow-auto p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  )
+}
+\end{minted}
+\end{listing}
+
+---
+
+\section{A representative query screen: Dashboard}
+\label{sec:dashboard-screen}
+
+The dashboard is the simplest example of the project's standard query flow:
+
+\begin{enumerate}
+  \item Call a hook.
+  \item If loading, render \code{LoadingSpinner}.
+  \item If error, render \code{ErrorMessage}.
+  \item If data, render a UI view that mixes:
+    \begin{itemize}
+      \item ``human-friendly'' components (\code{StatCard}),
+      \item and exact values (formatted timestamps, hashes, etc.).
+    \end{itemize}
+\end{enumerate}
+
+\begin{listing}[htbp]
+\caption{Dashboard --- the standard query pattern}
+\label{lst:ch21-dashboard}
+\begin{minted}[fontsize=\footnotesize]{typescript}
+import { useBlockchainInfo } from '../hooks/useApi'
+import StatCard from '../components/StatCard'
+import LoadingSpinner from '../components/LoadingSpinner'
+import ErrorMessage from '../components/ErrorMessage'
+
+export default function Dashboard() {
+  const { data, isLoading, error } = useBlockchainInfo(5000)
+
+  if (isLoading) return <LoadingSpinner />
+  if (error) return <ErrorMessage error={error} />
+  if (!data?.data) return <div>No data</div>
+
+  const info = data.data
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <StatCard
+        title="Block Height"
+        value={info.height}
+        description={`${info.total_transactions} txs`}
+      />
+      <StatCard
+        title="Pending Transactions"
+        value={info.pending_transaction_count}
+        description="in mempool"
+      />
+      <StatCard
+        title="Difficulty"
+        value={info.difficulty.toFixed(4)}
+        description="current target"
+      />
+      <StatCard
+        title="Total Supply"
+        value={`${(info.total_supply / 1e8).toFixed(4)} BTC`}
+        description="all time"
+      />
+    </div>
+  )
+}
+\end{minted}
+\end{listing}
+
+---
+
+\section{A representative mutation screen: Create Wallet}
+\label{sec:create-wallet-screen}
+
+The ``create wallet'' screen demonstrates the project's mutation conventions:
+
+\begin{itemize}
+  \item UI handles local form state (\code{label}).
+  \item Hook handles mutation lifecycle + user feedback:
+    \begin{itemize}
+      \item success toast,
+      \item cache invalidation (\code{wallet/addresses}).
+    \end{itemize}
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{Create wallet mutation --- user interaction + async update}
+\label{lst:ch21-create-wallet}
+\begin{minted}[fontsize=\footnotesize]{typescript}
+import { useState } from 'react'
+import { useCreateWallet } from '../hooks/useApi'
+import Button from '../components/Button'
+import JsonViewer from '../components/JsonViewer'
+
+export default function CreateWallet() {
+  const [label, setLabel] = useState('')
+  const { mutate, isLoading, data, error } = useCreateWallet()
+
+  const handleCreate = () => {
+    if (!label.trim()) {
+      alert('Please enter a label')
+      return
+    }
+    mutate(label)
+  }
+
+  return (
+    <div className="max-w-2xl">
+      <h2 className="text-2xl font-bold mb-4">Create Wallet</h2>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">
+          Wallet Label
+        </label>
+        <input
+          type="text"
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          className="w-full px-3 py-2 border rounded"
+          placeholder="My Wallet"
+        />
+      </div>
+
+      <Button
+        onClick={handleCreate}
+        disabled={isLoading}
+        className="mb-6"
+      >
+        {isLoading ? 'Creating...' : 'Create Wallet'}
+      </Button>
+
+      {error && (
+        <div className="bg-red-50 text-red-700 p-4 rounded mb-4">
+          Error: {error instanceof Error ? error.message : 'Unknown error'}
+        </div>
+      )}
+
+      {data && data.data && (
+        <div>
+          <h3 className="font-semibold mb-2">New Wallet</h3>
+          <p className="text-green-600 mb-2">
+            Address: {data.data.address}
+          </p>
+          <JsonViewer data={data.data} />
+        </div>
+      )}
+    </div>
+  )
+}
+\end{minted}
+\end{listing}
+
+---
+
+\section{Mutation flow diagram}
+\label{sec:mutation-flow}
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+User interaction                     Component state
+  |                                   |
+  | enter label + click "Create"      |
+  |--------------------------------->|
+  |                                   | validate label.trim()
+  |                                   | call mutate({ label })
+  |                                   |
+  |                                   Hook lifecycle
+  |                                   |
+  |                                   | call ApiClient.POST
+  |                                   |-------------------------> HTTP Request
+  |                                   |                           |
+  |                                   | receive response          | Rust node
+  |                                   |<------------------------<-|
+  |                                   |
+  |                                   | invalidateQueries
+  |                                   | show toast success
+  |                                   |
+  | render new address + JSON        <-
+  | show toast success
+  |
+\end{minted}
+
+---
+
+\section{Screens mixing UI state and bulk loading}
+\label{sec:bulk-loading}
+
+These screens show the project's ``bulk load escape hatch'' pattern:
+
+\begin{itemize}
+  \item React Query hooks are configured with \code{enabled: false} to avoid auto-fetching.
+  \item The component triggers fetches on-demand via \code{refetch()}.
+  \item When loading ``all pages,'' the component uses the API client directly in a loop.
+\end{itemize}
+
+This is a pragmatic compromise: React Query is excellent for caching and typical screen loads, while an explicit loop is simpler for ``load everything'' workflows.
+
+\begin{listing}[htbp]
+\caption{Bulk loading pattern --- all blocks or transactions}
+\label{lst:ch21-bulk-load}
+\begin{minted}[fontsize=\footnotesize]{typescript}
+import { useState } from 'react'
+import { useAllBlocks } from '../hooks/useApi'
+import { getApiClient } from '../services/api'
+import { useApiConfig } from '../contexts/ApiConfigContext'
+
+export default function AllBlocks() {
+  const { config } = useApiConfig()
+  const [allBlocks, setAllBlocks] = useState([])
+  const [loadingAll, setLoadingAll] = useState(false)
+
+  const handleLoadAll = async () => {
+    setLoadingAll(true)
+    const client = getApiClient(config.baseURL, config.apiKey)
+    const blocks = []
+    let offset = 0
+    const limit = 100
+
+    while (true) {
+      const result = await client.getAllBlocks(limit, offset)
+      if (!result.data || result.data.items.length === 0) break
+      blocks.push(...result.data.items)
+      offset += limit
+    }
+
+    setAllBlocks(blocks)
+    setLoadingAll(false)
+  }
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">All Blocks</h2>
+      <button
+        onClick={handleLoadAll}
+        disabled={loadingAll}
+        className="px-4 py-2 bg-blue-600 text-white rounded"
+      >
+        {loadingAll ? 'Loading...' : 'Load All Blocks'}
+      </button>
+
+      {allBlocks.length > 0 && (
+        <div className="mt-6">
+          <p className="text-gray-600 mb-4">
+            Loaded {allBlocks.length} blocks
+          </p>
+          <table className="w-full border">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border px-4 py-2">Height</th>
+                <th className="border px-4 py-2">Hash</th>
+                <th className="border px-4 py-2">Transactions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allBlocks.map((block) => (
+                <tr key={block.height}>
+                  <td className="border px-4 py-2">{block.height}</td>
+                  <td className="border px-4 py-2 font-mono text-sm">
+                    {block.hash.substring(0, 16)}...
+                  </td>
+                  <td className="border px-4 py-2">{block.tx_count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  )
+}
+\end{minted}
+\end{listing}
+
+---
+
+\section{Summary}
+\label{sec:ch21-summary}
+
+\begin{chaptersummary}
+\item We built a React/TypeScript web admin interface with modern component architecture.
+\item We implemented state management with React Query and authentication patterns.
+\item We structured the frontend build process and deployment pipeline.
+\item We applied TypeScript type safety to API integration and response handling.
+\end{chaptersummary}
+
+The Web Admin UI follows a clean layering approach:
+
+\begin{itemize}
+  \item \textbf{Routes and providers} are composed in \code{App.tsx}.
+  \item \textbf{Global configuration} is managed by \code{ApiConfigContext}.
+  \item \textbf{HTTP transport} is isolated in \code{ApiClient}.
+  \item \textbf{Caching \code{+} async lifecycle} are expressed in React Query hooks.
+  \item \textbf{Components} remain thin and predictable: render based on \code{data/isLoading/error}.
+\end{itemize}
+
+\begin{infobox}[Companion Chapter]
+Complete React component source code is available in the companion code listings appendix. In the print edition, these listings appear in the Appendix: Source Reference.
+\end{infobox}
+
+---
+
+\section{Exercises}
+\label{sec:ch21-exercises}
+
+\begin{enumerate}
+  \item \textbf{Add a Dashboard Widget} --- Create a new React component that displays the current block height, pending transaction count, and connected peer count. Use React Query to fetch the data and implement auto-refresh every 10 seconds.
+
+  \item \textbf{Authentication Flow Analysis} --- Trace the authentication flow from login form submission through API call, token storage, and authenticated request headers. Identify what happens when a token expires mid-session and how the UI handles the 401 response.
+\end{enumerate}
+
+---
+
+\section{Further Reading}
+\label{sec:ch21-further}
+
+\begin{itemize}
+  \item \textbf{React Documentation} --- \url{https://react.dev/} --- Official React guides and API reference.
+  \item \textbf{TypeScript Handbook} --- \url{https://www.typescriptlang.org/docs/handbook/} --- TypeScript language features and best practices.
+  \item \textbf{TanStack Query (React Query)} --- \url{https://tanstack.com/query/} --- Data fetching and caching for the web UI.
+\end{itemize}

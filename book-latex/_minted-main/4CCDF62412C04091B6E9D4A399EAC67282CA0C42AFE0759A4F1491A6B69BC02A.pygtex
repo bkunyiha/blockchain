@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{cd} ci/docker\PYGZhy{}compose/configs
+
+\PYG{c+c1}{\PYGZsh{} Set up address pool}
+\PYG{n+nb}{export} \PYG{n+nv}{WALLET\PYGZus{}ADDRESS\PYGZus{}POOL}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}addr1,addr2\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} Start services}
+docker compose up \PYGZhy{}d
+
+\PYG{c+c1}{\PYGZsh{} Result:}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{} redis (rate limiting backend)}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{} miner\PYGZus{}1 (P2P port 2001, uses addr1)}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{} webserver\PYGZus{}1 (Web 8080, P2P 2101, uses addr2)}
+\end{Verbatim}

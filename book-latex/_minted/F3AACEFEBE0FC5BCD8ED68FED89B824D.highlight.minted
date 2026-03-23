@@ -1,0 +1,13 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} CRITICAL: Use \PYGZhy{}\PYGZhy{}no\PYGZhy{}cache for script changes}
+\PYG{n+nb}{cd}\PYG{+w}{ }ci/docker\PYGZhy{}compose/configs
+
+\PYG{c+c1}{\PYGZsh{} Stop existing containers}
+docker\PYG{+w}{ }compose\PYG{+w}{ }down
+
+\PYG{c+c1}{\PYGZsh{} Rebuild with no cache}
+docker\PYG{+w}{ }compose\PYG{+w}{ }build\PYG{+w}{ }\PYGZhy{}\PYGZhy{}no\PYGZhy{}cache
+
+\PYG{c+c1}{\PYGZsh{} Start fresh}
+docker\PYG{+w}{ }compose\PYG{+w}{ }up\PYG{+w}{ }\PYGZhy{}d
+\end{MintedVerbatim}

@@ -1,0 +1,11 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// ✅ GOOD: Binary storage, zero conversions}
+\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{Transaction}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{id}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{  }\PYG{c+c1}{// Binary [0x23A, 0x2f, ...]}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Send over network = direct}
+\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{send\PYGZus{}to\PYGZus{}network}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Transaction}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{network}\PYG{p}{::}\PYG{n}{send\PYGZus{}inv}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{id}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// Zero cost!}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

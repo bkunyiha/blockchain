@@ -1,0 +1,56 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{save\PYGZus{}wallet\PYGZus{}address}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{wallet}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{SqliteResult}\PYG{o}{\PYGZlt{}}\PYG{n}{WalletAddress}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{conn}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{get\PYGZus{}connection}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{INSERT INTO wallet\PYGZus{}addresses }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{         (address, label, updated\PYGZus{}at) }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{         VALUES (?, ?, datetime(\PYGZsq{}now\PYGZsq{}))}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{params}\PYG{o}{!}\PYG{p}{[}\PYG{n}{wallet}\PYG{p}{.}\PYG{n}{address}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{wallet}\PYG{p}{.}\PYG{n}{label}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{\PYGZus{}}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{query\PYGZus{}row}\PYG{p}{(}
+\PYG{+w}{                }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{SELECT address, label, created\PYGZus{}at }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{                 FROM wallet\PYGZus{}addresses }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{                 WHERE address = ?}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{params}\PYG{o}{!}\PYG{p}{[}\PYG{n}{wallet}\PYG{p}{.}\PYG{n}{address}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{                }\PYG{o}{|}\PYG{n}{row}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{WalletAddress}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                        }\PYG{n}{address}: \PYG{n+nc}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{                        }\PYG{n}{label}: \PYG{n+nc}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{                        }\PYG{n}{created\PYGZus{}at}: \PYG{n+nc}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{                    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{rusqlite}::\PYG{n}{Error}::\PYG{n}{SqliteFailure}\PYG{p}{(}\PYG{n}{err}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{err}\PYG{p}{.}\PYG{n}{code}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{rusqlite}::\PYG{n}{ErrorCode}::\PYG{n}{ConstraintViolation}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{        }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{                }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{UPDATE wallet\PYGZus{}addresses SET }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{                 label = ?, }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{                 updated\PYGZus{}at = datetime(\PYGZsq{}now\PYGZsq{}) }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{                 WHERE address = ?}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{params}\PYG{o}{!}\PYG{p}{[}\PYG{n}{wallet}\PYG{p}{.}\PYG{n}{label}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{wallet}\PYG{p}{.}\PYG{n}{address}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{            }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{query\PYGZus{}row}\PYG{p}{(}
+\PYG{+w}{                }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{SELECT address, label, created\PYGZus{}at }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{                 FROM wallet\PYGZus{}addresses }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{                 WHERE address = ?}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{params}\PYG{o}{!}\PYG{p}{[}\PYG{n}{wallet}\PYG{p}{.}\PYG{n}{address}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{                }\PYG{o}{|}\PYG{n}{row}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{WalletAddress}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                        }\PYG{n}{address}: \PYG{n+nc}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{                        }\PYG{n}{label}: \PYG{n+nc}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{                        }\PYG{n}{created\PYGZus{}at}: \PYG{n+nc}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{                    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{e}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{e}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,28 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{useQuery}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}@tanstack/react\PYGZhy{}query\PYGZsq{}}\PYG{p}{;}
+\PYG{k}{import}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{k+kr}{as}\PYG{+w}{ }\PYG{n+nx}{commands}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}../commands\PYGZsq{}}\PYG{p}{;}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{useBlockchainInfo}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{useQuery}\PYG{p}{(}\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nx}{queryKey}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}blockchainInfo\PYGZsq{}}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{queryFn}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{getBlockchainInfo}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{staleTime}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{10000}\PYG{p}{,}\PYG{+w}{ }\PYG{c+c1}{// 10 seconds}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{useLatestBlocks}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{useQuery}\PYG{p}{(}\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nx}{queryKey}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}latestBlocks\PYGZsq{}}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{queryFn}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{getLatestBlocks}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{staleTime}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{10000}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{useMiningInfo}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{useQuery}\PYG{p}{(}\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nx}{queryKey}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}miningInfo\PYGZsq{}}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{queryFn}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{n+nx}{commands}\PYG{p}{.}\PYG{n+nx}{getMiningInfo}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nx}{staleTime}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{30000}\PYG{p}{,}\PYG{+w}{ }\PYG{c+c1}{// 30 seconds}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

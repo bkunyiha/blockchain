@@ -1,0 +1,25 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useState} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}react\PYGZsq{}}
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useLocation} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}react\PYGZhy{}router\PYGZhy{}dom\PYGZsq{}}
+\PYG{k}{import} \PYG{n+nx}{Navbar} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}./Navbar\PYGZsq{}}
+\PYG{k}{import} \PYG{n+nx}{Sidebar} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}./Sidebar\PYGZsq{}}
+
+\PYG{k}{export} \PYG{k}{default} \PYG{k+kd}{function} \PYG{n+nx}{Layout}\PYG{p}{(\PYGZob{}} \PYG{n+nx}{children} \PYG{p}{\PYGZcb{}}\PYG{o}{:} \PYG{p}{\PYGZob{}} \PYG{n+nx}{children}: \PYG{k+kt}{React.ReactNode} \PYG{p}{\PYGZcb{})} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{const} \PYG{n+nx}{location} \PYG{o}{=} \PYG{n+nx}{useLocation}\PYG{p}{()}
+  \PYG{k+kd}{const} \PYG{p}{[}\PYG{n+nx}{sidebarOpen}\PYG{p}{,} \PYG{n+nx}{setSidebarOpen}\PYG{p}{]} \PYG{o}{=} \PYG{n+nx}{useState}\PYG{p}{(}\PYG{k+kc}{true}\PYG{p}{)}
+
+  \PYG{k}{return} \PYG{p}{(}
+    \PYG{o}{\PYGZlt{}}\PYG{n+nx}{div} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}flex h\PYGZhy{}screen\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+      \PYG{p}{\PYGZob{}}\PYG{n+nx}{sidebarOpen} \PYG{o}{\PYGZam{}\PYGZam{}} \PYG{o}{\PYGZlt{}}\PYG{n+nx}{Sidebar} \PYG{n+nx}{currentPath}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{location}\PYG{p}{.}\PYG{n+nx}{pathname}\PYG{p}{\PYGZcb{}} \PYG{o}{/\PYGZgt{}}\PYG{p}{\PYGZcb{}}
+      \PYG{o}{\PYGZlt{}}\PYG{n+nx}{div} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}flex\PYGZhy{}1 flex flex\PYGZhy{}col\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+        \PYG{o}{\PYGZlt{}}\PYG{n+nx}{Navbar}
+          \PYG{n+nx}{onToggleSidebar}\PYG{o}{=}\PYG{p}{\PYGZob{}()} \PYG{p}{=\PYGZgt{}} \PYG{n+nx}{setSidebarOpen}\PYG{p}{(}\PYG{o}{!}\PYG{n+nx}{sidebarOpen}\PYG{p}{)\PYGZcb{}}
+        \PYG{o}{/\PYGZgt{}}
+        \PYG{o}{\PYGZlt{}}\PYG{n+nx}{main} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}flex\PYGZhy{}1 overflow\PYGZhy{}auto p\PYGZhy{}6\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+          \PYG{p}{\PYGZob{}}\PYG{n+nx}{children}\PYG{p}{\PYGZcb{}}
+        \PYG{o}{\PYGZlt{}}\PYG{err}{/main\PYGZgt{}}
+      \PYG{o}{\PYGZlt{}}\PYG{err}{/div\PYGZgt{}}
+    \PYG{o}{\PYGZlt{}}\PYG{err}{/div\PYGZgt{}}
+  \PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{rusqlite}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{version}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}0.31\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{features}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{[}\PYG{l+s}{\PYGZdq{}bundled\PYGZhy{}sqlcipher\PYGZdq{}}\PYG{p}{]}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{n}{dirs}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}5.0\PYGZdq{}}
+\end{Verbatim}

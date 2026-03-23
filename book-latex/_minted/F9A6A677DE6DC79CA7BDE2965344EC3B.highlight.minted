@@ -1,0 +1,13 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{import}\PYG{+w}{ }\PYG{n+nx}{React}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}react\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{n+nx}{ReactDOM}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}react\PYGZhy{}dom/client\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{n+nx}{App}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}./App.tsx\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}./index.css\PYGZsq{}}
+
+\PYG{n+nx}{ReactDOM}\PYG{p}{.}\PYG{n+nx}{createRoot}\PYG{p}{(}\PYG{n+nb}{document}\PYG{p}{.}\PYG{n+nx}{getElementById}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}root\PYGZsq{}}\PYG{p}{)}\PYG{o}{!}\PYG{p}{)}
+\PYG{+w}{  }\PYG{p}{.}\PYG{n+nx}{render}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{React}\PYG{p}{.}\PYG{n+nx}{StrictMode}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{App}\PYG{+w}{ }\PYG{o}{/}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{    }\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{R}\PYG{err}{e}\PYG{err}{a}\PYG{err}{c}\PYG{err}{t}\PYG{err}{.}\PYG{err}{S}\PYG{err}{t}\PYG{err}{r}\PYG{err}{i}\PYG{err}{c}\PYG{err}{t}\PYG{err}{M}\PYG{err}{o}\PYG{err}{d}\PYG{err}{e}\PYG{err}{\PYGZgt{}}\PYG{err}{,}
+\PYG{+w}{  }\PYG{p}{)}
+\end{MintedVerbatim}

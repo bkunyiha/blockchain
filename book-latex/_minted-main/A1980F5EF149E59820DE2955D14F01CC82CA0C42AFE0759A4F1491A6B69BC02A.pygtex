@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Edit ConfigMap}
+kubectl edit configmap blockchain\PYGZhy{}config \PYGZhy{}n blockchain
+
+\PYG{c+c1}{\PYGZsh{} Restart pods to pick up changes}
+kubectl rollout restart statefulset/webserver \PYG{l+s+se}{\PYGZbs{}}
+  \PYGZhy{}n blockchain
+kubectl rollout restart statefulset/miner \PYGZhy{}n blockchain
+\end{Verbatim}

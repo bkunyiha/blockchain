@@ -1,0 +1,9 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+miner\PYGZhy{}1     | [INFO] Starting miner on port 8010...
+miner\PYGZhy{}1     | [INFO] Mining block \PYGZsh{}1 ...
+miner\PYGZhy{}1     | [INFO] Block mined: hash=00a3f2...  height=1  txns=1
+webserver\PYGZhy{}1 | [INFO] Connected to peer miner\PYGZhy{}1:8010
+miner\PYGZhy{}1     | [INFO] Mining block \PYGZsh{}2 ...
+miner\PYGZhy{}1     | [INFO] Block mined: hash=0017cb...  height=2  txns=1
+webserver\PYGZhy{}1 | [INFO] Received block \PYGZsh{}2 from miner\PYGZhy{}1
+\end{MintedVerbatim}

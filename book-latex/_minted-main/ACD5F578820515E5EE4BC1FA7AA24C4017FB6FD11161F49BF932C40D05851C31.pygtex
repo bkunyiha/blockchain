@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{FromStr}\PYG{+w}{ }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{ConnectNode}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{type} \PYG{n+nb}{Err} \PYG{o}{=}\PYG{+w}{ }\PYG{n}{std}::\PYG{n}{net}::\PYG{n}{AddrParseError}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{fn} \PYG{n+nf}{from\PYGZus{}str}\PYG{p}{(}\PYG{n}{s}: \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb+bp}{Self}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb+bp}{Self}::\PYG{n+nb}{Err}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{s}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{local}\PYG{l+s}{\PYGZdq{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{ConnectNode}::\PYG{n}{Local}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{ip\PYGZus{}addr}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{.}\PYG{n}{parse}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{ConnectNode}::\PYG{n}{Remote}\PYG{p}{(}\PYG{n}{ip\PYGZus{}addr}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

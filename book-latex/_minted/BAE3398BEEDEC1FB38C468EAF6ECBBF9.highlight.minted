@@ -1,0 +1,28 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Clone, Copy, PartialEq, Eq)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum}\PYG{+w}{ }\PYG{n+nc}{Menu}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Blockchain}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Wallet}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Transactions}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Mining}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Health}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Clone, Copy, PartialEq, Eq)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum}\PYG{+w}{ }\PYG{n+nc}{WalletSection}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{GetWalletInfo}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{GetBalance}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Create}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nb}{Send}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{History}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Addresses}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Clone, Copy, PartialEq, Eq)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum}\PYG{+w}{ }\PYG{n+nc}{BlockchainSection}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Info}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{LatestBlocks}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{AllBlocks}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{BlockByHash}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

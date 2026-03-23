@@ -1,0 +1,14 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{my\PYGZus{}middleware}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{request}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Request}\PYG{o}{\PYGZlt{}}\PYG{n}{Body}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{next}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Next}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{Response}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{StatusCode}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Pre\PYGZhy{}processing}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{response}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{next}\PYG{p}{.}\PYG{n}{run}\PYG{p}{(}\PYG{n}{request}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{// Post\PYGZhy{}processing}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{response}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Apply with from\PYGZus{}fn}
+\PYG{p}{.}\PYG{n}{layer}\PYG{p}{(}\PYG{n}{axum}\PYG{p}{::}\PYG{n}{middleware}\PYG{p}{::}\PYG{n}{from\PYGZus{}fn}\PYG{p}{(}\PYG{n}{my\PYGZus{}middleware}\PYG{p}{)}\PYG{p}{)}
+\end{MintedVerbatim}

@@ -1,0 +1,4 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+validate(block, view) \PYGZhy{}\PYGZgt{} Ok(()) or Err(...)
+connect(block, state) \PYGZhy{}\PYGZgt{} Ok(()) or Err(...)
+\end{MintedVerbatim}

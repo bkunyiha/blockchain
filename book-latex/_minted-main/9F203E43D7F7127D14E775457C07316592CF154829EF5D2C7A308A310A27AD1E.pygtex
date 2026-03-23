@@ -1,0 +1,69 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{import} \PYG{n+nx}{axios}\PYG{p}{,} \PYG{p}{\PYGZob{}} \PYG{n+nx}{AxiosInstance} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}axios\PYGZsq{}}
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useApiConfig} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../contexts/ApiConfigContext\PYGZsq{}}
+
+\PYG{k+kd}{interface} \PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{T}\PYG{o}{\PYGZgt{}} \PYG{p}{\PYGZob{}}
+  \PYG{n+nx}{success}: \PYG{k+kt}{boolean}
+  \PYG{n+nx}{data?}: \PYG{k+kt}{T}
+  \PYG{n+nx}{error?}: \PYG{k+kt}{string}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{class} \PYG{n+nx}{ApiClient} \PYG{p}{\PYGZob{}}
+  \PYG{k}{private} \PYG{n+nx}{instance}: \PYG{k+kt}{AxiosInstance}
+
+  \PYG{k+kr}{constructor}\PYG{p}{(}\PYG{n+nx}{baseURL}: \PYG{k+kt}{string} \PYG{o}{=} \PYG{l+s+s1}{\PYGZsq{}http://127.0.0.1:8080\PYGZsq{}}\PYG{p}{,}
+              \PYG{n+nx}{apiKey}: \PYG{k+kt}{string} \PYG{o}{=} \PYG{l+s+s1}{\PYGZsq{}\PYGZsq{}}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{instance} \PYG{o}{=} \PYG{n+nx}{axios}\PYG{p}{.}\PYG{n+nx}{create}\PYG{p}{(\PYGZob{}}
+      \PYG{n+nx}{baseURL}\PYG{p}{,}
+      \PYG{n+nx}{timeout}: \PYG{k+kt}{10000}\PYG{p}{,}
+      \PYG{n+nx}{headers}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+        \PYG{l+s+s1}{\PYGZsq{}Content\PYGZhy{}Type\PYGZsq{}}\PYG{o}{:} \PYG{l+s+s1}{\PYGZsq{}application/json\PYGZsq{}}\PYG{p}{,}
+      \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZcb{})}
+
+    \PYG{k}{if} \PYG{p}{(}\PYG{n+nx}{apiKey}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+      \PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{instance}\PYG{p}{.}\PYG{n+nx}{defaults}\PYG{p}{.}\PYG{n+nx}{headers}\PYG{p}{.}\PYG{n+nx}{common}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}X\PYGZhy{}API\PYGZhy{}Key\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n+nx}{apiKey}
+    \PYG{p}{\PYGZcb{}}
+  \PYG{p}{\PYGZcb{}}
+
+  \PYG{k}{async} \PYG{n+nx}{getBlockchainInfo}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{k+kd}{const} \PYG{n+nx}{res} \PYG{o}{=} \PYG{k}{await} \PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{instance}\PYG{p}{.}\PYG{n+nx}{get}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{BlockchainInfo}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}
+      \PYG{l+s+s1}{\PYGZsq{}/api/admin/blockchain\PYGZsq{}}
+    \PYG{p}{)}
+    \PYG{k}{return} \PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{data}
+  \PYG{p}{\PYGZcb{}}
+
+  \PYG{k}{async} \PYG{n+nx}{getAllBlocks}\PYG{p}{(}\PYG{n+nx}{limit?}: \PYG{k+kt}{number}\PYG{p}{,} \PYG{n+nx}{offset?}: \PYG{k+kt}{number}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{k+kd}{const} \PYG{n+nx}{res} \PYG{o}{=} \PYG{k}{await} \PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{instance}\PYG{p}{.}\PYG{n+nx}{get}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{BlockList}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}
+      \PYG{l+s+s1}{\PYGZsq{}/api/admin/blocks\PYGZsq{}}\PYG{p}{,}
+      \PYG{p}{\PYGZob{}} \PYG{n+nx}{params}\PYG{o}{:} \PYG{p}{\PYGZob{}} \PYG{n+nx}{limit}\PYG{p}{,} \PYG{n+nx}{offset} \PYG{p}{\PYGZcb{}} \PYG{p}{\PYGZcb{}}
+    \PYG{p}{)}
+    \PYG{k}{return} \PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{data}
+  \PYG{p}{\PYGZcb{}}
+
+  \PYG{k}{async} \PYG{n+nx}{createWallet}\PYG{p}{(}\PYG{n+nx}{label?}: \PYG{k+kt}{string}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{k+kd}{const} \PYG{n+nx}{res} \PYG{o}{=} \PYG{k}{await} \PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{instance}\PYG{p}{.}\PYG{n+nx}{post}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{CreateWalletResponse}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}
+      \PYG{l+s+s1}{\PYGZsq{}/api/admin/wallet\PYGZsq{}}\PYG{p}{,}
+      \PYG{p}{\PYGZob{}} \PYG{n+nx}{label} \PYG{p}{\PYGZcb{}}
+    \PYG{p}{)}
+    \PYG{k}{return} \PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{data}
+  \PYG{p}{\PYGZcb{}}
+
+  \PYG{k}{async} \PYG{n+nx}{sendTransaction}\PYG{p}{(}\PYG{n+nx}{from}: \PYG{k+kt}{string}\PYG{p}{,} \PYG{n+nx}{to}: \PYG{k+kt}{string}\PYG{p}{,} \PYG{n+nx}{amount}: \PYG{k+kt}{number}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{k+kd}{const} \PYG{n+nx}{res} \PYG{o}{=} \PYG{k}{await} \PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{instance}\PYG{p}{.}\PYG{n+nx}{post}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{SendTxResponse}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}
+      \PYG{l+s+s1}{\PYGZsq{}/api/admin/send\PYGZhy{}transaction\PYGZsq{}}\PYG{p}{,}
+      \PYG{p}{\PYGZob{}} \PYG{k+kr}{from}\PYG{p}{,} \PYG{n+nx}{to}\PYG{p}{,} \PYG{n+nx}{amount} \PYG{p}{\PYGZcb{}}
+    \PYG{p}{)}
+    \PYG{k}{return} \PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{data}
+  \PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{let} \PYG{n+nx}{clientInstance}: \PYG{k+kt}{ApiClient} \PYG{o}{|} \PYG{k+kc}{null} \PYG{o}{=} \PYG{k+kc}{null}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{getApiClient}\PYG{p}{(}\PYG{n+nx}{baseURL?}: \PYG{k+kt}{string}\PYG{p}{,} \PYG{n+nx}{apiKey?}: \PYG{k+kt}{string}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{k}{if} \PYG{p}{(}\PYG{o}{!}\PYG{n+nx}{clientInstance} \PYG{o}{||} \PYG{n+nx}{baseURL} \PYG{o}{||} \PYG{n+nx}{apiKey}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{n+nx}{clientInstance} \PYG{o}{=} \PYG{o+ow}{new} \PYG{n+nx}{ApiClient}\PYG{p}{(}\PYG{n+nx}{baseURL}\PYG{p}{,} \PYG{n+nx}{apiKey}\PYG{p}{)}
+  \PYG{p}{\PYGZcb{}}
+  \PYG{k}{return} \PYG{n+nx}{clientInstance}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

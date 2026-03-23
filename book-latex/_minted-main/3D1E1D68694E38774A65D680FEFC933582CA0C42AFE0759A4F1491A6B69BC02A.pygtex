@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Compose mounts Settings.toml \PYGZhy{}\PYGZgt{} /app/Settings.toml}
+\PYG{c+c1}{\PYGZsh{} Environment variable: RL\PYGZus{}SETTINGS\PYGZus{}PATH=/app/Settings.toml}
+
+\PYG{c+c1}{\PYGZsh{} To change limits:}
+\PYG{c+c1}{\PYGZsh{} 1. Edit configs/Settings.toml}
+\PYG{c+c1}{\PYGZsh{} 2. Restart webserver}
+docker compose restart webserver
+\end{Verbatim}

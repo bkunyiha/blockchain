@@ -1,0 +1,27 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}blockchain\PYGZus{}info}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{State}\PYG{p}{(}\PYG{n}{node}\PYG{p}{)}: \PYG{n+nc}{State}\PYG{o}{\PYGZlt{}}\PYG{n}{Arc}\PYG{o}{\PYGZlt{}}\PYG{n}{NodeContext}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{Json}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{BlockchainInfoResponse}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{StatusCode}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{height}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{node}\PYG{p}{.}\PYG{n}{get\PYGZus{}blockchain\PYGZus{}height}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{StatusCode}::\PYG{n}{INTERNAL\PYGZus{}SERVER\PYGZus{}ERROR}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{last\PYGZus{}block}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{node}\PYG{p}{.}\PYG{n}{blockchain}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{get\PYGZus{}last\PYGZus{}block}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{StatusCode}::\PYG{n}{INTERNAL\PYGZus{}SERVER\PYGZus{}ERROR}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{mempool\PYGZus{}size}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{node}\PYG{p}{.}\PYG{n}{get\PYGZus{}mempool\PYGZus{}size}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{StatusCode}::\PYG{n}{INTERNAL\PYGZus{}SERVER\PYGZus{}ERROR}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{info}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{BlockchainInfoResponse}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{height}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{difficulty}: \PYG{l+m+mi}{1}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{total\PYGZus{}blocks}: \PYG{n+nc}{height}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{total\PYGZus{}transactions}: \PYG{c+cm}{/*}\PYG{c+cm}{ ... }\PYG{c+cm}{*/}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{mempool\PYGZus{}size}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{last\PYGZus{}block\PYGZus{}hash}: \PYG{c+cm}{/*}\PYG{c+cm}{ ... }\PYG{c+cm}{*/}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{last\PYGZus{}block\PYGZus{}timestamp}: \PYG{n+nc}{chrono}::\PYG{n}{Utc}::\PYG{n}{now}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{Json}\PYG{p}{(}\PYG{n}{ApiResponse}::\PYG{n}{success}\PYG{p}{(}\PYG{n}{info}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

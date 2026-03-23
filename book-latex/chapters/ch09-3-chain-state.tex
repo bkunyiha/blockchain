@@ -1,0 +1,588 @@
+% ══════════════════════════════════════════════════════════════
+%  Section 9.3: Chain State and Storage --- How Blocks Become Persistent State
+% ══════════════════════════════════════════════════════════════
+\chapter{Chain: Chain State and Storage}
+\label{ch:chain-state}
+
+\begin{learnbox}
+\begin{itemize}
+  \item How blocks are persisted to sled, the embedded key-value database
+  \item The ``tip pointer'' pattern: where the current chain head lives in-memory and on-disk
+  \item Entry points for reads (status queries) and writes (appending blocks)
+  \item How the chain is initialized (genesis bootstrap) and reopened from disk
+  \item Iterator pattern: walking the chain backward from tip to genesis
+\end{itemize}
+\end{learnbox}
+
+\begin{infobox}[\index{peer-to-peer}Distributed systems note]
+In a \index{blockchain}blockchain network, each node maintains its own local copy of the \index{blockchain}blockchain. When we discuss ``chain state and storage'' in this section, we are describing how one node stores \index{block}blocks locally, not a shared database that all nodes access. Each node's \code{BlockchainFileSystem} persists \index{block}blocks to its own local \index{sled}sled database, and nodes synchronize with each other by exchanging \index{block}blocks over the network. This decentralization is fundamental to \index{blockchain}blockchain's resilience: each node operates independently with its own copy of the chain.
+\end{infobox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Status Read and Append-Block Write Entry Points}
+\label{sec:ch09-3-entry-points}
+
+\subsection{Entry point 1: Status read (GET blockchain info)}
+\label{sec:ch09-3-status-read}
+
+\begin{listing}[H]
+\caption{Status read handler: retrieve height and tip block}
+\label{lst:ch09-3-1}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: blockchain.rs --- router -> get_blockchain_info(handler)
+pub async fn get_blockchain_info(
+    State(node): State<Arc<NodeContext>>,
+) -> Result<Json<ApiResponse<BlockchainInfoResponse>>, StatusCode> {
+    let height = node
+        .get_blockchain_height()
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let last_block = node
+        .blockchain()
+        .get_last_block()
+        .await?;
+    let last_block_hash = last_block
+        .map(|block| block.get_hash().to_string())
+        .unwrap_or_else(|| "genesis".to_string());
+
+    let mempool_size = node.get_mempool_size()?;
+    // ... build response ...
+    Ok(Json(ApiResponse::success(info)))
+}
+\end{minted}
+\end{listing}
+
+\subsection{Entry point 2: Append-block write (POST mine to address)}
+\label{sec:ch09-3-append-write}
+
+\begin{listing}[H]
+\caption{Mining write handler: mine and append a block}
+\label{lst:ch09-3-2}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: mining.rs --- router -> generate_to_address(handler)
+let mined_block = node
+    .mine_block(&transactions)
+    .await
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Height Read: The Shared-Lock Pattern Through Storage}
+\label{sec:ch09-3-height-read}
+
+The call chain for a height read goes: Axum router \(\to\) \code{NodeContext::get\_blockchain\_height} \(\to\) \code{BlockchainService::get\_best\_height} (shared lock) \(\to\) \code{BlockchainFileSystem::get\_best\_height}.
+
+\begin{listing}[htbp]
+\caption{\code{NodeContext::get\_blockchain\_height} delegates to service}
+\label{lst:ch09-3-3}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: context.rs
+pub async fn get_blockchain_height(&self) -> Result<usize> {
+    self.blockchain.get_best_height().await
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{\code{BlockchainService::get\_best\_height} acquires shared lock}
+\label{lst:ch09-3-4}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: chainstate.rs
+pub async fn get_best_height(&self) -> Result<usize> {
+    self.read(|blockchain: BlockchainFileSystem| async move {
+        blockchain.get_best_height().await
+    })
+    .await
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{\code{BlockchainFileSystem::get\_best\_height} hits sled}
+\label{lst:ch09-3-5}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: file_system_db_chain.rs
+pub async fn get_best_height(&self) -> Result<usize> {
+    if self.is_empty() {
+        Ok(0)
+    } else {
+        let block_tree = self.blockchain.db
+            .open_tree(self.get_blocks_tree_path())?;
+        let tip_block_bytes = block_tree
+            .get(self.get_tip_hash().await?)?
+            .ok_or(BtcError::BlockNotFound)?;
+        let tip_block = Block::deserialize(
+            tip_block_bytes.as_ref()
+        )?;
+        Ok(tip_block.get_height())
+    }
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+\code{BlockchainService::get\_best\_height(...)} is a \textbf{shared-lock read}: it uses \code{read(...)} (shared lock) and delegates to \code{BlockchainFileSystem}. The persistence engine hits sled via \code{self.blockchain.db} and uses the current tip hash to load the tip block bytes.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Tip-Block Read: Cache Then Lookup}
+\label{sec:ch09-3-tip-read}
+
+\begin{listing}[H]
+\caption{\code{BlockchainFileSystem::get\_last\_block} and cached tip pointer}
+\label{lst:ch09-3-6}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: file_system_db_chain.rs
+pub async fn get_last_block(&self) -> Result<Option<Block>> {
+    let tip_hash = self.get_tip_hash().await?;
+    let block = self.get_block(tip_hash.as_bytes()).await?;
+    Ok(block)
+}
+
+pub async fn get_tip_hash(&self) -> Result<String> {
+    let tip_hash = self.blockchain.tip_hash.read().await;
+    Ok(tip_hash.clone())
+}
+\end{minted}
+\end{listing}
+
+\begin{checkpointbox}
+This is a ``tip pointer + lookup'' pattern: read the cached tip hash from the in-memory lock, then use it as a sled key to load block bytes, then deserialize.
+\end{checkpointbox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Where Chain State Lives: The Storage Container}
+\label{sec:ch09-3-storage-container}
+
+\begin{listing}[H]
+\caption{\code{BlockchainFileSystem} owns \code{Blockchain<Db>}}
+\label{lst:ch09-3-7}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: file_system_db_chain.rs
+#[derive(Clone, Debug)]
+pub struct BlockchainFileSystem {
+    blockchain: Blockchain<Db>,
+    file_system_tree_dir: String,
+}
+
+// Source: blockchain.rs --- chain container
+pub struct Blockchain<T> {
+    pub tip_hash: Arc<TokioRwLock<String>>,
+    pub db: T,                              // sled Db handle
+    pub is_empty: bool,
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Create and Open: Bootstrap vs.\ Reopen}
+\label{sec:ch09-3-create-open}
+
+\subsection{Constructors: initialize vs.\ default}
+\label{sec:ch09-3-constructors}
+
+\begin{listing}[H]
+\caption{\code{BlockchainService} constructor entry points}
+\label{lst:ch09-3-8}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: chainstate.rs
+impl BlockchainService {
+    pub async fn initialize(
+        genesis_address: &WalletAddress,
+    ) -> Result<BlockchainService> {
+        let blockchain =
+            BlockchainFileSystem::create_blockchain(
+                genesis_address
+            ).await?;
+        Ok(BlockchainService(Arc::new(
+            TokioRwLock::new(blockchain)
+        )))
+    }
+
+    pub async fn default() -> Result<BlockchainService> {
+        let blockchain =
+            BlockchainFileSystem::open_blockchain().await?;
+        Ok(BlockchainService(Arc::new(
+            TokioRwLock::new(blockchain)
+        )))
+    }
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+\code{initialize(...)} delegates to \code{BlockchainFileSystem::create\_blockchain(...)} (genesis bootstrapping lives there). \code{default()} delegates to \code{BlockchainFileSystem::open\_blockchain(...)} (no genesis; fail if missing tip key).
+\end{notebox}
+
+\subsection{Persisted Keys That Define ``Chain Exists''}
+\label{sec:ch09-3-persisted-keys}
+
+\begin{listing}[H]
+\caption{Storage constants for tip pointer and blocks}
+\label{lst:ch09-3-9}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: file_system_db_chain.rs
+// persisted head pointer (sled key)
+const DEFAULT_TIP_BLOCK_HASH_KEY: &str = "tip_block_hash";
+// sled tree: "<block_hash>" -> bytes(Block)
+const DEFAULT_BLOCKS_TREE: &str = "blocks1";
+// on-disk directory for the default sled DB
+const DEFAULT_TREE_DIR: &str = "data1";
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+The persisted head pointer is \textbf{one key}: \code{"tip\_block\_hash"}. The historical log is a \textbf{tree} that maps \code{<block\_hash> -> serialized Block bytes}.
+\end{notebox}
+
+\subsection{Open path: load tip from sled}
+\label{sec:ch09-3-open-path}
+
+\begin{listing}[H]
+\caption{\code{BlockchainFileSystem::open\_blockchain}}
+\label{lst:ch09-3-10}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: file_system_db_chain.rs
+pub async fn open_blockchain()
+    -> Result<BlockchainFileSystem>
+{
+    let db = sled::open(path)?;
+    let blocks_tree = db
+        .open_tree(file_system_tree_dir.clone())?;
+
+    let tip_bytes = blocks_tree
+        .get(DEFAULT_TIP_BLOCK_HASH_KEY)?
+        .ok_or(BtcError::BlockchainNotFoundError(
+            "No existing blockchain found.".to_string(),
+        ))?;
+
+    let tip_hash = String::from_utf8(tip_bytes.to_vec())?;
+
+    Ok(BlockchainFileSystem {
+        blockchain: Blockchain {
+            tip_hash: Arc::new(TokioRwLock::new(tip_hash)),
+            db,
+            is_empty: false,
+        },
+        file_system_tree_dir,
+    })
+}
+\end{minted}
+\end{listing}
+
+\begin{checkpointbox}
+The \textbf{only ``open'' state we must recover} is the tip hash (\code{tip\_block\_hash} key). After this returns, reads like \code{get\_tip\_hash()} do \textbf{not} need to hit sled for the tip pointer (they read the in-memory lock).
+\end{checkpointbox}
+
+\subsection{Create path: bootstrap genesis if missing}
+\label{sec:ch09-3-create-path}
+
+\begin{listing}[H]
+\caption{\code{BlockchainFileSystem::create\_blockchain}}
+\label{lst:ch09-3-11}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: file_system_db_chain.rs
+pub async fn create_blockchain(
+    genesis_address: &WalletAddress,
+) -> Result<Self> {
+    let db = sled::open(path)?;
+    let blocks_tree =
+        db.open_tree(file_system_tree_dir.clone())?;
+
+    let data = blocks_tree.get(DEFAULT_TIP_BLOCK_HASH_KEY)?;
+
+    let tip_hash = if let Some(data) = data {
+        String::from_utf8(data.to_vec())?
+    } else {
+        let coinbase_tx = Transaction::new_coinbase_tx(
+            genesis_address
+        )?;
+        let block = Block::generate_genesis_block(&coinbase_tx);
+        Self::update_blocks_tree(&blocks_tree, &block).await?;
+        String::from(block.get_hash())
+    };
+
+    Ok(BlockchainFileSystem {
+        blockchain: Blockchain {
+            tip_hash: Arc::new(TokioRwLock::new(tip_hash)),
+            db,
+            is_empty: false,
+        },
+        file_system_tree_dir,
+    })
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+Genesis is created \textbf{exactly once} (when the tip key is absent). The persisted ``chain exists'' signal is: the \code{"tip\_block\_hash"} key is present.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Atomic Persistence Unit: Block Bytes + Tip Key}
+\label{sec:ch09-3-atomic-unit}
+
+\begin{listing}[H]
+\caption{Atomic persistence: write block and tip together}
+\label{lst:ch09-3-12}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: file_system_db_chain.rs
+async fn update_blocks_tree(
+    blocks_tree: &Tree,
+    block: &Block
+) -> Result<()> {
+    let block_hash = block.get_hash();
+    let block_ivec = IVec::try_from(block.clone())?;
+
+    let transaction_result = blocks_tree.transaction(|tx_db| {
+        tx_db.insert(block_hash, block_ivec.clone())?;
+        tx_db.insert(DEFAULT_TIP_BLOCK_HASH_KEY, block_hash)?;
+        Ok(())
+    });
+
+    transaction_result
+        .map(|_| ())
+        .map_err(|e| BtcError::BlockchainDBconnection(
+            format!("{:?}", e)
+        ))
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+``Atomic'' in this context means: \textbf{block bytes plus tip pointer} are updated together inside one sled transaction. Derived state (UTXO set) is \textbf{not} part of this transaction (it is updated as a later step).
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Mining Boundary: Append Block via Local Mining}
+\label{sec:ch09-3-mining-append}
+
+\begin{listing}[H]
+\caption{Mining: verify before acquiring write lock}
+\label{lst:ch09-3-13}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: chainstate.rs
+pub async fn mine_block(
+    &self,
+    transactions: &[Transaction]
+) -> Result<Block> {
+    for tx in transactions {
+        if !tx.verify(self).await? {
+            return Err(BtcError::InvalidTransaction);
+        }
+    }
+    let blockchain_guard = self.0.write().await;
+    blockchain_guard.mine_block(transactions).await
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{Persistence engine: create, persist, cache, update UTXO}
+\label{lst:ch09-3-14}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: file_system_db_chain.rs
+pub async fn mine_block(
+    &self,
+    transactions: &[Transaction]
+) -> Result<Block> {
+    let best_height = self.get_best_height().await?;
+    let block = Block::new_block(
+        self.get_tip_hash().await?,
+        transactions,
+        best_height + 1,
+    );
+    let block_hash = block.get_hash();
+
+    let blocks_tree = self.blockchain.db
+        .open_tree(self.get_blocks_tree_path())?;
+    Self::update_blocks_tree(&blocks_tree, &block).await?;
+
+    self.set_tip_hash(block_hash).await?;
+    self.update_utxo_set(&block).await?;
+
+    Ok(block)
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+\code{BlockchainService::mine\_block(...)} is the \textbf{exclusive lock boundary} for local chain extension. Persistence is split into:
+\begin{itemize}
+  \item \textbf{Atomic persisted unit}: write \code{<block\_hash> -> bytes(Block)} and \code{"tip\_block\_hash" -> <block\_hash>}
+  \item \textbf{Runtime cache update}: \code{set\_tip\_hash(...)} keeps the in-memory cached tip consistent with the persisted value
+  \item \textbf{Derived state update}: UTXO updates happen after the block is persisted
+\end{itemize}
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Chain Iteration: Walking Backward from Tip to Genesis}
+\label{sec:ch09-3-iteration}
+
+\begin{listing}[H]
+\caption{Iterator entry point (shared lock)}
+\label{lst:ch09-3-15}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: chainstate.rs
+pub async fn iterator(&self) -> Result<BlockchainIterator> {
+    self.read(|blockchain| async move {
+        blockchain.iterator().await
+    })
+    .await
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{Iterator creation and stepping}
+\label{lst:ch09-3-16}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: file_system_db_chain.rs
+pub async fn iterator(&self) -> Result<BlockchainIterator> {
+    let hash = self.get_tip_hash().await?;
+    Ok(BlockchainIterator::new(
+        hash,
+        self.blockchain.db.clone(),
+        self.get_blocks_tree_path(),
+    ))
+}
+
+pub struct BlockchainIterator {
+    db: Db,
+    file_system_blocks_tree: String,
+    current_hash: String,
+}
+
+impl BlockchainIterator {
+    fn new(
+        tip_hash: String,
+        db: Db,
+        file_system_blocks_tree: String,
+    ) -> Self {
+        BlockchainIterator {
+            current_hash: tip_hash,
+            file_system_blocks_tree,
+            db,
+        }
+    }
+
+    pub fn next(&mut self) -> Option<Block> {
+        let block_tree = self.db
+            .open_tree(self.file_system_blocks_tree.clone())
+            .ok()?;
+        let data = block_tree
+            .get(self.current_hash.clone())
+            .ok()
+            .flatten()?;
+        let block = Block::deserialize(
+            data.to_vec().as_slice()
+        ).ok()?;
+        self.current_hash = block.get_pre_block_hash().clone();
+        Some(block)
+    }
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{Higher-level API: blocks by height range}
+\label{lst:ch09-3-17}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: chainstate.rs
+pub async fn get_blocks_by_height(
+    &self,
+    initial_height: usize,
+    height: usize,
+) -> Result<Vec<Block>> {
+    let mut blocks = Vec::new();
+    let mut iterator = self.iterator().await?;
+
+    while let Some(block) = iterator.next() {
+        let h = block.get_height();
+        if h <= height && h >= initial_height {
+            blocks.push(block.clone());
+        }
+        if h < initial_height {
+            break;
+        }
+    }
+    Ok(blocks)
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+The iterator is exposed at the \textbf{API boundary} (\code{BlockchainService::iterator}) and implemented in the persistence engine. Iteration starts at the current tip hash and repeatedly follows \code{pre\_block\_hash} ``backward'' through history.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Network Insertion: Add Block from Peer}
+\label{sec:ch09-3-network-insert}
+
+\begin{listing}[H]
+\caption{Network block accepted into chain}
+\label{lst:ch09-3-18}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: chainstate.rs
+pub async fn add_block(&self, block: &Block) -> Result<()> {
+    let mut blockchain_guard = self.0.write().await;
+    blockchain_guard.add_block(block).await
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{Persistence layer: idempotence check, serialize, transaction, height comparison}
+\label{lst:ch09-3-19}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: file_system_db_chain.rs
+pub async fn add_block(&mut self, new_block: &Block) -> Result<()> {
+    let block_tree = self.blockchain.db
+        .open_tree(self.get_blocks_tree_path())?;
+
+    if block_tree.get(new_block.get_hash())?.is_some() {
+        return Ok(());
+    }
+
+    let block_bytes = new_block.serialize()?;
+    let tip_hash = self.get_tip_hash().await?;
+
+    let transaction_result = block_tree.transaction(|tx| {
+        tx.insert(new_block.get_hash(), block_bytes.clone())?;
+        if new_block.get_height() > /* tip height */ {
+            tx.insert(
+                DEFAULT_TIP_BLOCK_HASH_KEY,
+                new_block.get_hash()
+            )?;
+        }
+        Ok(())
+    });
+
+    transaction_result
+        .map_err(|e| BtcError::BlockchainDBconnection(
+            format!("{:?}", e)
+        ))?;
+
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+The network-received block is persisted \textbf{before} the full ``validate \(\to\) connect'' gate is enforced (that hard gate is still incomplete in this learning implementation). Tip updates use a simplified height-based fork-choice rule.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Summary}
+\label{sec:ch09-3-summary}
+
+\begin{chaptersummary}
+\item \textbf{Two entry points}: status reads (shared lock), append-block writes (exclusive lock)
+\item \textbf{Tip pointer pattern}: in-memory cache of the canonical head hash, backed by the sled key \code{"tip\_block\_hash"}
+\item \textbf{Genesis bootstrapping}: created exactly once when the tip key is absent
+\item \textbf{Atomic persistence unit}: block bytes and tip pointer written together in one sled transaction
+\item \textbf{Chain iteration}: walk backward from tip by following \code{pre\_block\_hash} links
+\item \textbf{Network insertion}: accept candidate blocks, update tip if candidate wins by height
+\end{chaptersummary}

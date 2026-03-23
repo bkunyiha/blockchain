@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{Router}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{route}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/path}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{get}\PYG{p}{(}\PYG{n}{handler1}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{route}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/path}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{post}\PYG{p}{(}\PYG{n}{handler2}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{.}\PYG{n}{route}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/path/:id}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{get}\PYG{p}{(}\PYG{n}{handler3}\PYG{p}{)}\PYG{p}{)}
+\end{Verbatim}

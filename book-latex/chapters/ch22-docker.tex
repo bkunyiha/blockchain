@@ -1,0 +1,810 @@
+% ══════════════════════════════════════════════════════════════
+% Chapter 22: Docker Compose Deployment
+% ══════════════════════════════════════════════════════════════
+\chapter{Deployment: Docker Compose}
+\label{ch:docker-deployment}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Deploy a multi-node blockchain network using Docker Compose
+  \item Configure container networking, port mapping, and volume management
+  \item Scale services and manage deployment topologies for development and testing
+  \item Troubleshoot common Docker Compose deployment issues
+  \item Understand container naming, instance identification, and execution flow
+  \item Implement sequential startup coordination for reliable node formation
+\end{itemize}
+\end{learnbox}
+
+\lettrine{U}{p} to this point in the book, we have been running a single node from \code{cargo run}. But Bitcoin is a distributed system\textemdash you need multiple nodes to test peer discovery, \index{block propagation}block propagation, and chain synchronization. \index{Docker}Docker Compose lets you spin up a configurable number of interconnected nodes with a single command, each with its own storage volume, while sharing a common network. This chapter bridges the gap between ``the code compiles'' and ``the system actually works as a network.''
+
+\begin{infobox}{Scope}
+This chapter covers local development and small-scale Docker Compose deployments. For production-grade orchestration with autoscaling and high availability, see Chapter~\ref{ch:k8s-deployment} (Kubernetes).
+\end{infobox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Overview and Quick Start}
+\label{sec:docker-overview}
+
+\index{Docker}Docker Compose deployment is \textbf{code-driven}: the \code{\index{Docker}docker-compose.yml} file describes the container topology, while orchestration logic (instance numbering, port selection, sequential startup, hostname resolution) lives in the \textbf{entrypoint and helper scripts}.
+
+\subsection{Container Topology}
+
+Figure~\ref{fig:docker-topology} shows the typical multi-node layout:
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance = 1.0cm and 1.2cm,
+    container/.style = {rectangle, rounded corners=6pt, draw=sectioncolor, fill=sectioncolor!5,
+                        text width=2.8cm, align=center, minimum height=2.4cm, font=\sffamily\small},
+    component/.style = {rectangle, rounded corners=3pt, draw=sectioncolor!60, fill=codebg,
+                        text width=1.8cm, align=center, minimum height=0.55cm, font=\ttfamily\tiny},
+    network arrow/.style = {<->,thick, color=brand},
+  ]
+
+  % Docker Network border
+  \draw[dashed,color=sectioncolor!50,line width=2pt] (-5.5,-0.8) rectangle (5.5,3.2);
+  \node[font=\small\sffamily\color{sectioncolor!70}, anchor=north west] at (-5.3,3.1) {Docker Network};
+
+  % Node 1
+  \node[container] (node1) at (-3.5, 1.5) {
+    \textbf{Node 1} \\[6pt]
+    \texttt{:8000}
+  };
+  \node[component] (web1) at (-3.5, 2.7) {Web API};
+  \node[component] (p2p1) at (-3.5, 2.0) {P2P};
+  \node[component] (store1) at (-3.5, 1.3) {Store};
+  \node[font=\tiny\sffamily,color=sectioncolor] at (-3.5, 0.8) {\texttt{vol\_1}};
+
+  % Node 2
+  \node[container] (node2) at (0, 1.5) {
+    \textbf{Node 2} \\[6pt]
+    \texttt{:8001}
+  };
+  \node[component] (web2) at (0, 2.7) {Web API};
+  \node[component] (p2p2) at (0, 2.0) {P2P};
+  \node[component] (store2) at (0, 1.3) {Store};
+  \node[font=\tiny\sffamily,color=sectioncolor] at (0, 0.8) {\texttt{vol\_2}};
+
+  % Node 3
+  \node[container] (node3) at (3.5, 1.5) {
+    \textbf{Node 3} \\[6pt]
+    \texttt{:8002}
+  };
+  \node[component] (web3) at (3.5, 2.7) {Web API};
+  \node[component] (p2p3) at (3.5, 2.0) {P2P};
+  \node[component] (store3) at (3.5, 1.3) {Store};
+  \node[font=\tiny\sffamily,color=sectioncolor] at (3.5, 0.8) {\texttt{vol\_3}};
+
+  % Network connections between nodes
+  \draw[network arrow] (p2p1.east) -- (p2p2.west);
+  \draw[network arrow] (p2p2.east) -- (p2p3.west);
+
+  % Host mapping
+  \draw[dashed,color=codeframe,line width=1pt] (-5.5,-1.2) -- (5.5,-1.2);
+  \node[font=\small\sffamily\color{codeframe}] at (-3.5,-1.5) {localhost:8000};
+  \node[font=\small\sffamily\color{codeframe}] at (0,-1.5) {localhost:8001};
+  \node[font=\small\sffamily\color{codeframe}] at (3.5,-1.5) {localhost:8002};
+  \node[font=\small\sffamily\color{codeframe}] at (-5.3,-1.8) {\textbf{Host}};
+
+  \end{tikzpicture}
+  \caption{Docker Compose Deployment Topology: Multi-Node Network with Storage Volumes}
+  \label{fig:docker-topology}
+\end{figure}
+
+\subsection{Quick Start: Single Miner and Webserver}
+
+Before starting, set up wallet addresses. Use either address pool (recommended) or direct assignment:
+
+\begin{listing}[htbp]
+\caption{Quick Start: Address Pool Method}
+\label{lst:ch22-quickstart-pool}
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/docker-compose/configs
+
+# Set up address pool
+export WALLET_ADDRESS_POOL="addr1,addr2"
+
+# Start services
+docker compose up -d
+
+# Result:
+# - redis (rate limiting backend)
+# - miner_1 (P2P port 2001, uses addr1)
+# - webserver_1 (Web 8080, P2P 2101, uses addr2)
+\end{minted}
+\end{listing}
+
+Alternative: direct assignment:
+
+\begin{listing}[htbp]
+\caption{Quick Start: Direct Assignment}
+\label{lst:ch22-quickstart-direct}
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/docker-compose/configs
+export NODE_MINING_ADDRESS=3npBNyKSEwhCQWTXHFjwR8Rb66kjq6khfZSdmLPm8Gde9XoTwW
+docker compose up -d
+\end{minted}
+\end{listing}
+
+Access webserver at \texttt{http://localhost:8080}.
+
+\subsection{Scaling to Multiple Instances}
+
+Once comfortable with basic setup, scale to multiple instances:
+
+\begin{listing}[htbp]
+\caption{Scale to Multiple Miners and Webservers}
+\label{lst:ch22-scale}
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/docker-compose/configs
+
+# Set up address pool (at least 5 addresses)
+export WALLET_ADDRESS_POOL="addr1,addr2,addr3,addr4,addr5"
+
+# Scale to 3 miners and 2 webservers
+./docker-compose.scale.sh 3 2
+
+# Results:
+# - miner_1 -> addr1 (port 2001)
+# - miner_2 -> addr2 (port 2002)
+# - miner_3 -> addr3 (port 2003)
+# - webserver_1 -> addr4 (port 8080, P2P 2101)
+# - webserver_2 -> addr5 (port 8081, P2P 2102)
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+Always use the helper script \code{./docker-compose.scale.sh} to ensure \textbf{ALL instances} have ports accessible externally. Using \code{docker compose --scale} directly only maps ports for the first instance.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Architecture and Execution Flow}
+\label{sec:docker-architecture}
+
+\subsection{Container Naming and Instance Identification}
+
+Docker Compose names containers using the pattern:
+\begin{equation}
+\text{<project>\_<service>\_<instance>}
+\end{equation}
+
+\textbf{Examples}:
+\begin{itemize}
+  \item \code{blockchain\_miner\_1} (first miner instance)
+  \item \code{blockchain\_miner\_2} (second miner instance)
+  \item \code{blockchain\_webserver\_1} (first webserver instance)
+\end{itemize}
+
+The entrypoint script extracts container identity from Docker's \code{HOSTNAME} environment variable and normalizes it into \code{CONTAINER\_NAME}. It then extracts the instance number using a regex pattern:
+
+\begin{listing}[htbp]
+\caption{Instance Number Extraction}
+\label{lst:ch22-instance-extract}
+\begin{minted}[fontsize=\footnotesize]{bash}
+CONTAINER_NAME="${HOSTNAME:-}"  # e.g. "blockchain_miner_1"
+
+# Extract instance number from container name
+if [[ "${CONTAINER_NAME}" =~ _([0-23]+)$ ]]; then
+    INSTANCE_NUMBER="${BASH_REMATCH[1]}"  # e.g. 1
+fi
+\end{minted}
+\end{listing}
+
+\subsection{Port Calculation}
+
+Based on instance number and service type, ports are calculated:
+
+\begin{table}[htbp]
+\caption{Port Calculation Formula}
+\label{tab:port-calc}
+\centering\small
+\begin{tabularx}{0.85\textwidth}{lllX}
+\toprule
+\textbf{Service} & \textbf{Instance} & \textbf{Formula} & \textbf{Port} \\
+\midrule
+Miner & 1 & \(2001 + 1 - 1\) & 2001 \\
+Miner & 2 & \(2001 + 2 - 1\) & 2002 \\
+Miner & 3 & \(2001 + 3 - 1\) & 2003 \\
+\midrule
+Webserver (Web) & 1 & \(8080 + 1 - 1\) & 8080 \\
+Webserver (Web) & 2 & \(8080 + 2 - 1\) & 8081 \\
+Webserver (P2P) & 1 & \(2101 + 1 - 1\) & 2101 \\
+Webserver (P2P) & 2 & \(2101 + 2 - 1\) & 2102 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Data Directory Isolation}
+
+Each instance uses an isolated data directory:
+
+\begin{listing}[htbp]
+\caption{Data Directory Naming}
+\label{lst:ch22-data-dir}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Per-instance data directories
+DATA_DIR="data${INSTANCE_NUMBER}"
+BLOCKS_TREE="blocks${INSTANCE_NUMBER}"
+
+# Examples:
+# Instance 1: data1/, blocks1/
+# Instance 2: data2/, blocks2/
+# Instance 3: data3/, blocks3/
+\end{minted}
+\end{listing}
+
+Data is persisted in Docker volumes:
+\begin{itemize}
+  \item Miners: \code{miner-data} and \code{miner-wallets}
+  \item Webservers: \code{webserver-data} and \code{webserver-wallets}
+\end{itemize}
+
+\subsection{Execution Timeline}
+
+The startup flow progresses through these phases:
+
+\begin{listing}[htbp]
+\caption{Docker Compose Startup Order}
+\label{lst:ch22-exec-order}
+\begin{minted}[fontsize=\footnotesize]{text}
+1. docker-compose.yml (Docker Compose reads configuration)
+   v
+2. Dockerfile (builds the blockchain binary into an image)
+   v
+3. docker-entrypoint.sh (Container startup script)
+   +- wait-for-node.sh (if sequential startup requires waiting)
+   v
+4. /app/blockchain startnode ... (Rust binary entry point)
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Deployment Topology and Networking}
+\label{sec:docker-topology}
+
+\subsection{Miner Connection Chain}
+
+When scaling miners, they form a sequential chain:
+
+\begin{listing}[htbp]
+\caption{Miner Network Topology}
+\label{lst:ch22-miner-chain}
+\begin{minted}[fontsize=\footnotesize]{text}
+Miner 1: NODE_CONNECT_NODES=local (seed node)
+  v
+Miner 2: NODE_CONNECT_NODES=miner_1:2001
+  v
+Miner 3: NODE_CONNECT_NODES=miner_2:2002
+  v
+Miner 4: NODE_CONNECT_NODES=miner_3:2003
+\end{minted}
+\end{listing}
+
+\subsection{Webserver Connections}
+
+\textbf{Important}: Webservers \textbf{always} connect to miners, never to other webservers.
+
+\begin{listing}[H]
+\caption{Webserver Network Topology}
+\label{lst:ch22-webserver-topology}
+\begin{minted}[fontsize=\footnotesize]{text}
+Webserver 1: NODE_CONNECT_NODES=miner_1:2001
+Webserver 2: NODE_CONNECT_NODES=miner_1:2001 (first miner, not webserver_1)
+Webserver 3: NODE_CONNECT_NODES=miner_1:2001 (first miner, not webserver_2)
+\end{minted}
+\end{listing}
+
+\subsection{Network Topologies}
+
+\subsubsection{Single Miner + Multiple Webservers (Star)}
+
+All webservers connect to the single miner:
+
+\begin{listing}[htbp]
+\caption{Star Topology: One Miner, Multiple Webservers}
+\label{lst:ch22-star-topology}
+\begin{minted}[fontsize=\footnotesize]{bash}
+./docker-compose.scale.sh 1 3
+\end{minted}
+\end{listing}
+
+\subsubsection{Multiple Miners (Chain)}
+
+Miners form a linear chain:
+
+\begin{listing}[htbp]
+\caption{Chain Topology: Multiple Miners}
+\label{lst:ch22-chain-topology}
+\begin{minted}[fontsize=\footnotesize]{bash}
+./docker-compose.scale.sh 3 1
+\end{minted}
+\end{listing}
+
+\subsubsection{Multiple Miners + Multiple Webservers (Hybrid)}
+
+Miners form a chain; webservers star around the first miner:
+
+\begin{listing}[htbp]
+\caption{Hybrid Topology: Multiple Miners and Webservers}
+\label{lst:ch22-hybrid-topology}
+\begin{minted}[fontsize=\footnotesize]{bash}
+./docker-compose.scale.sh 3 2
+\end{minted}
+\end{listing}
+
+\subsection{Sequential Startup Coordination}
+
+When \code{SEQUENTIAL\_STARTUP=yes} (default), nodes start in sequence:
+
+\begin{enumerate}
+  \item Instance 1 starts immediately (no wait needed)
+  \item Instance 2 waits for Instance 1 to be ready, then connects to it
+  \item Instance 3 waits for Instance 2 to be ready, then connects to it
+  \item And so on\ldots
+\end{enumerate}
+
+The \code{wait-for-node.sh} script handles this coordination. For miners, it waits for the previous miner. For webservers, it always waits for miners.
+
+\begin{listing}[htbp]
+\caption{Sequential Startup Configuration}
+\label{lst:ch22-sequential-config}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Enable sequential startup (default)
+export SEQUENTIAL_STARTUP=yes
+./docker-compose.scale.sh 3 2
+
+# Or disable for simultaneous startup
+export SEQUENTIAL_STARTUP=no
+./docker-compose.scale.sh 3 2
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Port Mapping and External Access}
+\label{sec:docker-ports}
+
+\subsection{The Port Mapping Challenge}
+
+Docker Compose only maps ports for the first instance when using \code{--scale}. Additional instances created by scaling do NOT get ports mapped to the host.
+
+\begin{table}[htbp]
+\caption{Port Mapping Limitation}
+\label{tab:port-mapping-issue}
+\centering\small
+\begin{tabularx}{0.85\textwidth}{llll}
+\toprule
+\textbf{Instance} & \textbf{Internal} & \textbf{External} & \textbf{Accessible?} \\
+\midrule
+miner\_1 & 2001 & 2001 & Yes \\
+miner\_2 & 2002 & --- & No \\
+miner\_3 & 2003 & --- & No \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Solution: Use Helper Script}
+
+The \code{./docker-compose.scale.sh} script automatically generates port mappings for all instances:
+
+\begin{listing}[htbp]
+\caption{Using the Helper Script for Scaling}
+\label{lst:ch22-helper-script}
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/docker-compose/configs
+./docker-compose.scale.sh 3 2
+
+# This script:
+# 1. Generates docker-compose.override.yml with port mappings
+# 2. Scales services with all ports accessible externally
+# 3. All instances have ports mapped to host
+\end{minted}
+\end{listing}
+
+\needspace{3in}
+\subsection{Alternative: Manual Override File}
+
+If you prefer to generate the override file manually:
+
+\begin{listing}[htbp]
+\caption{Manual Port Override Generation}
+\label{lst:ch22-manual-override}
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/docker-compose/configs
+
+# Step 1: Generate override file
+./generate-compose-ports.sh 3 2
+
+# Step 2: Start services
+docker compose up -d --scale miner=3 --scale webserver=2
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{DNS Resolution Mechanism}
+\label{sec:docker-dns}
+
+\subsection{Understanding Docker Compose DNS}
+
+Docker Compose creates an internal DNS system that resolves \textbf{service names} (defined in \code{docker-compose.yml}), but \textbf{NOT instance names}.
+
+\begin{table}[htbp]
+\caption{Docker Compose DNS Resolution}
+\label{tab:docker-dns-resolution}
+\centering\small
+\begin{tabularx}{0.85\textwidth}{llll}
+\toprule
+\textbf{Hostname} & \textbf{Type} & \textbf{Resolves?} & \textbf{Result} \\
+\midrule
+\code{miner} & Service name & Yes & 172.19.0.2 \\
+\code{miner\_1} & Instance name & No & Error \\
+\code{miner\_2} & Instance name & No & Error \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{The Conversion Mechanism}
+
+The entrypoint script converts instance names to service names for DNS resolution:
+
+\begin{listing}[htbp]
+\caption{Instance Name to Service Name Conversion}
+\label{lst:ch22-dns-conversion}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Input from wait script
+PREV_ADDR="miner_1:2001"
+
+# Initialize resolution address
+RESOLVE_ADDR="${PREV_ADDR}"
+
+# Pattern match: miner_N:PORT
+if [[ "${PREV_ADDR}" =~ ^miner_([0-23]+): ]]; then
+    # Extract port and convert to service name
+    PORT_PART="${PREV_ADDR##*:}"          # Extract port
+    RESOLVE_ADDR="miner:${PORT_PART}"     # Use service name
+fi
+
+# Now resolve using Docker DNS
+PREV_ADDR_RESOLVED=$(resolve_hostname_to_ip "${RESOLVE_ADDR}")
+# Result: PREV_ADDR_RESOLVED="172.19.0.2:2001"
+\end{minted}
+\end{listing}
+
+\textbf{Why this works}: \code{miner} (the service name) resolves in Docker Compose DNS, but \code{miner\_1} (the instance name) does not.
+
+% ──────────────────────────────────────────────────────────────
+\section{Deployment Scenarios and Operations}
+\label{sec:docker-scenarios}
+
+\subsection{Scenario 1: Development Setup}
+
+Single miner and webserver for local development:
+
+\begin{listing}[htbp]
+\caption{Single Miner + Webserver Deployment}
+\label{lst:ch22-scenario-dev}
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/docker-compose/configs
+
+export WALLET_ADDRESS_POOL="addr1,addr2"
+docker compose up -d
+
+# Accessible at:
+# - Miner P2P: localhost:2001
+# - Webserver Web: http://localhost:8080
+# - Webserver P2P: localhost:2101
+\end{minted}
+\end{listing}
+
+\subsection{Scenario 2: Multiple Mining Nodes}
+
+Test distributed mining with three miners:
+
+\begin{listing}[htbp]
+\caption{Three Miners + One Webserver}
+\label{lst:ch22-scenario-mining}
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/docker-compose/configs
+
+export WALLET_ADDRESS_POOL="addr1,addr2,addr3,addr4"
+./docker-compose.scale.sh 3 1
+
+# Topology:
+# miner_1 <- miner_2 <- miner_3
+# ^
+# webserver_1 (accesses all blocks via miner network)
+\end{minted}
+\end{listing}
+
+\subsection{Scenario 3: High Availability Web Access}
+
+Multiple webservers for redundancy:
+
+\begin{listing}[htbp]
+\caption{One Miner + Three Webservers}
+\label{lst:ch22-scenario-webservers}
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/docker-compose/configs
+
+export WALLET_ADDRESS_POOL="addr1,addr2,addr3,addr4"
+./docker-compose.scale.sh 1 3
+
+# Result:
+# - miner_1 (port 2001)
+# - webserver_1 (port 8080)
+# - webserver_2 (port 8081)
+# - webserver_3 (port 8082)
+# All webservers connect to miner_1
+\end{minted}
+\end{listing}
+
+\subsection{Scenario 4: Production-like Configuration}
+
+Multiple miners and webservers:
+
+\begin{listing}[htbp]
+\caption{Three Miners + Two Webservers}
+\label{lst:ch22-scenario-production}
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/docker-compose/configs
+
+export WALLET_ADDRESS_POOL="addr1,addr2,addr3,addr4,addr5"
+./docker-compose.scale.sh 3 2
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\needspace{2.5in}
+\section{Managing Script Changes}
+\label{sec:docker-script-changes}
+
+\subsection{Important: Rebuild Docker Image}
+
+The \code{docker-entrypoint.sh} and \code{wait-for-node.sh} scripts are copied into the Docker image during build. To deploy changes, you \textbf{MUST rebuild} the Docker image---Docker will use cached layers otherwise.
+
+\begin{listing}[htbp]
+\caption{Deploying Script Changes}
+\label{lst:ch22-rebuild}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# CRITICAL: Use --no-cache for script changes
+cd ci/docker-compose/configs
+
+# Stop existing containers
+docker compose down
+
+# Rebuild with no cache
+docker compose build --no-cache
+
+# Start fresh
+docker compose up -d
+\end{minted}
+\end{listing}
+
+\begin{warnbox}[Caching Pitfall]
+Using \code{docker compose build} alone may use cached layers. For script changes, always use \code{--no-cache}.
+\end{warnbox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Environment Variables and Configuration}
+\label{sec:docker-config}
+
+\subsection{Wallet Address Distribution}
+
+\subsubsection{Method 1: Address Pool (Recommended)}
+
+Each node automatically selects an address by index:
+
+\begin{listing}[htbp]
+\caption{Address Pool Configuration}
+\label{lst:ch22-address-pool}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Create pool with at least one address per instance
+export WALLET_ADDRESS_POOL="addr1,addr2,addr3,addr4,addr5"
+
+# Start with automatic selection
+docker compose up -d --scale miner=3 --scale webserver=2
+
+# Result:
+# miner_1 -> addr1
+# miner_2 -> addr2
+# miner_3 -> addr3
+# webserver_1 -> addr4
+# webserver_2 -> addr5
+\end{minted}
+\end{listing}
+
+\subsubsection{Method 2: Direct Assignment}
+
+Use the same address for all instances:
+
+\begin{listing}[htbp]
+\caption{Direct Address Assignment}
+\label{lst:ch22-direct-address}
+\begin{minted}[fontsize=\footnotesize]{bash}
+export NODE_MINING_ADDRESS=3npBNyKSEwhCQWTXHFjwR8Rb66kjq6khfZSdmLPm8Gde9XoTwW
+docker compose up -d --scale miner=3
+\end{minted}
+\end{listing}
+
+\subsection{Rate Limiting Configuration}
+
+The webserver loads \code{axum\_rate\_limiter} settings from \code{ci/docker-compose/configs/Settings.toml}:
+
+\begin{listing}[htbp]
+\caption{Rate Limiting Setup}
+\label{lst:ch22-rate-limit}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Compose mounts Settings.toml -> /app/Settings.toml
+# Environment variable: RL_SETTINGS_PATH=/app/Settings.toml
+
+# To change limits:
+# 1. Edit configs/Settings.toml
+# 2. Restart webserver
+docker compose restart webserver
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Monitoring and Troubleshooting}
+\label{sec:docker-troubleshooting}
+
+\subsection{View Running Containers}
+
+\begin{listing}[H]
+\caption{Check Container Status}
+\label{lst:ch22-status}
+\begin{minted}[fontsize=\footnotesize]{bash}
+docker compose ps
+\end{minted}
+\end{listing}
+
+\subsection{View Logs}
+
+\begin{listing}[H]
+\caption{Monitor Container Logs}
+\label{lst:ch22-logs}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# All miner logs
+docker compose logs -f miner
+
+# All webserver logs
+docker compose logs -f webserver
+
+# Specific instance
+docker compose logs -f miner_1
+\end{minted}
+\end{listing}
+
+\subsection{Common Issues}
+
+\subsubsection{Port Conflicts}
+
+\begin{listing}[H]
+\caption{Diagnose Port Conflicts}
+\label{lst:ch22-port-conflicts}
+\begin{minted}[fontsize=\footnotesize]{bash}
+docker compose ps
+netstat -tulpn | grep -E '2001|8080|2101'
+\end{minted}
+\end{listing}
+
+\subsubsection{Data Persistence}
+
+\begin{listing}[H]
+\caption{Check Data Persistence}
+\label{lst:ch22-data-check}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# List volumes
+docker volume ls | grep blockchain
+
+# Inspect volume
+docker volume inspect blockchain_miner-data
+
+# Remove volumes (WARNING: deletes data)
+docker compose down -v
+\end{minted}
+\end{listing}
+
+\subsubsection{Nodes Not Connecting}
+
+\begin{listing}[H]
+\caption{Troubleshoot Node Connectivity}
+\label{lst:ch22-connectivity}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Check if target node is ready
+docker compose exec miner_2 nc -zv miner_1 2001
+
+# Check connection environment variable
+docker compose exec miner_2 env | grep NODE_CONNECT_NODES
+
+# View connection errors in logs
+docker compose logs miner_2 | grep -i connect
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Accessing the Webserver}
+\label{sec:docker-webserver-access}
+
+\subsection{Health Checks}
+
+\begin{listing}[H]
+\caption{Webserver Health Endpoints}
+\label{lst:ch22-health}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Liveness probe
+curl -f http://localhost:8080/api/health/live
+
+# Readiness probe
+curl -f http://localhost:8080/api/health/ready
+\end{minted}
+\end{listing}
+
+\subsection{Swagger UI}
+
+Access interactive API documentation at:
+\begin{equation}
+\text{\texttt{http://localhost:8080/swagger-ui/}}
+\end{equation}
+
+\subsection{API Authentication}
+
+All API endpoints require the \code{X-API-Key} header. Default keys:
+\begin{itemize}
+  \item Admin API: \code{admin-secret}
+  \item Wallet API: \code{wallet-secret}
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{API Call Examples}
+\label{lst:ch22-api-examples}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Get blockchain info
+curl -H "X-API-Key: admin-secret" \
+  http://localhost:8080/api/admin/blockchain
+
+# Get latest blocks
+curl -H "X-API-Key: admin-secret" \
+  http://localhost:8080/api/admin/blockchain/blocks/latest
+
+# Create wallet
+curl -X POST \
+  -H "X-API-Key: wallet-secret" \
+  -H "Content-Type: application/json" \
+  http://localhost:8080/api/wallet/wallet
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Cleanup}
+\label{sec:docker-cleanup}
+
+\subsection{Stop Services}
+
+\begin{listing}[H]
+\caption{Stopping Docker Compose Services}
+\label{lst:ch22-cleanup}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Stop all services (keeps volumes)
+docker compose down
+
+# Stop and remove volumes (deletes all data)
+docker compose down -v
+
+# View volumes before deletion
+docker volume ls | grep blockchain
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+\item We deployed a multi-node blockchain network using Docker Compose with configurable topologies.
+\item We configured container networking, port mapping via helper scripts, and volume management for data persistence.
+\item We understood instance identification, port calculation, and data directory isolation.
+\item We implemented sequential startup coordination to ensure reliable node formation.
+\item We managed DNS resolution by converting instance names to service names for Docker's internal DNS.
+\item We deployed script changes by rebuilding Docker images without cache.
+\item We monitored and troubleshot common deployment issues with logging and health checks.
+\end{chaptersummary}
+
+---

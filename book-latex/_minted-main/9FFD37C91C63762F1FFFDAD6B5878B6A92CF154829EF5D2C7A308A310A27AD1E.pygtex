@@ -1,0 +1,41 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useBlockchainInfo} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../hooks/useApi\PYGZsq{}}
+\PYG{k}{import} \PYG{n+nx}{StatCard} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../components/StatCard\PYGZsq{}}
+\PYG{k}{import} \PYG{n+nx}{LoadingSpinner} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../components/LoadingSpinner\PYGZsq{}}
+\PYG{k}{import} \PYG{n+nx}{ErrorMessage} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../components/ErrorMessage\PYGZsq{}}
+
+\PYG{k}{export} \PYG{k}{default} \PYG{k+kd}{function} \PYG{n+nx}{Dashboard}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{const} \PYG{p}{\PYGZob{}} \PYG{n+nx}{data}\PYG{p}{,} \PYG{n+nx}{isLoading}\PYG{p}{,} \PYG{n+nx}{error} \PYG{p}{\PYGZcb{}} \PYG{o}{=} \PYG{n+nx}{useBlockchainInfo}\PYG{p}{(}\PYG{l+m+mf}{5000}\PYG{p}{)}
+
+  \PYG{k}{if} \PYG{p}{(}\PYG{n+nx}{isLoading}\PYG{p}{)} \PYG{k}{return} \PYG{o}{\PYGZlt{}}\PYG{n+nx}{LoadingSpinner} \PYG{o}{/\PYGZgt{}}
+  \PYG{k}{if} \PYG{p}{(}\PYG{n+nx}{error}\PYG{p}{)} \PYG{k}{return} \PYG{o}{\PYGZlt{}}\PYG{n+nx}{ErrorMessage} \PYG{n+nx}{error}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{error}\PYG{p}{\PYGZcb{}} \PYG{o}{/\PYGZgt{}}
+  \PYG{k}{if} \PYG{p}{(}\PYG{o}{!}\PYG{n+nx}{data}\PYG{o}{?}\PYG{p}{.}\PYG{n+nx}{data}\PYG{p}{)} \PYG{k}{return} \PYG{o}{\PYGZlt{}}\PYG{n+nx}{div}\PYG{o}{\PYGZgt{}}\PYG{n+nx}{No} \PYG{n+nx}{data}\PYG{o}{\PYGZlt{}}\PYG{err}{/div\PYGZgt{}}
+
+  \PYG{k+kd}{const} \PYG{n+nx}{info} \PYG{o}{=} \PYG{n+nx}{data}\PYG{p}{.}\PYG{n+nx}{data}
+
+  \PYG{k}{return} \PYG{p}{(}
+    \PYG{o}{\PYGZlt{}}\PYG{n+nx}{div} \PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}grid grid\PYGZhy{}cols\PYGZhy{}1 md:grid\PYGZhy{}cols\PYGZhy{}4 gap\PYGZhy{}4\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+      \PYG{o}{\PYGZlt{}}\PYG{n+nx}{StatCard}
+        \PYG{n+nx}{title}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}Block Height\PYGZdq{}}
+        \PYG{n+nx}{value}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{info}\PYG{p}{.}\PYG{n+nx}{height}\PYG{p}{\PYGZcb{}}
+        \PYG{n+nx}{description}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+sb}{`}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nx}{info}\PYG{p}{.}\PYG{n+nx}{total\PYGZus{}transactions}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+sb}{ txs`}\PYG{p}{\PYGZcb{}}
+      \PYG{o}{/\PYGZgt{}}
+      \PYG{o}{\PYGZlt{}}\PYG{n+nx}{StatCard}
+        \PYG{n+nx}{title}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}Pending Transactions\PYGZdq{}}
+        \PYG{n+nx}{value}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{info}\PYG{p}{.}\PYG{n+nx}{pending\PYGZus{}transaction\PYGZus{}count}\PYG{p}{\PYGZcb{}}
+        \PYG{n+nx}{description}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}in mempool\PYGZdq{}}
+      \PYG{o}{/\PYGZgt{}}
+      \PYG{o}{\PYGZlt{}}\PYG{n+nx}{StatCard}
+        \PYG{n+nx}{title}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}Difficulty\PYGZdq{}}
+        \PYG{n+nx}{value}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{info}\PYG{p}{.}\PYG{n+nx}{difficulty}\PYG{p}{.}\PYG{n+nx}{toFixed}\PYG{p}{(}\PYG{l+m+mf}{4}\PYG{p}{)\PYGZcb{}}
+        \PYG{n+nx}{description}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}current target\PYGZdq{}}
+      \PYG{o}{/\PYGZgt{}}
+      \PYG{o}{\PYGZlt{}}\PYG{n+nx}{StatCard}
+        \PYG{n+nx}{title}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}Total Supply\PYGZdq{}}
+        \PYG{n+nx}{value}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{l+s+sb}{`}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{p}{(}\PYG{n+nx}{info}\PYG{p}{.}\PYG{n+nx}{total\PYGZus{}supply} \PYG{o}{/} \PYG{l+m+mf}{1e8}\PYG{p}{).}\PYG{n+nx}{toFixed}\PYG{p}{(}\PYG{l+m+mf}{4}\PYG{p}{)}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+sb}{ BTC`}\PYG{p}{\PYGZcb{}}
+        \PYG{n+nx}{description}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}all time\PYGZdq{}}
+      \PYG{o}{/\PYGZgt{}}
+    \PYG{o}{\PYGZlt{}}\PYG{err}{/div\PYGZgt{}}
+  \PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

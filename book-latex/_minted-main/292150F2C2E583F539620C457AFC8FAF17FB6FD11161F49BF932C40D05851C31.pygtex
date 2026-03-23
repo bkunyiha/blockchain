@@ -1,0 +1,23 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// src/node/context.rs (line 99\PYGZhy{}110)}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{process\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{addr\PYGZus{}from}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{tx}: \PYG{n+nc}{Transaction}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Add to memory pool}
+\PYG{+w}{    }\PYG{n}{add\PYGZus{}to\PYGZus{}memory\PYGZus{}pool}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{blockchain}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{my\PYGZus{}node\PYGZus{}addr}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Broadcast using BINARY format}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{my\PYGZus{}node\PYGZus{}addr}\PYG{p}{.}\PYG{n}{eq}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{CENTERAL\PYGZus{}NODE}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{nodes}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{get\PYGZus{}nodes\PYGZus{}excluding\PYGZus{}sender}\PYG{p}{(}\PYG{n}{addr\PYGZus{}from}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{broadcast\PYGZus{}transaction\PYGZus{}to\PYGZus{}nodes}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{nodes}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}id\PYGZus{}bytes}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{//                                           \PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}\PYGZca{}}
+\PYG{+w}{        }\PYG{c+c1}{//                                           Binary for network!}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{  }\PYG{c+c1}{// Hex only for API response}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

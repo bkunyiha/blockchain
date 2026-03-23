@@ -1,0 +1,18 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{convert\PYGZus{}address}\PYG{p}{(}\PYG{n}{pub\PYGZus{}hash\PYGZus{}key}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{WalletAddress}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{payload}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{vec!}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{payload}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{n}{VERSION}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{payload}\PYG{p}{.}\PYG{n}{extend}\PYG{p}{(}\PYG{n}{pub\PYGZus{}hash\PYGZus{}key}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{checksum}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{checksum}\PYG{p}{(}\PYG{n}{payload}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{payload}\PYG{p}{.}\PYG{n}{extend}\PYG{p}{(}\PYG{n}{checksum}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{address\PYGZus{}str}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{base58\PYGZus{}encode}\PYG{p}{(}\PYG{n}{payload}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{WalletAddress}::\PYG{n}{validate}\PYG{p}{(}\PYG{n}{address\PYGZus{}str}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{get\PYGZus{}pub\PYGZus{}key\PYGZus{}hash}\PYG{p}{(}\PYG{n}{address}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{payload}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{base58\PYGZus{}decode}\PYG{p}{(}\PYG{n}{address}\PYG{p}{.}\PYG{n}{as\PYGZus{}str}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{        }\PYG{n}{payload}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{o}{..}\PYG{n}{payload}\PYG{p}{.}\PYG{n}{len}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{ADDRESS\PYGZus{}CHECK\PYGZus{}SUM\PYGZus{}LEN}\PYG{p}{]}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

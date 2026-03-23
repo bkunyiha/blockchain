@@ -1,0 +1,1088 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 6: Primitives --- Core Data Structures
+% ══════════════════════════════════════════════════════════════
+\chapter{Primitives}
+\label{ch:primitives}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Define the Block, Transaction, and Blockchain data structures that form the system's foundation
+  \item Explain why transaction IDs use \code{Vec<u8>} rather than hex strings
+  \item Describe the role of each field in the block header and transaction structure
+  \item Understand how these pure data types are used by every other module in the codebase
+\end{itemize}
+\end{learnbox}
+
+\lettrine{I}{n} this chapter, we define the core data structures that every other module depends on. The primitives module (\code{bitcoin/src/primitives}) contains pure data types \code{\index{block}Block}, \code{\index{transaction}Transaction}, \code{\index{transaction}TransactionInput}, and \code{\index{transaction}TransactionOutput} with no business logic attached. Following Bitcoin Core's separation of concerns, we keep the ``what data looks like'' question here and push ``what to do with data'' into the chain, node, and validation modules.
+
+These are the atomic building blocks from which we construct all \index{blockchain}blockchain operations. By the end of this chapter, you will understand every field in a \index{block}block and a \index{transaction}transaction, why we chose \code{Vec<u8>} for hashes, and how \index{Rust!serialization}Serde derives make these types \index{Rust!serialization}serialization-ready from day one.
+
+% ──────────────────────────────────────────────────────────────
+\section{Overview}
+\label{sec:ch06-overview}
+
+The types we define here flow through the rest of the system. Chapter~9 (Cryptography) hashes and signs them. Chapters~10--18 (Blockchain Core) validate them against \index{consensus}consensus rules and manage \index{UTXO}UTXO state transitions. Chapter~20 (Storage Layer) persists them to disk via \index{sled}Sled. Chapter~21 (Network Layer) serializes them for \index{peer-to-peer}peer-to-peer transmission. Understanding the shape of \code{\index{block}Block}, \code{\index{transaction}Transaction}, \code{\index{transaction}TXInput}, and \code{\index{transaction}TXOutput} is a prerequisite for every chapter that follows.
+
+% ──────────────────────────────────────────────────────────────
+\section{Block Structure}
+\label{sec:ch06-block-structure}
+
+The \code{\index{block}Block} structure represents a single \index{block}block in the \index{blockchain}blockchain, containing both metadata (the \index{block header}header) and a list of \index{transaction}transactions.
+
+\needspace{5in}
+\begin{notebox}[Block Diagram]
+The diagram below shows the block structure with its header fields and transaction list:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
++----------------------------------------------+
+|                    Block                     |
++----------------------------------------------+
+|  +----------------------------------------+  |
+|  |               BlockHeader              |  |
+|  +----------------------------------------+  |
+|  |  hash:           String   (PoW result) |  |
+|  |  pre_block_hash: String (prev hash)    |  |
+|  |  timestamp:      i64                   |  |
+|  |  nonce:          i64                   |  |
+|  |  height:         usize                 |  |
+|  +----------------------------------------+  |
+|                                              |
+|  +----------------------------------------+  |
+|  |     transactions: Vec<Transaction>     |  |
+|  +----------------------------------------+  |
+|  |  tx[0]: Coinbase (block subsidy)       |  |
+|  |  tx[1]: Alice -> Bob (3.5 BTC)         |  |
+|  |  tx[2]: Bob -> Carol (1.2 BTC)         |  |
+|  |  ...                                   |  |
+|  +----------------------------------------+  |
++----------------------------------------------+
+
+             pre_block_hash == previous.header.hash
+                         (the "link")
+                               |
+                               v
+                      +----------------+
+                      | Previous Block |
+                      |  header.hash   |
+                      +----------------+
+\end{minted}
+\end{notebox}
+
+\textbf{Clarification (this project vs Bitcoin Core):} Bitcoin's block header includes fields like a Merkle root and difficulty target (bits), and the block hash is derived from the header bytes. In this book's implementation we keep the header minimal (and store hashes as \code{String}) so the first pass stays focused on chaining, proof-of-work, and transactions. As you read later chapters, treat this as an intentionally simplified\textemdash{}but functional\textemdash{}model of the core idea.
+
+\subsection{Block Header Components}
+\label{sec:ch06-block-header}
+
+The \code{BlockHeader} contains the metadata essential for blockchain operation:
+
+\begin{itemize}
+  \item \textbf{\index{SHA-256}Hash}: Cryptographic hash of the \index{block}block (used as the identifier and as the ``link'' target for the next \index{block}block)
+  \item \textbf{\index{block}Previous Hash} (\code{pre\_block\_hash}): Link to the parent \index{block}block, creating the chain
+  \item \textbf{Timestamp}: Unix timestamp of \index{block}block creation
+  \item \textbf{\index{nonce}Nonce}: \index{proof-of-work}Proof-of-work value found by \index{mining}mining
+  \item \textbf{Height}: Position of this \index{block}block in the chain (zero-indexed)
+\end{itemize}
+
+\subsection{Block Key Operations}
+\label{sec:ch06-block-operations}
+
+\begin{itemize}
+  \item Block creation and validation
+  \item Hash calculation
+  \item Serialization/deserialization
+  \item Transaction inclusion
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Transaction Structure}
+\label{sec:ch06-transaction-structure}
+
+The \code{\index{transaction}Transaction} structure represents a single \index{transaction}transaction, which transfers value by consuming previous outputs and creating new ones.
+
+\subsection{\index{transaction}Transaction Components}
+\label{sec:ch06-transaction-components}
+
+\begin{itemize}
+  \item \textbf{\index{transaction}TXInput}: References to previous \index{transaction}transaction outputs (\index{UTXO}UTXOs) being spent
+  \item \textbf{\index{transaction}TXOutput}: New outputs created by this \index{transaction}transaction
+  \item \textbf{\index{transaction}Transaction ID}: \index{SHA-256}SHA-256 hash of the \index{transaction}transaction
+  \item \textbf{\index{digital signature}Signatures}: Cryptographic \index{digital signature}signatures authorizing each spend
+\end{itemize}
+
+\subsection{\index{transaction}Transaction Types}
+\label{sec:ch06-transaction-types}
+
+\begin{itemize}
+  \item \textbf{\index{coinbase transaction}Coinbase Transactions}: \index{mining}Mining rewards with no inputs
+  \item \textbf{\index{transaction}Regular Transactions}: Transfers between addresses
+  \item \textbf{\index{transaction}Wallet Transactions}: User-facing \index{transaction}transaction representation
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Blockchain Structure}
+\label{sec:ch06-blockchain-structure}
+
+The \code{\index{blockchain}Blockchain} structure represents the complete chain of \index{block}blocks:
+
+\subsection{\index{blockchain}Blockchain Components}
+\label{sec:ch06-blockchain-components}
+
+\begin{itemize}
+  \item \textbf{\index{block}Blocks}: Collection of \index{block}blocks in sequence
+  \item \textbf{\index{chain tip}Tip Hash}: Hash of the latest \index{block}block
+  \item \textbf{Height}: Current chain height
+  \item \textbf{\index{genesis block}Genesis Block}: First \index{block}block in the chain
+\end{itemize}
+
+\subsection{Key Operations}
+\label{sec:ch06-blockchain-operations}
+
+\begin{itemize}
+  \item \index{block}Block addition
+  \item \index{blockchain}Chain validation
+  \item \index{block}Block retrieval
+  \item \index{blockchain}Chain traversal
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Design Decisions}
+\label{sec:ch06-design-decisions}
+
+\subsection{Why Pure Data Structures?}
+\label{sec:ch06-pure-data}
+
+The primitives module deliberately contains no business logic \textendash{} no validation, no persistence, no networking. This mirrors Bitcoin Core's \code{primitives/} directory and keeps the types reusable across every other module. A \code{Block} struct can be constructed, serialized, and passed around without pulling in database dependencies or consensus rules.
+
+\subsection{Why \code{Vec<u8>} for Hashes and IDs?}
+\label{sec:ch06-vecu8-hashes}
+
+Transaction IDs and block hashes are stored as raw byte vectors rather than hex strings. This avoids repeated hex-encode/decode round-trips and keeps hashing deterministic (we hash bytes, not string representations). The following section explores this decision in depth, including comparisons with Bitcoin Core's approach.
+
+\begin{warnbox}
+Transaction IDs are stored as \code{Vec<u8>} (raw bytes) rather than hex strings throughout the codebase. This is a deliberate design choice: byte comparisons are faster, storage is more compact, and we avoid repeated hex encoding/decoding. You will see this pattern in every module that handles transaction IDs.
+\end{warnbox}
+
+\subsection{Serde for Serialization}
+\label{sec:ch06-serde}
+
+All primitives derive \code{Serialize} and \code{Deserialize}, enabling JSON serialization for the REST API (Chapter~24) and binary encoding via bincode for storage (Chapter~20). The \code{\#[derive(Serialize, Deserialize)]} pattern appears on every struct in this module.
+
+\begin{warnbox}
+Changing any field in a block \textendash{} even a single byte \textendash{} invalidates the block hash and breaks the chain of hashes linking it to subsequent blocks. This is what makes blockchain tamper-evident.
+\end{warnbox}
+
+% ══════════════════════════════════════════════════════════════
+\section{Transaction ID Format}
+\label{sec:ch06-transaction-id-format}
+
+In this section, we explore one of the most fundamental aspects of blockchain implementation: how we represent and store transaction identifiers. This might seem like a simple detail---after all, a transaction ID is just an identifier, right? But as we will discover, the choices we make here have profound implications for memory efficiency, performance, and code clarity.
+
+Every design decision in a blockchain system cascades through the entire architecture. A seemingly minor choice about data representation can determine whether your system can handle thousands of transactions per second or struggles with hundreds. It can mean the difference between a system that uses gigabytes of memory or one that uses terabytes. And it can affect everything from network protocol efficiency to database query performance.
+
+We will examine why we store transaction IDs as binary data rather than strings, understanding not just the ``what'' but the ``why'' behind each decision. We will explore the relationship between bytes and hex representations, learning when to use each and why. We will dive deep into Rust's memory model, understanding how references, ownership, and borrowing enable zero-cost abstractions that make our code both safe and fast.
+
+By the end of this section, you will understand the technical reasoning behind every choice, from why Bitcoin Core uses binary internally to why our API returns hex strings. You will see how these patterns scale from single transactions to millions, and you will learn best practices that will guide you throughout the rest of our blockchain implementation.
+
+% ──────────────────────────────────────────────────────────────
+\subsection{Why \code{Vec<u8>} Instead of String?}
+\label{sec:ch06-txid-vecu8}
+
+\subsubsection{The Fundamental Reason: Hash Output is Binary}
+\label{sec:ch06-hash-is-binary}
+
+When we first started designing our transaction system, we faced a fundamental question: how should we represent transaction IDs? The answer lies in understanding what transaction IDs actually are.
+
+Transaction IDs are \textbf{SHA-256 hashes}, and hash functions produce \textbf{binary data}, not text. Here is what this means in practice:
+
+\begin{listing}[H]
+\caption{Transaction ID storage in Rust}
+\label{lst:ch06-1}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// From src/primitives/transaction.rs
+pub struct Transaction {
+    txid: Vec<u8>,  // 32 bytes of binary data
+    vin: Vec<TXInput>,
+    vout: Vec<TXOutput>,
+    // ...
+}
+
+// SHA-256 outputs raw bytes:
+fn sha256(data: &[u8]) -> [u8; 32] {
+    // Returns: [0x23A, 0x2f, 0x3c, ..., 0xef]  (32 bytes)
+    //     NOT: "9a2f3c...ef"  (64 character string)
+}
+\end{minted}
+\end{listing}
+
+\needspace{3in}
+\subsubsection{Memory Efficiency Comparison}
+\label{sec:ch06-memory-efficiency}
+
+\begin{table}[H]
+\caption{Memory usage: \code{Vec<u8>} vs hex string}
+\label{tab:ch06-memory}
+\centering\small
+\begin{tabularx}{0.90\textwidth}{lll}
+\toprule
+\textbf{Type} & \textbf{Size} & \textbf{Example} \\
+\midrule
+\code{Vec<u8>} & 32 bytes & \code{[0x23A, 0x2f, 0x3c, ...]} \\
+\code{String} (hex) & 64+ bytes & \code{"9a2f3c4d5e6f..."} \\
+Savings & 50\% & Binary is half the size! \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{The Bitcoin Protocol Uses Binary}
+\label{sec:ch06-bitcoin-protocol-binary}
+
+When we look at how Bitcoin actually works at the protocol level, we discover another important reason for using binary storage. The Bitcoin P2P protocol transmits \textbf{raw bytes}, not hex strings:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
++------------------------------------------+
+|  Bitcoin Wire Format (inv message)       |
++------------------------------------------+
+|  Count:  1                      [varint] |
+|  Type:   0x01 (MSG_TX)          [4 bytes]|
+|  Hash:   0x9a2f3c... (raw)      [32 bytes]  <- Binary!
++------------------------------------------+
+\end{minted}
+
+\needspace{3in}
+\paragraph{Code Comparison}
+Consider what this means in practice. If we stored transaction IDs as strings, we would need constant conversions:
+
+\begin{listing}[H]
+\caption{Inefficient string-based approach}
+\label{lst:ch06-2}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// [X] BAD: String storage requires constant conversions
+struct Transaction {
+    id: String,  // Hex string "9a2f3c..."
+}
+
+// Send over network = decode hex every time
+fn send_to_network(tx: &Transaction) {
+    let bytes = hex::decode(&tx.id).unwrap();  // Expensive!
+    network::send_inv(&bytes);
+}
+\end{minted}
+\end{listing}
+
+But with binary storage, we get zero-cost network operations:
+
+\begin{listing}[H]
+\caption{Efficient binary-based approach}
+\label{lst:ch06-3}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// [OK] GOOD: Binary storage, zero conversions
+struct Transaction {
+    id: Vec<u8>,  // Binary [0x23A, 0x2f, ...]
+}
+
+// Send over network = direct
+fn send_to_network(tx: &Transaction) {
+    network::send_inv(&tx.id);  // Zero cost!
+}
+\end{minted}
+\end{listing}
+
+\needspace{3in}
+\paragraph{From Our Codebase}
+Here is how this works in our actual implementation:
+
+\begin{listing}[H]
+\caption{Transaction processing with binary IDs}
+\label{lst:ch06-4}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// src/node/context.rs (line 99-110)
+pub async fn process_transaction(
+    &self,
+    addr_from: &SocketAddr,
+    tx: Transaction,
+) -> Result<String> {
+    // Add to memory pool
+    add_to_memory_pool(tx, &self.blockchain).await;
+
+    let my_node_addr = GLOBAL_CONFIG.get_node_addr();
+
+    // Broadcast using BINARY format
+    if my_node_addr.eq(&CENTERAL_NODE) {
+        let nodes = self.get_nodes_excluding_sender(addr_from).await?;
+        self.broadcast_transaction_to_nodes(&nodes, tx.get_id_bytes())
+            .await;
+        //                                           ^^^^^^^^^^^^^^^^
+        //                                           Binary for network!
+    }
+    Ok(tx.get_tx_id_hex())  // Hex only for API response
+}
+\end{minted}
+\end{listing}
+
+\needspace{4in}
+\subsubsection{Performance Comparison}
+\label{sec:ch06-performance-comparison}
+
+Binary format enables efficient operations:
+
+\begin{listing}[H]
+\caption{Binary vs hex comparison performance}
+\label{lst:ch06-5}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// [OK] Binary: Direct byte comparison O(n)
+fn compare_binary(a: &[u8], b: &[u8]) -> bool {
+    a == b  // Fast: memcmp() at CPU level
+}
+
+// [X] Hex String: Character comparison O(2n)
+fn compare_hex(a: &str, b: &str) -> bool {
+    a == b  // Slower: must compare 64 chars instead of 32 bytes
+}
+
+// For Merkle tree operations, binary format is essential
+// for hashing efficiency.
+\end{minted}
+\end{listing}
+
+\subsubsection{Database Storage Efficiency}
+\label{sec:ch06-database-efficiency}
+
+\begin{listing}[H]
+\caption{Database key-value operations}
+\label{lst:ch06-6}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// [OK] Binary: Compact 32-byte keys
+use sled::Db;
+
+let db: Db = sled::open("blockchain.db")?;
+
+// Store with binary key
+db.insert(&tx.id, serialized_tx)?;  // 32-byte key
+
+// Lookup with binary key
+let tx = db.get(&tx.id)?;  // Fast lookup
+
+// [X] String: Bloated 64-byte keys
+let hex_key = hex::encode(&tx.id);
+db.insert(hex_key.as_bytes(), serialized_tx)?;  // 64-byte key (2x space!)
+\end{minted}
+\end{listing}
+
+\paragraph{From Our Codebase}
+
+\begin{listing}[H]
+\caption{Database transaction lookup}
+\label{lst:ch06-7}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// src/store/file_system_db_chain.rs
+impl BlockchainFileSystem {
+    pub async fn get_transaction(
+        &self,
+        id: &[u8],
+    ) -> Result<Option<Transaction>> {
+        // Binary for efficient DB lookup.
+        let tx_tree = self.blockchain.db.open_tree(TRANSACTIONS_CF)?;
+
+        match tx_tree.get(id)? {  // Direct binary key lookup
+            Some(tx_bytes) => {
+                let tx = bincode::deserialize(&tx_bytes)?;
+                Ok(Some(tx))
+            }
+            None => Ok(None),
+        }
+    }
+}
+\end{minted}
+\end{listing}
+
+\subsubsection{Real-World Impact}
+\label{sec:ch06-real-world-impact}
+
+For a blockchain processing 400,000 transactions per day:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+Memory for 1 million transaction IDs:
+
+Vec<u8> storage:
+1,000,000 txids × 32 bytes = 32 MB
+
+String storage:
+1,000,000 txids × 64 bytes = 64 MB
+Plus String overhead = ~88 MB total
+
+SAVINGS: 56 MB (64% reduction!)
+\end{minted}
+
+The same advantage applies to network bandwidth, where binary IDs reduce per-transaction overhead:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+Network bandwidth (1000 tx/s sustained):
+
+Vec<u8> transmission:
+1000 tx/s × 32 bytes = 32 KB/s
+
+String transmission:
+1000 tx/s × 64 bytes = 64 KB/s
+
+SAVINGS: 32 KB/s (50% bandwidth reduction!)
+\end{minted}
+
+% ──────────────────────────────────────────────────────────────
+\subsection{Bytes vs Hex: \code{get\_id\_bytes()} vs \code{get\_tx\_id\_hex()}}
+\label{sec:ch06-bytes-vs-hex}
+
+As we have seen, transaction IDs are fundamentally binary data---32 bytes produced by a SHA-256 hash function. However, different parts of our system need this data in different formats. Understanding when and why to use each format is crucial for writing efficient, maintainable code.
+
+Both methods return the \textbf{same transaction ID}, just in different formats for different purposes. The key insight is recognizing that format conversion has costs, and we should minimize conversions by using the right format at the right time.
+
+\needspace{2in}
+\subsubsection{Method Definitions}
+\label{sec:ch06-method-defs}
+
+\begin{listing}[H]
+\caption{Transaction ID accessor methods}
+\label{lst:ch06-8}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// From src/primitives/transaction.rs
+impl Transaction {
+    /// Get transaction ID as raw bytes (for internal use)
+    pub fn get_id_bytes(&self) -> Vec<u8> {
+        self.txid.clone()
+    }
+
+    /// Get transaction ID as hex string (for display)
+    pub fn get_tx_id_hex(&self) -> String {
+        hex::encode(&self.txid)
+    }
+
+    /// Get transaction ID reference (most efficient)
+    pub fn get_id(&self) -> &[u8] {
+        &self.txid
+    }
+}
+\end{minted}
+\end{listing}
+
+\subsubsection{Use Cases Comparison}
+\label{sec:ch06-use-cases}
+
+\begin{table}[H]
+\caption{When to use each transaction ID method}
+\label{tab:ch06-methods}
+\centering\small
+\begin{tabularx}{0.95\textwidth}{lllX}
+\toprule
+\textbf{Method} & \textbf{Returns} & \textbf{Use Case} \\
+\midrule
+\code{get\_id\_bytes()} & \code{Vec<u8>} & Network protocol, storage, when ownership needed \\
+\code{get\_tx\_id\_hex()} & \code{String} & API responses, logging, UI display \\
+\code{get\_id()} & \code{\&[u8]} & Comparisons, lookups, when borrowing is enough \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\needspace{2.5in}
+\subsubsection{Practical Examples from Our Codebase}
+\label{sec:ch06-practical-examples}
+
+Use case summary:
+\begin{itemize}
+  \item Network Protocol: \code{Vec<u8>} (binary)
+  \item API Response: \code{String} (hex)
+  \item Logging: \code{String} (hex)
+  \item Database: \code{Vec<u8>} (binary)
+\end{itemize}
+
+\subsubsection{Conversion Cost Analysis}
+\label{sec:ch06-cost-analysis}
+
+Understanding the cost of each operation helps us make informed decisions about when to use which method:
+
+\begin{listing}[H]
+\caption{Conversion costs for transaction IDs}
+\label{lst:ch06-9}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Conversion costs for a 32-byte transaction ID:
+
+// get_id() - FREE (just returns reference)
+let id_ref: &[u8] = tx.get_id();
+// Cost: 0 bytes allocated, 0 copies
+//       Just returns a pointer (8 bytes) + length (8 bytes) = 16 bytes total
+//       This is essentially free - no heap allocation, no data copying
+//       CPU: ~1-2 nanoseconds (just pointer arithmetic)
+
+// get_id_bytes() - CLONE COST
+let id_vec: Vec<u8> = tx.get_id_bytes();
+// Cost: 32 bytes copied + Vec overhead (24 bytes) = 56 bytes allocated
+//       CPU: ~10-20 nanoseconds (memory copy operation)
+//       This is necessary when you need ownership (e.g., storing in HashMap)
+
+// get_tx_id_hex() - ENCODE + ALLOCATE
+let id_hex: String = tx.get_tx_id_hex();
+// Cost: 32 bytes read + 64 bytes allocated (hex string) + String overhead (24 bytes)
+//       = 88 bytes allocated + encoding computation
+//       CPU: ~50-100 nanoseconds (encoding each byte to 2 hex chars)
+//       This conversion is necessary at API boundaries but should be avoided internally
+\end{minted}
+\end{listing}
+
+\subsubsection{Real-World Performance Impact}
+\label{sec:ch06-perf-impact}
+
+These costs might seem small, but they compound:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+Scenario: Processing 1,000 transactions/second
+
+Using get_id() (references) - 1,000 × 2ns = 2 microseconds/second
+Using get_id_bytes() (cloning) - 1,000 × 15ns = 15 microseconds/second
+Using get_tx_id_hex() (encoding) - 1,000 × 75ns = 75 microseconds/second
+
+Over 1 day (86,400 seconds):
+References: 172 milliseconds total
+Cloning: 3 seconds total
+Hex encoding: 6.5 seconds total
+
+The difference becomes significant at scale!
+\end{minted}
+
+\subsubsection{Best Practices}
+\label{sec:ch06-txid-best-practices}
+
+\begin{listing}[H]
+\caption{Best practices for transaction ID methods}
+\label{lst:ch06-10}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// [OK] DO: Use get_id() for comparisons and lookups
+if tx1.get_id() == tx2.get_id() {
+    println!("Same transaction!");
+}
+
+// [OK] DO: Use get_id_bytes() when you need ownership
+let txid_owned = tx.get_id_bytes();
+store_in_database(txid_owned);
+
+// [OK] DO: Use get_tx_id_hex() for user-facing output
+println!("Transaction ID: {}", tx.get_tx_id_hex());
+return Ok(json!({ "txid": tx.get_tx_id_hex() }));
+
+// [X] DON'T: Convert unnecessarily
+let hex = tx.get_tx_id_hex();
+let bytes = hex::decode(&hex).unwrap();  // Wasteful!
+// Just use: tx.get_id() or tx.get_id_bytes()
+
+// [X] DON'T: Clone when borrowing is enough
+let id = tx.get_id_bytes();  // Allocates!
+compare(&id, &other);
+// Better: compare(tx.get_id(), &other);
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\subsection{References: \code{\&tx.id} vs \code{tx.id.as\_slice()}}
+\label{sec:ch06-references}
+
+As we have seen, using references (\code{\&[u8]}) is crucial for performance. But Rust provides multiple ways to get a reference to the transaction ID bytes. Understanding the subtle differences between \code{\&tx.id} and \code{tx.id.as\_slice()} helps us write idiomatic Rust code and understand how the language's type system works.
+
+These represent different ways to get a reference to the transaction ID bytes, and while they are often interchangeable, there are important distinctions that matter in certain contexts.
+
+\needspace{2in}
+\subsubsection{Type Difference}
+\label{sec:ch06-type-difference}
+
+\begin{listing}[H]
+\caption{Reference types for transaction IDs}
+\label{lst:ch06-11}
+\begin{minted}[fontsize=\footnotesize]{rust}
+let tx = Transaction {
+    txid: vec![0x23A, 0x2f, 0x3c, /* ... */],
+    // ...
+};
+
+// Different types:
+let a: &Vec<u8> = &tx.id;           // Reference to Vec
+let b: &[u8]    = tx.id.as_slice(); // Slice reference
+\end{minted}
+\end{listing}
+
+\subsubsection{Rust's Deref Coercion}
+\label{sec:ch06-deref-coercion}
+
+Rust's \textbf{deref coercion} is a powerful feature that automatically converts references to types that implement the \code{Deref} trait. \code{Vec<u8>} implements \code{Deref<Target = [u8]>}, which means Rust can automatically convert \code{\&Vec<u8>} to \code{\&[u8]} when needed.
+
+In \textbf{most cases}, they behave identically due to this automatic conversion:
+
+\begin{listing}[H]
+\caption{Deref coercion in action}
+\label{lst:ch06-12}
+\begin{minted}[fontsize=\footnotesize]{rust}
+fn takes_slice(data: &[u8]) {
+    println!("Length: {}", data.len());
+}
+
+// Both work the same:
+takes_slice(&tx.id);            // [OK] Auto-converts &Vec<u8> -> &[u8]
+takes_slice(tx.id.as_slice());  // [OK] Explicit conversion
+
+// For comparison:
+if &tx.id == other_slice { }            // [OK] Works
+if tx.id.as_slice() == other_slice { }  // [OK] Same result
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\subsection{Bitcoin Core Comparison}
+\label{sec:ch06-bitcoin-core-comparison}
+
+\subsubsection{Bitcoin Core Uses \code{uint256} (Binary)}
+\label{sec:ch06-bitcoin-uint256}
+
+\begin{listing}[H]
+\caption{Bitcoin Core transaction ID storage (C++)}
+\label{lst:ch06-13}
+\begin{minted}[fontsize=\footnotesize]{cpp}
+// Bitcoin Core: src/primitives/transaction.h
+class CTransaction {
+private:
+    mutable uint256 hash;  // 256-bit binary hash (like Vec<u8>)
+
+public:
+    // Get binary hash (like get_id_bytes())
+    const uint256& GetHash() const {
+        if (hash.IsNull())
+            hash = SerializeHash(*this);
+        return hash;  // Returns reference to binary
+    }
+
+    // Get hex string (like get_tx_id_hex())
+    std::string GetHex() const {
+        return hash.GetHex();  // Convert to hex only when needed
+    }
+};
+\end{minted}
+\end{listing}
+
+\subsubsection{Bitcoin Core Pattern: Binary Internal, Hex External}
+\label{sec:ch06-bitcoin-pattern}
+
+\begin{listing}[H]
+\caption{Bitcoin Core RPC transaction lookup}
+\label{lst:ch06-14}
+\begin{minted}[fontsize=\footnotesize]{cpp}
+// Bitcoin Core: src/rpc/rawtransaction.cpp
+UniValue getrawtransaction(const JSONRPCRequest& request) {
+    uint256 hash = ParseHashV(request.params[0], "txid");
+    //             ^^^^^^^^^^
+    //             Parse hex from RPC -> binary uint256
+
+    CTransactionRef tx;
+    if (!GetTransaction(hash, tx, ...)) {
+        //               ^^^^
+        //               Use binary for lookup
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY,
+                          "No such transaction");
+    }
+
+    // Return hex to user
+    return EncodeHexTx(*tx);
+    //     ^^^^^^^^^^^
+    //     Convert back to hex for RPC response
+}
+\end{minted}
+\end{listing}
+
+\subsubsection{Our Implementation Mirrors Bitcoin Core}
+\label{sec:ch06-our-implementation}
+
+\begin{listing}[H]
+\caption{Our transaction ID implementation}
+\label{lst:ch06-15}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Our implementation: src/primitives/transaction.rs
+pub struct Transaction {
+    txid: Vec<u8>,  // <- Like Bitcoin's uint256 (binary)
+    // ...
+}
+
+impl Transaction {
+    // Like Bitcoin's GetHash() - returns binary reference
+    pub fn get_id(&self) -> &[u8] {
+        &self.txid
+    }
+
+    // Like Bitcoin's GetHex() - converts to hex
+    pub fn get_tx_id_hex(&self) -> String {
+        hex::encode(&self.txid)
+    }
+}
+\end{minted}
+\end{listing}
+
+\needspace{3in}
+\subsubsection{Protocol Messages (Binary Format)}
+\label{sec:ch06-protocol-binary}
+
+\textbf{Bitcoin Core:}
+
+\begin{listing}[H]
+\caption{Bitcoin Core network message construction (C++)}
+\label{lst:ch06-16}
+\begin{minted}[fontsize=\footnotesize]{cpp}
+// Bitcoin Core: src/net_processing.cpp
+void SendInventory(CNode* node, const std::vector<CInv>& inventory) {
+    for (const CInv& inv : inventory) {
+        // inv.hash is uint256 (binary), sent as-is over network
+        connman->PushMessage(node, NetMsgType::INV, inv);
+    }
+}
+\end{minted}
+\end{listing}
+
+\textbf{Our Implementation:}
+
+\begin{listing}[H]
+\caption{Our network message construction}
+\label{lst:ch06-17}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Our code: src/node/context.rs
+async fn broadcast_transaction_to_nodes(&self, nodes: &[Node], txid: Vec<u8>) {
+    //                                                         ^^^^^^^^^^
+    // Binary (like uint256)
+    nodes.iter().for_each(|node| {
+        tokio::spawn(async move {
+            send_inv(&node_addr, OpType::Tx, &[txid]).await;
+            //                                  ^^^^
+            //                                  Send binary over network
+        });
+    });
+}
+\end{minted}
+\end{listing}
+
+\needspace{3in}
+\subsubsection{Database Storage (Binary Keys)}
+\label{sec:ch06-database-keys}
+
+\textbf{Bitcoin Core:}
+
+\begin{listing}[H]
+\caption{Bitcoin Core database operations (C++)}
+\label{lst:ch06-18}
+\begin{minted}[fontsize=\footnotesize]{cpp}
+// Bitcoin Core: src/txdb.cpp
+bool CCoinsViewDB::GetCoin(const COutPoint &outpoint, Coin &coin) const {
+    // outpoint.hash is uint256 (binary) - used as DB key
+    return m_db->Read(DB_COIN, outpoint);  // Binary key
+}
+\end{minted}
+\end{listing}
+
+\needspace{3in}
+\textbf{Our Implementation:}
+
+\begin{listing}[H]
+\caption{Our database operations}
+\label{lst:ch06-19}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Our code: src/store/file_system_db_chain.rs
+pub async fn get_transaction(&self, id: &[u8]) -> Result<Option<Transaction>> {
+    //                                    ^^^^
+    //                                    Binary key (like uint256)
+    let tx_tree = self.blockchain.db.open_tree(TRANSACTIONS_CF)?;
+    match tx_tree.get(id)? {  // Use binary key for lookup
+        Some(tx_bytes) => Ok(Some(bincode::deserialize(&tx_bytes)?)),
+        None => Ok(None),
+    }
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\needspace{3in}
+\subsection{Best Practices for Transaction IDs}
+\label{sec:ch06-full-best-practices}
+
+\subsubsection{1. Storage: Always Use \code{Vec<u8>}}
+\label{sec:ch06-storage-best-practice}
+
+\begin{listing}[H]
+\caption{Storage best practices}
+\label{lst:ch06-20}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// [OK] CORRECT: Store as binary
+pub struct Transaction {
+    txid: Vec<u8>,
+    vin: Vec<TXInput>,
+    vout: Vec<TXOutput>,
+}
+
+// [X] WRONG: Don't store as hex string
+pub struct Transaction {
+    txid: String,  // Wastes memory and requires conversions
+    // ...
+}
+\end{minted}
+\end{listing}
+
+\subsubsection{2. Internal Operations: Use References (\code{\&[u8]})}
+\label{sec:ch06-internal-refs}
+
+\begin{listing}[H]
+\caption{Internal operation best practices}
+\label{lst:ch06-21}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// [OK] EFFICIENT: Pass by reference
+fn verify_transaction(txid: &[u8], signature: &[u8]) -> bool {
+    // Just reading, don't need ownership
+    signature::verify(txid, signature)
+}
+
+// [X] WASTEFUL: Passing owned values
+fn verify_transaction(txid: Vec<u8>, signature: Vec<u8>) -> bool {
+    // Forces cloning at call site
+    signature::verify(&txid, &signature)
+}
+\end{minted}
+\end{listing}
+
+\subsubsection{3. Network Protocol: Use \code{Vec<u8>} or \code{\&[u8]}}
+\label{sec:ch06-network-best-practice}
+
+\begin{listing}[H]
+\caption{Network protocol best practices}
+\label{lst:ch06-22}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// [OK] Protocol messages use binary
+async fn send_transaction_inv(peer: &SocketAddr, txid: &[u8]) {
+    let inv_msg = Message::Inv {
+        inv_type: InvType::Tx,
+        hash: txid.to_vec(),  // Binary
+    };
+    send_message(peer, inv_msg).await;
+}
+\end{minted}
+\end{listing}
+
+\needspace{2in}
+\subsubsection{4. API Responses: Convert to Hex}
+\label{sec:ch06-api-responses}
+
+\begin{listing}[H]
+\caption{API response best practices}
+\label{lst:ch06-23}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// [OK] Return hex in JSON/API responses
+#[derive(Serialize)]
+struct TransactionResponse {
+    txid: String,  // Hex string for readability
+    confirmations: u32,
+}
+
+impl From<Transaction> for TransactionResponse {
+    fn from(tx: Transaction) -> Self {
+        Self {
+            txid: tx.get_tx_id_hex(),  // Convert to hex
+            confirmations: 0,
+        }
+    }
+}
+\end{minted}
+\end{listing}
+
+\subsubsection{5. Logging: Use Hex}
+\label{sec:ch06-logging}
+
+\begin{listing}[H]
+\caption{Logging best practices}
+\label{lst:ch06-24}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// [OK] Log hex for human readability
+use tracing::info;
+
+info!("Processing transaction: {}", tx.get_tx_id_hex());
+//                                   ^^^^^^^^^^^^^^^^^
+//                                   Hex is readable in logs
+
+// [X] Don't log binary directly
+info!("Processing transaction: {:?}", tx.get_id());
+// Logs: [154, 47, 60, ...] - hard to read!
+\end{minted}
+\end{listing}
+
+\needspace{2in}
+\subsubsection{6. Comparisons: Use References}
+\label{sec:ch06-comparisons}
+
+\begin{listing}[H]
+\caption{Comparison best practices}
+\label{lst:ch06-25}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// [OK] Compare without cloning
+fn transaction_exists(tx: &Transaction, pool: &[Transaction]) -> bool {
+    pool.iter().any(|t| t.get_id() == tx.get_id())
+    //                   ^^^^^^^^^    ^^^^^^^^^
+    //                   Returns &[u8] - no allocation
+}
+
+// [X] Don't convert to hex for comparison
+fn transaction_exists(tx: &Transaction, pool: &[Transaction]) -> bool {
+    let tx_hex = tx.get_tx_id_hex();  // Allocation!
+    pool.iter().any(|t| t.get_tx_id_hex() == tx_hex)  // More allocations!
+}
+\end{minted}
+\end{listing}
+
+\subsubsection{7. Database Keys: Use Binary}
+\label{sec:ch06-database-keys-best}
+
+\begin{listing}[H]
+\caption{Database key best practices}
+\label{lst:ch06-26}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// [OK] Binary keys are compact
+fn store_transaction(db: &Db, tx: &Transaction) -> Result<()> {
+    db.insert(tx.get_id(), bincode::serialize(tx)?)?;
+    //        ^^^^^^^^^
+    //        32-byte binary key
+    Ok(())
+}
+
+// [X] Hex keys waste space
+fn store_transaction(db: &Db, tx: &Transaction) -> Result<()> {
+    let key = tx.get_tx_id_hex();  // 64 bytes!
+    db.insert(key.as_bytes(), bincode::serialize(tx)?)?;
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\subsection{Performance Notes}
+\label{sec:ch06-performance-notes}
+
+The choice between \code{Vec<u8>} and \code{String} (hex) has runtime tradeoffs:
+
+\begin{itemize}
+  \item \textbf{Memory}: Binary is 2-4x more efficient than hex string representation
+  \item \textbf{CPU}: Hex conversion has minimal cost (\textasciitilde microseconds per transaction)
+  \item \textbf{Database}: Binary keys are faster to compare and index
+\end{itemize}
+
+For a blockchain node processing 1000 tx/sec, the difference is negligible in absolute terms (microseconds), but storage savings can be significant: \textasciitilde 32GB for 1 billion transactions in binary vs \textasciitilde 128GB in hex.
+
+% ──────────────────────────────────────────────────────────────
+\subsection{Summary}
+\label{sec:ch06-txid-summary}
+
+\textbf{Use \code{Vec<u8>} for internal storage and wire protocol.}
+
+\textbf{Use \code{String} (hex) for external APIs and logging.}
+
+This matches Bitcoin Core's design and minimizes unnecessary conversions while keeping the API user-friendly.
+
+% ──────────────────────────────────────────────────────────────
+\needspace{4in}
+\section{Code Examples}
+\label{sec:ch06-code-examples}
+
+\subsection{Creating a Block}
+\label{sec:ch06-create-block}
+
+\begin{listing}[H]
+\caption{Creating a block with transactions}
+\label{lst:ch06-27}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use blockchain::primitives::block::Block;
+use blockchain::primitives::transaction::Transaction;
+
+// Create block with transactions
+let block = Block::new_block(
+    previous_hash,
+    &transactions,
+    height
+);
+\end{minted}
+\end{listing}
+
+\subsection{Creating a Transaction}
+\label{sec:ch06-create-transaction}
+
+\begin{listing}[H]
+\caption{Creating transactions}
+\label{lst:ch06-28}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use blockchain::primitives::transaction::{
+    Transaction, TXInput, TXOutput
+};
+
+// Create coinbase transaction
+let coinbase = Transaction::new_coinbase_tx(&mining_address)?;
+
+// Create regular transaction
+let tx = Transaction::new_utxo_transaction(
+    &from_address,
+    &to_address,
+    amount,
+    &utxo_set
+)
+.await?;
+\end{minted}
+\end{listing}
+
+\subsection{Blockchain Operations}
+\label{sec:ch06-blockchain-ops}
+
+\begin{listing}[H]
+\caption{Basic blockchain operations}
+\label{lst:ch06-29}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use blockchain::chain::BlockchainService;
+
+// Initialize blockchain with genesis address
+let blockchain_service = BlockchainService::initialize(
+    &genesis_address
+).await?;
+
+// Add block to the chain
+blockchain_service.add_block(&block).await?;
+
+// Get block by hash
+let block = blockchain_service.get_block_by_hash(&hash).await?;
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Relationship to Bitcoin Core}
+\label{sec:ch06-bitcoin-core-relation}
+
+This module aligns with Bitcoin Core's primitives directory:
+
+\begin{itemize}
+  \item \textbf{Bitcoin Core's \code{primitives/block.h}}: Block data structure
+  \item \textbf{Bitcoin Core's \code{primitives/transaction.h}}: Transaction data structure
+  \item \textbf{Bitcoin Core's separation}: Pure data structures, no business logic
+\end{itemize}
+
+The separation of concerns we maintain here---pure data types with no business logic---mirrors Bitcoin Core's architectural philosophy and ensures our types remain reusable and dependency-free.
+
+% ══════════════════════════════════════════════════════════════
+\begin{chaptersummary}
+
+\item Defined the Block, Transaction, and Blockchain structs that serve as atomic building blocks for every operation in the system
+
+\item Explained the Transaction ID format and the deliberate choice to store IDs as \code{Vec<u8>} rather than hex strings, optimizing for programmatic use
+
+\item Examined every field in the block header---hash, previous hash, timestamp, nonce, difficulty---and its role in blockchain integrity
+
+\item Analyzed why binary storage reduces memory by 50\%, saves network bandwidth, and enables efficient database operations
+
+\item Compared our Rust implementation with Bitcoin Core's approach to transaction IDs and consensus-critical data structures
+
+\item Demonstrated best practices for using \code{get\_id()}, \code{get\_id\_bytes()}, and \code{get\_tx\_id\_hex()} based on context (internal operations, network, API responses)
+
+\item Saw how pure data types remain dependency-free, allowing every other module to build on them without circular references
+
+\end{chaptersummary}
+
+In the next chapter, we build the utility functions that operate on these structures---timestamps, functional helpers, and cross-cutting concerns that every module in the system needs.
+

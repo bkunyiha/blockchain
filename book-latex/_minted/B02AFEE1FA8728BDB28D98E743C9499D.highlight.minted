@@ -1,0 +1,34 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+Pending transactions (mempool)
+  |
+  |  (candidate transaction assembly)
+  v
+Candidate transaction list
+  (transactions from mempool + coinbase)
+  |
+  |  (block construction)
+  v
+Constructed block header
+  (includes hash commitment to txs)
+  |
+  |  (proof\PYGZhy{}of\PYGZhy{}work)
+  v
+Mined block (Nonce search until hash \PYGZlt{} target)
+  |
+  |  (persist + state transition)
+  v
+Add block to the blockchain
+  (Persist as new tip + update UTXO set)
+  |
+  |  (announce to peers nodes)
+  v
+Relay new block to peers
+  (INV announces hash \PYGZhy{}\PYGZgt{} GETDATA requests
+   bytes \PYGZhy{}\PYGZgt{} BLOCK delivers full block)
+  |
+  |  (peer acceptance boundary +
+      housekeeping)
+  v
+Add new block to chainstate;
+remove its txs from local mempool
+\end{MintedVerbatim}

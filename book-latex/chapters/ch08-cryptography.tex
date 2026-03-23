@@ -1,0 +1,1161 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 8: Cryptography --- Cryptographic Primitives and Libraries
+% ══════════════════════════════════════════════════════════════
+\chapter{Cryptography}
+\label{ch:cryptography}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Implement SHA-256 hashing to create unique transaction and block identifiers
+  \item Sign and verify transactions using Schnorr signatures on the secp256k1 curve
+  \item Generate cryptographic key pairs and derive addresses via Base58Check encoding
+  \item Understand why the crypto module exposes a minimal surface area: hash, sign, verify, and key generation
+  \item Distinguish between hashing (which creates tamper-evident identifiers), signing (which proves authorization), and encoding (which makes bytes human-usable)
+\end{itemize}
+\end{learnbox}
+
+\lettrine{C}{ryptography} is the foundation of \index{blockchain}blockchain security. Every \index{transaction}transaction must be signed, every address must be derived from keys, and every \index{block}block must be hashed. In this chapter, we explore how our \index{blockchain}blockchain implementation uses cryptographic primitives to ensure security, authenticity, and integrity.
+
+This chapter examines the cryptographic libraries we use, why we chose them, and how they are applied throughout the \index{blockchain}blockchain. We will see how Rust's type system and memory safety enable secure cryptographic operations, and how different libraries serve different purposes in our implementation.
+
+In the whitepaper, Satoshi's system relies on a few cryptographic building blocks:
+
+\begin{itemize}
+  \item \textbf{\index{hash function}Hashing} makes data tamper-evident and powers \index{proof-of-work}proof-of-work.
+  \item \textbf{\index{digital signature}Digital signatures} let a spender prove ownership of a key without revealing it.
+  \item \textbf{\index{key pair}Key generation} gives users the material needed to sign.
+  \item \textbf{\index{Base58}Address encoding} turns binary identifiers into human-usable strings.
+\end{itemize}
+
+In this project, the cryptography layer lives in \code{bitcoin/src/crypto/}. Cryptography is the part of a Bitcoin implementation that answers three practical questions:
+
+\begin{itemize}
+  \item \textbf{How do we name things?} We use \index{hash function}hashes as stable, tamper-evident identifiers (for \index{transaction}transactions, \index{block}blocks, and \index{proof-of-work}proof-of-work candidates).
+  \item \textbf{How do we prove authorization?} We use \index{digital signature}digital signatures so only the \index{key pair}key holder can authorize spends.
+  \item \textbf{How do we represent these ideas as bytes?} We standardize \index{key pair}key formats, \index{digital signature}signature formats, and address encodings so nodes can interoperate.
+\end{itemize}
+
+Some of this code is used by consensus-critical paths today (hashing and Schnorr verification). Some pieces exist as learning scaffolding or forward-looking building blocks (for example, alternative signature schemes), and we call that out explicitly where it matters.
+
+% ──────────────────────────────────────────────────────────────
+\section{Module Structure and Design}
+\label{sec:ch08-module-structure}
+
+In Rust, a module is a namespace boundary. We use it here to keep cryptographic concerns isolated and easy to audit: application code calls a small set of cryptographic functions, and the crypto module owns the details of which library implements what.
+
+\code{bitcoin/src/crypto/mod.rs} is the entry point for this chapter's code. It defines four submodules, each representing a concrete cryptographic responsibility:
+
+\begin{itemize}
+  \item \textbf{\code{\index{hash function}hash}}: \index{hash function}hashing bytes into fixed-size digests (identifiers and \index{proof-of-work}PoW work units)
+  \item \textbf{\code{\index{digital signature}signature}}: producing and verifying \index{digital signature}signatures (authorization)
+  \item \textbf{\code{\index{key pair}keypair}}: generating \index{private key}private keys and deriving \index{public key}public keys (identity material)
+  \item \textbf{\code{\index{Base58}address}}: converting binary payloads to and from human-facing strings (encoding/decoding)
+\end{itemize}
+
+We keep the crypto surface area explicit and small by re-exporting the functions we want the rest of the crate to call directly:
+
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub mod address;
+pub mod hash;
+pub mod keypair;
+pub mod signature;
+
+pub use address::{base58_decode, base58_encode};
+pub use hash::{sha256_digest, taproot_hash};
+pub use keypair::{get_schnorr_public_key, new_key_pair, new_schnorr_key_pair};
+pub use signature::{
+    ecdsa_p256_sha256_sign_digest,
+    ecdsa_p256_sha256_sign_verify,
+    schnorr_sign_digest,
+    schnorr_sign_verify,
+};
+\end{minted}
+
+Because \code{bitcoin/src/lib.rs} re-exports the crypto module (\code{pub use crypto::*;}\,), most call sites inside the crate simply use \code{crate::sha256\_digest(...)} or \code{crate::schnorr\_sign\_verify(...)}. This is a deliberate ergonomics choice: it keeps cryptographic call sites readable while also letting us centralize cryptographic decisions inside \code{bitcoin/src/crypto/}.
+
+% ──────────────────────────────────────────────────────────────
+\section{Hash Functions: SHA-256 for Identifiers and Proof-of-Work}
+\label{sec:ch08-hash-functions}
+
+\index{hash function}Hash functions are fundamental to \index{blockchain}blockchain operations. They create fixed-size fingerprints of arbitrary data, enabling efficient identification and verification. In this section, we explore how \index{SHA-256}SHA-256 is used throughout our \index{blockchain}blockchain implementation for \index{transaction}transaction IDs, \index{block}block hashes, \index{Merkle tree}Merkle trees, and address generation.
+
+\subsection{The Role of Hashing in the Whitepaper}
+\label{sec:ch08-hashing-whitepaper}
+
+A \textbf{\index{hash function}hash} (also called a \emph{\index{checksum}digest}) is the fixed-size output of a \index{hash function}hash function. You can think of it as a compact ``fingerprint'' of some input bytes:
+
+\begin{itemize}
+  \item \textbf{Determinism}: Same input $\to$ same \index{hash function}hash
+  \item \textbf{Avalanche effect}: Small change in input $\to$ very different \index{hash function}hash
+  \item \textbf{One-way}: \index{hash function}Hash is easy to compute, but impossible to reverse (you cannot recover the original input from the \index{hash function}hash)
+\end{itemize}
+
+In Bitcoin and in this project, \index{hash function}hashes are used as \emph{identifiers} (``this \index{transaction}transaction / this \index{block}block''), as \emph{tamper-evidence} (``if the bytes change, the \index{hash function}hash changes''), and as the work unit for \index{proof-of-work}proof-of-work (``find a \index{hash function}hash below a target'').
+
+When we say ``SHA-256,'' we are relying on specific properties:
+
+\begin{itemize}
+  \item \textbf{Determinism}: Same bytes in, same bytes out. That is what allows every node to agree on identifiers.
+  \item \textbf{Preimage resistance}: Given $h = \text{SHA256}(m)$, it is computationally infeasible to recover $m$.
+  \item \textbf{Second-preimage resistance}: Given $m$, it is infeasible to find $m' \ne m$ where $\text{SHA256}(m) = \text{SHA256}(m')$.
+  \item \textbf{Collision resistance}: It is infeasible to find any $m_1 \ne m_2$ with the same hash.
+  \item \textbf{Avalanche effect}: Flipping 1 bit of input tends to flip approximately 50\% of output bits, which makes tampering obvious.
+\end{itemize}
+
+\subsection{SHA-256 Digest: General-Purpose Hashing}
+\label{sec:ch08-sha256-digest}
+
+The \code{sha256\_digest} function provides general-purpose \index{SHA-256}SHA-256 \index{hash function}hashing using the \code{ring} crate. It is used throughout the \index{blockchain}blockchain for \index{transaction}transaction IDs, \index{block}block hashes, and \index{Merkle tree}Merkle tree calculations.
+
+\begin{listing}[htbp]
+\caption{SHA-256 hashing implementation (\code{hash.rs})}
+\label{lst:ch08-sha256-digest}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use ring::digest::{Context, SHA256};
+
+pub fn sha256_digest(data: &[u8]) -> Vec<u8> {
+    let mut context = Context::new(&SHA256);
+    context.update(data);
+    let digest = context.finish();
+    digest.as_ref().to_vec()
+}
+\end{minted}
+\end{listing}
+
+\textbf{Function signature}:
+\begin{itemize}
+  \item \textbf{Input}: \code{\&[u8]} --- Reference to byte slice (any length)
+  \item \textbf{Output}: \code{Vec<u8>} --- 32-byte SHA-256 hash
+\end{itemize}
+
+\textbf{Process}:
+\begin{enumerate}
+  \item Create a new SHA-256 context
+  \item Update context with input data
+  \item Finalize and extract digest
+  \item Convert to vector of bytes
+\end{enumerate}
+
+\textbf{Why \code{ring} for SHA-256?} The \code{ring} crate is a comprehensive cryptographic library based on BoringSSL. It provides security (well-audited, production-tested cryptographic primitives), performance (optimized C implementations), compatibility (used by other parts of our codebase), and reliability (battle-tested in production systems).
+
+\subsection{Transaction ID Generation}
+\label{sec:ch08-txid-generation}
+
+Every \index{transaction}transaction gets a unique identifier by \index{hash function}hashing its serialized contents. This ID is used throughout the \index{blockchain}blockchain to reference \index{transaction}transactions.
+
+\begin{infobox}[Why compute transaction hashes instead of trusting a supplied ID?]
+If we allowed an arbitrary \code{id} field to define identity, a sender could change the ID without changing the transaction's meaning---a critical security flaw. Instead, the ID is derived from the transaction's \emph{content}. This content-addressed security model means nodes do not need to trust the sender's claimed ID; they recompute the hash locally and reject any transaction where the claimed ID does not match the bytes.
+\end{infobox}
+
+\begin{listing}[htbp]
+\caption{Computing transaction ID from content (\code{transaction.rs})}
+\label{lst:ch08-tx-hash}
+\begin{minted}[fontsize=\footnotesize]{rust}
+fn hash(&mut self) -> Result<Vec<u8>> {
+    // IMPORTANT: we must NOT hash the transaction including its own id,
+    // otherwise the definition becomes circular.
+    let tx_copy = Transaction {
+        // Exclude the id from the bytes we hash by setting it to empty.
+        id: vec![],
+        vin: self.vin.clone(),
+        vout: self.vout.clone(),
+    };
+    // The transaction ID is the SHA-256 hash of the serialized transaction
+    // (with id excluded).
+    Ok(sha256_digest(tx_copy.serialize()?.as_slice()))
+}
+\end{minted}
+\end{listing}
+
+\textbf{Process}:
+\begin{enumerate}
+  \item Create a copy of the transaction without the ID field
+  \item Serialize the transaction to bytes
+  \item Hash the serialized bytes using SHA-256
+  \item Return the 32-byte hash as the transaction ID
+\end{enumerate}
+
+\begin{notebox}[Important implementation note]
+In Bitcoin Core, many identifiers use \textbf{double SHA-256} (often written as $\text{SHA256}(\text{SHA256}(\cdot))$). In this project, we currently use a \textbf{single} SHA-256 for simplicity. This is not a moral failing; it is a deliberate scope choice. But it is consensus-relevant: if you want byte-for-byte compatibility with Bitcoin's formats, you will need to align those hashing rules.
+\end{notebox}
+
+\subsection{Block Hashing and Merkle-Ish Trees}
+\label{sec:ch08-block-hashing}
+
+Blocks are identified by their hash, calculated from header data. This hash serves as the block's immutable fingerprint.
+
+\begin{listing}[htbp]
+\caption{Hashing block transactions (\code{block.rs})}
+\label{lst:ch08-block-hash}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn hash_transactions(&self) -> Vec<u8> {
+    let mut txhashs = vec![];
+    for transaction in &self.transactions {
+        txhashs.extend(transaction.get_id());
+    }
+    crate::sha256_digest(txhashs.as_slice())
+}
+\end{minted}
+\end{listing}
+
+\needspace{2in}
+\textbf{Process}:
+\begin{enumerate}
+  \item Collect all transaction IDs from the block
+  \item Concatenate them into a single byte vector
+  \item Hash the concatenated transaction IDs
+  \item Return the hash as the transactions hash
+\end{enumerate}
+
+A \textbf{Merkle tree} is a binary hash tree: \textbf{leaves} are hashes of items (e.g., transaction IDs), and each \textbf{internal node} is the hash of its two child hashes. The \textbf{Merkle root} is the final hash at the top and serves as a compact \emph{commitment} to the entire set and ordering of leaves. This structure enables efficient verification of transaction inclusion in blocks.
+
+\begin{notebox}[Implementation note]
+In this project, \code{Block::hash\_transactions()} currently computes a simplified ``Merkle-ish'' root by concatenating all transaction IDs and hashing once. That is useful for learning, but it is not the same as Bitcoin's full Merkle root construction, which uses pairwise hashing and handles odd-numbered levels by duplicating the last hash.
+\end{notebox}
+
+\subsection{Proof-of-Work Mining}
+\label{sec:ch08-pow-hashing}
+
+Proof-of-work mining uses hash functions to find valid block hashes. Miners repeatedly hash block data with different nonces until they find a hash below the target.
+
+\begin{listing}[htbp]
+\caption{Proof-of-work mining loop (\code{pow.rs})}
+\label{lst:ch08-pow-run}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn run(&self) -> (i64, String) {
+    let mut nonce = 0;
+    let mut hash = Vec::new();
+
+    while nonce < MAX_NONCE {
+        let data = self.prepare_data(nonce);
+        hash = crate::sha256_digest(data.as_slice());
+        let hash_int = BigInt::from_bytes_be(Sign::Plus, hash.as_slice());
+
+        if hash_int.lt(self.target.borrow()) {
+            break; // Found valid hash!
+        } else {
+            nonce += 1; // Try next nonce
+        }
+    }
+
+    (nonce, HEXLOWER.encode(hash.as_slice()))
+}
+\end{minted}
+\end{listing}
+
+\textbf{Process}:
+\begin{enumerate}
+  \item Start with nonce = 0
+  \item Prepare block data with current nonce
+  \item Hash the block data
+  \item Convert hash to integer
+  \item Check if hash $<$ target
+  \item If valid, return nonce and hash; if not, increment nonce and repeat
+\end{enumerate}
+
+\subsection{Taproot-Related Hashing for Address Generation}
+\label{sec:ch08-taproot-hash}
+
+\begin{listing}[H]
+\caption{Taproot-style SHA-256 hashing (\code{hash.rs})}
+\label{lst:ch08-taproot-hash}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use sha2::{Digest as Sha2Digest, Sha256 as Sha2Hash};
+
+pub fn taproot_hash(data: &[u8]) -> Vec<u8> {
+    let mut hasher = Sha2Hash::new();
+    hasher.update(data);
+    hasher.finalize().to_vec()
+}
+\end{minted}
+\end{listing}
+
+This function is also SHA-256, but implemented via the \code{sha2} library instead of \code{ring}. Conceptually, there is no new cryptographic primitive here; it is the same digest algorithm with a different implementation. In this project, \code{taproot\_hash} is used by the wallet address pipeline (via \code{wallet\_impl.rs} \textrightarrow{} \code{hash\_pub\_key}), where we intentionally use a 32-byte public-key hash as part of a Taproot-style address construction.
+
+\textbf{Why \code{sha2} for Taproot?} The \code{sha2} crate is a focused hashing library that provides simplicity (lightweight, focused on hashing algorithms), Taproot compatibility (matches Bitcoin's Taproot upgrade requirements), modern standard (uses SHA-256 instead of RIPEMD160 for better security), and pure Rust implementation (no C dependencies, easier to audit).
+
+% ──────────────────────────────────────────────────────────────
+\section{Digital Signatures: Transaction Authorization}
+\label{sec:ch08-digital-signatures}
+
+Digital signatures prove ownership and authorize transactions in the blockchain. Every transaction input must be signed with the private key corresponding to the public key that locks the output being spent.
+
+\subsection{Overview of Digital Signatures}
+\label{sec:ch08-sig-overview}
+
+A \textbf{digital signature} is a cryptographic primitive that binds a message to a keypair: the signer uses a private key to produce a signature over a message (or message digest), and anyone can use the corresponding public key to verify that (1) the signer knew the private key and (2) the message was not modified. Digital signatures provide authenticity and integrity, but not confidentiality.
+
+Digital signatures serve three critical functions in blockchain systems:
+
+\begin{enumerate}
+  \item \textbf{Authentication}: Prove that the signer owns the private key
+  \item \textbf{Authorization}: Authorize spending of transaction outputs
+  \item \textbf{Integrity}: Ensure transaction data has not been tampered with
+\end{enumerate}
+
+\subsection{Schnorr Signatures: Modern Bitcoin}
+\label{sec:ch08-schnorr}
+
+Schnorr signatures are the modern signature scheme introduced with Bitcoin's Taproot upgrade. They provide better security properties, smaller signatures, and support for signature aggregation. The primary path used by transaction signing and verification in this project.
+
+\begin{listing}[htbp]
+\caption{Schnorr signature creation (\code{signature.rs})}
+\label{lst:ch08-schnorr-sign}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use secp256k1::{Keypair, Message, Secp256k1, SecretKey};
+
+pub fn schnorr_sign_digest(
+    private_key: &[u8],
+    message: &[u8],
+) -> Result<Vec<u8>> {
+    let secp = Secp256k1::new();
+
+    // Parse private key (32 bytes)
+    let secret_key_array: [u8; 32] = private_key.try_into()
+        .map_err(|_| BtcError::TransactionSignatureError(
+            "Invalid private key length".to_string()
+        ))?;
+    let secret_key = SecretKey::from_byte_array(secret_key_array)?;
+
+    // Hash the message
+    let message_hash = sha256_digest(message);
+    let message_hash_array: [u8; 32] = message_hash.try_into()
+        .map_err(|_| BtcError::TransactionSignatureError(
+            "Invalid message hash length".to_string()
+        ))?;
+
+    // Create keypair and sign
+    let keypair = Keypair::from_secret_key(&secp, &secret_key);
+    let mut rng = rng();
+    let signature = secp.sign_schnorr_with_rng(
+        &message_hash,
+        &keypair,
+        &mut rng
+    );
+
+    Ok(signature.as_ref().to_vec())
+}
+\end{minted}
+\end{listing}
+
+\textbf{Key Characteristics}:
+\begin{itemize}
+  \item \textbf{Key Format}: Raw 32-byte private keys (Bitcoin-native)
+  \item \textbf{Curve}: secp256k1 (Bitcoin standard)
+  \item \textbf{Library}: \code{secp256k1} crate (Bitcoin-optimized)
+  \item \textbf{Signature Size}: Fixed 64 bytes (more efficient than ECDSA)
+  \item \textbf{Message}: Transaction hash (32 bytes)
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{Schnorr signature verification (\code{signature.rs})}
+\label{lst:ch08-schnorr-verify}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use secp256k1::{PublicKey, XOnlyPublicKey, schnorr};
+
+pub fn schnorr_sign_verify(
+    public_key: &[u8],
+    signature: &[u8],
+    message: &[u8]
+) -> bool {
+    let secp = Secp256k1::new();
+
+    // Parse public key (33 bytes compressed)
+    let public_key_array: [u8; 33] = match public_key.try_into() {
+        Ok(arr) => arr,
+        Err(_) => return false,
+    };
+    let public_key_obj = match
+        PublicKey::from_byte_array_compressed(public_key_array)
+    {
+        Ok(pk) => pk,
+        Err(_) => return false,
+    };
+
+    // Convert to XOnlyPublicKey for Schnorr
+    let pk_bytes = public_key_obj.serialize();
+    let xonly_array: [u8; 32] = match pk_bytes[1..33].try_into() {
+        Ok(arr) => arr,
+        Err(_) => return false,
+    };
+    let xonly_public_key = match XOnlyPublicKey::from_byte_array(xonly_array) {
+        Ok(pk) => pk,
+        Err(_) => return false,
+    };
+
+    // Hash the message
+    let message_hash = sha256_digest(message);
+    let message_hash_array: [u8; 32] = match message_hash.try_into() {
+        Ok(arr) => arr,
+        Err(_) => return false,
+    };
+
+    // Parse signature (64 bytes)
+    let signature_array: [u8; 64] = match signature.try_into() {
+        Ok(arr) => arr,
+        Err(_) => return false,
+    };
+    let signature_obj = schnorr::Signature::from_byte_array(signature_array);
+
+    // Verify
+    secp.verify_schnorr(&signature_obj, &message_hash, &xonly_public_key)
+        .is_ok()
+}
+\end{minted}
+\end{listing}
+
+\textbf{Verification Process}:
+\begin{enumerate}
+  \item Parse the compressed public key (33 bytes)
+  \item Convert to XOnlyPublicKey (32 bytes) for Schnorr verification
+  \item Hash the message using SHA-256
+  \item Parse the signature (64 bytes)
+  \item Verify the signature against the message hash
+\end{enumerate}
+
+\textbf{Why Schnorr?} Schnorr signatures provide better security (improved security properties and linearity), smaller signatures (fixed 64 bytes vs. variable 70-72 bytes for ECDSA), signature aggregation (can combine multiple signatures efficiently), Bitcoin compatibility (native support for Taproot/P2TR addresses), and batch verification (can verify multiple signatures faster).
+
+\subsection{ECDSA Signatures: Legacy Support}
+\label{sec:ch08-ecdsa}
+
+ECDSA (Elliptic Curve Digital Signature Algorithm) is the traditional signature scheme used in older Bitcoin implementations. Our codebase provides ECDSA functions for legacy compatibility and alternative signature schemes.
+
+\begin{listing}[htbp]
+\caption{ECDSA P-256 signature signing (\code{signature.rs})}
+\label{lst:ch08-ecdsa-sign}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use ring::signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair};
+
+pub fn ecdsa_p256_sha256_sign_digest(
+    pkcs8: &[u8],
+    message: &[u8],
+) -> Result<Vec<u8>> {
+    let rng = ring::rand::SystemRandom::new();
+    let key_pair = EcdsaKeyPair::from_pkcs8(
+        &ECDSA_P256_SHA256_FIXED_SIGNING,
+        pkcs8,
+        &rng
+    )?;
+    let signature = key_pair.sign(&rng, message)?;
+    Ok(signature.as_ref().to_vec())
+}
+\end{minted}
+\end{listing}
+
+\textbf{Key Characteristics}:
+\begin{itemize}
+  \item \textbf{Key Format}: PKCS\#8 format (variable length, standardized)
+  \item \textbf{Curve}: P-256 (secp256r1) --- \emph{different from Bitcoin's secp256k1}
+  \item \textbf{Library}: \code{ring} crate (BoringSSL-based)
+  \item \textbf{Signature Size}: Variable (typically 70-72 bytes)
+\end{itemize}
+
+\begin{warnbox}
+ECDSA functions are available but not currently used in the primary transaction flow. The codebase primarily uses Schnorr signatures for modern Bitcoin operations. Bitcoin's historical ECDSA uses secp256k1; our ECDSA helpers use P-256 via \code{ring}, which is \emph{not} Bitcoin-standard.
+\end{warnbox}
+
+\subsection{Transaction Signing Process}
+\label{sec:ch08-tx-signing}
+
+Transaction signing is a multi-step process that ensures only the owner of the private key can authorize spending.
+
+\begin{listing}[htbp]
+\caption{Multi-input transaction signing (\code{transaction.rs})}
+\label{lst:ch08-tx-sign}
+\begin{minted}[fontsize=\footnotesize]{rust}
+async fn sign(
+    &mut self,
+    blockchain: &BlockchainService,
+    private_key: &[u8],
+) -> Result<()> {
+    let mut tx_copy = self.trimmed_copy();
+
+    for (idx, vin) in self.vin.iter_mut().enumerate() {
+        // 1. Find the previous transaction
+        let prev_tx_option = blockchain.find_transaction(vin.get_txid()).await?;
+        let prev_tx = match prev_tx_option {
+            Some(tx) => tx,
+            None => {
+                return Err(BtcError::TransactionNotFoundError(
+                    "(sign) Previous transaction is not correct".to_string(),
+                ));
+            }
+        };
+
+        // 2. Prepare transaction copy for signing
+        tx_copy.vin[idx].signature = vec![];
+        tx_copy.vin[idx].pub_key = prev_tx.vout[vin.vout].pub_key_hash.clone();
+        tx_copy.id = tx_copy.hash()?;
+        tx_copy.vin[idx].pub_key = vec![];
+
+        // 3. Sign the transaction hash
+        let signature = schnorr_sign_digest(private_key, tx_copy.get_id())?;
+        vin.signature = signature;
+    }
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\textbf{Detailed Process}:
+\begin{enumerate}
+  \item Create Trimmed Copy: Remove signatures and public keys from inputs
+  \item For Each Input:
+  \begin{enumerate}
+    \item Find the previous transaction that created the output
+    \item Set the public key hash in the trimmed copy
+    \item Calculate the transaction hash
+    \item Clear the public key from the trimmed copy
+    \item Sign the transaction hash with the private key
+    \item Attach the signature to the input
+  \end{enumerate}
+\end{enumerate}
+
+\subsection{Transaction Verification Process}
+\label{sec:ch08-tx-verify}
+
+Transaction verification ensures that signatures are valid and that the signer authorized the transaction.
+
+\begin{listing}[htbp]
+\caption{Multi-input transaction verification (\code{transaction.rs})}
+\label{lst:ch08-tx-verify}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn verify(&self, blockchain: &BlockchainService) -> Result<bool> {
+    // Coinbase transactions don't need verification
+    if self.is_coinbase() {
+        return Ok(true);
+    }
+
+    let mut trimmed_self_copy = self.trimmed_copy();
+
+    for (idx, vin) in self.vin.iter().enumerate() {
+        // 1. Find the previous transaction
+        let txid = vin.get_txid();
+        let current_vin_tx_option = blockchain
+            .find_transaction(txid)
+            .await?;
+        let current_vin_tx = match current_vin_tx_option {
+            Some(tx) => tx,
+            None => {
+                return Err(BtcError::TransactionNotFoundError(
+                    "(verify) Previous transaction is not correct".to_string(),
+                ));
+            }
+        };
+
+        // 2. Prepare transaction copy for verification
+        trimmed_self_copy.vin[idx].signature = vec![];
+        let pub_key_hash = current_vin_tx.vout[vin.vout]
+            .pub_key_hash
+            .clone();
+        trimmed_self_copy.vin[idx].pub_key = pub_key_hash;
+        trimmed_self_copy.id = trimmed_self_copy.hash()?;
+        trimmed_self_copy.vin[idx].pub_key = vec![];
+
+        // 3. Verify the signature
+        if !schnorr_sign_verify(
+            vin.get_pub_key(),
+            vin.get_signature(),
+            trimmed_self_copy.get_id()
+        ) {
+            return Ok(false); // Invalid signature
+        }
+    }
+
+    Ok(true) // All signatures valid
+}
+\end{minted}
+\end{listing}
+
+\textbf{Detailed Process}:
+\begin{enumerate}
+  \item Check Coinbase: Coinbase transactions do not need verification
+  \item Create Trimmed Copy: Remove signatures and public keys
+  \item For Each Input:
+  \begin{enumerate}
+    \item Find the previous transaction
+    \item Set the public key hash in the trimmed copy
+    \item Calculate the transaction hash
+    \item Clear the public key from the trimmed copy
+    \item Verify the signature against the public key and hash
+    \item If invalid, return false
+  \end{enumerate}
+  \item All Valid: Return true if all signatures are valid
+\end{enumerate}
+
+\begin{table}[htbp]
+\caption{Signature schemes comparison}
+\label{tab:ch08-sig-comparison}
+\centering\small
+\begin{tabularx}{0.95\textwidth}{lXX}
+\toprule
+\textbf{Aspect} & \textbf{ECDSA} & \textbf{Schnorr} \\
+\midrule
+Signature Size & Variable (70-72 bytes) & Fixed (64 bytes) \\
+Security Properties & Well-established & Better (linearity, aggregation) \\
+Bitcoin Compatibility & Traditional & Modern (Taproot) \\
+Library & \code{ring} (BoringSSL) & \code{secp256k1} (Bitcoin-optimized) \\
+Key Format & PKCS\#8 (variable) & Raw 32-byte (Bitcoin-native) \\
+Curve & P-256 (secp256r1) & secp256k1 (Bitcoin standard) \\
+Current Usage & Legacy/Alternative & Primary (P2TR transactions) \\
+Signature Aggregation & No & Yes \\
+Batch Verification & Limited & Efficient \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ──────────────────────────────────────────────────────────────
+\section{Key Pair Generation: Secure Key Management}
+\label{sec:ch08-keypair-generation}
+
+Key pairs are the foundation of blockchain security. Every address is derived from a public key, and every transaction is signed with a private key. In this section, we focus on the exact key formats and libraries used by the code, and how those keys flow into wallets, addresses, and transaction signatures.
+
+\subsection{Overview of Key Pairs}
+\label{sec:ch08-keypair-overview}
+
+Key pairs consist of two mathematically related keys:
+
+\begin{enumerate}
+  \item \textbf{Private Key}: Secret key used for signing transactions (32 bytes)
+  \item \textbf{Public Key}: Public key used for verification (33 bytes compressed)
+\end{enumerate}
+
+\textbf{Key Pair Properties}:
+\begin{itemize}
+  \item \textbf{Mathematical Relationship}: Public key is derived from private key
+  \item \textbf{One-Way Function}: Cannot derive private key from public key
+  \item \textbf{Deterministic}: Same private key always produces same public key
+  \item \textbf{Security}: Private key must be kept secret
+\end{itemize}
+
+\subsection{Schnorr Key Pair Generation}
+\label{sec:ch08-schnorr-keypair}
+
+Schnorr key pairs use the \code{secp256k1} crate and generate raw 32-byte private keys. This is the primary key pair type used for wallet creation in this project.
+
+\begin{listing}[htbp]
+\caption{Schnorr key pair generation (\code{keypair.rs})}
+\label{lst:ch08-schnorr-keypair-gen}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use secp256k1::{PublicKey, Secp256k1, SecretKey};
+
+pub fn new_schnorr_key_pair() -> Result<Vec<u8>> {
+    let mut secret_key_bytes = [0u8; 32];
+    ring::rand::SystemRandom::new()
+        .fill(&mut secret_key_bytes)
+        .map_err(|e| BtcError::WalletKeyPairError(e.to_string()))?;
+
+    let _secp = Secp256k1::new();
+    let secret_key = SecretKey::from_byte_array(secret_key_bytes)
+        .map_err(|e| BtcError::WalletKeyPairError(e.to_string()))?;
+    Ok(secret_key.secret_bytes().to_vec())
+}
+\end{minted}
+\end{listing}
+
+\textbf{Process}:
+\begin{enumerate}
+  \item Generate Random Bytes: Fill 32-byte array with cryptographically secure random bytes
+  \item Create Secret Key: Convert bytes to \code{SecretKey} type
+  \item Validate: Ensure key is valid for secp256k1 curve
+  \item Return: Return private key as byte vector
+\end{enumerate}
+
+\textbf{Key Characteristics}:
+\begin{itemize}
+  \item \textbf{Format}: Raw 32-byte private key (Bitcoin-native)
+  \item \textbf{Curve}: secp256k1 (Bitcoin standard)
+  \item \textbf{Randomness}: Uses system random number generator
+  \item \textbf{Library}: \code{secp256k1} crate
+\end{itemize}
+
+\subsection{Public Key Derivation}
+\label{sec:ch08-pubkey-derivation}
+
+Public keys are derived from private keys using elliptic curve multiplication. This is a one-way operation: you can derive the public key from the private key, but not vice versa.
+
+\begin{listing}[htbp]
+\caption{Schnorr public key derivation (\code{keypair.rs})}
+\label{lst:ch08-schnorr-pubkey}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn get_schnorr_public_key(private_key: &[u8]) -> Result<Vec<u8>> {
+    let secp = Secp256k1::new();
+    let secret_key_array: [u8; 32] = private_key.try_into()
+        .map_err(|_| BtcError::WalletKeyPairError(
+            "Invalid private key length".to_string()
+        ))?;
+    let secret_key = SecretKey::from_byte_array(secret_key_array)?;
+    let public_key = PublicKey::from_secret_key(&secp, &secret_key);
+    Ok(public_key.serialize().to_vec())
+}
+\end{minted}
+\end{listing}
+
+\textbf{Process}:
+\begin{enumerate}
+  \item Parse Private Key: Convert byte slice to 32-byte array
+  \item Create Secret Key: Convert to \code{SecretKey} type
+  \item Derive Public Key: Use elliptic curve multiplication
+  \item Serialize: Convert to compressed format (33 bytes)
+  \item Return: Return public key as byte vector
+\end{enumerate}
+
+\textbf{Key Properties}:
+\begin{itemize}
+  \item \textbf{Deterministic}: Same private key always produces same public key
+  \item \textbf{One-Way}: Cannot derive private key from public key
+  \item \textbf{Compressed Format}: Public keys are 33 bytes (compressed)
+  \item \textbf{Efficient}: Fast derivation operation
+\end{itemize}
+
+\subsection{ECDSA Key Pair Generation (Legacy)}
+\label{sec:ch08-ecdsa-keypair}
+
+ECDSA key pairs use the \code{ring} crate and generate keys in PKCS\#8 format. This path exists for legacy compatibility and is not used by the main wallet creation flow.
+
+\begin{listing}[htbp]
+\caption{ECDSA P-256 key pair generation (\code{keypair.rs})}
+\label{lst:ch08-ecdsa-keypair-gen}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use ring::signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair};
+
+pub fn new_key_pair() -> Result<Vec<u8>> {
+    let rng = SystemRandom::new();
+    let pkcs8 = EcdsaKeyPair::generate_pkcs8(
+        &ECDSA_P256_SHA256_FIXED_SIGNING,
+        &rng
+    )?;
+    Ok(pkcs8.as_ref().to_vec())
+}
+\end{minted}
+\end{listing}
+
+\needspace{2.5in}
+\textbf{Key Characteristics}:
+\begin{itemize}
+  \item \textbf{Format}: PKCS\#8 (variable length, standardized)
+  \item \textbf{Curve}: P-256 (secp256r1)
+  \item \textbf{Randomness}: Uses system random number generator
+  \item \textbf{Library}: \code{ring} crate
+\end{itemize}
+
+ECDSA key pairs are available but not currently used in the primary transaction flow. The codebase primarily uses Schnorr key pairs for modern Bitcoin operations, while ECDSA remains as a backward-compatible option.
+
+% ──────────────────────────────────────────────────────────────
+\section{Address Encoding: Base58Check for Human-Readable Addresses}
+\label{sec:ch08-address-encoding}
+
+Address encoding is where raw key material becomes something a human can copy, paste, and exchange safely. In production Bitcoin, address formats vary (Base58Check for legacy scripts, Bech32/Bech32m for SegWit and Taproot). This project uses a \textbf{Base58Check-style} format for its wallet addresses: version byte $\parallel$ public key hash $\parallel$ checksum, then Base58-encode the bytes.
+
+\subsection{Overview of Address Encoding}
+\label{sec:ch08-address-overview}
+
+An address is a compact, checksummed identifier derived from a public key. It is \emph{not} the public key itself. In this project, we hash the public key, attach a version byte and checksum, then encode the result into a Base58 string.
+
+\needspace{2in}
+\textbf{Address Properties}:
+\begin{itemize}
+  \item \textbf{Human-Readable}: Easy to read and type
+  \item \textbf{Compact}: More compact than hexadecimal
+  \item \textbf{Error-Resistant}: Avoids ambiguous characters
+  \item \textbf{Checksummed}: Includes checksum for error detection
+\end{itemize}
+
+\begin{infobox}[Address payload layout]
+In this project, we build an address by constructing a payload and then Base58-encoding it:
+
+\noindent
+\code{payload = version (1) \textbar{}\textbar{} pub\_key\_hash (32) \textbar{}\textbar{} checksum (4)}
+
+\noindent
+\code{version}: 0x01 (P2TR version tag)
+\noindent
+\code{pub\_key\_hash}: SHA-256(pubkey), 32 bytes
+\noindent
+\code{checksum}: first 4 bytes of SHA256(SHA256(version \textbar{}\textbar{} hash))
+\end{infobox}
+
+\subsection{Base58 Encoding Algorithm}
+\label{sec:ch08-base58-encoding}
+
+Base58 encoding converts binary data into a human-readable string, excluding characters that could be confused (0, O, I, l).
+
+\begin{listing}[htbp]
+\caption{Base58 encoding (\code{address.rs})}
+\label{lst:ch08-base58-encode}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn base58_encode(data: &[u8]) -> Result<String> {
+    Ok(bs58::encode(data).into_string())
+}
+\end{minted}
+\end{listing}
+
+\textbf{Function Signature}:
+\begin{itemize}
+  \item \textbf{Input}: \code{\&[u8]} --- Reference to byte slice
+  \item \textbf{Output}: \code{Result<String>} --- Base58-encoded string
+\end{itemize}
+
+\textbf{Why Base58?}
+\begin{itemize}
+  \item \textbf{Human Readability}: Easy to read and type
+  \item \textbf{Error Prevention}: Avoids ambiguous characters (0/O, I/l)
+  \item \textbf{Compactness}: More compact than hexadecimal
+  \item \textbf{Bitcoin Standard}: Used by Bitcoin for addresses
+\end{itemize}
+
+\textbf{Base58 Character Set}:
+
+\code{123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz}
+
+\needspace{2in}
+\noindent
+\textbf{Excluded Characters}:
+\begin{itemize}
+  \item \code{0} (zero) --- Can be confused with \code{O} (capital O)
+  \item \code{O} (capital O) --- Can be confused with \code{0} (zero)
+  \item \code{I} (capital I) --- Can be confused with \code{l} (lowercase L)
+  \item \code{l} (lowercase L) --- Can be confused with \code{I} (capital I)
+\end{itemize}
+
+\subsection{Base58 Decoding Algorithm}
+\label{sec:ch08-base58-decoding}
+
+Base58 decoding converts human-readable addresses back to binary data.
+
+\begin{listing}[htbp]
+\caption{Base58 decoding (\code{address.rs})}
+\label{lst:ch08-base58-decode}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn base58_decode(data: &str) -> Result<Vec<u8>> {
+    bs58::decode(data)
+        .into_vec()
+        .map_err(|e| BtcError::AddressDecodingError(e.to_string()))
+}
+\end{minted}
+\end{listing}
+
+\textbf{Function Signature}:
+\begin{itemize}
+  \item \textbf{Input}: \code{\&str} --- Base58-encoded string
+  \item \textbf{Output}: \code{Result<Vec<u8>>} --- Decoded byte vector
+\end{itemize}
+
+Base58 decoding can fail if invalid characters are present, the string format is incorrect, or decoding fails. All errors are properly handled and returned as \code{BtcError::AddressDecodingError}.
+
+\subsection{P2TR Address Generation}
+\label{sec:ch08-p2tr-address}
+
+P2TR (Pay-to-Taproot) addresses are generated from Schnorr public keys in this project, then encoded using the Base58Check-style format described above.
+
+\begin{listing}[htbp]
+\caption{P2TR address generation flow}
+\label{lst:ch08-p2tr-gen}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// 1. Generate key pair
+let private_key = new_schnorr_key_pair()?;
+let public_key = get_schnorr_public_key(&private_key)?;
+
+// 2. Hash public key
+let pub_key_hash = taproot_hash(&public_key);
+
+// 3. Create address payload
+let version_byte = 0x01; // P2TR version
+let mut address_data = vec![version_byte];
+address_data.extend_from_slice(&pub_key_hash);
+
+// 4. Calculate checksum (double SHA-256, first 4 bytes)
+let checksum = checksum(&address_data);
+address_data.extend_from_slice(&checksum);
+
+// 5. Encode to Base58
+let address = base58_encode(&address_data)?;
+\end{minted}
+\end{listing}
+
+\textbf{Step-by-Step Process}:
+\begin{enumerate}
+  \item Hash Public Key: Use \code{taproot\_hash} to hash public key
+  \item Add Version Byte: Prepend version byte (0x01 for P2TR)
+  \item Calculate Checksum: Double SHA-256 hash, take first 4 bytes
+  \item Append Checksum: Add checksum to address data
+  \item Base58 Encode: Convert to Base58 string
+\end{enumerate}
+
+\subsection{Address Validation}
+\label{sec:ch08-address-validation}
+
+Address validation ensures addresses are correctly formatted and have valid checksums.
+
+\begin{listing}[htbp]
+\caption{Address validation with checksum verification}
+\label{lst:ch08-address-validate}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn validate_address(address: &str) -> Result<bool> {
+    // 1. Decode Base58
+    let payload = base58_decode(address)?;
+
+    // 2. Extract components
+    let actual_checksum = payload[payload.len() - 4..].to_vec();
+    let version = payload[0];
+    let pub_key_hash = payload[1..payload.len() - 4].to_vec();
+
+    // 3. Recompute checksum from version + hash
+    let mut target_vec = vec![version];
+    target_vec.extend(pub_key_hash);
+    let target_checksum = checksum(target_vec.as_slice());
+
+    // 4. Compare checksums
+    Ok(actual_checksum.eq(target_checksum.as_slice()))
+}
+\end{minted}
+\end{listing}
+
+\textbf{Validation Steps}:
+\begin{enumerate}
+  \item Decode Base58: Convert address string to bytes
+  \item Extract Components: Split version, hash, and checksum
+  \item Recompute Checksum: Build \code{version \textbar{}\textbar{} hash}, then double-SHA-256
+  \item Compare Checksums: Return true if the checksum matches
+\end{enumerate}
+
+\textbf{Why Validate?}
+\begin{itemize}
+  \item \textbf{Error Detection}: Catches transmission errors
+  \item \textbf{Security}: Prevents invalid addresses
+  \item \textbf{User Experience}: Provides clear error messages
+  \item \textbf{Integrity}: Ensures address integrity
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Security and Performance Considerations}
+\label{sec:ch08-security-performance}
+
+Security is less about a single ``best'' library and more about disciplined and repeatable practices. The core idea is simple: protect private keys, validate every external input, and make the system behave predictably even under attack, even when the data is malformed or hostile.
+
+\subsection{Security Best Practices}
+\label{sec:ch08-security-practices}
+
+\begin{warnbox}[Threat model for the crypto layer]
+\textbf{What to protect:} private keys, authorization, tx/block ID integrity, address correctness
+
+\noindent
+\textbf{Who attacks:} network attackers, local attackers, side-channel attackers, developers
+
+\noindent
+\textbf{How they attack:} malformed inputs (DoS), memory scraping (logs, disk), timing observation, wrong implementation
+
+\noindent
+\textbf{Mitigations:} validate all inputs and lengths, keep private keys out of logs, use well-audited crypto libraries, keep formats explicit
+\end{warnbox}
+
+\subsubsection{Secure Random Number Generation}
+\label{sec:ch08-secure-rng}
+
+Keys are only as strong as their randomness. This project uses the operating system's cryptographically secure RNG via \code{ring::rand::SystemRandom}:
+
+\begin{minted}[fontsize=\footnotesize]{rust}
+let rng = ring::rand::SystemRandom::new();
+\end{minted}
+
+\textbf{Best Practices}:
+\begin{itemize}
+  \item Always use system random number generators
+  \item Never use predictable random number generators
+  \item Ensure sufficient entropy for key generation
+  \item Test randomness quality in production
+\end{itemize}
+
+\subsubsection{Constant-Time Operations}
+\label{sec:ch08-constant-time}
+
+Cryptographic operations should be constant-time to reduce timing side channels. The libraries used in this project (\code{ring}, \code{secp256k1}) implement constant-time operations internally, so the safest path is to keep custom crypto logic minimal and delegate to those libraries.
+
+\textbf{Best Practices}:
+\begin{itemize}
+  \item Use libraries that implement constant-time operations
+  \item Avoid timing-dependent code in cryptographic operations
+  \item Test for timing vulnerabilities
+  \item Use hardware acceleration when available
+\end{itemize}
+
+\subsubsection{Input Validation}
+\label{sec:ch08-input-validation}
+
+In a blockchain node, inputs are often attacker-controlled (network messages, transaction payloads, user-provided addresses). Validation is not a nice-to-have---it is an anti-DoS and correctness requirement.
+
+\textbf{Best Practices}:
+\begin{itemize}
+  \item Validate all inputs before cryptographic operations
+  \item Check key lengths and formats
+  \item Verify signature and message lengths
+  \item Provide clear error messages
+\end{itemize}
+
+\subsubsection{Error Handling}
+\label{sec:ch08-error-handling}
+
+Error handling is part of the security model. Panics can become denial-of-service; ambiguous errors can hide bugs. This project returns \code{Result} for crypto operations to keep failure explicit.
+
+\textbf{Best Practices}:
+\begin{itemize}
+  \item Always return \code{Result} types for cryptographic operations
+  \item Never panic on cryptographic errors
+  \item Provide detailed error messages
+  \item Handle errors gracefully
+\end{itemize}
+
+\subsubsection{Private Key Protection}
+\label{sec:ch08-private-key-protection}
+
+Private keys are the crown jewels. Treat them as toxic waste: never log them, never serialize them casually, and never keep them in memory longer than necessary.
+
+\textbf{Best Practices}:
+\begin{itemize}
+  \item Never log private keys
+  \item Encrypt private keys at rest
+  \item Use secure memory for private keys
+  \item Limit access to private keys
+  \item Implement secure key deletion
+\end{itemize}
+
+\subsection{Performance Characteristics}
+\label{sec:ch08-performance}
+
+Performance matters because every node replays the same cryptographic work: hashes for block/tx IDs, signature verification for every input, and address validation for every user-facing operation. The exact numbers are hardware-dependent, but the ordering and relative costs are stable across machines.
+
+\begin{table}[htbp]
+\caption{Cryptographic operation performance (order-of-magnitude)}
+\label{tab:ch08-perf}
+\centering\small
+\begin{tabularx}{0.95\textwidth}{lXXX}
+\toprule
+\textbf{Operation} & \textbf{Speed} & \textbf{Latency} & \textbf{Notes} \\
+\midrule
+SHA-256 hash & ~200-300 MB/s & ~1-2 $\mu$s & Hardware-dependent \\
+Schnorr sign & ~1000-2000 sigs/s & ~0.5-1 ms & Per signature \\
+Schnorr verify & ~2000-4000 verifs/s & ~0.25-0.5 ms & Per verification \\
+Key gen & ~100-200 pairs/s & ~5-24 ms & Bottleneck: RNG \\
+Public key derivation & ~5000-10000/s & ~0.1-0.2 ms & Minimal overhead \\
+Base58 encoding & ~10-20 MB/s & ~1-5 $\mu$s/address & User-facing \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Optimization Strategies}
+\label{sec:ch08-optimization}
+
+Optimization comes after correctness. Start with clear, correct implementations, measure real bottlenecks, then apply targeted changes.
+
+\textbf{Common Optimization Patterns}:
+\begin{itemize}
+  \item \textbf{Batch Operations}: Process multiple signatures together to amortize fixed costs
+  \item \textbf{Caching}: Cache frequently used results (like derived public keys)
+  \item \textbf{Parallel Processing}: Verify multiple signatures in parallel when CPU cores are available
+  \item \textbf{Hardware Acceleration}: Use hardware crypto when available to shift work to optimized CPU features
+\end{itemize}
+
+\subsection{Library Choices and Trade-offs}
+\label{sec:ch08-library-choices}
+
+Bitcoin implementations live and die by their dependency choices. You want well-audited code, deterministic behavior, and APIs that make mistakes hard. This project intentionally uses multiple libraries to mirror how real systems evolve:
+
+\begin{itemize}
+  \item \textbf{\code{ring}}: ECDSA signatures, general SHA-256 hashing
+  \item \textbf{\code{secp256k1}}: Schnorr signatures, secp256k1 curve operations
+  \item \textbf{\code{sha2}}: Taproot-specific SHA-256 hashing
+  \item \textbf{\code{bs58}}: Base58 encoding/decoding
+\end{itemize}
+
+\textbf{Trade-offs}:
+
+\noindent
+\textbf{Advantages}:
+\begin{itemize}
+  \item Best Tool for Each Job: Each library excels in its domain
+  \item Bitcoin Compatibility: Native support for Bitcoin standards
+  \item Flexibility: Can use different schemes as needed
+\end{itemize}
+
+\needspace{2in}
+\noindent
+\textbf{Disadvantages}:
+\begin{itemize}
+  \item Dependency Count: More dependencies to manage
+  \item Consistency: Different APIs and patterns
+  \item Maintenance: More code to maintain and update
+\end{itemize}
+
+In a production system, we typically want a single SHA-256 implementation for consistency, reduced dependencies, and improved maintainability. However, both implementations are correct and produce identical results, so the current approach works well for a learning implementation.
+
+% ──────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+\item Cryptography in blockchain answers three practical questions: how do we name things (hashing), how do we prove authorization (signatures), and how do we represent bytes as humans can safely exchange them (encoding).
+
+\item SHA-256 hashing produces 32-byte digests used for transaction IDs, block hashes, and proof-of-work. It is deterministic, collision-resistant, and exhibits the avalanche effect.
+
+\item Schnorr signatures (secp256k1) are the primary authorization mechanism in this project. They provide better security properties and efficiency than legacy ECDSA schemes.
+
+\item Transaction signing requires computing a hash of the transaction, then signing that hash with the private key. Verification mirrors this: rebuild the same hash and verify the signature against the public key.
+
+\item Key pairs consist of a 32-byte private key and a 33-byte compressed public key. Public keys are derived deterministically from private keys via elliptic curve multiplication.
+
+\item Addresses are not keys. They are human-friendly Base58Check-encoded strings that combine a version byte, public key hash, and checksum. This format reduces transcription errors.
+
+\item The crypto module uses four specialized libraries: \code{ring} for ECDSA and SHA-256, \code{secp256k1} for Schnorr and secp256k1 curve operations, \code{sha2} for Taproot-specific hashing, and \code{bs58} for Base58 encoding.
+
+\item Security best practices include secure random generation, constant-time operations, input validation, explicit error handling, and private key protection. Never log private keys, and always encrypt them at rest.
+
+\item Performance is measured in hashes per second, signatures per second, and latency per operation. Signature verification is the most CPU-intensive operation in a typical node.
+
+\item Future improvements include hardware acceleration, better batch operation support, more sophisticated caching, and enhanced side-channel resistance.
+\end{chaptersummary}
+
+% ══════════════════════════════════════════════════════════════
+% References
+% ══════════════════════════════════════════════════════════════
+
+\begin{thebibliography}{99}
+
+\bibitem[fips180]{fips180}
+NIST. \emph{FIPS 180-4: Secure Hash Standard (SHA-256)}.
+\url{https://csrc.nist.gov/publications/detail/fips/180/4/final}
+
+\bibitem[fips186]{fips186}
+NIST. \emph{FIPS 186-5: Digital Signature Standard (DSS)}.
+\url{https://csrc.nist.gov/publications/detail/fips/186/5/final}
+
+\bibitem[satoshi]{satoshi}
+Satoshi Nakamoto. \emph{Bitcoin: A Peer-to-Peer Electronic Cash System}.
+\url{https://bitcoin.org/bitcoin.pdf}
+
+\bibitem[bip340]{bip340}
+The Bitcoin Project. \emph{BIP 340: Schnorr Signatures for secp256k1}.
+\url{https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki}
+
+\bibitem[bip341]{bip341}
+The Bitcoin Project. \emph{BIP 341: Taproot}.
+\url{https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki}
+
+\bibitem[bip342]{bip342}
+The Bitcoin Project. \emph{BIP 342: Validation of Taproot Scripts}.
+\url{https://github.com/bitcoin/bips/blob/master/bip-0342.mediawiki}
+
+\bibitem[sec2]{sec2}
+Standards for Efficient Cryptography Group. \emph{SEC 2: Recommended Elliptic Curve Domain Parameters}.
+\url{https://www.secg.org/sec2-v2.pdf}
+
+\bibitem[base58check]{base58check}
+Bitcoin Wiki. \emph{Base58Check encoding}.
+\url{https://en.bitcoin.it/wiki/Base58Check_encoding}
+
+\bibitem[ring]{ring}
+Bracing. \emph{ring: Safe, fast, small crypto using Rust}.
+\url{https://docs.rs/ring/latest/ring/}
+
+\bibitem[secp256k1]{secp256k1}
+Peter Westmacott. \emph{secp256k1 Rust crate}.
+\url{https://docs.rs/secp256k1/latest/secp256k1/}
+
+\end{thebibliography}
+

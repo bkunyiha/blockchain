@@ -1,0 +1,31 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{btc\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{wlt\PYGZus{}frm\PYGZus{}addr}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{wlt\PYGZus{}to\PYGZus{}addr}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{amount}: \PYG{k+kt}{i32}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// 1) Build a UTXO view over the current}
+\PYG{+w}{    }\PYG{c+c1}{// chain state. This is used to select}
+\PYG{+w}{    }\PYG{c+c1}{// spendable outputs owned by the sender.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{utxo\PYGZus{}set}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UTXOSet}::\PYG{n}{new}\PYG{p}{(}
+\PYG{+w}{        }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{blockchain}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 2) Construct and sign the transaction.}
+\PYG{+w}{    }\PYG{c+c1}{// Transaction::new\PYGZus{}utxo\PYGZus{}transaction selects}
+\PYG{+w}{    }\PYG{c+c1}{// inputs, creates outputs (including change),}
+\PYG{+w}{    }\PYG{c+c1}{// and signs the inputs using sender\PYGZsq{}s key.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Transaction}::\PYG{n}{new\PYGZus{}utxo\PYGZus{}transaction}\PYG{p}{(}
+\PYG{+w}{        }\PYG{n}{wlt\PYGZus{}frm\PYGZus{}addr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{wlt\PYGZus{}to\PYGZus{}addr}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{amount}\PYG{p}{,}
+\PYG{+w}{        }\PYG{o}{\PYGZam{}}\PYG{n}{utxo\PYGZus{}set}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 3) Submit to mempool + propagation via}
+\PYG{+w}{    }\PYG{c+c1}{// shared processing entrypoint.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{addr\PYGZus{}from}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{GLOBAL\PYGZus{}CONFIG}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{process\PYGZus{}transaction}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{addr\PYGZus{}from}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

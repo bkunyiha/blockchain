@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{BlockHeader}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{timestamp}: \PYG{k+kt}{i64}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{pre\PYGZus{}block\PYGZus{}hash}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{hash}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{nonce}: \PYG{k+kt}{i64}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{height}: \PYG{k+kt}{usize}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{Block}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{header}: \PYG{n+nc}{BlockHeader}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{transactions}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{Transaction}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

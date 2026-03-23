@@ -1,0 +1,19 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+UI layer: routes + components
+├─ App.tsx
+│  ├─ routes + providers
+│  └─ Screens
+│     ├─ Dashboard / Wallet / Mining / ...
+│
+Data layer: React Query hooks
+├─ useApi.ts
+│  ├─ useQuery / useMutation
+│  ├─ cache keys + invalidation
+│
+HTTP boundary
+├─ ApiClient (Axios)
+│  └─ one method per endpoint
+│
+Rust node
+└─ /api/admin/* endpoints
+\end{MintedVerbatim}

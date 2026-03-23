@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{create\PYGZus{}admin\PYGZus{}api\PYGZus{}routes}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{Router}\PYG{o}{\PYGZlt{}}\PYG{n}{Arc}\PYG{o}{\PYGZlt{}}\PYG{n}{NodeContext}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Router}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{nest}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/api/admin}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{create\PYGZus{}api\PYGZus{}routes}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{nest}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/api/admin}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{create\PYGZus{}monitor\PYGZus{}api\PYGZus{}routes}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{layer}\PYG{p}{(}\PYG{n}{axum}::\PYG{n}{middleware}::\PYG{n}{from\PYGZus{}fn}\PYG{p}{(}\PYG{n}{require\PYGZus{}admin}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

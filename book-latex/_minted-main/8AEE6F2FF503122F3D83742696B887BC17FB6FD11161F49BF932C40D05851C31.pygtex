@@ -1,0 +1,11 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Clone, Error, Debug)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum} \PYG{n+nc}{BtcError}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{error(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Blockchain not found: \PYGZob{}0\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{c+cp}{)}\PYG{c+cp}{]}
+\PYG{+w}{    }\PYG{n}{BlockchainNotFoundError}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{error(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Invalid transaction}\PYG{l+s}{\PYGZdq{}}\PYG{c+cp}{)}\PYG{c+cp}{]}
+\PYG{+w}{    }\PYG{n}{InvalidTransaction}\PYG{p}{,}
+\PYG{+w}{    }\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{error(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Not enough funds}\PYG{l+s}{\PYGZdq{}}\PYG{c+cp}{)}\PYG{c+cp}{]}
+\PYG{+w}{    }\PYG{n}{NotEnoughFunds}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

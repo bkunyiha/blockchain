@@ -1,0 +1,5 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{p}{::}\PYG{n}{primitives}\PYG{p}{::}\PYG{n}{block}\PYG{p}{::}\PYG{n}{Block}\PYG{p}{;}
+
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Block}\PYG{p}{::}\PYG{n}{new\PYGZus{}block}\PYG{p}{(}\PYG{n}{previous\PYGZus{}hash}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{transactions}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{height}\PYG{p}{)}\PYG{p}{;}
+\end{MintedVerbatim}

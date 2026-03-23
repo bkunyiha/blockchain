@@ -1,0 +1,24 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Source: chainstate.rs}
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{BlockchainService}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{initialize}\PYG{p}{(}
+\PYG{+w}{        }\PYG{n}{genesis\PYGZus{}address}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{WalletAddress}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{BlockchainService}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{            }\PYG{n}{BlockchainFileSystem}\PYG{p}{::}\PYG{n}{create\PYGZus{}blockchain}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{genesis\PYGZus{}address}
+\PYG{+w}{            }\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{BlockchainService}\PYG{p}{(}\PYG{n}{Arc}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{TokioRwLock}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{blockchain}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{default}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{BlockchainService}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{            }\PYG{n}{BlockchainFileSystem}\PYG{p}{::}\PYG{n}{open\PYGZus{}blockchain}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{BlockchainService}\PYG{p}{(}\PYG{n}{Arc}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{TokioRwLock}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{blockchain}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

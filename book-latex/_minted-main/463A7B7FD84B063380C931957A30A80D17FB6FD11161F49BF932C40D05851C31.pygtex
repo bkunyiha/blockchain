@@ -1,0 +1,12 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Serialize, Deserialize, Validate,}
+\PYG{c+cp}{         ToSchema)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{CreateWalletRequest}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{validate(length(}
+\PYG{c+cp}{        min = 1,}
+\PYG{c+cp}{        max = 100,}
+\PYG{c+cp}{        message = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Wallet name must be 1\PYGZhy{}100 characters}\PYG{l+s}{\PYGZdq{}}
+\PYG{c+cp}{    ))}\PYG{c+cp}{]}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{name}: \PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

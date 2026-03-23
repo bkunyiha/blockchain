@@ -1,0 +1,19 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+┌──────────────────────────────────────────────────────────┐
+│                      Blockchain                          │
+│  ┌─────────────────────────────────────────────────────┐ │
+│  │  Block 0 (Genesis)                                  │ │
+│  │    └─\PYGZgt{} Block 1                                      │ │
+│  │         └─\PYGZgt{} Block 2                                 │ │
+│  │              └─\PYGZgt{} Block N (Tip)                      │ │
+│  └─────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────┘
+                            │
+                            │ maintains derived state
+                            ▼
+                    ┌───────────────┐
+                    │    UTXOSet    │
+                    │  (txid,vout)  │ \PYGZhy{}\PYGZgt{} TXOutput
+                    │  (txid,vout)  │ \PYGZhy{}\PYGZgt{} TXOutput
+                    └───────────────┘
+\end{Verbatim}

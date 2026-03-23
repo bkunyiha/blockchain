@@ -1,0 +1,58 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{std}\PYG{p}{::}\PYG{n}{collections}\PYG{p}{::}\PYG{n}{HashSet}\PYG{p}{;}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Clone, Debug, PartialEq, Eq, Hash)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{OutPoint}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{txid}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{vout}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{usize}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{validate\PYGZus{}step5}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{block}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Block}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{chain}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{BlockchainService}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{utxo}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{UTXOSet}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// 1) Exactly one coinbase (simplified)}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{txs}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{block}\PYG{p}{.}\PYG{n}{get\PYGZus{}transactions}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{coinbase\PYGZus{}count}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{txs}\PYG{p}{.}\PYG{n}{iter}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{filter}\PYG{p}{(}\PYG{o}{|}\PYG{n}{tx}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{is\PYGZus{}coinbase}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{n}{count}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{coinbase\PYGZus{}count}\PYG{+w}{ }\PYG{o}{!}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{BtcError}\PYG{p}{::}\PYG{n}{InvalidTransaction}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// 2) No outpoint spent twice in the same block}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{seen}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{HashSet}\PYG{o}{\PYGZlt{}}\PYG{n}{OutPoint}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{HashSet}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{txs}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{is\PYGZus{}coinbase}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{continue}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{c+c1}{// 3) Authorization (signatures)}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{verify}\PYG{p}{(}\PYG{n}{chain}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{BtcError}\PYG{p}{::}\PYG{n}{InvalidSignature}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{c+c1}{// 4) Spendability (UTXO view)}
+\PYG{+w}{        }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{vin}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}vin}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{op}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{OutPoint}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{txid}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{vin}\PYG{p}{.}\PYG{n}{get\PYGZus{}txid}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{vout}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{vin}\PYG{p}{.}\PYG{n}{get\PYGZus{}vout}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{seen}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{n}{op}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{c+c1}{// Intra\PYGZhy{}block double spend}
+\PYG{+w}{                }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{n}{BtcError}\PYG{p}{::}\PYG{n}{InvalidTransactionInput}
+\PYG{+w}{                }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{            }\PYG{c+c1}{// Your UTXO API wants to answer:}
+\PYG{+w}{            }\PYG{c+c1}{// is (txid, vout) currently unspent?}
+\PYG{+w}{            }\PYG{n}{utxo}\PYG{p}{.}\PYG{n}{assert\PYGZus{}unspent}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{op}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

@@ -1,0 +1,25 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{useState}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}react\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{useLocation}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}react\PYGZhy{}router\PYGZhy{}dom\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{n+nx}{Navbar}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}./Navbar\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{n+nx}{Sidebar}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}./Sidebar\PYGZsq{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k}{default}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{Layout}\PYG{p}{(}\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{children}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{children}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{React.ReactNode}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{location}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{useLocation}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{p}{[}\PYG{n+nx}{sidebarOpen}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{setSidebarOpen}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{useState}\PYG{p}{(}\PYG{k+kc}{true}\PYG{p}{)}
+
+\PYG{+w}{  }\PYG{k}{return}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{div}\PYG{+w}{ }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}flex h\PYGZhy{}screen\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{p}{\PYGZob{}}\PYG{n+nx}{sidebarOpen}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{Sidebar}\PYG{+w}{ }\PYG{n+nx}{currentPath}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{location}\PYG{p}{.}\PYG{n+nx}{pathname}\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{/}\PYG{o}{\PYGZgt{}}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{      }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{div}\PYG{+w}{ }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}flex\PYGZhy{}1 flex flex\PYGZhy{}col\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{        }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{Navbar}
+\PYG{+w}{          }\PYG{n+nx}{onToggleSidebar}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{n+nx}{setSidebarOpen}\PYG{p}{(}\PYG{o}{!}\PYG{n+nx}{sidebarOpen}\PYG{p}{)}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{o}{/}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{        }\PYG{o}{\PYGZlt{}}\PYG{n+nx}{main}\PYG{+w}{ }\PYG{n+nx}{className}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}flex\PYGZhy{}1 overflow\PYGZhy{}auto p\PYGZhy{}6\PYGZdq{}}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{          }\PYG{p}{\PYGZob{}}\PYG{n+nx}{children}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{m}\PYG{err}{a}\PYG{err}{i}\PYG{err}{n}\PYG{err}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{d}\PYG{err}{i}\PYG{err}{v}\PYG{err}{\PYGZgt{}}
+\PYG{+w}{    }\PYG{o}{\PYGZlt{}}\PYG{err}{/}\PYG{err}{d}\PYG{err}{i}\PYG{err}{v}\PYG{err}{\PYGZgt{}}
+\PYG{+w}{  }\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

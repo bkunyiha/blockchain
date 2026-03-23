@@ -1,0 +1,290 @@
+% ══════════════════════════════════════════════════════════════════════════════
+%  Chapter 19: Wallet UI (Tauri)
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Wallet UI (Tauri)}
+\label{ch:wallet-tauri}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Build a user-facing wallet interface using Tauri 2 (Rust backend \texttt{+} React frontend)
+  \item Implement secure persistent storage for wallet keys and transaction history
+  \item Design a modern React UI for real wallet workflows with transaction signing
+  \item Integrate Tauri commands for database operations and transaction broadcast
+\end{itemize}
+\end{learnbox}
+
+\lettrine{T}{his} chapter explains the \code{\index{bitcoin-wallet-ui-tauri}bitcoin-wallet-ui-tauri} \index{Cargo!crate}crate---the same \index{wallet}wallet \index{functionality}functionality as Chapter~\ref{ch:wallet-iced}, but built with \index{Tauri}Tauri 2 instead of pure \index{Iced}Iced.
+
+\begin{notebox}[Architecture]
+Like the \index{admin dashboard}admin UI \index{comparison}comparison (Chapters~\ref{ch:desktop-iced} and~\ref{ch:desktop-tauri}), this \index{wallet}wallet demonstrates the same \textbf{\index{feature}feature set} with two different \index{architecture}architectures. Chapter~\ref{ch:wallet-iced} is pure \index{Rust!backend}Rust (\index{Iced}Iced \index{MVU}MVU); this chapter is \index{Tauri}Tauri (\index{Rust!backend}Rust \index{backend}backend \texttt{+} \index{React}React \index{frontend}frontend). If you read Chapter~\ref{ch:wallet-iced} first, you will see where the \index{UI}UI \index{logic}logic diverges and how the same \index{blockchain}blockchain \index{operation}operations are exposed through different \index{framework}frameworks.
+\end{notebox}
+
+The \index{Tauri}Tauri \index{wallet}wallet adds \textbf{\index{persistent}persistent \index{encryption}encrypted \index{storage}storage} of \index{private key}private \index{key}keys and \index{transaction}transaction \index{history}history. Unlike the \index{admin dashboard}admin UI (which connects to a remote \index{blockchain}blockchain \index{node}node), the \index{wallet}wallet UI manages \index{key}keys locally and signs \index{transaction}transactions in the \index{Rust!backend}Rust \index{backend}backend before \index{broadcast}broadcasting them.
+
+\section{What This UI Is (In One Sentence)}
+\label{sec:ch19-oneline}
+
+The Tauri wallet UI is a \textbf{two-language user-facing application} that adds \textbf{secure key storage}: a Rust backend exposes 18 \code{\#[tauri::command]} handlers for wallet operations (address generation, balance queries, transaction signing and broadcast), while a React frontend provides a modern dashboard for managing addresses, sending transactions, and viewing history.
+
+\section{Architectural Differences: Iced vs. Tauri Wallet}
+\label{sec:ch19-comparison}
+
+Both the Iced (Chapter~\ref{ch:wallet-iced}) and Tauri (this chapter) wallet implementations expose the same operations:
+
+\begin{table}[htbp]
+\caption{Wallet UI: Iced vs. Tauri}
+\label{tab:wallet-iced-vs-tauri}
+\centering\small
+\begin{tabularx}{0.95\textwidth}{lXX}
+\toprule
+\textbf{Aspect} & \textbf{Iced Wallet (Ch. 18)} & \textbf{Tauri Wallet (Ch. 19)} \\
+\midrule
+Languages & Rust only & Rust backend \texttt{+} React/TypeScript \\
+State persistence & SQLite with encrypted password & SQLite via Rust backend, React state (Zustand) \\
+Key storage & In-memory + database & In Rust backend (\code{State<RwLock>}), never exposed to JS \\
+Transaction signing & Rust (sync) & Rust backend via command, never touches frontend \\
+Event handling & \code{Message} enum & React Router \texttt{+} React Query \\
+UI styling & Iced widgets (programmatic) & Tailwind CSS \texttt{+} React components \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{infobox}[Security Note]
+Both implementations follow the same security principle: \textbf{private keys stay in Rust}. In Iced, keys are in memory and encrypted at rest in SQLite. In Tauri, keys are in Rust backend state and never serialized to JSON/JavaScript. Transaction signing happens in Rust; the frontend only receives the signed transaction hash.
+\end{infobox}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Rust Backend Architecture}
+\label{sec:ch19-rust-backend}
+
+\begin{listing}[H]
+\caption{Tauri wallet main (\code{src-tauri/src/main.rs})}
+\label{lst:ch19-main}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use tauri::State;
+use std::sync::RwLock;
+
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+pub struct WalletState {
+    pub current_wallet: Option<String>,
+    pub wallets: Vec<String>,
+    pub database_password: String,
+}
+
+#[derive(Clone)]
+pub struct AppState {
+    pub wallet: RwLock<WalletState>,
+    pub base_url: String,
+}
+
+fn main() {
+    let app_state = AppState {
+        wallet: RwLock::new(WalletState {
+            current_wallet: None,
+            wallets: Vec::new(),
+            database_password: generate_database_password(),
+        }),
+        base_url: "http://127.0.0.1:8080".to_string(),
+    };
+
+    tauri::Builder::default()
+        .manage(app_state)
+        .invoke_handler(tauri::generate_handler![
+            cmd_list_wallets,
+            cmd_create_wallet,
+            cmd_select_wallet,
+            cmd_get_balance,
+            cmd_get_addresses,
+            cmd_generate_address,
+            cmd_get_transaction_history,
+            cmd_get_unspent_outputs,
+            cmd_send_transaction,
+            cmd_sign_transaction,
+            cmd_get_tx_status,
+            cmd_export_wallet,
+            cmd_import_wallet,
+            cmd_backup_wallet,
+            cmd_set_passphrase,
+            cmd_unlock_wallet,
+            cmd_get_wallet_info,
+            cmd_cancel_transaction,
+        ])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}
+
+fn generate_database_password() -> String {
+    use std::collections::hash_map::DefaultHasher;
+    use std::hash::{Hash, Hasher};
+
+    let mut hasher = DefaultHasher::new();
+    if let Ok(username) = std::env::var("USER") {
+        username.hash(&mut hasher);
+    }
+    if let Some(home) = dirs::home_dir() {
+        home.to_string_lossy().hash(&mut hasher);
+    }
+    format!("{:x}", hasher.finish())
+}
+\end{minted}
+\end{listing}
+
+\textbf{Walkthrough: the command handler pattern:}
+
+Every command follows the same structure:
+
+\begin{enumerate}
+  \item Extract \code{State<AppState>} parameter injected by Tauri.
+  \item Call a corresponding \code{WalletClient} method from the bitcoin-api crate.
+  \item Return the result (or error) as JSON over IPC.
+\end{enumerate}
+
+Crucially, transaction signing and key management happen in the Rust backend---the frontend never touches private keys.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{React Frontend: State Management and Commands}
+\label{sec:ch19-frontend}
+
+\begin{listing}[H]
+\caption{React Query hooks (\code{src/hooks/useWallet.ts})}
+\label{lst:ch19-hooks}
+\begin{minted}[fontsize=\footnotesize]{typescript}
+import { useQuery, useMutation } from '@tanstack/react-query';
+import * as commands from '../commands';
+
+export function useWalletList() {
+    return useQuery({
+        queryKey: ['wallets'],
+        queryFn: () => commands.listWallets(),
+        staleTime: 30000,
+    });
+}
+
+export function useBalance(address: string | null) {
+    return useQuery({
+        queryKey: ['balance', address],
+        queryFn: () => address ? commands.getBalance(address) : Promise.resolve(0),
+        enabled: !!address,
+        staleTime: 10000,
+    });
+}
+
+export function useSendTransaction() {
+    return useMutation({
+        mutationFn: (params: { from: string; to: string; amount: number }) =>
+            commands.sendTransaction(params.from, params.to, params.amount),
+    });
+}
+
+export function useCreateWallet() {
+    return useMutation({
+        mutationFn: (label?: string) => commands.createWallet(label),
+    });
+}
+\end{minted}
+\end{listing}
+
+React Query manages server state (data from the Bitcoin API), while local component state handles UI (forms, modals, etc.):
+
+\begin{enumerate}
+  \item \textbf{useQuery}: automatic caching and refetching for reads (balance, transaction history).
+  \item \textbf{useMutation}: explicit side effects for writes (create wallet, send transaction).
+\end{enumerate}
+
+Each query/mutation calls the corresponding function in \code{commands.ts}, which uses Tauri's \code{invoke()}.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Persistent Database Layer}
+\label{sec:ch19-database}
+
+Both Iced (Chapter~\ref{ch:wallet-iced}) and Tauri (this chapter) wallets use the same encrypted SQLite database (Chapter~\ref{ch:embedded-db}) for persistence. The difference is where the encryption happens:
+
+\begin{itemize}
+  \item \textbf{Iced}: database initialization happens in \code{main.rs} before MVU starts.
+  \item \textbf{Tauri}: database initialization happens in a startup command; the frontend can choose when to unlock it (e.g., with a passphrase).
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{Database initialization command (\code{src-tauri/src/commands/database.rs})}
+\label{lst:ch19-db-cmd}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use crate::AppState;
+use tauri::State;
+
+#[tauri::command]
+pub async fn cmd_init_database(
+    state: State<'_, AppState>,
+    password: Option<String>,
+) -> Result<(), String> {
+    let wallet_state = state.wallet.read()
+        .map_err(|e| format!("Failed to read state: {}", e))?;
+
+    // Use provided password or deterministic password
+    let pwd = password.unwrap_or_else(|| {
+        wallet_state.database_password.clone()
+    });
+
+    // Initialize SQLite with encryption (XChaCha20 via sqlcipher or similar)
+    database::init_with_password(&pwd)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn cmd_save_wallet(
+    wallet_address: String,
+    wallet_data: serde_json::Value,
+) -> Result<(), String> {
+    database::save_wallet(&wallet_address, &wallet_data)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn cmd_load_wallet(
+    wallet_address: String,
+) -> Result<serde_json::Value, String> {
+    database::load_wallet(&wallet_address)
+        .await
+        .map_err(|e| e.to_string())
+}
+\end{minted}
+\end{listing}
+
+The database persists:
+\begin{itemize}
+  \item Wallet metadata (addresses, labels).
+  \item Transaction history (cached from the blockchain node).
+  \item Encrypted key material (never directly accessed by the frontend).
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+\item We built a user-facing Tauri wallet with a Rust backend and React frontend, mirroring the Iced wallet from Chapter~\ref{ch:wallet-iced}.
+\item Command handlers expose 18 wallet operations (create, balance, send, history, etc.), all with transaction signing in Rust.
+\item React Query manages server state (balances, transactions) and integrates with Tauri's IPC via \code{invoke()}.
+\item The encrypted database persists wallet metadata and transaction history (Chapter~\ref{ch:embedded-db} covers the database itself).
+\item Security is maintained by keeping private keys in Rust backend state---they never touch the JavaScript/React frontend.
+\end{chaptersummary}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Exercises}
+\label{sec:ch19-exercises}
+
+\begin{enumerate}
+  \item \textbf{Add a Transaction Confirmation Dialog} --- Modify the ``Send'' command to return a transaction preview (recipients, amounts, fees) to the frontend. Add a React modal that displays this preview and requires explicit confirmation before broadcasting. Trace the IPC round-trip: React \(\to\) Tauri command \(\to\) Bitcoin API \(\to\) JSON response \(\to\) modal display.
+
+  \item \textbf{Implement Wallet Recovery} --- Add a ``Restore Wallet'' feature: allow the user to input a seed phrase, call a backend command to derive addresses from the seed, and persist them to the database. Compare this with the ``Create Wallet'' flow.
+\end{enumerate}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Further Reading}
+\label{sec:ch19-reading}
+
+\begin{itemize}
+  \item \textbf{Tauri Documentation} --- API reference and examples at \url{https://tauri.app/docs/}.
+  \item \textbf{React Query Documentation} --- Server state management at \url{https://tanstack.com/query/}.
+  \item \textbf{Chapter~\ref{ch:wallet}: Wallet System} --- The wallet implementation that both UIs consume.
+  \item \textbf{Chapter~\ref{ch:embedded-db}: Embedded Database} --- SQLite encryption and persistence layer.
+\end{itemize}
+

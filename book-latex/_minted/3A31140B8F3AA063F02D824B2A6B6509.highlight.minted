@@ -1,0 +1,77 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{bitcoin\PYGZus{}api}\PYG{p}{::}\PYG{n}{WalletClient}\PYG{p}{;}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{WalletApp}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Current wallet}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{current\PYGZus{}wallet}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{wallets}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Balances and transaction history}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{balance}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u64}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{transactions}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{Transaction}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{unspent\PYGZus{}outputs}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{UnspentOutput}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// UI state}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{active\PYGZus{}tab}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Tab}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{selected\PYGZus{}address}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{input\PYGZus{}send\PYGZus{}to}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{input\PYGZus{}amount}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{status}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Derivation path management}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{derivation\PYGZus{}path}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{generated\PYGZus{}addresses}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Clone)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{Transaction}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{txid}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{timestamp}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{i64}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{amount}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{i64}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{fee}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{i64}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{from\PYGZus{}addresses}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{to\PYGZus{}addresses}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Clone)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{UnspentOutput}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{txid}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{vout}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{usize}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{amount}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{u64}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{address}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Clone, Copy, PartialEq, Eq)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum}\PYG{+w}{ }\PYG{n+nc}{Tab}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Addresses}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{SendTransaction}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{History}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{Balance}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n+nb}{Default}\PYG{+w}{ }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{WalletApp}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{default}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{Self}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb+bp}{Self}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{current\PYGZus{}wallet}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{None}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{wallets}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{balance}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{None}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{transactions}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{unspent\PYGZus{}outputs}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{active\PYGZus{}tab}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Tab}\PYG{p}{::}\PYG{n}{Addresses}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{selected\PYGZus{}address}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{None}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{input\PYGZus{}send\PYGZus{}to}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{input\PYGZus{}amount}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{status}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{::}\PYG{n}{from}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Ready}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{derivation\PYGZus{}path}\PYG{p}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{m/44\PYGZsq{}/0\PYGZsq{}/0\PYGZsq{}/0}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{generated\PYGZus{}addresses}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n}{WalletApp}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{new}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{p}{(}\PYG{n+nb+bp}{Self}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{iced}\PYG{p}{::}\PYG{n}{Task}\PYG{o}{\PYGZlt{}}\PYG{n}{Message}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{p}{(}\PYG{n+nb+bp}{Self}\PYG{p}{::}\PYG{n}{default}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{iced}\PYG{p}{::}\PYG{n}{Task}\PYG{p}{::}\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

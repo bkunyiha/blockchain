@@ -1,0 +1,30 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{require\PYGZus{}role}\PYG{p}{(}
+\PYG{+w}{    }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{req}: \PYG{n+nc}{axum}::\PYG{n}{http}::\PYG{n}{Request}\PYG{o}{\PYGZlt{}}\PYG{n}{axum}::\PYG{n}{body}::\PYG{n}{Body}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{required}: \PYG{n+nc}{Role}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{next}: \PYG{n+nc}{axum}::\PYG{n}{middleware}::\PYG{n}{Next}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{axum}::\PYG{n}{response}::\PYG{n}{Response}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{StatusCode}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{req}\PYG{p}{.}\PYG{n}{headers}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{X\PYGZhy{}API\PYGZhy{}Key}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{and\PYGZus{}then}\PYG{p}{(}\PYG{o}{|}\PYG{n}{h}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{h}\PYG{p}{.}\PYG{n}{to\PYGZus{}str}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{ok}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{caller\PYGZus{}role}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{key}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{k}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{is\PYGZus{}admin\PYGZus{}key}\PYG{p}{(}\PYG{n}{k}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{Role}::\PYG{n}{Admin}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{k}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{is\PYGZus{}wallet\PYGZus{}key}\PYG{p}{(}\PYG{n}{k}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{Role}::\PYG{n}{Wallet}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{StatusCode}::\PYG{n}{UNAUTHORIZED}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Admin can access wallet routes too}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{allowed}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{caller\PYGZus{}role}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{required}
+\PYG{+w}{        }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{caller\PYGZus{}role}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Role}::\PYG{n}{Admin}
+\PYG{+w}{            }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{required}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Role}::\PYG{n}{Wallet}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{allowed}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{StatusCode}::\PYG{n}{FORBIDDEN}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// Attach role to extensions for handlers}
+\PYG{+w}{    }\PYG{n}{req}\PYG{p}{.}\PYG{n}{extensions\PYGZus{}mut}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{n}{caller\PYGZus{}role}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{next}\PYG{p}{.}\PYG{n}{run}\PYG{p}{(}\PYG{n}{req}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

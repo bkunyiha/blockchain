@@ -1,0 +1,87 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{create\PYGZus{}tables}\PYG{p}{(}\PYG{n}{conn}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Connection}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{SqliteResult}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// ── Settings table ──}
+\PYG{+w}{    }\PYG{c+c1}{// CHECK(id = 1) prevents multiple rows (singleton pattern).}
+\PYG{+w}{    }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{CREATE TABLE IF NOT EXISTS settings (}
+\PYG{l+s}{            id INTEGER PRIMARY KEY CHECK (id = 1),}
+\PYG{l+s}{            base\PYGZus{}url TEXT NOT NULL DEFAULT \PYGZsq{}...\PYGZsq{},}
+\PYG{l+s}{            api\PYGZus{}key TEXT NOT NULL DEFAULT \PYGZsq{}\PYGZsq{},}
+\PYG{l+s}{            created\PYGZus{}at TEXT NOT NULL DEFAULT (datetime(\PYGZsq{}now\PYGZsq{})),}
+\PYG{l+s}{            updated\PYGZus{}at TEXT NOT NULL DEFAULT (datetime(\PYGZsq{}now\PYGZsq{}))}
+\PYG{l+s}{        )}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{[}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Populate singleton row on first run.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{count}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{i64}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{query\PYGZus{}row}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{SELECT COUNT(*) FROM settings}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{[}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{        }\PYG{o}{|}\PYG{n}{row}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{count}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{            }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{INSERT INTO settings (id, base\PYGZus{}url, api\PYGZus{}key) }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{             VALUES (1, \PYGZsq{}http://127.0.0.1:8080\PYGZsq{}, ?)}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{params}\PYG{o}{!}\PYG{p}{[}
+\PYG{+w}{                }\PYG{n}{std}\PYG{p}{::}\PYG{n}{env}\PYG{p}{::}\PYG{n}{var}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{BITCOIN\PYGZus{}API\PYGZus{}WALLET\PYGZus{}KEY}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{wallet\PYGZhy{}secret}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// ── Wallet addresses table ──}
+\PYG{+w}{    }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{CREATE TABLE IF NOT EXISTS wallet\PYGZus{}addresses (}
+\PYG{l+s}{            id INTEGER PRIMARY KEY AUTOINCREMENT,}
+\PYG{l+s}{            address TEXT NOT NULL UNIQUE,}
+\PYG{l+s}{            label TEXT,}
+\PYG{l+s}{            created\PYGZus{}at TEXT NOT NULL DEFAULT (datetime(\PYGZsq{}now\PYGZsq{})),}
+\PYG{l+s}{            updated\PYGZus{}at TEXT NOT NULL DEFAULT (datetime(\PYGZsq{}now\PYGZsq{}))}
+\PYG{l+s}{        )}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{[}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{CREATE INDEX IF NOT EXISTS }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{         idx\PYGZus{}wallet\PYGZus{}addresses\PYGZus{}address }\PYG{l+s}{\PYGZbs{}}
+\PYG{l+s}{         ON wallet\PYGZus{}addresses(address)}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{[}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// ── User profile table ──}
+\PYG{+w}{    }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{CREATE TABLE IF NOT EXISTS users (}
+\PYG{l+s}{            id INTEGER PRIMARY KEY CHECK (id = 1),}
+\PYG{l+s}{            first\PYGZus{}name TEXT,}
+\PYG{l+s}{            last\PYGZus{}name TEXT,}
+\PYG{l+s}{            profile\PYGZus{}picture BLOB,}
+\PYG{l+s}{            created\PYGZus{}at TEXT NOT NULL DEFAULT (datetime(\PYGZsq{}now\PYGZsq{})),}
+\PYG{l+s}{            updated\PYGZus{}at TEXT NOT NULL DEFAULT (datetime(\PYGZsq{}now\PYGZsq{}))}
+\PYG{l+s}{        )}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{[}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// ── Schema version table ──}
+\PYG{+w}{    }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{CREATE TABLE IF NOT EXISTS schema\PYGZus{}version (}
+\PYG{l+s}{            version INTEGER PRIMARY KEY}
+\PYG{l+s}{        )}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{[}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{version\PYGZus{}count}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{i64}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{query\PYGZus{}row}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{SELECT COUNT(*) FROM schema\PYGZus{}version}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{[}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{        }\PYG{o}{|}\PYG{n}{row}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{row}\PYG{p}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{version\PYGZus{}count}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{execute}\PYG{p}{(}
+\PYG{+w}{            }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{INSERT INTO schema\PYGZus{}version (version) VALUES (?)}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{params}\PYG{o}{!}\PYG{p}{[}\PYG{n}{SCHEMA\PYGZus{}VERSION}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

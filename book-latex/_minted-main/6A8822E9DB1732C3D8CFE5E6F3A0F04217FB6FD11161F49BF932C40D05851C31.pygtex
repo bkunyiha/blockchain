@@ -1,0 +1,45 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{init\PYGZus{}database}\PYG{p}{(}\PYG{n}{password}: \PYG{k+kp}{\PYGZam{}}\PYG{k+kt}{str}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{SqliteResult}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{db\PYGZus{}path}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{get\PYGZus{}database\PYGZus{}path}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 1) Ensure the parent directory exists. This makes the module robust on}
+\PYG{+w}{    }\PYG{c+c1}{// first run.}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{parent}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{db\PYGZus{}path}\PYG{p}{.}\PYG{n}{parent}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{std}::\PYG{n}{fs}::\PYG{n}{create\PYGZus{}dir\PYGZus{}all}\PYG{p}{(}\PYG{n}{parent}\PYG{p}{)}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{c+c1}{// Map an I/O error into a rusqlite error so we keep one error}
+\PYG{+w}{            }\PYG{c+c1}{// domain.}
+\PYG{+w}{            }\PYG{n}{rusqlite}::\PYG{n}{Error}::\PYG{n}{SqliteFailure}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{rusqlite}::\PYG{n}{ffi}::\PYG{n}{Error}::\PYG{n}{new}\PYG{p}{(}\PYG{n}{rusqlite}::\PYG{n}{ffi}::\PYG{n}{SQLITE\PYGZus{}CANTOPEN}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n+nf+fm}{format!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Failed to create database directory: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// 2) Open (or create) the SQLite file.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{conn}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Connection}::\PYG{n}{open}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{db\PYGZus{}path}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 3) Critical SQLCipher step: set the encryption key *immediately* after}
+\PYG{+w}{    }\PYG{c+c1}{// opening.}
+\PYG{+w}{    }\PYG{c+c1}{// If the key is wrong, subsequent reads will fail with \PYGZdq{}file is}
+\PYG{+w}{    }\PYG{c+c1}{// encrypted...\PYGZdq{}.}
+\PYG{+w}{    }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{pragma\PYGZus{}update}\PYG{p}{(}\PYG{n+nb}{None}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{key}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{password}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 4) Enable foreign keys (good SQLite hygiene; harmless if unused).}
+\PYG{+w}{    }\PYG{n}{conn}\PYG{p}{.}\PYG{n}{pragma\PYGZus{}update}\PYG{p}{(}\PYG{n+nb}{None}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{foreign\PYGZus{}keys}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{ON}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 5) Create base schema + apply migrations before the connection is}
+\PYG{+w}{    }\PYG{c+c1}{// exposed.}
+\PYG{+w}{    }\PYG{n}{create\PYGZus{}tables}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{conn}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{run\PYGZus{}migrations}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{conn}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 6) Store the connection globally for the rest of the process lifetime.}
+\PYG{+w}{    }\PYG{n}{DB\PYGZus{}CONN}\PYG{p}{.}\PYG{n}{set}\PYG{p}{(}\PYG{n}{Mutex}::\PYG{n}{new}\PYG{p}{(}\PYG{n}{conn}\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{rusqlite}::\PYG{n}{Error}::\PYG{n}{SqliteFailure}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{rusqlite}::\PYG{n}{ffi}::\PYG{n}{Error}::\PYG{n}{new}\PYG{p}{(}\PYG{n}{rusqlite}::\PYG{n}{ffi}::\PYG{n}{SQLITE\PYGZus{}MISUSE}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Database already initialized}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,5 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+kubectl\PYG{+w}{ }apply\PYG{+w}{ }\PYGZhy{}f\PYG{+w}{ }\PYG{l+m}{02}\PYGZhy{}configmap.yaml
+kubectl\PYG{+w}{ }apply\PYG{+w}{ }\PYGZhy{}f\PYG{+w}{ }\PYG{l+m}{03}\PYGZhy{}secrets.yaml
+kubectl\PYG{+w}{ }apply\PYG{+w}{ }\PYGZhy{}f\PYG{+w}{ }\PYG{l+m}{14}\PYGZhy{}configmap\PYGZhy{}rate\PYGZhy{}limit.yaml
+\end{MintedVerbatim}

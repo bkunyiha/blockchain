@@ -1,0 +1,416 @@
+% ══════════════════════════════════════════════════════════════════════════════
+%  Chapter 18: Wallet UI (Iced)
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Wallet UI (Iced)}
+\label{ch:wallet-iced}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Build a user-facing wallet interface for managing addresses, balances, and transactions
+  \item Implement persistent encrypted storage of wallet data using an embedded database
+  \item Extend the Iced MVU pattern with database initialization and query semantics
+  \item Design for real wallet workflows: address generation, sending funds, transaction history
+\end{itemize}
+\end{learnbox}
+
+\lettrine{T}{his} chapter explains the \code{\index{bitcoin-wallet-ui}bitcoin-wallet-ui} \index{Cargo!crate}crate---a \index{user-facing}user-facing \index{wallet}wallet \index{interface}interface for managing \index{address}addresses, \index{balance}balances, and \index{transaction}transactions. Unlike the \index{admin dashboard}admin UI (Chapter~\ref{ch:desktop-iced}), the \index{wallet}wallet UI prioritizes end-user \index{workflow}workflows: creating \index{wallet}wallets, sending \index{transaction}transactions, viewing \index{transaction}transaction \index{history}history, and persisting \index{encryption}encryption \index{key}keys securely.
+
+\begin{notebox}[Focus]
+This chapter focuses on the \index{wallet}wallet \index{interface}interface, not the \index{wallet}wallet \index{implementation}implementation itself. The \index{wallet}wallet \index{backend}backend is explained in Chapter~\ref{ch:wallet} (\index{Wallet}Wallet \index{System}System). Here we build the \index{MVU}MVU shell and \index{persistence}persistence layer that puts that \index{wallet}wallet to work in a user's hands.
+\end{notebox}
+
+The \index{wallet}wallet UI uses the same \index{Iced}Iced \index{MVU}MVU \index{pattern}pattern as Chapter~\ref{ch:desktop-iced} but adds \textbf{\index{persistent}persistent \index{encryption}encrypted \index{storage}storage}. An \index{embedded database}embedded \index{database}database (Chapter~\ref{ch:embedded-db}) stores \index{wallet}wallet \index{metadata}metadata and \index{derived state}derived \index{data}data, eliminating the need to re-query the \index{blockchain}blockchain for every \index{session}session.
+
+\section{What This UI Is (In One Sentence)}
+\label{sec:ch18-oneline}
+
+The wallet UI is a \textbf{user-facing MVU application} that adds \textbf{persistent encrypted storage}: it renders wallet state (\code{view.rs}), mutates state in response to user actions (\code{update.rs}), performs async API calls (\code{api.rs}), and persists balances and transaction history to an encrypted database (\code{database.rs}).
+
+\section{Architectural Map}
+\label{sec:ch18-arch-map}
+
+This wallet UI is a message-driven state machine that adds persistence to the MVU pattern:
+
+\begin{minted}[fontsize=\footnotesize]{text}
+View
+  view(&WalletApp) -> Element<Message>
+  |
+  +-- User action produces Message
+  |
+  v
+Update
+  update(&mut WalletApp, Message) -> Task<Message>
+  |
+  +-- Mutates model (WalletApp)
+  +-- Returns Task for async work
+  |
+  v
+Model
+  WalletApp
+  +-- in-memory state (addresses, balances, tx history)
+  +-- references to database for persistence
+  |
+  v
+Task<Message>
+  +-- spawn_on_tokio(...) for async work
+  |
+  v
+Tokio bridge
+  +-- Database queries (Chapter 29)
+  +-- API calls to WalletClient HTTP
+  |
+  v
+Persistent Storage + Node API
+  +-- Encrypted database (SQLite with XChaCha20)
+  +-- Bitcoin Node API (Chapter 23)
+\end{minted}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Boot Sequence and Wiring}
+\label{sec:ch18-boot}
+
+\begin{listing}[H]
+\caption{Main entrypoint (\code{bitcoin-wallet-ui/src/main.rs})}
+\label{lst:ch18-main}
+\begin{minted}[fontsize=\footnotesize]{rust}
+mod api;
+mod app;
+mod database;
+mod runtime;
+mod types;
+mod update;
+mod view;
+
+use app::WalletApp;
+use iced::{Theme, application};
+use runtime::init_runtime;
+use update::update;
+use view::view;
+
+fn main() -> iced::Result {
+    // 1) Async precondition: initialize Tokio runtime for API calls
+    init_runtime();
+
+    // 2) Persistence precondition: generate deterministic database password
+    let db_password = generate_database_password();
+    if let Err(e) = database::init_database(&db_password) {
+        eprintln!("Failed to initialize database: {}", e);
+    }
+
+    // 3) Enter Iced's MVU loop
+    application("Bitcoin Wallet UI", update, view)
+        .theme(|_| Theme::Dark)
+        .run_with(WalletApp::new)
+}
+
+fn generate_database_password() -> String {
+    use std::collections::hash_map::DefaultHasher;
+    use std::hash::{Hash, Hasher};
+
+    let mut hasher = DefaultHasher::new();
+
+    // Deterministic password from username + home directory
+    if let Ok(username) = std::env::var("USER") {
+        username.hash(&mut hasher);
+    } else if let Ok(username) = std::env::var("USERNAME") {
+        username.hash(&mut hasher);
+    }
+
+    if let Some(home) = dirs::home_dir() {
+        home.to_string_lossy().hash(&mut hasher);
+    }
+
+    // Return hex-encoded hash as password
+    format!("{:x}", hasher.finish())
+}
+\end{minted}
+\end{listing}
+
+\textbf{Walkthrough: three preconditions before MVU starts:}
+
+\begin{enumerate}
+  \item \textbf{Async execution}: \code{init\_runtime()} (same as Chapter~\ref{ch:desktop-iced}) creates a Tokio runtime for API calls.
+  \item \textbf{Persistent storage}: \code{init\_database(password)} opens/creates an encrypted SQLite database (see Chapter~\ref{ch:embedded-db}).
+  \item \textbf{MVU loop}: \code{application(...).run\_with(WalletApp::new)} starts the event loop.
+\end{enumerate}
+
+The database password is generated deterministically from the user's username and home directory, so:
+\begin{itemize}
+  \item Same user on same machine: same password, so the database can be reopened.
+  \item Different user or machine: different password, so wallets are not trivially portable.
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Wallet Application State}
+\label{sec:ch18-wallet-state}
+
+\begin{listing}[H]
+\caption{Wallet state (\code{bitcoin-wallet-ui/src/app.rs})}
+\label{lst:ch18-app}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use bitcoin_api::WalletClient;
+
+#[derive(Debug)]
+pub struct WalletApp {
+    // Current wallet
+    pub current_wallet: Option<String>,
+    pub wallets: Vec<String>,
+
+    // Balances and transaction history
+    pub balance: Option<u64>,
+    pub transactions: Vec<Transaction>,
+    pub unspent_outputs: Vec<UnspentOutput>,
+
+    // UI state
+    pub active_tab: Tab,
+    pub selected_address: Option<String>,
+    pub input_send_to: String,
+    pub input_amount: String,
+    pub status: String,
+
+    // Derivation path management
+    pub derivation_path: String,
+    pub generated_addresses: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct Transaction {
+    pub txid: String,
+    pub timestamp: i64,
+    pub amount: i64,
+    pub fee: Option<i64>,
+    pub from_addresses: Vec<String>,
+    pub to_addresses: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct UnspentOutput {
+    pub txid: String,
+    pub vout: usize,
+    pub amount: u64,
+    pub address: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Tab {
+    Addresses,
+    SendTransaction,
+    History,
+    Balance,
+}
+
+impl Default for WalletApp {
+    fn default() -> Self {
+        Self {
+            current_wallet: None,
+            wallets: Vec::new(),
+            balance: None,
+            transactions: Vec::new(),
+            unspent_outputs: Vec::new(),
+            active_tab: Tab::Addresses,
+            selected_address: None,
+            input_send_to: String::new(),
+            input_amount: String::new(),
+            status: String::from("Ready"),
+            derivation_path: "m/44'/0'/0'/0".to_string(),
+            generated_addresses: Vec::new(),
+        }
+    }
+}
+
+impl WalletApp {
+    pub fn new() -> (Self, iced::Task<Message>) {
+        (Self::default(), iced::Task::none())
+    }
+}
+\end{minted}
+\end{listing}
+
+\textbf{Walkthrough: wallet state design:}
+
+\code{WalletApp} groups state into three categories:
+
+\begin{itemize}
+  \item \textbf{Wallet identity}: \code{current\_wallet} (active wallet address), \code{wallets} (list of known wallets).
+  \item \textbf{Derived data}: \code{balance}, \code{transactions}, \code{unspent\_outputs} (cached from API or database).
+  \item \textbf{UI state}: \code{active\_tab}, \code{input\_*} (user inputs), \code{status} (feedback message).
+\end{itemize}
+
+Unlike the admin UI, the wallet UI is designed around a \textbf{single active wallet}---the user selects one wallet to manage at a time.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Message Types}
+\label{sec:ch18-messages}
+
+\begin{listing}[H]
+\caption{Message enum (excerpt) (\code{bitcoin-wallet-ui/src/types.rs})}
+\label{lst:ch18-messages}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Clone)]
+pub enum Message {
+    // Wallet selection
+    SelectWallet(String),
+    FetchWalletList,
+    WalletListLoaded(Result<Vec<String>, String>),
+
+    // Balance and transaction history
+    FetchBalance(String),
+    BalanceLoaded(Result<BalanceResponse, String>),
+
+    FetchTransactionHistory(String),
+    HistoryLoaded(Result<Vec<Transaction>, String>),
+
+    FetchUnspentOutputs(String),
+    UnspentLoaded(Result<Vec<UnspentOutput>, String>),
+
+    // Address generation
+    GenerateAddress,
+    AddressGenerated(Result<String, String>),
+
+    // Sending transactions
+    SendToChanged(String),
+    AmountChanged(String),
+    SendTransaction,
+    TransactionSent(Result<String, String>),
+
+    // Navigation
+    TabChanged(Tab),
+
+    // Persistence
+    SaveToDatabaseRequested,
+    SaveToDatabase(Result<(), String>),
+}
+\end{minted}
+\end{listing}
+
+Messages fall into four categories:
+
+\begin{itemize}
+  \item \textbf{Wallet operations}: select wallet, fetch wallets, generate addresses.
+  \item \textbf{Balance/history queries}: fetch balance, transaction history, unspent outputs.
+  \item \textbf{Transactions}: send Bitcoin (user inputs and submission).
+  \item \textbf{Persistence}: save and load from encrypted database.
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Update Loop}
+\label{sec:ch18-update}
+
+\begin{listing}[H]
+\caption{Update loop (excerpt) (\code{bitcoin-wallet-ui/src/update.rs})}
+\label{lst:ch18-update}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use crate::api;
+use crate::app::WalletApp;
+use crate::database;
+use crate::runtime::spawn_on_tokio;
+use crate::types::Message;
+use iced::Task;
+
+pub fn update(app: &mut WalletApp, message: Message) -> Task<Message> {
+    match message {
+        Message::TabChanged(tab) => {
+            app.active_tab = tab;
+            Task::none()
+        }
+
+        Message::SelectWallet(wallet) => {
+            app.current_wallet = Some(wallet.clone());
+            app.status = format!("Selected wallet: {}", wallet);
+            // Automatically fetch balance for the selected wallet
+            let task_fetch_balance = Task::perform(
+                spawn_on_tokio(api::fetch_balance(wallet.clone())),
+                Message::BalanceLoaded,
+            );
+            task_fetch_balance
+        }
+
+        Message::FetchBalance(wallet_addr) => {
+            Task::perform(
+                spawn_on_tokio(api::fetch_balance(wallet_addr)),
+                Message::BalanceLoaded,
+            )
+        }
+
+        Message::BalanceLoaded(result) => {
+            match result {
+                Ok(response) => {
+                    app.balance = Some(response.balance);
+                    app.status = format!("Balance: {} satoshis", response.balance);
+                    // Persist balance to database
+                    if let Some(ref wallet) = app.current_wallet {
+                        let wallet = wallet.clone();
+                        let balance = response.balance;
+                        Task::perform(
+                            spawn_on_tokio(async move {
+                                database::save_balance(&wallet, balance).await
+                            }),
+                            |result| Message::SaveToDatabase(result),
+                        )
+                    } else {
+                        Task::none()
+                    }
+                }
+                Err(e) => {
+                    app.status = format!("Error fetching balance: {}", e);
+                    Task::none()
+                }
+            }
+        }
+
+        Message::SendToChanged(address) => {
+            app.input_send_to = address;
+            Task::none()
+        }
+
+        Message::AmountChanged(amount) => {
+            app.input_amount = amount;
+            Task::none()
+        }
+
+        Message::SendTransaction => {
+            if let Some(ref current_wallet) = app.current_wallet {
+                if app.input_send_to.is_empty() || app.input_amount.is_empty() {
+                    app.status = "Recipient and amount are required".to_string();
+                    return Task::none();
+                }
+
+                let from = current_wallet.clone();
+                let to = app.input_send_to.clone();
+                let amount: u64 = match app.input_amount.parse() {
+                    Ok(a) => a,
+                    Err(_) => {
+                        app.status = "Invalid amount".to_string();
+                        return Task::none();
+                    }
+                };
+
+                Task::perform(
+                    spawn_on_tokio(api::send_transaction(from, to.clone(), amount)),
+                    Message::TransactionSent,
+                )
+            } else {
+                app.status = "No wallet selected".to_string();
+                Task::none()
+            }
+        }
+
+        Message::TransactionSent(result) => {
+            match result {
+                Ok(txid) => {
+                    app.status = format!("Transaction sent: {}", txid);
+                    app.input_send_to.clear();
+                    app.input_amount.clear();
+                }
+                Err(e) => {
+                    app.status = format!("Error sending transaction: {}", e);
+                }
+            }
+            Task::none()
+        }
+
+        _ => Task::none(),
+    }
+}
+\end{minted}
+\end{listing}

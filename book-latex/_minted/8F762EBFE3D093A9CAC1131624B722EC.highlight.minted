@@ -1,0 +1,32 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+External Events (arrive at runtime)
+  |
+  ├─\PYGZgt{} Web API Request (HTTP)
+  |     |
+  |     ├─\PYGZgt{} GET /api/balance
+  |     |     └─\PYGZgt{} NodeContext::get\PYGZus{}balance
+  |     |           └─\PYGZgt{} BlockchainService \PYGZhy{}\PYGZgt{} UTXOSet \PYGZhy{}\PYGZgt{} Storage
+  |     |
+  |     └─\PYGZgt{} POST /api/transaction
+  |           └─\PYGZgt{} NodeContext::process\PYGZus{}transaction
+  |                 ├─\PYGZgt{} Check duplicate (GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL)
+  |                 ├─\PYGZgt{} Add to mempool (txmempool)
+  |                 └─\PYGZgt{} Spawn background: broadcast + mining trigger
+  |
+  └─\PYGZgt{} Network Message Router (P2P)
+        |
+        ├─\PYGZgt{} Package::Tx (transaction from peer)
+        |     └─\PYGZgt{} process\PYGZus{}stream \PYGZhy{}\PYGZgt{} NodeContext::process\PYGZus{}transaction
+        |
+        ├─\PYGZgt{} Package::Block (block from peer)
+        |     └─\PYGZgt{} process\PYGZus{}stream \PYGZhy{}\PYGZgt{} NodeContext::add\PYGZus{}block
+        |           ├─\PYGZgt{} BlockchainService::add\PYGZus{}block
+        |           ├─\PYGZgt{} Remove txs from mempool (confirmed)
+        |           └─\PYGZgt{} Request next block (if syncing)
+        |
+        ├─\PYGZgt{} Package::Inv (inventory announcement)
+        |     └─\PYGZgt{} Check if known \PYGZhy{}\PYGZgt{} request via GETDATA
+        |
+        └─\PYGZgt{} Package::GetData (peer requests data)
+              └─\PYGZgt{} Lookup in blockchain/mempool \PYGZhy{}\PYGZgt{} Send
+\end{MintedVerbatim}

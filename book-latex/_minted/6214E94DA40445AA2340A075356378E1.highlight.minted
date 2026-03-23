@@ -1,0 +1,23 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+┌─────────────────────────────────────────────────────────────────────────┐
+│  TAURI APPLICATION                                                      │
+│                                                                         │
+│  ┌──────────────────────────┐    IPC     ┌────────────────────────────┐ │
+│  │   React Frontend         │  invoke()  │   Rust Backend             │ │
+│  │   (WebView / Chromium)   │ ────────\PYGZgt{}  │   (src\PYGZhy{}tauri/)             │ │
+│  │                          │            │                            │ │
+│  │  Page Component          │            │  \PYGZsh{}[tauri::command]         │ │
+│  │    └─ useQuery()         │            │    └─ reads State\PYGZlt{}RwLock\PYGZgt{}  │ │
+│  │       └─ commands.ts     │            │       └─ BitcoinApiService │ │
+│  │          └─ invoke(name) │  \PYGZlt{}──────── │          └─ AdminClient    │ │
+│  │             \PYGZob{}payload\PYGZcb{}    │  Result\PYGZlt{}V\PYGZgt{} │             └─ HTTP call   │ │
+│  └──────────────────────────┘            └─────────────┬──────────────┘ │
+│                                                        │                │
+└────────────────────────────────────────────────────────│────────────────┘
+                                                         │ HTTP
+                                                         v
+                                              ┌────────────────────┐
+                                              │  Bitcoin API Server │
+                                              │  (Chapter 15)       │
+                                              └────────────────────┘
+\end{MintedVerbatim}

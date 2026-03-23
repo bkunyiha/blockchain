@@ -1,0 +1,531 @@
+\begin{theindex}
+
+  \item address, \hyperpage{489}
+  \item Admin, \hyperpage{545}
+  \item admin API, \hyperpage{545}
+  \item admin dashboard, \hyperpage{1}, \hyperpage{354}, 
+		\hyperpage{474, 475}, \hyperpage{489}, \hyperpage{503}, 
+		\hyperpage{545}
+  \item administrative, \hyperpage{545}
+  \item application, \hyperpage{474}, \hyperpage{545}
+  \item architecture, \hyperpage{473}, \hyperpage{503}, \hyperpage{545}
+  \item async, \hyperpage{155}
+  \item async/await, \hyperpage{74}
+  \item atomicity, \hyperpage{319}
+  \item authorization, \hyperpage{210}
+  \item Axios, \hyperpage{545}
+  \item Axum, \hyperpage{3}, \hyperpage{10}, \hyperpage{13}, 
+		\hyperpage{389}
+
+  \indexspace
+
+  \item backend, \hyperpage{474, 475}, \hyperpage{489}, 
+		\hyperpage{503, 504}, \hyperpage{545}
+  \item balance, \hyperpage{489}
+  \item Base58, \hyperpage{114}, \hyperpage{372, 373}
+  \item binary, \hyperpage{473}
+  \item Bitcoin, \hyperpage{288}, \hyperpage{474}
+    \subitem history, \hyperpage{34}
+    \subitem whitepaper, \hyperpage{33}
+  \item bitcoin, \hyperpage{287}
+  \item bitcoin-api, \hyperpage{474}, \hyperpage{546}
+  \item bitcoin-desktop-ui-tauri, \hyperpage{474}
+  \item bitcoin-wallet-ui, \hyperpage{489}
+  \item bitcoin-wallet-ui-tauri, \hyperpage{503}
+  \item bitcoin-web-ui, \hyperpage{545}
+  \item block, \hyperpage{2, 3}, \hyperpage{17--20}, \hyperpage{26--29}, 
+		\hyperpage{67}, \hyperpage{77, 78}, \hyperpage{80, 81}, 
+		\hyperpage{107, 108}, \hyperpage{111}, 
+		\hyperpage{113--116}, \hyperpage{147}, 
+		\hyperpage{155, 156}, \hyperpage{165}, \hyperpage{183}, 
+		\hyperpage{203}, \hyperpage{223--225}, 
+		\hyperpage{245, 246}, \hyperpage{265, 266}, 
+		\hyperpage{287, 288}, \hyperpage{309, 310}, 
+		\hyperpage{319--321}, \hyperpage{339}, \hyperpage{353}
+    \subitem acceptance, \hyperpage{73}, \hyperpage{224}
+    \subitem creation, \hyperpage{109}
+    \subitem validation, \hyperpage{68}
+  \item block hash, \hyperpage{68}
+  \item block header, \hyperpage{18}, \hyperpage{27, 28}, 
+		\hyperpage{67}, \hyperpage{78}, \hyperpage{80}, 
+		\hyperpage{108}, \hyperpage{224}
+  \item BLOCK message, \hyperpage{224}
+  \item block propagation, \hyperpage{29}, \hyperpage{575}
+  \item blockchain, \hyperpage{9, 10}, \hyperpage{17--20}, 
+		\hyperpage{29}, \hyperpage{77, 78}, \hyperpage{81}, 
+		\hyperpage{113}, \hyperpage{115, 116}, \hyperpage{118}, 
+		\hyperpage{148}, \hyperpage{165}, \hyperpage{184}, 
+		\hyperpage{266}, \hyperpage{309}, \hyperpage{319}, 
+		\hyperpage{339}, \hyperpage{354}, \hyperpage{389}, 
+		\hyperpage{391}, \hyperpage{475}, \hyperpage{490}, 
+		\hyperpage{503, 504}, \hyperpage{595}, \hyperpage{621}, 
+		\hyperpage{623}
+    \subitem core, \hyperpage{73}
+    \subitem domain, \hyperpage{107}
+    \subitem history, \hyperpage{33}
+    \subitem network, \hyperpage{1}
+    \subitem state, \hyperpage{155}, \hyperpage{265, 266}
+    \subitem state management, \hyperpage{155}
+  \item BlockchainFileSystem, \hyperpage{155}, \hyperpage{266}
+    \subitem add\_block, \hyperpage{156}
+    \subitem mine\_block, \hyperpage{156}, \hyperpage{225}
+  \item BlockchainService, \hyperpage{155, 156}
+    \subitem add\_block, \hyperpage{156}
+    \subitem mine\_block, \hyperpage{156}, \hyperpage{225}
+    \subitem read, \hyperpage{156}
+    \subitem rollback\_utxo\_set, \hyperpage{156}
+    \subitem update\_utxo\_set, \hyperpage{156}, \hyperpage{225}
+  \item blocks tree, \hyperpage{224}
+  \item branch, \hyperpage{309, 310}
+  \item broadcast, \hyperpage{204}, \hyperpage{504}
+  \item Byzantine fault tolerance, \hyperpage{34}
+
+  \indexspace
+
+  \item cache, \hyperpage{545}
+  \item call chain, \hyperpage{287}
+  \item canonical, \hyperpage{224}, \hyperpage{353}
+  \item canonical chain, \hyperpage{3}
+  \item canonical encoding, \hyperpage{73}
+  \item canonical tip, \hyperpage{310}
+  \item Cargo, \hyperpage{2}
+    \subitem crate, \hyperpage{74}, \hyperpage{474}, \hyperpage{489}, 
+		\hyperpage{503}, \hyperpage{546}
+    \subitem workspace, \hyperpage{74}
+  \item central database, \hyperpage{266}
+  \item central-node, \hyperpage{340}
+  \item chain, \hyperpage{155, 156}, \hyperpage{224, 225}, 
+		\hyperpage{287}, \hyperpage{309}, \hyperpage{311}, 
+		\hyperpage{319}, \hyperpage{354}
+  \item chain height, \hyperpage{2, 3}
+  \item chain selection, \hyperpage{68}, \hyperpage{73}
+  \item chain tip, \hyperpage{81}, \hyperpage{246}, 
+		\hyperpage{319--321}
+  \item chainstate, \hyperpage{74}, \hyperpage{224}, \hyperpage{353}
+  \item change output, \hyperpage{207}, \hyperpage{209}
+  \item checksum, \hyperpage{116}, \hyperpage{372, 373}
+  \item code walkthrough, \hyperpage{287}
+  \item coin selection, \hyperpage{209}
+  \item coinbase transaction, \hyperpage{49}, \hyperpage{80}, 
+		\hyperpage{224}, \hyperpage{246}
+  \item command, \hyperpage{473, 474}
+  \item communication, \hyperpage{266}
+  \item CompactSize, \hyperpage{68}
+  \item comparison, \hyperpage{503}
+  \item component, \hyperpage{545}
+  \item confirmation, \hyperpage{204}
+  \item connection, \hyperpage{311}
+  \item consensus, \hyperpage{10}, \hyperpage{17}, \hyperpage{19, 20}, 
+		\hyperpage{28}, \hyperpage{73}, \hyperpage{78}, 
+		\hyperpage{246}, \hyperpage{339}
+    \subitem distributed, \hyperpage{38}
+  \item consensus rules, \hyperpage{3}, \hyperpage{109}
+  \item consistency, \hyperpage{319}
+  \item construction, \hyperpage{203, 204}, \hyperpage{223}, 
+		\hyperpage{265}
+  \item container, \hyperpage{2}
+  \item coordination, \hyperpage{353}
+  \item coordinator, \hyperpage{3}
+  \item CORS, \hyperpage{391}
+  \item crates.io, \hyperpage{74}
+  \item cryptographic proof, \hyperpage{43}
+  \item cryptography, \hyperpage{10}, \hyperpage{73, 74}, 
+		\hyperpage{111}
+
+  \indexspace
+
+  \item dashboard, \hyperpage{475}
+  \item data, \hyperpage{310}, \hyperpage{490}
+  \item database, \hyperpage{266}, \hyperpage{319}, \hyperpage{489}
+  \item decentralization, \hyperpage{266}
+  \item dependency
+    \subitem local, \hyperpage{74}
+  \item derived state, \hyperpage{155, 156}, \hyperpage{224}, 
+		\hyperpage{310}, \hyperpage{490}
+  \item desktop application, \hyperpage{473, 474}
+  \item determinism, \hyperpage{109}
+  \item difference, \hyperpage{545, 546}
+  \item difficulty, \hyperpage{28}, \hyperpage{80}
+  \item digital signature, \hyperpage{27}, \hyperpage{34}, 
+		\hyperpage{68--70}, \hyperpage{73}, \hyperpage{80}, 
+		\hyperpage{111}, \hyperpage{114}, \hyperpage{209, 210}, 
+		\hyperpage{245, 246}, \hyperpage{309}, \hyperpage{371}
+    \subitem signing, \hyperpage{203, 204}, \hyperpage{207}, 
+		\hyperpage{209, 210}, \hyperpage{223}, \hyperpage{265}
+  \item dispatcher, \hyperpage{340}
+  \item distributed systems, \hyperpage{266}
+  \item Docker, \hyperpage{1}, \hyperpage{10}, \hyperpage{575, 576}, 
+		\hyperpage{595}
+  \item Docker Compose, \hyperpage{1}, \hyperpage{3}
+  \item double-spend, \hyperpage{246}, \hyperpage{339}
+  \item double-spending, \hyperpage{33}, \hyperpage{41}, 
+		\hyperpage{309}
+  \item durable state, \hyperpage{309}, \hyperpage{311}
+  \item durable storage, \hyperpage{319}
+
+  \indexspace
+
+  \item ECDSA, \hyperpage{3}, \hyperpage{27}
+  \item Electron, \hyperpage{473}
+  \item embedded database, \hyperpage{489}
+  \item encoding, \hyperpage{340}
+  \item encryption, \hyperpage{489}, \hyperpage{503}
+  \item entry point, \hyperpage{287}, \hyperpage{354}
+
+  \indexspace
+
+  \item facade, \hyperpage{155, 156}
+  \item feature, \hyperpage{475}, \hyperpage{503}
+  \item filter
+    \subitem functional programming, \hyperpage{108}
+  \item flow, \hyperpage{287}
+  \item fork, \hyperpage{48}, \hyperpage{246}
+  \item fork-choice, \hyperpage{155}, \hyperpage{309}
+  \item framework, \hyperpage{473}, \hyperpage{475}, \hyperpage{503}
+  \item frontend, \hyperpage{473--475}, \hyperpage{503}, 
+		\hyperpage{545}
+  \item functionality, \hyperpage{503}, \hyperpage{545}
+
+  \indexspace
+
+  \item generic, \hyperpage{74}
+  \item genesis block, \hyperpage{20}, \hyperpage{81}
+  \item GETDATA message, \hyperpage{224}
+  \item Git
+    \subitem clone, \hyperpage{1}, \hyperpage{74}
+  \item GitHub, \hyperpage{74}
+  \item GLOBAL\_MEMORY\_POOL, \hyperpage{224}
+  \item gossip protocol, \hyperpage{29}, \hyperpage{340}
+
+  \indexspace
+
+  \item hash, \hyperpage{2}, \hyperpage{73}, \hyperpage{111}, 
+		\hyperpage{209}, \hyperpage{224}, \hyperpage{319}
+  \item hash function, \hyperpage{34}, \hyperpage{114--116}, 
+		\hyperpage{118}, \hyperpage{371--373}
+  \item HASH160, \hyperpage{69, 70}
+  \item header
+    \subitem metadata, \hyperpage{108}
+  \item health check, \hyperpage{475}
+  \item history, \hyperpage{319}, \hyperpage{489}, \hyperpage{503}
+  \item hook, \hyperpage{545}
+  \item HTTP, \hyperpage{156}, \hyperpage{288}, \hyperpage{545, 546}
+
+  \indexspace
+
+  \item Iced, \hyperpage{10}, \hyperpage{13}, \hyperpage{449}, 
+		\hyperpage{475}, \hyperpage{489}, \hyperpage{503}, 
+		\hyperpage{517}, \hyperpage{545}
+  \item implementation, \hyperpage{266}, \hyperpage{288}, 
+		\hyperpage{474}, \hyperpage{489}
+  \item inbound, \hyperpage{340}
+  \item incentive mechanism, \hyperpage{224}
+  \item incoming, \hyperpage{265}
+  \item instance, \hyperpage{266}
+  \item instruction, \hyperpage{287}
+  \item interface, \hyperpage{354}, \hyperpage{489}, \hyperpage{545}
+  \item INV message, \hyperpage{224}
+  \item invariant, \hyperpage{319}
+  \item invoke, \hyperpage{473, 474}
+  \item IPC, \hyperpage{473, 474}, \hyperpage{545, 546}
+  \item is\_miner, \hyperpage{288}
+  \item is\_web\_server, \hyperpage{288}
+
+  \indexspace
+
+  \item JSON, \hyperpage{3}, \hyperpage{340}
+
+  \indexspace
+
+  \item key, \hyperpage{209}, \hyperpage{309}, \hyperpage{489}, 
+		\hyperpage{503, 504}
+  \item key generation, \hyperpage{111}
+  \item key pair, \hyperpage{27}, \hyperpage{114}, \hyperpage{371, 372}
+  \item Kubernetes, \hyperpage{10}, \hyperpage{595, 596}
+
+  \indexspace
+
+  \item lightweight client, \hyperpage{53}
+  \item limitation, \hyperpage{288}
+  \item logic, \hyperpage{473}, \hyperpage{503}
+  \item longest chain rule, \hyperpage{48}, \hyperpage{68}
+
+  \indexspace
+
+  \item main, \hyperpage{287, 288}
+  \item management, \hyperpage{475}, \hyperpage{545}
+  \item map
+    \subitem functional programming, \hyperpage{108}
+  \item mempool, \hyperpage{2, 3}, \hyperpage{67}, \hyperpage{203--205}, 
+		\hyperpage{223, 224}, \hyperpage{265, 266}, 
+		\hyperpage{288}, \hyperpage{353, 354}
+  \item Merkle root, \hyperpage{51}
+  \item Merkle tree, \hyperpage{27}, \hyperpage{34}, \hyperpage{51}, 
+		\hyperpage{68}, \hyperpage{80}, \hyperpage{115, 116}
+  \item message, \hyperpage{265}, \hyperpage{287}, \hyperpage{340}, 
+		\hyperpage{353}
+  \item metadata, \hyperpage{490}
+  \item miner, \hyperpage{155}, \hyperpage{224}, \hyperpage{287, 288}, 
+		\hyperpage{353, 354}
+  \item miner node, \hyperpage{2}
+  \item Mining, \hyperpage{288}
+  \item mining, \hyperpage{1, 2}, \hyperpage{10}, \hyperpage{19, 20}, 
+		\hyperpage{26}, \hyperpage{28}, \hyperpage{44}, 
+		\hyperpage{80}, \hyperpage{155, 156}, \hyperpage{204}, 
+		\hyperpage{224, 225}, \hyperpage{265, 266}, 
+		\hyperpage{288}, \hyperpage{339}, \hyperpage{353, 354}, 
+		\hyperpage{475}, \hyperpage{596}, \hyperpage{623}
+  \item mining boundary, \hyperpage{204}, \hyperpage{225}
+  \item mining reward, \hyperpage{49}, \hyperpage{224}
+  \item mobile wallet, \hyperpage{53}
+  \item MVU, \hyperpage{475}, \hyperpage{489}, \hyperpage{503}, 
+		\hyperpage{545}
+
+  \indexspace
+
+  \item network, \hyperpage{225}, \hyperpage{266}
+    \subitem handler, \hyperpage{155}
+    \subitem layer, \hyperpage{353}
+    \subitem message, \hyperpage{265}, \hyperpage{353}
+    \subitem propagation, \hyperpage{203}
+  \item network layer, \hyperpage{10}, \hyperpage{339}
+  \item networking, \hyperpage{73, 74}, \hyperpage{156}, 
+		\hyperpage{205}
+  \item new output, \hyperpage{209}
+  \item node, \hyperpage{74}, \hyperpage{155}, \hyperpage{205}, 
+		\hyperpage{223, 224}, \hyperpage{265, 266}, 
+		\hyperpage{288}, \hyperpage{309--311}, \hyperpage{319}, 
+		\hyperpage{340}, \hyperpage{353}, \hyperpage{504}, 
+		\hyperpage{545}
+    \subitem coordination, \hyperpage{47}, \hyperpage{156}
+    \subitem orchestration, \hyperpage{73}
+    \subitem runtime, \hyperpage{156}
+  \item node orchestration, \hyperpage{10}
+  \item NodeContext, \hyperpage{156}, \hyperpage{353, 354}
+    \subitem add\_block, \hyperpage{225}, \hyperpage{354}
+    \subitem mine\_empty\_block, \hyperpage{354}
+    \subitem process\_transaction, \hyperpage{354}
+  \item nonce, \hyperpage{28}, \hyperpage{80}, \hyperpage{224}
+
+  \indexspace
+
+  \item operation, \hyperpage{266}, \hyperpage{503}
+  \item OpType, \hyperpage{340}
+  \item orchestration, \hyperpage{205}
+  \item orphan block, \hyperpage{48}
+  \item outpoint, \hyperpage{209}
+  \item output, \hyperpage{224}, \hyperpage{265}, \hyperpage{309}, 
+		\hyperpage{353}
+  \item ownership, \hyperpage{309}
+
+  \indexspace
+
+  \item P2PKH, \hyperpage{69, 70}
+  \item P2WPKH, \hyperpage{69, 70}
+  \item Package, \hyperpage{225}, \hyperpage{310}, \hyperpage{340}, 
+		\hyperpage{353}
+  \item package, \hyperpage{340}
+  \item pattern, \hyperpage{489}, \hyperpage{545}
+  \item peer, \hyperpage{2}, \hyperpage{223, 224}, \hyperpage{310}, 
+		\hyperpage{319}, \hyperpage{353, 354}
+    \subitem acceptance, \hyperpage{225}
+    \subitem bootstrap, \hyperpage{340}
+    \subitem relay, \hyperpage{353}
+  \item peer-to-peer, \hyperpage{19, 20}, \hyperpage{29}, 
+		\hyperpage{78}, \hyperpage{165}, \hyperpage{266}, 
+		\hyperpage{288}, \hyperpage{340}
+    \subitem network, \hyperpage{2}
+    \subitem protocol, \hyperpage{47}
+  \item pending, \hyperpage{224}
+  \item permissionless, \hyperpage{34}
+  \item persistence, \hyperpage{225}, \hyperpage{265}, \hyperpage{489}
+  \item persistent, \hyperpage{489}, \hyperpage{503}
+  \item pipeline, \hyperpage{354}
+  \item primitives, \hyperpage{74}, \hyperpage{107}
+  \item private key, \hyperpage{27}, \hyperpage{39}, \hyperpage{114}, 
+		\hyperpage{503}
+  \item process, \hyperpage{288}
+  \item process\_stream, \hyperpage{225}, \hyperpage{340}
+  \item proof-of-work, \hyperpage{17}, \hyperpage{19, 20}, 
+		\hyperpage{26}, \hyperpage{28}, \hyperpage{34}, 
+		\hyperpage{44}, \hyperpage{73, 74}, \hyperpage{80}, 
+		\hyperpage{108}, \hyperpage{114}, \hyperpage{116}, 
+		\hyperpage{223--225}, \hyperpage{245, 246}
+  \item propagation, \hyperpage{223}
+  \item protocol, \hyperpage{288}
+  \item public key, \hyperpage{27}, \hyperpage{39}, \hyperpage{69}, 
+		\hyperpage{114}, \hyperpage{209}, \hyperpage{373}
+  \item pure function, \hyperpage{311}
+
+  \indexspace
+
+  \item React, \hyperpage{2, 3}, \hyperpage{10}, \hyperpage{14}, 
+		\hyperpage{473, 474}, \hyperpage{503}, \hyperpage{545}
+  \item React Query, \hyperpage{545}
+  \item read-write lock, \hyperpage{155, 156}
+  \item reorg, \hyperpage{68}
+  \item reorganization, \hyperpage{246}, \hyperpage{310}
+  \item request, \hyperpage{288}
+  \item REST API, \hyperpage{3}, \hyperpage{10}, \hyperpage{389}, 
+		\hyperpage{391}, \hyperpage{449}, \hyperpage{545}
+  \item RIPEMD160, \hyperpage{70}
+  \item rollback, \hyperpage{311}
+  \item runtime, \hyperpage{265, 266}, \hyperpage{287}, 
+		\hyperpage{353, 354}, \hyperpage{546}
+  \item Rust
+    \subitem async, \hyperpage{9}, \hyperpage{391}, \hyperpage{450}, 
+		\hyperpage{622, 623}
+    \subitem await, \hyperpage{9}
+    \subitem backend, \hyperpage{473--475}, \hyperpage{503, 504}, 
+		\hyperpage{545}
+    \subitem borrowing, \hyperpage{623}
+    \subitem channel, \hyperpage{10}
+    \subitem compilation, \hyperpage{2}
+    \subitem developer, \hyperpage{311}, \hyperpage{353}, 
+		\hyperpage{474}
+    \subitem enum, \hyperpage{449}
+    \subitem implementation, \hyperpage{74}
+    \subitem introduction, \hyperpage{66}
+    \subitem language guide, \hyperpage{74}
+    \subitem module, \hyperpage{107}, \hyperpage{109}, 
+		\hyperpage{353, 354}
+    \subitem modules, \hyperpage{65}
+    \subitem ownership, \hyperpage{9}, \hyperpage{74}, \hyperpage{621}, 
+		\hyperpage{623}
+    \subitem pattern matching, \hyperpage{449}
+    \subitem project, \hyperpage{73}
+    \subitem serialization, \hyperpage{13}, \hyperpage{77}, 
+		\hyperpage{340}, \hyperpage{391}
+    \subitem trait, \hyperpage{9}
+
+  \indexspace
+
+  \item Satoshi Nakamoto, \hyperpage{33}
+  \item scarcity, \hyperpage{309}
+  \item script, \hyperpage{68--70}
+  \item scriptPubKey, \hyperpage{69}
+  \item scriptSig, \hyperpage{70}
+  \item SegWit, \hyperpage{70}
+  \item send, \hyperpage{340}
+  \item send\_block, \hyperpage{340}
+  \item send\_data, \hyperpage{340}
+  \item send\_get\_data, \hyperpage{340}
+  \item send\_inv, \hyperpage{340}
+  \item send\_tx, \hyperpage{340}
+  \item send\_version, \hyperpage{340}
+  \item serde, \hyperpage{340}
+  \item serialization, \hyperpage{68}, \hyperpage{224}
+  \item session, \hyperpage{490}
+  \item SHA-256, \hyperpage{3}, \hyperpage{26}, \hyperpage{44}, 
+		\hyperpage{68}, \hyperpage{70}, \hyperpage{80}, 
+		\hyperpage{115, 116}, \hyperpage{373}
+  \item side, \hyperpage{545}
+  \item sign, \hyperpage{209}
+  \item single-page application, \hyperpage{545}
+  \item sled, \hyperpage{3}, \hyperpage{78}, \hyperpage{165}, 
+		\hyperpage{184}, \hyperpage{266}, \hyperpage{320}
+  \item software, \hyperpage{266}
+  \item spendability, \hyperpage{309}
+  \item SPV, \hyperpage{53}
+  \item SQLCipher, \hyperpage{13}, \hyperpage{517, 518}
+  \item stage, \hyperpage{204}
+  \item startnode, \hyperpage{288}
+  \item state, \hyperpage{155}, \hyperpage{265, 266}, 
+		\hyperpage{310, 311}, \hyperpage{354}
+  \item state transition, \hyperpage{224, 225}, \hyperpage{311}
+  \item storage, \hyperpage{73, 74}, \hyperpage{266}, \hyperpage{489}, 
+		\hyperpage{503}
+  \item storage layer, \hyperpage{155}, \hyperpage{319}
+  \item structure, \hyperpage{545}
+  \item submission, \hyperpage{204}
+  \item subsystem, \hyperpage{287}, \hyperpage{353}
+  \item System, \hyperpage{489}
+  \item system, \hyperpage{204}, \hyperpage{266}, \hyperpage{354}, 
+		\hyperpage{473}
+
+  \indexspace
+
+  \item Tauri, \hyperpage{10}, \hyperpage{473--475}, \hyperpage{503}, 
+		\hyperpage{517}, \hyperpage{545}
+  \item tauri::command, \hyperpage{473, 474}
+  \item TCP, \hyperpage{3}, \hyperpage{340}
+  \item timestamp, \hyperpage{108, 109}
+  \item timestamp server, \hyperpage{43}
+  \item tip, \hyperpage{223--225}, \hyperpage{311}, \hyperpage{353}
+  \item tip hash, \hyperpage{3}
+  \item tokio, \hyperpage{10}, \hyperpage{13}, \hyperpage{450}
+  \item trade-off, \hyperpage{475}
+  \item trait, \hyperpage{74}
+  \item Transaction
+    \subitem new\_coinbase\_tx, \hyperpage{224}
+    \subitem verify, \hyperpage{309}
+  \item transaction, \hyperpage{3}, \hyperpage{17--20}, 
+		\hyperpage{26--29}, \hyperpage{67}, \hyperpage{77, 78}, 
+		\hyperpage{80}, \hyperpage{107, 108}, \hyperpage{111}, 
+		\hyperpage{113--116}, \hyperpage{118}, 
+		\hyperpage{147, 148}, \hyperpage{155}, 
+		\hyperpage{183, 184}, \hyperpage{203--205}, 
+		\hyperpage{207}, \hyperpage{210}, \hyperpage{223--225}, 
+		\hyperpage{245, 246}, \hyperpage{265, 266}, 
+		\hyperpage{288}, \hyperpage{309}, \hyperpage{339}, 
+		\hyperpage{353}, \hyperpage{489}, \hyperpage{503, 504}, 
+		\hyperpage{623}
+    \subitem digital signature, \hyperpage{39}
+    \subitem lifecycle, \hyperpage{203}, \hyperpage{223}
+  \item transaction fee, \hyperpage{49}
+  \item transport, \hyperpage{545, 546}
+  \item trimmed copy, \hyperpage{210}
+  \item trusted third party, \hyperpage{35}
+  \item trustless, \hyperpage{34}
+  \item txid, \hyperpage{67, 68}, \hyperpage{207}, \hyperpage{209}
+  \item TXInput, \hyperpage{209}
+  \item txmempool, \hyperpage{354}
+  \item TXOutput, \hyperpage{209}
+  \item TypeScript, \hyperpage{14}, \hyperpage{474}, \hyperpage{545}
+
+  \indexspace
+
+  \item UI, \hyperpage{473}, \hyperpage{503}
+  \item unconfirmed transaction, \hyperpage{353}
+  \item Unix timestamp, \hyperpage{108}
+  \item user-facing, \hyperpage{489}
+  \item UTXO, \hyperpage{17}, \hyperpage{28}, \textbf{28}, 
+		\hyperpage{67, 68}, \hyperpage{73}, \hyperpage{78}, 
+		\hyperpage{80}, \hyperpage{108}, \hyperpage{147, 148}, 
+		\hyperpage{155}, \hyperpage{183, 184}, \hyperpage{209}, 
+		\hyperpage{223--225}, \hyperpage{246}, \hyperpage{265}, 
+		\hyperpage{309--311}, \hyperpage{353}, \hyperpage{371}
+  \item UTXOSet, \hyperpage{155}
+    \subitem find\_spendable\_outputs, \hyperpage{209}
+    \subitem rollback\_block, \hyperpage{156}
+    \subitem update, \hyperpage{156}
+
+  \indexspace
+
+  \item validation, \hyperpage{74}, \hyperpage{266}, \hyperpage{309}, 
+		\hyperpage{311}
+  \item verification, \hyperpage{203, 204}, \hyperpage{225}
+
+  \indexspace
+
+  \item Wallet, \hyperpage{489}
+  \item wallet, \hyperpage{10}, \hyperpage{13}, \hyperpage{73, 74}, 
+		\hyperpage{155}, \hyperpage{183}, \hyperpage{207}, 
+		\hyperpage{354}, \hyperpage{371--373}, \hyperpage{475}, 
+		\hyperpage{489, 490}, \hyperpage{503, 504}, 
+		\hyperpage{517}, \hyperpage{545}, \hyperpage{596}
+  \item Web, \hyperpage{545}
+  \item web, \hyperpage{475}
+  \item web API, \hyperpage{155, 156}, \hyperpage{354}
+  \item web server, \hyperpage{288}
+  \item web-technology, \hyperpage{473}
+  \item webserver, \hyperpage{2}
+  \item WebSocket, \hyperpage{14}
+  \item webview, \hyperpage{473}
+  \item whitepaper, \hyperpage{33}, \hyperpage{65}, \hyperpage{73}, 
+		\hyperpage{108}, \hyperpage{224}, \hyperpage{309, 310}
+  \item wiring, \hyperpage{287}
+  \item witness, \hyperpage{70}
+  \item workflow, \hyperpage{489}
+
+\end{theindex}

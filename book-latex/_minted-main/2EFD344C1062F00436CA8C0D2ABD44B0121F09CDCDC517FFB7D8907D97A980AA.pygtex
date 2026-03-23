@@ -1,0 +1,19 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{[rate\PYGZus{}limiter]}
+\PYG{n}{redis\PYGZus{}addr}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}127.0.0.1:6379\PYGZdq{}}
+\PYG{n}{ip\PYGZus{}whitelist}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{[}\PYG{l+s}{\PYGZdq{}127.0.0.1\PYGZdq{}}\PYG{p}{]}
+
+\PYG{c+c1}{\PYGZsh{} Per\PYGZhy{}IP limit: bursts of 20, refill 1 token per 6 sec}
+\PYG{k}{[[rate\PYGZus{}limiter.limiter]]}
+\PYG{n}{strategy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}ip\PYGZdq{}}
+\PYG{n}{global\PYGZus{}bucket}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{tokens\PYGZus{}count}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{20}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{add\PYGZus{}tokens\PYGZus{}every}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{6}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{\PYGZsh{} Tighten specific expensive endpoints}
+\PYG{k}{[[rate\PYGZus{}limiter.limiter]]}
+\PYG{n}{strategy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}url\PYGZdq{}}
+\PYG{n}{global\PYGZus{}bucket}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{tokens\PYGZus{}count}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{60}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{add\PYGZus{}tokens\PYGZus{}every}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{n}{buckets\PYGZus{}per\PYGZus{}value}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{[}
+\PYG{+w}{  }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{value}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}/api/mining/generate\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{tokens\PYGZus{}count}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{add\PYGZus{}tokens\PYGZus{}every}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{60}\PYG{+w}{ }\PYG{p}{\PYGZcb{},}
+\PYG{p}{]}
+\end{Verbatim}

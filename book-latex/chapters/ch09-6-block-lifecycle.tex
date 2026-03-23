@@ -1,0 +1,721 @@
+% ══════════════════════════════════════════════════════════════
+%  Section 9.6: Block Lifecycle and Mining
+% ══════════════════════════════════════════════════════════════
+\chapter{Chain: Block Lifecycle and Mining}
+\label{ch:block-lifecycle}
+
+\begin{learnbox}
+\begin{itemize}
+  \item How pending transactions transition to a mined block
+  \item The three critical boundaries: mining verification, persistence, and peer acceptance
+  \item How proof-of-work is performed and why nonce search is necessary
+  \item Where the UTXO set advances after a block connects
+  \item Block relay mechanics: INV, GETDATA, and BLOCK messages
+\end{itemize}
+\end{learnbox}
+
+In the previous chapter (Chapter~14, \textbf{\index{transaction!lifecycle}Transaction Lifecycle}), we followed a \index{transaction}transaction from \index{construction}construction and \index{digital signature!signing}signing, through \index{mempool}mempool admission and \index{propagation}propagation. That brings us to the natural next question: \textbf{what happens to those pending \index{transaction}transactions next?}
+
+This section picks up from that boundary and traces the rest of the path: how the \index{node}node assembles a candidate \index{block}block from the \index{mempool}mempool, performs \index{proof-of-work}proof-of-work, persists the new \index{tip}tip, advances the \index{UTXO}UTXO set, and relays the new \index{block}block to \index{peer}peers. We will walk through the code: key methods are printed, and each listing is followed by a succinct explanation of what the code is doing and why.
+
+% ──────────────────────────────────────────────────────────────
+\section{Scope}
+\label{sec:ch09-6-scope}
+
+This chapter covers \textbf{Steps 5--7} of the blockchain pipeline (from \index{transaction}transaction to \index{block!acceptance}block acceptance): candidate assembly, \index{proof-of-work}proof-of-work, persistence, and the \index{UTXO}UTXO \index{state transition}state transition after a \index{block}block is connected.
+
+% ──────────────────────────────────────────────────────────────
+\section{Reader Promise}
+\label{sec:ch09-6-promise}
+
+After reading this section, you should be able to explain---using concrete method names---how the code moves from \textbf{\index{pending}pending \index{transaction}transactions} to a \textbf{\index{mining}mined, persisted, and relayed \index{block}block}, including where the implementation:
+
+\begin{itemize}
+  \item Builds the candidate \index{transaction}transaction list (\index{mempool}mempool snapshot + \index{coinbase transaction}coinbase).
+  \item Constructs a \index{block header}block header and commits to \index{transaction}transaction data.
+  \item Performs \index{proof-of-work}proof-of-work (the \index{nonce}nonce search and the bytes being \index{hash}hashed).
+  \item Persists the new \index{tip}tip and applies the \index{UTXO}UTXO \index{state transition}state transition.
+  \item Announces \index{block}blocks to \index{peer}peers and handles \index{block}block download (\index{INV message}INV \textrightarrow\ \index{GETDATA message}GETDATA \textrightarrow\ \index{BLOCK message}BLOCK).
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\subsection{Quick Terminology}
+\label{sec:ch09-6-terminology}
+
+\begin{itemize}
+  \item \textbf{\index{mempool}mempool}: an in-memory pool of \textbf{accepted \index{transaction}transactions} that are \textbf{waiting to be included in a \index{block}block} (implemented here as \code{\index{GLOBAL\_MEMORY\_POOL}GLOBAL\_MEMORY\_POOL})
+  \item \textbf{\index{coinbase transaction}coinbase transaction}: by convention, the \textbf{first \index{transaction}transaction in a \index{block}block} is a \index{coinbase transaction}coinbase transaction. It has no real inputs (there are no earlier coins to spend), and it \textbf{creates new coins owned by the \index{miner}miner} as the \index{mining reward}block reward---this is the Bitcoin \index{whitepaper}whitepaper's \index{incentive mechanism}incentive mechanism (\S6: ``the first \index{transaction}transaction in a \index{block}block is a special \index{transaction}transaction that starts a new coin owned by the creator of the \index{block}block''). In this implementation it is created with \code{\index{Transaction!new\_coinbase\_tx}Transaction::new\_coinbase\_tx(...)}.
+  \item \textbf{\index{tip}tip}: the current best \index{block}block \index{hash}hash this \index{node}node considers \index{canonical}canonical (the ``head'' of the \index{chain}chain)
+  \item \textbf{\index{blocks tree}blocks tree}: the on-disk key/value store of \index{block}blocks (\index{hash}hash \textrightarrow\ \index{serialization}serialized \index{block}block)
+  \item \textbf{\index{UTXO}\index{chainstate}UTXO set / chainstate}: \index{derived state}derived state answering ``what \index{output}outputs are spendable right now?'' (stored under the \code{\index{chainstate}"chainstate"} tree)
+  \item \textbf{\index{INV message}\index{GETDATA message}\index{BLOCK message}INV / GETDATA / BLOCK}: announce an object by id \textrightarrow\ request bytes \textrightarrow\ transmit full bytes
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\subsection{The Three Boundaries to Watch For}
+\label{sec:ch09-6-boundaries}
+
+This section is easiest to follow if you keep three ``boundaries'' in mind:
+
+\begin{itemize}
+  \item \textbf{\index{mining boundary}mining boundary}: the ``last step'' before doing \index{proof-of-work}proof-of-work---every candidate \index{transaction}transaction must be \index{verification}verified before we are willing to \index{mining}mine it (\code{\index{BlockchainService!mine\_block}BlockchainService::mine\_block})
+  \item \textbf{\index{persistence}persistence + \index{state transition}state-transition boundary}: the moment a \index{mining}mined \index{block}block becomes part of our local \index{chain}chain---write the \index{block}block as the new \index{tip}tip, then update the \index{UTXO}UTXO set so spendability matches the new \index{tip}tip (\code{\index{BlockchainFileSystem!mine\_block}BlockchainFileSystem::mine\_block} \textrightarrow\ \code{\index{BlockchainService!update\_utxo\_set}update\_utxo\_set})
+  \item \textbf{\index{peer!acceptance}peer acceptance boundary}: the moment we receive a full \index{block}block from the \index{network}network and attempt to add it to our \index{chain}chain (\code{\index{process\_stream}process\_stream} handling \code{\index{Package}Package::Block} \textrightarrow\ \code{\index{NodeContext!add\_block}node\_context.add\_block})
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\subsection{Primary Files}
+\label{sec:ch09-6-files}
+
+\begin{infobox}[Code locations]
+\begin{itemize}
+  \item \code{bitcoin/src/node/miner.rs}
+  \item \code{bitcoin/src/chain/chainstate.rs}
+  \item \code{bitcoin/src/store/file\_system\_db\_chain.rs}
+  \item \code{bitcoin/src/primitives/block.rs}
+  \item \code{bitcoin/src/pow.rs}
+  \item \code{bitcoin/src/net/net\_processing.rs}
+\end{itemize}
+\end{infobox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Block Lifecycle at a Glance (Two Zoom Levels)}
+\label{sec:ch09-6-overview}
+
+\subsection{High-Level Stages}
+\label{sec:ch09-6-stages}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance = 1.0cm,
+  stage/.style = {rectangle, rounded corners=4pt, draw=sectioncolor, fill=sectioncolor!10,
+                  text width=3.8cm, align=center, minimum height=0.95cm, font=\sffamily\small},
+  arrow/.style = {-{Stealth[length=4pt,width=3pt]}, thick, color=brand},
+]
+
+% Pending transactions
+\node[stage] (pending) at (0, 7.5) {
+  \textbf{Pending} \\
+  \small (mempool)
+};
+
+% Candidate list
+\node[stage] (candidate) at (0, 6.2) {
+  \textbf{Candidate Txs} \\
+  \small (mempool + coinbase)
+};
+
+% Block header
+\node[stage] (header) at (0, 4.9) {
+  \textbf{Block Header} \\
+  \small (hash commitment)
+};
+
+% Proof of work
+\node[stage] (pow) at (0, 3.6) {
+  \textbf{Proof-of-Work} \\
+  \small (nonce search)
+};
+
+% Persistence
+\node[stage] (persist) at (0, 2.3) {
+  \textbf{Persist} \\
+  \small (tip + UTXO)
+};
+
+% Relay
+\node[stage] (relay) at (0, 1.0) {
+  \textbf{Relay} \\
+  \small (INV → GETDATA → BLOCK)
+};
+
+% Accept
+\node[stage] (accept) at (0, -0.3) {
+  \textbf{Accept} \\
+  \small (add to chain)
+};
+
+% Arrows
+\draw[arrow] (pending) -- (candidate);
+\draw[arrow] (candidate) -- (header);
+\draw[arrow] (header) -- (pow);
+\draw[arrow] (pow) -- (persist);
+\draw[arrow] (persist) -- (relay);
+\draw[arrow] (relay) -- (accept);
+
+\end{tikzpicture}
+\caption{Block Lifecycle: From Pending Transactions to Blockchain Acceptance}
+\label{fig:ch09-6-block-lifecycle}
+\end{figure}
+
+In this diagram, ``selected from the mempool for this block'' means a fixed list of transactions the miner will try to include in the next block; those transactions are still unconfirmed until the block is mined and accepted.
+
+\subsection{Code-Level Call Sequence}
+\label{sec:ch09-6-callseq}
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+miner::should_trigger_mining
+  // Check if mempool size >= threshold
+  -> miner::prepare_mining_utxo
+       // Snapshot mempool + append coinbase
+       -> chainstate::BlockchainService::mine_block
+            // Mining boundary: verify sigs
+            -> store::BlockchainFileSystem::mine_block
+                 // Persist block as tip
+                 -> Block::new_block
+                      // Construct header + PoW
+                      -> ProofOfWork::new_proof_of_work
+                      -> ProofOfWork::run
+                           // Search nonce
+       -> miner::broadcast_new_block
+            // Announce to network
+            -> net_processing::send_inv(OpType::Block, [hash])
+
+net_processing::process_stream
+  // Network message handler
+  Package::Inv(Block)  -> send_get_data(Block, hash)
+       // On INV: request full block
+  Package::GetData     -> send_block(block_bytes)
+       // On GETDATA: send serialized block
+  Package::Block       -> node_context.add_block(&block)
+       // On BLOCK: add + cleanup mempool
+\end{minted}
+
+% ──────────────────────────────────────────────────────────────
+\section{Whitepaper Connections}
+\label{sec:ch09-6-whitepaper}
+
+\subsection{Timestamp Chaining (Whitepaper \S3)}
+\label{sec:ch09-6-timestamp}
+
+The ``timestamp server'' concept creates an immutable, chronological chain by linking each block to its predecessor through cryptographic hashing. The key insight is that changing any block would require redoing all subsequent proof-of-work, making the history tamper-resistant.
+
+In this implementation, the proof-of-work hash input includes five components that together create this chain:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+prev_hash + tx_commitment + timestamp + difficulty + nonce
+\end{minted}
+
+The \code{prev\_hash} links this block to the previous block's hash, creating the chain structure. Changing any historical block would change its hash, breaking the link and requiring all subsequent blocks to be re-mined. The \code{tx\_commitment} is a hash (simplified Merkle root via \code{hash\_transactions()}) that commits to the exact set of transactions in this block. Changing any transaction would change this commitment, invalidating the block's proof-of-work.
+
+The \code{timestamp} records when the block was created, providing chronological ordering. It prevents miners from manipulating block ordering by using timestamps from the future, and ensures the chain reflects real-world time progression. The \code{difficulty} field encodes the target threshold (as \code{TARGET\_BITS}) that determines how hard the proof-of-work must be. This is included in the hash so that changing the difficulty would require re-mining, maintaining consensus on the difficulty adjustment rules.
+
+Finally, the \code{nonce} is the variable that miners increment during proof-of-work search. It's the only field that changes between hash attempts, allowing miners to search for a hash below the target without changing the block's content.
+
+The first four components are fixed for a given candidate block, while the \code{nonce} is varied during mining. This means the block header commits to its position in the chain (\code{prev\_hash}), its contents (\code{tx\_commitment}), its creation time (\code{timestamp}), and the consensus rules (\code{difficulty}). The resulting block hash serves as both the proof-of-work result and the link that the next block will reference, creating an unbreakable chain.
+
+\subsection{Proof-of-Work (Whitepaper \S4)}
+\label{sec:ch09-6-pow}
+
+Proof-of-work is the mechanism that secures the blockchain by making block creation computationally expensive. The miner's task is to find a nonce value that, when combined with the block header data and hashed, produces a hash value numerically below a predetermined target threshold.
+
+The algorithm works through brute-force search: the miner repeatedly hashes the block header with different nonce values until finding one that satisfies the difficulty requirement. Since hash functions are unpredictable, there's no shortcut---the miner must try many nonce values, making the process computationally intensive.
+
+Here's how the proof-of-work algorithm operates:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+function mine_block(block_header):
+    target = calculate_target(TARGET_BITS)
+    nonce = 0
+
+    while nonce < MAX_NONCE:
+        data = concatenate(
+            block_header.prev_hash,
+            block_header.tx_commitment,
+            block_header.timestamp,
+            block_header.difficulty_bits,
+            nonce
+        )
+        hash = SHA256(data)
+        hash_as_integer = convert_to_integer(hash)
+
+        if hash_as_integer < target:
+            return (nonce, hash)
+        else:
+            nonce = nonce + 1
+
+    return error
+\end{minted}
+
+The key insight is that the first four components of the data (\code{prev\_hash}, \code{tx\_commitment}, \code{timestamp}, \code{difficulty\_bits}) are fixed for a given candidate block, while the \code{nonce} is the only variable that changes between attempts. This allows miners to search through nonce values without altering the block's content or position in the chain. The difficulty target determines how rare a valid hash is---lower targets mean fewer valid hashes exist, requiring more computational work on average.
+
+The difficulty adjusts over time to maintain a consistent block production rate. As more miners join the network and computational power increases, blocks would be mined too quickly if difficulty remained constant. To compensate, the network periodically adjusts the \code{TARGET\_BITS} value (which encodes the difficulty threshold) to make mining harder. When difficulty increases, the target value decreases, meaning miners must find rarer hashes---those with more leading zeros when interpreted as a number. This adjustment typically occurs every few blocks, ensuring that blocks continue to be produced at roughly the intended interval despite changes in total network hash rate.
+
+\subsection{Incentives (Whitepaper \S6)}
+\label{sec:ch09-6-incentives}
+
+Mining is rewarded by a coinbase transaction (\code{Transaction::new\_coinbase\_tx(...)}). This implementation appends coinbase to the candidate list during \code{prepare\_mining\_utxo(...)}.
+
+\subsection{Merkle Roots vs.\ Our Simplification (Whitepaper \S8)}
+\label{sec:ch09-6-merkle}
+
+Bitcoin commits to transactions via a Merkle root in the block header. This implementation uses a simplified \code{hash\_transactions()} commitment (a hash over concatenated transaction ids). That keeps the learning focus on the byte layout and the PoW loop, but it is not a substitute for Merkle proofs.
+
+% ──────────────────────────────────────────────────────────────
+\needspace{3in}
+\section{Step-by-Step Code Walkthrough}
+\label{sec:ch09-6-walkthrough}
+
+\textbf{Goal}: trace block production and propagation in code: mempool \textrightarrow\ coinbase \textrightarrow\ PoW \textrightarrow\ persist tip \textrightarrow\ broadcast \textrightarrow\ peer acceptance path.
+
+\subsection{Roadmap}
+\label{sec:ch09-6-roadmap}
+
+\begin{itemize}
+  \item \textbf{Step 1}: mining trigger (\code{should\_trigger\_mining}) \textrightarrow\ Listing~\ref{lst:9-6-1}
+  \item \textbf{Step 2}: candidate tx list (\code{prepare\_mining\_utxo}) \textrightarrow\ Listing~\ref{lst:9-6-2}
+  \item \textbf{Step 3}: mine + announce (\code{process\_mine\_block}) \textrightarrow\ Listing~\ref{lst:9-6-3}
+  \item \textbf{Step 3a}: mining boundary verification (\code{BlockchainService::mine\_block}) \textrightarrow\ Listing~\ref{lst:9-6-4}
+  \item \textbf{Step 3b}: block construction + tx commitment (\code{Block::new\_block}, \code{hash\_transactions}) \textrightarrow\ Listing~\ref{lst:9-6-7}
+  \item \textbf{Step 3c}: proof-of-work engine (\code{ProofOfWork}) \textrightarrow\ Listing~\ref{lst:9-6-8}
+  \item \textbf{Step 3d}: persist new tip + update derived state (\code{BlockchainFileSystem::mine\_block}) \textrightarrow\ Listing~\ref{lst:9-6-5}
+  \item \textbf{Step 3e}: UTXO state transition (\code{update\_utxo\_set}) \textrightarrow\ Listing~\ref{lst:9-6-6}
+  \item \textbf{Step 4}: block relay handshake (INV \textrightarrow\ GETDATA \textrightarrow\ BLOCK) \textrightarrow\ Listings~\ref{lst:9-6-9}--\ref{lst:9-6-11}
+\end{itemize}
+
+\textbf{Whitepaper anchors}:
+\begin{itemize}
+  \item Section 3 (Timestamp server intuition: linking via previous hash)
+  \item Section 4 (Proof-of-Work)
+  \item Section 5 (Network operation loop: broadcast txs/blocks; accept; build on accepted tip)
+  \item Section 6 (Incentive mechanism: coinbase/subsidy)
+\end{itemize}
+
+\subsection{Step 1 --- Decide Whether to Mine}
+\label{sec:ch09-6-step1}
+
+Mining is only attempted when the node is configured as a miner and the mempool has reached a minimum size.
+
+\begin{listing}[htbp]
+\caption{Mining trigger (\code{should\_trigger\_mining})}
+\label{lst:9-6-1}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn should_trigger_mining() -> bool {
+    // Read mempool size (how many pending transactions we currently have).
+    let pool_size = GLOBAL_MEMORY_POOL.len()
+        .expect("Memory pool length error");
+    // Configuration flag: only nodes explicitly configured as miners should mine.
+    let is_miner = GLOBAL_CONFIG.is_miner();
+    // Teaching policy: mine only when there is "enough" work and we are a miner.
+    // (Production miners build templates continuously and do not wait for a
+    // fixed threshold.)
+    pool_size >= TRANSACTION_THRESHOLD && is_miner
+}
+\end{minted}
+\end{listing}
+
+\textbf{What to notice}:
+\begin{itemize}
+  \item It checks two conditions---mempool size and ``am I a miner?''---and returns a boolean.
+  \item It makes miner scheduling explicit and easy to reason about: the node mines only when there is enough pending work to justify it.
+\end{itemize}
+
+\subsection{Step 2 --- Build Candidate Transaction List}
+\label{sec:ch09-6-step2}
+
+This step constructs the exact list of transactions that will be included in the next block to be mined.
+
+\textbf{In this project}: The miner takes a snapshot of the entire mempool using \code{GLOBAL\_MEMORY\_POOL.get\_all()}, which returns all pending transactions without any filtering or ordering. There is no fee-based selection or size optimization---this is a simplified learning implementation that prioritizes clarity over production efficiency. Mining is triggered when the mempool contains at least 3 transactions (\code{TRANSACTION\_THRESHOLD = 3}), and when mining occurs, all transactions in the mempool are included in the candidate block.
+
+\textbf{In Bitcoin whitepaper}: Production miners use sophisticated transaction selection algorithms to maximize revenue. Transactions are selected based on their fee rate (satoshis per byte), with higher fee-rate transactions prioritized. Miners aim to fill blocks up to the size limit (originally 1MB, now approximately 4MB with SegWit) with the most profitable transactions first. The Bitcoin whitepaper doesn't specify a particular selection algorithm, but the economic incentive is clear: ``If the output value of a transaction is less than its input value, the difference is a transaction fee that is added to the incentive value of the block containing the transaction'' (Whitepaper \S6). This creates a fee market where users compete by offering higher fees for faster confirmation.
+
+After selecting transactions, the miner appends a coinbase transaction, creating the candidate transaction list that will be packaged into the new block.
+
+\textbf{Diagram --- candidate assembly (mempool snapshot + coinbase)}
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+candidate_txs =
+  GLOBAL_MEMORY_POOL.get_all()
+  + [Transaction::new_coinbase_tx(mining_address)]
+\end{minted}
+
+\begin{listing}[htbp]
+\caption{Candidate assembly (\code{prepare\_mining\_utxo})}
+\label{lst:9-6-2}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn prepare_mining_utxo(
+    mining_address: &WalletAddress,
+    blockchain: &BlockchainService,
+) -> Result<Vec<Transaction>> {
+    let txs = GLOBAL_MEMORY_POOL.get_all()?;
+
+    // Validate each transaction's inputs are still unspent
+    let db = blockchain.get_db().await?;
+    let utxo_tree = db.open_tree("chainstate")?;
+
+    let mut valid_txs = Vec::new();
+    for tx in txs {
+        if tx.is_coinbase() { continue; }
+        let mut inputs_valid = true;
+        for input in tx.get_vin() {
+            match utxo_tree.get(input.get_txid()) {
+                Ok(Some(outs_bytes)) => {
+                    let outputs: Vec<TXOutput> =
+                        decode(outs_bytes)?;
+                    if input.get_vout() >= outputs.len() {
+                        inputs_valid = false;
+                        break;
+                    }
+                }
+                _ => { inputs_valid = false; break; }
+            }
+        }
+        if inputs_valid {
+            valid_txs.push(tx);
+        } else {
+            remove_from_memory_pool(tx, blockchain).await;
+        }
+    }
+
+    if valid_txs.is_empty() {
+        return Err(BtcError::InvalidValueForMiner(
+            "No valid transactions to mine".to_string(),
+        ));
+    }
+
+    let coinbase_tx =
+        create_mining_coinbase_transaction(mining_address)?;
+    let mut final_txs = valid_txs;
+    final_txs.push(coinbase_tx);
+    Ok(final_txs)
+}
+\end{minted}
+\end{listing}
+
+\textbf{What to notice}:
+\begin{itemize}
+  \item It snapshots the current mempool and validates each transaction's inputs against the UTXO set. This prevents mining blocks with already-spent inputs when a competing block has been accepted during the race between miners.
+  \item Transactions with spent inputs are removed from the mempool (they were already confirmed in a competing block).
+  \item If no valid transactions remain (all were stale), mining is aborted.
+  \item It appends a coinbase transaction, which is the mechanism by which new coins (subsidy) are created for the miner.
+  \item The function is now \code{async} and accepts a \code{BlockchainService} parameter for UTXO validation.
+\end{itemize}
+
+\begin{notebox}
+Why does validation happen in \code{prepare} AND again in \code{mine\_block}? \code{prepare\_mining\_utxo} validates with a \emph{read lock}---other operations can proceed concurrently. Between this validation and the actual \code{mine\_block} call (which requires the \emph{write lock}), a competing block may arrive from the network and be processed via \code{add\_block}. That competing block spends the same transaction inputs. If we didn't re-validate under the write lock, we'd mine a block with already-spent inputs---creating a duplicate coinbase subsidy (money from nothing). The second validation in \code{BlockchainService::mine\_block} catches this race condition.
+\end{notebox}
+
+\subsection{Step 3 --- Mine, Persist, and Clean Up Mempool}
+\label{sec:ch09-6-step3}
+
+\begin{listing}[H]
+\caption{Mine \textrightarrow\ mempool cleanup \textrightarrow\ announce (\code{process\_mine\_block})}
+\label{lst:9-6-3}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn process_mine_block(
+    txs: Vec<Transaction>,
+    blockchain: &BlockchainService,
+) -> Result<Block> {
+    // Prevent concurrent mining --- only one mining task at a time
+    if MINING_IN_PROGRESS
+        .compare_exchange(false, true, Ordering::SeqCst,
+                         Ordering::SeqCst)
+        .is_err()
+    {
+        let msg = "Mining already in progress";
+        return Err(BtcError::InvalidValueForMiner(
+            msg.to_string()));
+    }
+
+    // Reset cancellation flag before starting
+    reset_mining_cancellation();
+
+    let result = async {
+        // Check for cancellation before mining
+        // (a competing block may have arrived)
+        if is_mining_cancelled() {
+            let msg = "Mining cancelled";
+            return Err(BtcError::InvalidValueForMiner(
+                msg.to_string()));
+        }
+        // ... (continue to mine_block call)
+    }.await;
+
+    MINING_IN_PROGRESS.store(false, Ordering::SeqCst);
+    result
+}
+\end{minted}
+\end{listing}
+
+\subsection{Step 3a --- Mining Boundary Verification}
+\label{sec:ch09-6-step3a}
+
+Before a mined block is constructed, every transaction is verified to ensure it is not already spent.
+
+\begin{listing}[htbp]
+\caption{Mining boundary verification (\code{BlockchainService::mine\_block})}
+\label{lst:9-6-4}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn mine_block(
+    &self,
+    transactions: &[Transaction]
+) -> Result<Block> {
+    for tx in transactions {
+        let is_valid = tx.verify(self).await?;
+        if !is_valid {
+            return Err(BtcError::InvalidTransaction);
+        }
+    }
+    // ... (locking mechanism)
+    self.0.write().await.mine_block(transactions).await
+}
+\end{minted}
+\end{listing}
+
+\subsection{Step 3b --- Block Construction and Transaction Commitment}
+\label{sec:ch09-6-step3b}
+
+\begin{listing}[H]
+\caption{Block construction + proof-of-work (\code{Block::new\_block})}
+\label{lst:9-6-7}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn new_block(
+    pre_block_hash: String,
+    transactions: &[Transaction],
+    height: usize,
+) -> Block {
+    let header = BlockHeader {
+        timestamp: crate::current_timestamp(),
+        pre_block_hash,
+        hash: String::new(),
+        nonce: 0,
+        height,
+    };
+    let mut block = Block {
+        header,
+        transactions: transactions.to_vec(),
+    };
+    // Run PoW to find nonce such that
+    // hash < target difficulty
+    let pow = ProofOfWork::new_proof_of_work(
+        block.clone()
+    );
+    let (nonce, hash) = pow.run();
+    block.header.nonce = nonce;
+    block.header.hash = hash;
+    block
+}
+\end{minted}
+\end{listing}
+
+\subsection{Step 3c --- Proof-of-Work Loop}
+\label{sec:ch09-6-step3c}
+
+\begin{listing}[H]
+\caption{Proof-of-work search (\code{ProofOfWork::run})}
+\label{lst:9-6-8}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub fn run(&self) -> (i64, String) {
+    let mut nonce = 0;
+    let mut hash = Vec::new();
+    while nonce < MAX_NONCE {
+        let data = self.prepare_data(nonce);
+        hash = crate::sha256_digest(
+            data.as_slice());
+        let hash_int = BigInt::from_bytes_be(
+            Sign::Plus, hash.as_slice());
+        if hash_int.lt(self.target.borrow()) {
+            // Found valid hash < target difficulty
+            break;
+        } else {
+            nonce += 1;
+        }
+    }
+    (nonce, HEXLOWER.encode(hash.as_slice()))
+}
+\end{minted}
+\end{listing}
+
+\textbf{What to notice}:
+\begin{itemize}
+  \item The nonce starts at 0 and increments by 1 each iteration.
+  \item Each iteration hashes the block header (plus nonce) and checks if the result is less than the target.
+  \item Once a hash below the target is found, the loop breaks and returns the nonce and hash.
+\end{itemize}
+
+\subsection{Step 3d --- Persist New Tip + Update Derived State}
+\label{sec:ch09-6-step3d}
+
+\begin{listing}[H]
+\caption{Persist block and update state (\code{BlockchainFileSystem::mine\_block})}
+\label{lst:9-6-5}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn mine_block(
+    &self,
+    transactions: &[Transaction]
+) -> Result<Block> {
+    let best_height = self.get_best_height().await?;
+    let block = Block::new_block(
+        self.get_tip_hash().await?,
+        transactions,
+        best_height + 1
+    );
+    let block_hash = block.get_hash();
+    // ... (persist to sled, update tip hash)
+    self.update_utxo_set(&block).await?;
+    Ok(block)
+}
+\end{minted}
+\end{listing}
+
+\subsection{Step 3e --- UTXO State Transition}
+\label{sec:ch09-6-step3e}
+
+\begin{listing}[H]
+\caption{UTXO set update after block (\code{update\_utxo\_set})}
+\label{lst:9-6-6}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn update_utxo_set(
+    &self,
+    block: &Block
+) -> Result<()> {
+    // For each transaction in the block:
+    for tx in block.get_transactions() {
+        // Remove spent outputs (coinbase has no inputs)
+        if !tx.is_coinbase() {
+            for input in tx.get_vin() {
+                self.spend_output(
+                    input.get_txid(),
+                    input.get_vout()
+                ).await?;
+            }
+        }
+        // Add newly created outputs
+        for (idx, output) in
+            tx.get_vout().iter().enumerate()
+        {
+            self.add_unspent_output(
+                tx.get_id_bytes(),
+                idx,
+                output
+            ).await?;
+        }
+    }
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\subsection{Step 4 --- Block Relay Handshake}
+\label{sec:ch09-6-step4}
+
+Blocks propagate over the P2P network using a three-message pattern: INV (announce), GETDATA (request), and BLOCK (deliver).
+
+\begin{listing}[htbp]
+\caption{Announce new block (\code{broadcast\_new\_block})}
+\label{lst:9-6-9}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn broadcast_new_block(
+    block: &Block
+) -> Result<()> {
+    // Get all connected peers
+    let peers = GLOBAL_NODES.get_nodes()?;
+    for peer in peers {
+        // Spawn a task to send INV to each peer
+        let block_hash = block.get_hash();
+        tokio::spawn(async move {
+            send_inv(
+                &peer.get_addr(),
+                OpType::Block,
+                &[block_hash.into_bytes()]
+            ).await;
+        });
+    }
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{P2P broadcast primitives (\code{send\_inv}, \code{send\_get\_data}, \code{send\_block})}
+\label{lst:9-6-10}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn send_inv(
+    addr_to: &SocketAddr,
+    op_type: OpType,
+    items: &[Vec<u8>],
+) {
+    send_data(addr_to, Package::Inv {
+        addr_from: GLOBAL_CONFIG.get_node_addr(),
+        op_type,
+        items: items.to_vec(),
+    }).await;
+}
+
+pub async fn send_get_data(
+    addr_to: &SocketAddr,
+    op_type: OpType,
+    id: &[u8],
+) {
+    send_data(addr_to, Package::GetData {
+        addr_from: GLOBAL_CONFIG.get_node_addr(),
+        op_type,
+        id: id.to_vec(),
+    }).await;
+}
+
+pub async fn send_block(
+    addr_to: &SocketAddr,
+    block: &Block,
+) {
+    send_data(addr_to, Package::Block {
+        addr_from: GLOBAL_CONFIG.get_node_addr(),
+        block: block.serialize()
+            .expect("Serialization error"),
+    }).await;
+}
+\end{minted}
+\end{listing}
+
+\begin{listing}[htbp]
+\caption{P2P receive: block from peer (\code{process\_stream}, block arms)}
+\label{lst:9-6-11}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: bitcoin/src/net/net_processing.rs
+match pkg {
+    // Peer says: "I have block_hash"
+    Package::Inv {
+        addr_from,
+        op_type: OpType::Block,
+        items
+    } => {
+        let block_hash = items.first()
+            .expect("INV items empty");
+        // Request the full block bytes
+        send_get_data(
+            &addr_from,
+            OpType::Block,
+            block_hash
+        ).await;
+    }
+
+    // Peer sends: full block bytes
+    Package::Block {
+        addr_from,
+        block
+    } => {
+        let block = Block::deserialize(
+            block.as_slice())
+            .expect("Block deserialization error");
+        // Validate and add to blockchain
+        node_context.add_block(&block).await
+            .expect("Blockchain write error");
+    }
+
+    _ => {}
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Summary}
+\label{sec:ch09-6-summary}
+
+\begin{chaptersummary}
+  \item Pending transactions in the mempool are selected and combined with a coinbase transaction to form a candidate block.
+  \item The mining boundary enforces that all transactions are valid before any proof-of-work is attempted.
+  \item Proof-of-work is a nonce search where miners increment a counter until the block header hashes to a value below the target threshold.
+  \item The persistence boundary updates the blockchain tip and advances the UTXO set only after mining succeeds.
+  \item Block relay uses a three-message INV/GETDATA/BLOCK pattern to efficiently propagate blocks across the network without requiring all peers to simultaneously download each block.
+\end{chaptersummary}

@@ -1,0 +1,36 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{QueryClient}\PYG{p}{,} \PYG{n+nx}{QueryClientProvider} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}react\PYGZhy{}query\PYGZsq{}}
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{BrowserRouter} \PYG{k+kr}{as} \PYG{n+nx}{Router}\PYG{p}{,} \PYG{n+nx}{Routes}\PYG{p}{,} \PYG{n+nx}{Route} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}react\PYGZhy{}router\PYGZhy{}dom\PYGZsq{}}
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{ApiConfigProvider} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}./contexts/ApiConfigContext\PYGZsq{}}
+\PYG{k}{import} \PYG{n+nx}{Layout} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}./components/Layout\PYGZsq{}}
+\PYG{k}{import} \PYG{n+nx}{Dashboard} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}./pages/Dashboard\PYGZsq{}}
+\PYG{c+c1}{// ... other page imports}
+
+\PYG{k+kd}{const} \PYG{n+nx}{queryClient} \PYG{o}{=} \PYG{o+ow}{new} \PYG{n+nx}{QueryClient}\PYG{p}{(\PYGZob{}}
+  \PYG{n+nx}{defaultOptions}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+    \PYG{n+nx}{queries}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+      \PYG{n+nx}{retry}: \PYG{k+kt}{1}\PYG{p}{,}
+      \PYG{n+nx}{staleTime}: \PYG{k+kt}{5} \PYG{o}{*} \PYG{l+m+mf}{60} \PYG{o}{*} \PYG{l+m+mf}{1000}\PYG{p}{,} \PYG{c+c1}{// 5 min}
+    \PYG{p}{\PYGZcb{},}
+  \PYG{p}{\PYGZcb{},}
+\PYG{p}{\PYGZcb{})}
+
+\PYG{k}{export} \PYG{k}{default} \PYG{k+kd}{function} \PYG{n+nx}{App}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+  \PYG{k}{return} \PYG{p}{(}
+    \PYG{o}{\PYGZlt{}}\PYG{n+nx}{QueryClientProvider} \PYG{n+nx}{client}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n+nx}{queryClient}\PYG{p}{\PYGZcb{}}\PYG{o}{\PYGZgt{}}
+      \PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiConfigProvider}\PYG{o}{\PYGZgt{}}
+        \PYG{o}{\PYGZlt{}}\PYG{n+nx}{Router}\PYG{o}{\PYGZgt{}}
+          \PYG{o}{\PYGZlt{}}\PYG{n+nx}{Layout}\PYG{o}{\PYGZgt{}}
+            \PYG{o}{\PYGZlt{}}\PYG{n+nx}{Routes}\PYG{o}{\PYGZgt{}}
+              \PYG{o}{\PYGZlt{}}\PYG{n+nx}{Route} \PYG{n+nx}{path}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}/\PYGZdq{}} \PYG{n+nx}{element}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{Dashboard} \PYG{o}{/\PYGZgt{}}\PYG{p}{\PYGZcb{}} \PYG{o}{/\PYGZgt{}}
+              \PYG{o}{\PYGZlt{}}\PYG{n+nx}{Route} \PYG{n+nx}{path}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}/blockchain\PYGZdq{}} \PYG{n+nx}{element}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{BlockchainScreen} \PYG{o}{/\PYGZgt{}}\PYG{p}{\PYGZcb{}} \PYG{o}{/\PYGZgt{}}
+              \PYG{o}{\PYGZlt{}}\PYG{n+nx}{Route} \PYG{n+nx}{path}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}/wallet\PYGZdq{}} \PYG{n+nx}{element}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{WalletScreen} \PYG{o}{/\PYGZgt{}}\PYG{p}{\PYGZcb{}} \PYG{o}{/\PYGZgt{}}
+              \PYG{p}{\PYGZob{}}\PYG{c+cm}{/* ... more routes */}\PYG{p}{\PYGZcb{}}
+            \PYG{o}{\PYGZlt{}}\PYG{err}{/Routes\PYGZgt{}}
+          \PYG{o}{\PYGZlt{}}\PYG{err}{/Layout\PYGZgt{}}
+        \PYG{o}{\PYGZlt{}}\PYG{err}{/Router\PYGZgt{}}
+      \PYG{o}{\PYGZlt{}}\PYG{err}{/ApiConfigProvider\PYGZgt{}}
+    \PYG{o}{\PYGZlt{}}\PYG{err}{/QueryClientProvider\PYGZgt{}}
+  \PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

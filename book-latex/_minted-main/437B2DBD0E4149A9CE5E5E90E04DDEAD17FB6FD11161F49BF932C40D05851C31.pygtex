@@ -1,0 +1,11 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{blockchain}::\PYG{n}{primitives}::\PYG{n}{block}::\PYG{n}{Block}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{blockchain}::\PYG{n}{primitives}::\PYG{n}{transaction}::\PYG{n}{Transaction}\PYG{p}{;}
+
+\PYG{c+c1}{// Create block with transactions}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Block}::\PYG{n}{new\PYGZus{}block}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{previous\PYGZus{}hash}\PYG{p}{,}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n}{transactions}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{height}
+\PYG{p}{)}\PYG{p}{;}
+\end{Verbatim}

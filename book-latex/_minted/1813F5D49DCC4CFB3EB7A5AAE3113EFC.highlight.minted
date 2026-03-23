@@ -1,0 +1,8 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Good: Arc for shared ownership}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{shared}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Arc}\PYG{o}{\PYGZlt{}}\PYG{n}{NodeContext}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Arc}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{n}{node}\PYG{p}{)}\PYG{p}{;}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{clone1}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Arc}\PYG{p}{::}\PYG{n}{clone}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{shared}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// Cheap}
+
+\PYG{c+c1}{// Bad: Cloning entire struct}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{shared}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{node}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// Expensive}
+\end{MintedVerbatim}

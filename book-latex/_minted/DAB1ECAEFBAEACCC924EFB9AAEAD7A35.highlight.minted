@@ -1,0 +1,15 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Get blockchain info}
+curl\PYG{+w}{ }\PYGZhy{}H\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}X\PYGZhy{}API\PYGZhy{}Key: admin\PYGZhy{}secret\PYGZdq{}}\PYG{+w}{ }\PYG{l+s+se}{\PYGZbs{}}
+\PYG{+w}{  }http://localhost:8080/api/admin/blockchain
+
+\PYG{c+c1}{\PYGZsh{} Get latest blocks}
+curl\PYG{+w}{ }\PYGZhy{}H\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}X\PYGZhy{}API\PYGZhy{}Key: admin\PYGZhy{}secret\PYGZdq{}}\PYG{+w}{ }\PYG{l+s+se}{\PYGZbs{}}
+\PYG{+w}{  }http://localhost:8080/api/admin/blockchain/blocks/latest
+
+\PYG{c+c1}{\PYGZsh{} Create wallet}
+curl\PYG{+w}{ }\PYGZhy{}X\PYG{+w}{ }POST\PYG{+w}{ }\PYG{l+s+se}{\PYGZbs{}}
+\PYG{+w}{  }\PYGZhy{}H\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}X\PYGZhy{}API\PYGZhy{}Key: wallet\PYGZhy{}secret\PYGZdq{}}\PYG{+w}{ }\PYG{l+s+se}{\PYGZbs{}}
+\PYG{+w}{  }\PYGZhy{}H\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}Content\PYGZhy{}Type: application/json\PYGZdq{}}\PYG{+w}{ }\PYG{l+s+se}{\PYGZbs{}}
+\PYG{+w}{  }http://localhost:8080/api/wallet/wallet
+\end{MintedVerbatim}

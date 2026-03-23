@@ -1,0 +1,4 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+docker\PYG{+w}{ }compose\PYG{+w}{ }ps
+netstat\PYG{+w}{ }\PYGZhy{}tulpn\PYG{+w}{ }\PYG{p}{|}\PYG{+w}{ }grep\PYG{+w}{ }\PYGZhy{}E\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}2001|8080|2101\PYGZsq{}}
+\end{MintedVerbatim}

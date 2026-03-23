@@ -1,0 +1,13 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Update image}
+kubectl \PYG{n+nb}{set} image statefulset/webserver \PYG{l+s+se}{\PYGZbs{}}
+  blockchain\PYGZhy{}node\PYG{o}{=}blockchain\PYGZhy{}node:v1.1.0 \PYG{l+s+se}{\PYGZbs{}}
+  \PYGZhy{}n blockchain
+
+\PYG{c+c1}{\PYGZsh{} Watch rollout progress}
+kubectl rollout status statefulset/webserver \PYG{l+s+se}{\PYGZbs{}}
+  \PYGZhy{}n blockchain
+
+\PYG{c+c1}{\PYGZsh{} Rollback if needed}
+kubectl rollout undo statefulset/webserver \PYGZhy{}n blockchain
+\end{Verbatim}

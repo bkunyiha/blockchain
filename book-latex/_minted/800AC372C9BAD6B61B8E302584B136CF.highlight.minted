@@ -1,0 +1,46 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{verify}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{BlockchainService}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{bool}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Coinbase transactions don\PYGZsq{}t need verification}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{is\PYGZus{}coinbase}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{k+kc}{true}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{trimmed\PYGZus{}self\PYGZus{}copy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{trimmed\PYGZus{}copy}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{idx}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{vin}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{vin}\PYG{p}{.}\PYG{n}{iter}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{enumerate}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// 1. Find the previous transaction}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{txid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{vin}\PYG{p}{.}\PYG{n}{get\PYGZus{}txid}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{current\PYGZus{}vin\PYGZus{}tx\PYGZus{}option}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{blockchain}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{find\PYGZus{}transaction}\PYG{p}{(}\PYG{n}{txid}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{current\PYGZus{}vin\PYGZus{}tx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{current\PYGZus{}vin\PYGZus{}tx\PYGZus{}option}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n+nb}{None}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{BtcError}\PYG{p}{::}\PYG{n}{TransactionNotFoundError}\PYG{p}{(}
+\PYG{+w}{                    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{(verify) Previous transaction is not correct}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{c+c1}{// 2. Prepare transaction copy for verification}
+\PYG{+w}{        }\PYG{n}{trimmed\PYGZus{}self\PYGZus{}copy}\PYG{p}{.}\PYG{n}{vin}\PYG{p}{[}\PYG{n}{idx}\PYG{p}{]}\PYG{p}{.}\PYG{n}{signature}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{vec!}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{current\PYGZus{}vin\PYGZus{}tx}\PYG{p}{.}\PYG{n}{vout}\PYG{p}{[}\PYG{n}{vin}\PYG{p}{.}\PYG{n}{vout}\PYG{p}{]}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{trimmed\PYGZus{}self\PYGZus{}copy}\PYG{p}{.}\PYG{n}{vin}\PYG{p}{[}\PYG{n}{idx}\PYG{p}{]}\PYG{p}{.}\PYG{n}{pub\PYGZus{}key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{pub\PYGZus{}key\PYGZus{}hash}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{trimmed\PYGZus{}self\PYGZus{}copy}\PYG{p}{.}\PYG{n}{id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{trimmed\PYGZus{}self\PYGZus{}copy}\PYG{p}{.}\PYG{n}{hash}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{trimmed\PYGZus{}self\PYGZus{}copy}\PYG{p}{.}\PYG{n}{vin}\PYG{p}{[}\PYG{n}{idx}\PYG{p}{]}\PYG{p}{.}\PYG{n}{pub\PYGZus{}key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{vec!}\PYG{p}{[}\PYG{p}{]}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{c+c1}{// 3. Verify the signature}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{schnorr\PYGZus{}sign\PYGZus{}verify}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{vin}\PYG{p}{.}\PYG{n}{get\PYGZus{}pub\PYGZus{}key}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{vin}\PYG{p}{.}\PYG{n}{get\PYGZus{}signature}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{trimmed\PYGZus{}self\PYGZus{}copy}\PYG{p}{.}\PYG{n}{get\PYGZus{}id}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{k+kc}{false}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// Invalid signature}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{k+kc}{true}\PYG{p}{)}\PYG{+w}{ }\PYG{c+c1}{// All signatures valid}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

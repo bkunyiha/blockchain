@@ -1,0 +1,11 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Use Minikube\PYGZsq{}s Docker daemon}
+\PYG{n+nb}{eval} \PYG{k}{\PYGZdl{}(}minikube docker\PYGZhy{}env\PYG{k}{)}
+
+\PYG{c+c1}{\PYGZsh{} Build from repository root}
+\PYG{n+nb}{cd} ../../  \PYG{c+c1}{\PYGZsh{} (where Dockerfile is)}
+docker build \PYGZhy{}t blockchain\PYGZhy{}node:latest \PYGZhy{}f Dockerfile .
+
+\PYG{c+c1}{\PYGZsh{} Restore normal Docker}
+\PYG{n+nb}{eval} \PYG{k}{\PYGZdl{}(}minikube docker\PYGZhy{}env \PYGZhy{}u\PYG{k}{)}
+\end{Verbatim}

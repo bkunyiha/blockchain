@@ -1,0 +1,63 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useQuery}\PYG{p}{,} \PYG{n+nx}{useMutation}\PYG{p}{,} \PYG{n+nx}{useQueryClient} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}react\PYGZhy{}query\PYGZsq{}}
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{getApiClient} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../services/api\PYGZsq{}}
+\PYG{k}{import} \PYG{p}{\PYGZob{}} \PYG{n+nx}{useApiConfig} \PYG{p}{\PYGZcb{}} \PYG{k+kr}{from} \PYG{l+s+s1}{\PYGZsq{}../contexts/ApiConfigContext\PYGZsq{}}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{useBlockchainInfo}\PYG{p}{(}\PYG{n+nx}{refetchInterval?}: \PYG{k+kt}{number}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{const} \PYG{p}{\PYGZob{}} \PYG{n+nx}{config} \PYG{p}{\PYGZcb{}} \PYG{o}{=} \PYG{n+nx}{useApiConfig}\PYG{p}{()}
+  \PYG{k+kd}{const} \PYG{n+nx}{client} \PYG{o}{=} \PYG{n+nx}{getApiClient}\PYG{p}{(}\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{baseURL}\PYG{p}{,} \PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{apiKey}\PYG{p}{)}
+
+  \PYG{k}{return} \PYG{n+nx}{useQuery}\PYG{p}{(\PYGZob{}}
+    \PYG{n+nx}{queryKey}\PYG{o}{:} \PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}blockchain\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}info\PYGZsq{}}\PYG{p}{],}
+    \PYG{n+nx}{queryFn}\PYG{o}{:} \PYG{p}{()} \PYG{p}{=\PYGZgt{}} \PYG{n+nx}{client}\PYG{p}{.}\PYG{n+nx}{getBlockchainInfo}\PYG{p}{(),}
+    \PYG{n+nx}{refetchInterval}\PYG{p}{,}
+  \PYG{p}{\PYGZcb{})}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{useCreateWallet}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{const} \PYG{n+nx}{queryClient} \PYG{o}{=} \PYG{n+nx}{useQueryClient}\PYG{p}{()}
+  \PYG{k+kd}{const} \PYG{p}{\PYGZob{}} \PYG{n+nx}{config} \PYG{p}{\PYGZcb{}} \PYG{o}{=} \PYG{n+nx}{useApiConfig}\PYG{p}{()}
+  \PYG{k+kd}{const} \PYG{n+nx}{client} \PYG{o}{=} \PYG{n+nx}{getApiClient}\PYG{p}{(}\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{baseURL}\PYG{p}{,} \PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{apiKey}\PYG{p}{)}
+
+  \PYG{k}{return} \PYG{n+nx}{useMutation}\PYG{p}{(}
+    \PYG{k}{async} \PYG{p}{(}\PYG{n+nx}{label?}: \PYG{k+kt}{string}\PYG{p}{)} \PYG{p}{=\PYGZgt{}} \PYG{n+nx}{client}\PYG{p}{.}\PYG{n+nx}{createWallet}\PYG{p}{(}\PYG{n+nx}{label}\PYG{p}{),}
+    \PYG{p}{\PYGZob{}}
+      \PYG{n+nx}{onSuccess}\PYG{o}{:} \PYG{p}{()} \PYG{p}{=\PYGZgt{}} \PYG{p}{\PYGZob{}}
+        \PYG{n+nx}{queryClient}\PYG{p}{.}\PYG{n+nx}{invalidateQueries}\PYG{p}{([}\PYG{l+s+s1}{\PYGZsq{}wallet\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}addresses\PYGZsq{}}\PYG{p}{])}
+        \PYG{c+c1}{// Show toast success}
+      \PYG{p}{\PYGZcb{},}
+      \PYG{n+nx}{onError}\PYG{o}{:} \PYG{p}{(}\PYG{n+nx}{error}: \PYG{k+kt}{any}\PYG{p}{)} \PYG{p}{=\PYGZgt{}} \PYG{p}{\PYGZob{}}
+        \PYG{c+c1}{// Show toast error}
+      \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZcb{}}
+  \PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{useSendTransaction}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{const} \PYG{n+nx}{queryClient} \PYG{o}{=} \PYG{n+nx}{useQueryClient}\PYG{p}{()}
+  \PYG{k+kd}{const} \PYG{p}{\PYGZob{}} \PYG{n+nx}{config} \PYG{p}{\PYGZcb{}} \PYG{o}{=} \PYG{n+nx}{useApiConfig}\PYG{p}{()}
+  \PYG{k+kd}{const} \PYG{n+nx}{client} \PYG{o}{=} \PYG{n+nx}{getApiClient}\PYG{p}{(}\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{baseURL}\PYG{p}{,} \PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{apiKey}\PYG{p}{)}
+
+  \PYG{k}{return} \PYG{n+nx}{useMutation}\PYG{p}{(}
+    \PYG{k}{async} \PYG{p}{(}\PYG{n+nx}{params}\PYG{o}{:} \PYG{p}{\PYGZob{}} \PYG{n+nx}{from}: \PYG{k+kt}{string}\PYG{p}{;} \PYG{n+nx}{to}: \PYG{k+kt}{string}\PYG{p}{;} \PYG{n+nx}{amount}: \PYG{k+kt}{number} \PYG{p}{\PYGZcb{})} \PYG{p}{=\PYGZgt{}}
+      \PYG{n+nx}{client}\PYG{p}{.}\PYG{n+nx}{sendTransaction}\PYG{p}{(}\PYG{n+nx}{params}\PYG{p}{.}\PYG{k+kr}{from}\PYG{p}{,} \PYG{n+nx}{params}\PYG{p}{.}\PYG{n+nx}{to}\PYG{p}{,} \PYG{n+nx}{params}\PYG{p}{.}\PYG{n+nx}{amount}\PYG{p}{),}
+    \PYG{p}{\PYGZob{}}
+      \PYG{n+nx}{onSuccess}\PYG{o}{:} \PYG{p}{()} \PYG{p}{=\PYGZgt{}} \PYG{p}{\PYGZob{}}
+        \PYG{n+nx}{queryClient}\PYG{p}{.}\PYG{n+nx}{invalidateQueries}\PYG{p}{([}\PYG{l+s+s1}{\PYGZsq{}blockchain\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}info\PYGZsq{}}\PYG{p}{])}
+        \PYG{n+nx}{queryClient}\PYG{p}{.}\PYG{n+nx}{invalidateQueries}\PYG{p}{([}\PYG{l+s+s1}{\PYGZsq{}transactions\PYGZsq{}}\PYG{p}{])}
+      \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZcb{}}
+  \PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export} \PYG{k+kd}{function} \PYG{n+nx}{useAllBlocks}\PYG{p}{(}\PYG{n+nx}{enabled}: \PYG{k+kt}{boolean} \PYG{o}{=} \PYG{k+kc}{false}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{const} \PYG{p}{\PYGZob{}} \PYG{n+nx}{config} \PYG{p}{\PYGZcb{}} \PYG{o}{=} \PYG{n+nx}{useApiConfig}\PYG{p}{()}
+  \PYG{k+kd}{const} \PYG{n+nx}{client} \PYG{o}{=} \PYG{n+nx}{getApiClient}\PYG{p}{(}\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{baseURL}\PYG{p}{,} \PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{apiKey}\PYG{p}{)}
+
+  \PYG{k}{return} \PYG{n+nx}{useQuery}\PYG{p}{(\PYGZob{}}
+    \PYG{n+nx}{queryKey}\PYG{o}{:} \PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}blocks\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}all\PYGZsq{}}\PYG{p}{],}
+    \PYG{n+nx}{queryFn}\PYG{o}{:} \PYG{p}{()} \PYG{p}{=\PYGZgt{}} \PYG{n+nx}{client}\PYG{p}{.}\PYG{n+nx}{getAllBlocks}\PYG{p}{(),}
+    \PYG{n+nx}{enabled}\PYG{p}{,}
+  \PYG{p}{\PYGZcb{})}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

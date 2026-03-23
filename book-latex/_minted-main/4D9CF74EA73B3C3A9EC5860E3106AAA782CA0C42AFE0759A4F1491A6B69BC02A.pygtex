@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Scale webservers to 5 replicas}
+kubectl scale statefulset webserver \PYGZhy{}n blockchain \PYG{l+s+se}{\PYGZbs{}}
+  \PYGZhy{}\PYGZhy{}replicas\PYG{o}{=}\PYG{l+m}{5}
+
+\PYG{c+c1}{\PYGZsh{} Scale miners to 3}
+kubectl scale statefulset miner \PYGZhy{}n blockchain \PYG{l+s+se}{\PYGZbs{}}
+  \PYGZhy{}\PYGZhy{}replicas\PYG{o}{=}\PYG{l+m}{3}
+\end{Verbatim}

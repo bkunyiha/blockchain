@@ -1,0 +1,14 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+WalletService::new
+  |
+  +\PYGZhy{}\PYGZhy{}\PYGZgt{} load\PYGZus{}from\PYGZus{}file()
+          |
+          +\PYGZhy{}\PYGZhy{}\PYGZgt{} bincode decode \PYGZhy{}\PYGZgt{} HashMap\PYGZlt{}WalletAddress, Wallet\PYGZgt{}
+
+WalletService::create\PYGZus{}wallet
+  |
+  +\PYGZhy{}\PYGZhy{}\PYGZgt{} insert new wallet into HashMap
+  +\PYGZhy{}\PYGZhy{}\PYGZgt{} save\PYGZus{}to\PYGZus{}file()
+          |
+          +\PYGZhy{}\PYGZhy{}\PYGZgt{} bincode encode \PYGZhy{}\PYGZgt{} wallets.dat (truncate + write + flush)
+\end{MintedVerbatim}

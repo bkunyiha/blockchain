@@ -1,0 +1,12 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} macOS / Linux}
+curl\PYG{+w}{ }\PYGZhy{}\PYGZhy{}proto\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}=https\PYGZsq{}}\PYG{+w}{ }\PYGZhy{}\PYGZhy{}tlsv2\PYG{+w}{ }\PYGZhy{}sSf\PYG{+w}{ }https://sh.rustup.rs\PYG{+w}{ }\PYG{p}{|}\PYG{+w}{ }sh
+\PYG{n+nb}{source}\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}}\PYG{n+nv}{\PYGZdl{}HOME}\PYG{l+s+s2}{/.cargo/env}\PYG{l+s+s2}{\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} Windows (PowerShell)}
+winget\PYG{+w}{ }install\PYG{+w}{ }\PYGZhy{}\PYGZhy{}id\PYG{+w}{ }Rustlang.Rustup\PYG{+w}{ }\PYGZhy{}e
+
+\PYG{c+c1}{\PYGZsh{} Verify installation}
+rustc\PYG{+w}{ }\PYGZhy{}\PYGZhy{}version
+cargo\PYG{+w}{ }\PYGZhy{}\PYGZhy{}version
+\end{MintedVerbatim}

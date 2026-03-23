@@ -1,0 +1,42 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{AppState}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{tauri}::\PYG{n}{State}\PYG{p}{;}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{tauri::command}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{cmd\PYGZus{}init\PYGZus{}database}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{state}: \PYG{n+nc}{State}\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZsq{}}\PYG{n+nb}{\PYGZus{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{AppState}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{password}: \PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{wallet\PYGZus{}state}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{state}\PYG{p}{.}\PYG{n}{wallet}\PYG{p}{.}\PYG{n}{read}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n+nf+fm}{format!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Failed to read state: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Use provided password or deterministic password}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pwd}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{password}\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{wallet\PYGZus{}state}\PYG{p}{.}\PYG{n}{database\PYGZus{}password}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Initialize SQLite with encryption (XChaCha20 via sqlcipher or similar)}
+\PYG{+w}{    }\PYG{n}{database}::\PYG{n}{init\PYGZus{}with\PYGZus{}password}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{pwd}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{tauri::command}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{cmd\PYGZus{}save\PYGZus{}wallet}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{wallet\PYGZus{}address}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{wallet\PYGZus{}data}: \PYG{n+nc}{serde\PYGZus{}json}::\PYG{n}{Value}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{database}::\PYG{n}{save\PYGZus{}wallet}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{wallet\PYGZus{}address}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{wallet\PYGZus{}data}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{tauri::command}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{cmd\PYGZus{}load\PYGZus{}wallet}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{wallet\PYGZus{}address}: \PYG{n+nb}{String}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{serde\PYGZus{}json}::\PYG{n}{Value}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{database}::\PYG{n}{load\PYGZus{}wallet}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{wallet\PYGZus{}address}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

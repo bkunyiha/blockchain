@@ -1,0 +1,835 @@
+% ══════════════════════════════════════════════════════════════
+% Chapter 23: Kubernetes Deployment
+% ══════════════════════════════════════════════════════════════
+\chapter{Deployment: Kubernetes}
+\label{ch:k8s-deployment}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Deploy the blockchain network on Kubernetes for production-grade orchestration
+  \item Configure StatefulSets with per-pod storage for stateful blockchain nodes
+  \item Understand service discovery, DNS, and networking in Kubernetes
+  \item Implement horizontal pod autoscaling and high availability
+  \item Migrate from Docker Compose to Kubernetes manifests
+  \item Troubleshoot and operate Kubernetes deployments
+\end{itemize}
+\end{learnbox}
+
+\lettrine{D}{o}\index{Docker}cker Compose excels for local development, but \index{Kubernetes}Kubernetes is built for long-running systems in production. If a \index{blockchain}blockchain node crashes, \index{Kubernetes}Kubernetes restarts it automatically. If you need more nodes, you change a replica count. If you push a new image, \index{Kubernetes}Kubernetes rolls it out without downtime. This chapter shows how the same \index{Docker}Docker images from Chapter~\ref{ch:docker-deployment} are deployed into a system that can run reliably in production.
+
+\begin{infobox}{Prerequisites}
+This chapter assumes you have read Chapter~\ref{ch:docker-deployment} (Docker Compose) and have basic familiarity with Kubernetes concepts. A local cluster like Minikube or kind is recommended for following along.
+\end{infobox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Introduction and Architecture}
+\label{sec:k8s-introduction}
+
+\subsection{Why Kubernetes After Docker Compose}
+
+\begin{table}[htbp]
+\caption{Docker Compose vs. Kubernetes}
+\label{tab:compose-vs-k8s}
+\centering\small
+\begin{tabularx}{0.92\textwidth}{lll}
+\toprule
+\textbf{Feature} & \textbf{Docker Compose} & \textbf{Kubernetes} \\
+\midrule
+Self-healing & Limited & \checkmark Restarts and reschedules \\
+Rolling updates & Manual & \checkmark Built-in rollout/rollback \\
+Service discovery & Docker DNS & \checkmark Cluster DNS + Services \\
+Autoscaling & Manual & \checkmark HPA \\
+Stateful workloads & Possible & \checkmark First-class StatefulSets \\
+Multi-node & No & \checkmark Native \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+In this repo, \index{Kubernetes}Kubernetes matters because \textbf{\index{mining}miners and webservers are stateful} (disk-backed databases and \index{wallet}wallets), and \index{Kubernetes}Kubernetes provides StatefulSets with per-pod PersistentVolumeClaims---the right primitive to manage this cleanly.
+
+\subsection{What You'll Build}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance = 1.0cm and 0.9cm,
+    cluster/.style = {rectangle, rounded corners=8pt, draw=sectioncolor, fill=sectioncolor!5,
+                      minimum width=6.5cm, minimum height=7cm},
+    section/.style = {rectangle, rounded corners=5pt, draw=sectioncolor!60, fill=codebg,
+                      text width=2.8cm, align=center, minimum height=0.7cm, font=\small\sffamily},
+    item/.style = {rectangle, rounded corners=3pt, draw=sectioncolor!40, fill=white,
+                   text width=2.0cm, align=center, minimum height=0.5cm, font=\tiny\ttfamily},
+  ]
+
+  % Cluster border
+  \node[cluster] (cluster) at (3.25, 3.5) {};
+  \node[font=\small\sffamily\bfseries, anchor=north west] at (0.5,6.8) {Kubernetes Cluster (namespace: blockchain)};
+
+  % StatefulSet: Miner
+  \node[section] (miner_ss) at (1.2, 5.5) {
+    \textbf{StatefulSet:} \\
+    miner
+  };
+  \node[item] (miner0) at (0.4, 4.6) {miner-0};
+  \node[item] (miner1) at (1.2, 4.6) {miner-1};
+  \node[item] (pvc_m) at (2.0, 4.6) {PVCs};
+
+  % StatefulSet: Webserver
+  \node[section] (web_ss) at (5.3, 5.5) {
+    \textbf{StatefulSet:} \\
+    webserver
+  };
+  \node[item] (web0) at (4.5, 4.6) {webserver-0};
+  \node[item] (web1) at (5.3, 4.6) {webserver-1};
+  \node[item] (pvc_w) at (6.1, 4.6) {PVCs};
+
+  % Deployment: Redis
+  \node[section] (redis_deploy) at (3.25, 3.8) {
+    \textbf{Deployment:} \\
+    redis
+  };
+
+  % Services
+  \node[section] (services) at (1.2, 2.8) {
+    \textbf{Services}
+  };
+  \node[item] (svc_m_hl) at (0.2, 2.0) {miner-hl};
+  \node[item] (svc_m) at (1.2, 2.0) {miner-svc};
+  \node[item] (svc_w_hl) at (2.2, 2.0) {web-hl};
+
+  % ConfigMaps
+  \node[section] (cm) at (5.3, 2.8) {
+    \textbf{ConfigMaps}
+  };
+  \node[item] (cm_cfg) at (4.5, 2.0) {config};
+  \node[item] (cm_rate) at (6.1, 2.0) {rate-limit};
+
+  % HPA
+  \node[section] (hpa) at (3.25, 1.0) {
+    \textbf{HPA:} miner-hpa, \\
+    webserver-hpa
+  };
+
+  % Secrets
+  \node[section] (secrets) at (3.25, 0.1) {
+    \textbf{Secrets:} \\
+    blockchain-secrets
+  };
+
+  \end{tikzpicture}
+  \caption{Kubernetes Deployment Architecture: StatefulSets, Services, and Configuration}
+  \label{fig:k8s-architecture}
+\end{figure}
+
+% ──────────────────────────────────────────────────────────────
+\section{Core Kubernetes Concepts}
+\label{sec:k8s-concepts}
+
+\subsection{Namespace}
+
+A Namespace provides resource isolation and scoping. All resources in this repo live in the \code{blockchain} namespace.
+
+\begin{listing}[htbp]
+\caption{Namespace Definition}
+\label{lst:ch23-namespace}
+\begin{minted}[fontsize=\footnotesize]{yaml}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: blockchain
+  labels:
+    name: blockchain
+    environment: production
+\end{minted}
+\end{listing}
+
+\subsection{ConfigMap}
+
+ConfigMaps store non-sensitive configuration data. In this repo, two ConfigMaps are used:
+\begin{itemize}
+  \item \code{blockchain-config}: General node settings (as env vars)
+  \item \code{rate-limit-settings}: \code{Settings.toml} (mounted as file)
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{ConfigMap for Node Settings}
+\label{lst:ch23-configmap}
+\begin{minted}[fontsize=\footnotesize]{yaml}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blockchain-config
+  namespace: blockchain
+data:
+  MINER_NODE_IS_MINER: "yes"
+  MINER_NODE_CONNECT_NODES: "local"
+  WEBSERVER_NODE_IS_WEB_SERVER: "yes"
+  WEBSERVER_NODE_CONNECT_NODES: >-
+    miner-service.blockchain.svc.cluster.local:2001
+  SEQUENTIAL_STARTUP: "no"
+  WALLET_FILE: "wallets/wallets.dat"
+\end{minted}
+\end{listing}
+
+\subsection{Secret}
+
+Secrets store sensitive data like API keys. Values are base64-encoded (not encrypted by default).
+
+\begin{listing}[htbp]
+\caption{Secret for API Keys}
+\label{lst:ch23-secret}
+\begin{minted}[fontsize=\footnotesize]{yaml}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: blockchain-secrets
+  namespace: blockchain
+type: Opaque
+stringData:
+  BITCOIN_API_ADMIN_KEY: "admin-secret"
+  BITCOIN_API_WALLET_KEY: "wallet-secret"
+  # Optional: if omitted, entrypoint auto-creates and persists
+  # MINER_ADDRESS: ""
+\end{minted}
+\end{listing}
+
+\subsection{StatefulSet vs. Deployment}
+
+A StatefulSet manages \textbf{stateful pods} with:
+\begin{itemize}
+  \item Stable pod identity (\code{miner-0}, \code{miner-1}, \ldots)
+  \item Stable per-pod storage via \code{volumeClaimTemplates}
+  \item Stable per-pod DNS identity when used with a headless Service
+\end{itemize}
+
+A Deployment manages \textbf{stateless pods} where replicas are interchangeable. In this repo, both miners and webservers are stateful (disk-backed chain DB and wallets), so both run as StatefulSets.
+
+\begin{listing}[htbp]
+\caption{StatefulSet for Webservers}
+\label{lst:ch23-statefulset}
+\begin{minted}[fontsize=\footnotesize]{yaml}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: webserver
+  namespace: blockchain
+spec:
+  serviceName: webserver-headless
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webserver
+  template:
+    metadata:
+      labels:
+        app: webserver
+    spec:
+      containers:
+      - name: blockchain-node
+        image: blockchain-node:latest
+        ports:
+        - name: web
+          containerPort: 8080
+        - name: p2p
+          containerPort: 2001
+        volumeMounts:
+        - name: webserver-data
+          mountPath: /app/data
+        - name: webserver-wallets
+          mountPath: /app/wallets
+  volumeClaimTemplates:
+  - metadata:
+      name: webserver-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 50Gi
+  - metadata:
+      name: webserver-wallets
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
+\end{minted}
+\end{listing}
+
+The \code{volumeClaimTemplates} section creates \textbf{one PVC per pod}, ensuring each webserver/miner has isolated disk storage. This avoids shared-disk locking issues (e.g., Sled DB lock contention) that would occur if multiple replicas shared the same storage path.
+
+\subsection{Service: Normal and Headless}
+
+In Kubernetes, it is common to have \textbf{two Services} for the same application:
+
+\begin{enumerate}
+  \item A \textbf{headless Service} (\code{clusterIP: None}) for stable \textbf{per-pod identity} (DNS)
+  \item A \textbf{normal Service} (ClusterIP/NodePort/LoadBalancer) for stable \textbf{load-balanced access}
+\end{enumerate}
+
+\begin{listing}[htbp]
+\caption{Headless Service (Per-Pod DNS Identity)}
+\label{lst:ch23-service-headless}
+\begin{minted}[fontsize=\footnotesize]{yaml}
+apiVersion: v1
+kind: Service
+metadata:
+  name: webserver-headless
+  namespace: blockchain
+spec:
+  clusterIP: None  # Headless service
+  selector:
+    app: webserver
+  ports:
+  - name: web
+    port: 8080
+    targetPort: 8080
+  - name: p2p
+    port: 2001
+    targetPort: 2001
+\end{minted}
+\end{listing}
+
+A headless Service enables stable DNS names like:
+\begin{equation}
+\text{\code{webserver-0.webserver-headless.blockchain.svc.cluster.local}}
+\end{equation}
+
+\begin{listing}[htbp]
+\caption{Normal Service (Load-Balanced Access)}
+\label{lst:ch23-service-normal}
+\begin{minted}[fontsize=\footnotesize]{yaml}
+apiVersion: v1
+kind: Service
+metadata:
+  name: webserver-service
+  namespace: blockchain
+spec:
+  type: LoadBalancer
+  selector:
+    app: webserver
+  ports:
+  - name: web
+    port: 8080
+    targetPort: 8080
+\end{minted}
+\end{listing}
+
+\subsection{Service Discovery}
+
+In Kubernetes, pods connect using Service DNS names:
+\begin{equation}
+\text{\code{<service-name>.<namespace>.svc.cluster.local}}
+\end{equation}
+
+\textbf{Example}: A webserver connecting to a miner:
+
+\begin{listing}[H]
+\caption{Service Discovery: Webserver to Miner}
+\label{lst:ch23-service-discovery}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Docker Compose
+NODE_CONNECT_NODES=miner_1:2001
+
+# Kubernetes
+NODE_CONNECT_NODES=miner-service.blockchain.svc.cluster.local:2001
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Setup and Quick Start}
+\label{sec:k8s-quickstart}
+
+\subsection{Prerequisites}
+
+Install the required tools:
+
+\begin{listing}[htbp]
+\caption{Install Kubernetes Tools (macOS)}
+\label{lst:ch23-install-tools}
+\begin{minted}[fontsize=\footnotesize]{bash}
+brew install kubectl
+brew install minikube
+brew install docker
+\end{minted}
+\end{listing}
+
+\subsection{Start Minikube Cluster}
+
+\begin{listing}[H]
+\caption{Start Local Kubernetes Cluster}
+\label{lst:ch23-start-minikube}
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/kubernetes
+
+# Start cluster with metrics-server addon (required for HPA)
+minikube start --cpus=4 --memory=3072mb \
+  --addons=metrics-server
+\end{minted}
+\end{listing}
+
+\subsection{Build and Load Docker Image}
+
+\begin{listing}[H]
+\caption{Build Image into Minikube}
+\label{lst:ch23-build-image}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Use Minikube's Docker daemon
+eval $(minikube docker-env)
+
+# Build from repository root
+cd ../../  # (where Dockerfile is)
+docker build -t blockchain-node:latest -f Dockerfile .
+
+# Restore normal Docker
+eval $(minikube docker-env -u)
+\end{minted}
+\end{listing}
+
+\subsection{Deploy Using Script}
+
+\begin{listing}[H]
+\caption{Deploy All Kubernetes Resources}
+\label{lst:ch23-deploy}
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/kubernetes/manifests
+./deploy.sh
+\end{minted}
+\end{listing}
+
+The deployment script applies manifests in dependency order:
+\begin{enumerate}
+  \item Namespace
+  \item ConfigMaps and Secrets
+  \item PersistentVolumeClaims
+  \item Redis (rate limiting backend)
+  \item StatefulSets (miners and webservers)
+  \item Services
+  \item HPA configurations
+  \item Pod Disruption Budgets
+\end{enumerate}
+
+\subsection{Verify Deployment}
+
+\begin{listing}[H]
+\caption{Verify Pods Are Running}
+\label{lst:ch23-verify}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Check pod status
+kubectl get pods -n blockchain
+
+# Wait for all pods to be ready
+kubectl wait --for=condition=ready pod \
+  -l app=miner -n blockchain --timeout=300s
+kubectl wait --for=condition=ready pod \
+  -l app=webserver -n blockchain --timeout=300s
+
+# View all resources
+kubectl get all -n blockchain
+\end{minted}
+\end{listing}
+
+\subsection{Access Webserver (Port Forward)}
+
+\begin{listing}[H]
+\caption{Port-Forward to Webserver Service}
+\label{lst:ch23-port-forward}
+\begin{minted}[fontsize=\footnotesize]{bash}
+kubectl port-forward -n blockchain \
+  svc/webserver-service 8080:8080
+
+# Then access at http://localhost:8080
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Migration from Docker Compose}
+\label{sec:k8s-migration}
+
+\subsection{Step 1: Build and Push Image}
+
+For local Minikube: use the image loaded in Step 3 above.
+
+For cloud: tag and push to your registry:
+
+\begin{listing}[htbp]
+\caption{Push to Container Registry}
+\label{lst:ch23-push-image}
+\begin{minted}[fontsize=\footnotesize]{bash}
+docker build -t blockchain-node:latest -f Dockerfile .
+docker tag blockchain-node:latest your-registry/blockchain-node:v1.0.0
+docker push your-registry/blockchain-node:v1.0.0
+\end{minted}
+\end{listing}
+
+\subsection{Step 2: Create Namespace}
+
+\begin{listing}[H]
+\caption{Create Blockchain Namespace}
+\label{lst:ch23-create-ns}
+\begin{minted}[fontsize=\footnotesize]{bash}
+kubectl apply -f 01-namespace.yaml
+\end{minted}
+\end{listing}
+
+\subsection{Step 3: Create ConfigMaps and Secrets}
+
+\begin{listing}[H]
+\caption{Apply Configuration and Secrets}
+\label{lst:ch23-config-secrets}
+\begin{minted}[fontsize=\footnotesize]{bash}
+kubectl apply -f 02-configmap.yaml
+kubectl apply -f 03-secrets.yaml
+kubectl apply -f 14-configmap-rate-limit.yaml
+\end{minted}
+\end{listing}
+
+\subsection{Step 4: Create StatefulSets}
+
+StatefulSets automatically create per-pod PVCs based on \code{volumeClaimTemplates}:
+
+\begin{listing}[htbp]
+\caption{Deploy StatefulSets}
+\label{lst:ch23-deploy-statefulsets}
+\begin{minted}[fontsize=\footnotesize]{bash}
+kubectl apply -f 15-redis.yaml
+kubectl apply -f 06-statefulset-miner.yaml
+kubectl apply -f 07-deployment-webserver.yaml
+\end{minted}
+\end{listing}
+
+\subsection{Step 5: Create Services}
+
+\begin{listing}[H]
+\caption{Deploy Services for Networking}
+\label{lst:ch23-deploy-services}
+\begin{minted}[fontsize=\footnotesize]{bash}
+kubectl apply -f 08-service-miner-headless.yaml
+kubectl apply -f 08-service-miner.yaml
+kubectl apply -f 09-service-webserver-headless.yaml
+kubectl apply -f 09-service-webserver.yaml
+\end{minted}
+\end{listing}
+
+\subsection{Step 6: Configure HPA (Autoscaling)}
+
+\begin{listing}[H]
+\caption{Deploy Horizontal Pod Autoscalers}
+\label{lst:ch23-deploy-hpa}
+\begin{minted}[fontsize=\footnotesize]{bash}
+kubectl apply -f 10-hpa-webserver.yaml
+kubectl apply -f 11-hpa-miner.yaml
+\end{minted}
+\end{listing}
+
+\subsection{Key Differences from Docker Compose}
+
+\begin{table}[htbp]
+\caption{Migration: Docker Compose to Kubernetes}
+\label{tab:migration-differences}
+\centering\small
+\begin{tabularx}{0.92\textwidth}{lll}
+\toprule
+\textbf{Aspect} & \textbf{Docker Compose} & \textbf{Kubernetes} \\
+\midrule
+Service discovery & \code{miner\_1:2001} & \code{miner-service\ldots:2001} \\
+Scaling & \code{--scale miner=3} & \code{kubectl scale statefulset miner \ldots} \\
+Port mapping & Manual in compose & Service types (ClusterIP, LB) \\
+Storage & Docker volumes & PersistentVolumeClaims \\
+Configuration & Env vars & ConfigMaps + Secrets \\
+Rolling updates & Manual & \code{kubectl rollout} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ──────────────────────────────────────────────────────────────
+\section{Operations and Scaling}
+\label{sec:k8s-operations}
+
+\subsection{Manual Scaling}
+
+Scale StatefulSets by changing replica count:
+
+\begin{listing}[htbp]
+\caption{Manual Pod Scaling}
+\label{lst:ch23-scale}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Scale webservers to 5 replicas
+kubectl scale statefulset webserver -n blockchain \
+  --replicas=5
+
+# Scale miners to 3
+kubectl scale statefulset miner -n blockchain \
+  --replicas=3
+\end{minted}
+\end{listing}
+
+\subsection{Viewing Logs}
+
+\begin{listing}[H]
+\caption{Stream Container Logs}
+\label{lst:ch23-logs}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# All miner logs
+kubectl logs -n blockchain -l app=miner -f
+
+# Specific pod
+kubectl logs -n blockchain miner-0 -f
+
+# Show previous container logs (for crashes)
+kubectl logs -n blockchain miner-0 --previous
+\end{minted}
+\end{listing}
+
+\subsection{Update Configuration}
+
+\begin{listing}[H]
+\caption{Update and Rollout Configuration}
+\label{lst:ch23-update-config}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Edit ConfigMap
+kubectl edit configmap blockchain-config -n blockchain
+
+# Restart pods to pick up changes
+kubectl rollout restart statefulset/webserver \
+  -n blockchain
+kubectl rollout restart statefulset/miner -n blockchain
+\end{minted}
+\end{listing}
+
+\subsection{Rolling Updates}
+
+\begin{listing}[H]
+\caption{Rolling Update Strategy}
+\label{lst:ch23-rolling-update}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Update image
+kubectl set image statefulset/webserver \
+  blockchain-node=blockchain-node:v1.1.0 \
+  -n blockchain
+
+# Watch rollout progress
+kubectl rollout status statefulset/webserver \
+  -n blockchain
+
+# Rollback if needed
+kubectl rollout undo statefulset/webserver -n blockchain
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Horizontal Pod Autoscaling (HPA)}
+\label{sec:k8s-autoscaling}
+
+HPA automatically adjusts replica counts based on CPU and memory metrics:
+
+\begin{listing}[htbp]
+\caption{HPA Configuration}
+\label{lst:ch23-hpa}
+\begin{minted}[fontsize=\footnotesize]{yaml}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: webserver-hpa
+  namespace: blockchain
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: webserver
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+\end{minted}
+\end{listing}
+
+\subsection{Verify HPA Status}
+
+\begin{listing}[H]
+\caption{Check Autoscaling Status}
+\label{lst:ch23-hpa-status}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# View HPA status
+kubectl describe hpa webserver-hpa -n blockchain
+
+# Check current resource usage
+kubectl top pods -n blockchain
+
+# If \`kubectl top\` fails, enable metrics-server:
+minikube addons enable metrics-server
+
+# Verify Metrics API is available
+kubectl get apiservices | grep metrics
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Troubleshooting}
+\label{sec:k8s-troubleshooting}
+
+\subsection{Symptom: CrashLoopBackOff}
+
+Container starts and immediately exits, then Kubernetes restarts it in a loop.
+
+\begin{listing}[htbp]
+\caption{Debug CrashLoopBackOff}
+\label{lst:ch23-crashloop}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# View logs from crashed container
+kubectl logs -n blockchain miner-0 --previous \
+  --tail 200
+
+# Describe pod for events and probe failures
+kubectl describe pod miner-0 -n blockchain
+
+# Common cause: invalid MINER\_ADDRESS
+# Fix: remove placeholder or set real address
+\end{minted}
+\end{listing}
+
+\subsection{Symptom: Pod Running but Not Ready}
+
+Container is running, but readiness probes fail.
+
+\begin{listing}[htbp]
+\caption{Debug Readiness Issues}
+\label{lst:ch23-not-ready}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Describe pod to see probe failures
+kubectl describe pod miner-0 -n blockchain
+
+# Common causes:
+# - Port mismatches between container and probe
+# - Process not listening on expected port
+# - Application startup delay
+\end{minted}
+\end{listing}
+
+\subsection{Symptom: Storage Lock Errors}
+
+Multiple webserver pods trying to open same Sled database simultaneously.
+
+\begin{listing}[htbp]
+\caption{Debug Storage Lock Errors}
+\label{lst:ch23-storage-lock}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Verify each webserver has its own PVC
+kubectl get pvc -n blockchain | grep webserver
+
+# If sharing storage, ensure StatefulSet with
+# volumeClaimTemplates is used (not Deployment)
+# with shared PVC
+\end{minted}
+\end{listing}
+
+\subsection{Symptom: HPA Not Working}
+
+\begin{listing}[H]
+\caption{Debug HPA Issues}
+\label{lst:ch23-hpa-debug}
+\begin{minted}[fontsize=\footnotesize]{bash}
+# Check HPA status
+kubectl describe hpa webserver-hpa -n blockchain
+
+# Check if metrics are available
+kubectl top pods -n blockchain
+
+# If metrics unavailable, enable metrics-server:
+minikube addons enable metrics-server
+
+# Verify the Metrics API is registered:
+kubectl get apiservices | grep metrics
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Cleanup}
+\label{sec:k8s-cleanup}
+
+\begin{listing}[H]
+\caption{Delete Kubernetes Deployment}
+\label{lst:ch23-cleanup}
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/kubernetes/manifests
+./undeploy.sh
+
+# Or delete namespace (removes all resources)
+kubectl delete namespace blockchain
+
+# Stop local cluster (keeps cluster on disk)
+minikube stop
+
+# Remove local cluster completely
+minikube delete
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Production Considerations}
+\label{sec:k8s-production}
+
+\subsection{Persistent Storage}
+
+In production:
+\begin{itemize}
+  \item Use cloud-provided storage classes (AWS EBS, Google Persistent Disks, Azure Disks)
+  \item Ensure PVCs are backed by reliable block storage with snapshots/backups
+  \item StatefulSets with per-pod PVCs prevent shared-disk locking
+\end{itemize}
+
+\subsection{Resource Requests and Limits}
+
+Set appropriate CPU and memory requests/limits to:
+\begin{itemize}
+  \item Enable proper scheduling
+  \item Prevent resource starvation
+  \item Trigger autoscaling based on actual usage
+\end{itemize}
+
+\begin{listing}[htbp]
+\caption{Resource Configuration}
+\label{lst:ch23-resources}
+\begin{minted}[fontsize=\footnotesize]{yaml}
+resources:
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+  limits:
+    cpu: "2000m"
+    memory: "2Gi"
+\end{minted}
+\end{listing}
+
+\subsection{Network Policies}
+
+In production, restrict network traffic using Kubernetes NetworkPolicies to limit which pods can communicate.
+
+\subsection{Secrets Management}
+
+For production, use proper secret management:
+\begin{itemize}
+  \item Sealed Secrets (automatic encryption)
+  \item External Secrets Operator (integrate with Vault, AWS Secrets Manager)
+  \item Avoid base64-encoding as security (not encryption)
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+\item We deployed the blockchain network on Kubernetes using StatefulSets for stateful miners and webservers.
+\item We understood StatefulSets with per-pod PersistentVolumeClaims as the right primitive for disk-backed databases.
+\item We implemented service discovery using normal and headless Services for load-balanced and per-pod DNS access.
+\item We configured Horizontal Pod Autoscaling to automatically adjust replica counts based on CPU/memory metrics.
+\item We migrated from Docker Compose to Kubernetes by building images, creating manifests, and applying resources in dependency order.
+\item We scaled deployments manually using \code{kubectl scale} and automatically using HPA.
+\item We troubleshot common issues (CrashLoopBackOff, readiness failures, storage locks, HPA misconfiguration).
+\item We considered production best practices: persistent storage, resource management, network policies, and secrets management.
+\end{chaptersummary}
+
+---
+
+

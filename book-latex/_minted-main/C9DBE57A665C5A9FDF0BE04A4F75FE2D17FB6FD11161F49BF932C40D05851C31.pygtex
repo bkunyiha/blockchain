@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{tower\PYGZus{}http}::\PYG{n}{compression}::\PYG{n}{CompressionLayer}\PYG{p}{;}
+
+\PYG{n}{app}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{layer}\PYG{p}{(}\PYG{n}{CompressionLayer}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\end{Verbatim}

@@ -1,0 +1,515 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 12: Network Layer --- P2P Message Routing and Sync
+% ══════════════════════════════════════════════════════════════
+\chapter{Network Layer}
+\label{ch:network}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Process peer-to-peer messages for blockchain synchronization
+  \item Manage peer connections and handle discovery of new nodes
+  \item Coordinate blockchain synchronization across a distributed network
+  \item Understand the network protocol that enables decentralized consensus
+\end{itemize}
+\end{learnbox}
+
+\lettrine{A}{} \index{blockchain}blockchain that cannot communicate with peers is just a local database. The \index{network layer}network layer is what turns isolated nodes into a \index{consensus}consensus system: it propagates new \index{transaction}transactions so \index{mining}miners can include them in \index{block}blocks, relays newly mined \index{block}blocks so all nodes converge on the same chain, and synchronizes new nodes that need to catch up with the canonical history. Every guarantee Bitcoin makes --- immutability, \index{double-spend}double-spend prevention, censorship resistance --- depends on this protocol layer working correctly.
+
+\begin{notebox}[Scope]
+This chapter implements a simplified P2P protocol for blockchain synchronization. We do not cover NAT traversal, relay nodes, the full Bitcoin protocol message set, or Tor/I2P privacy layers.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Chapter Map: What ``Network'' Means in This Repo}
+\label{sec:ch12-chapter-map}
+
+This repository's \index{peer-to-peer}P2P layer is deliberately small:
+
+\begin{itemize}
+  \item \textbf{\index{TCP}Transport}: \index{TCP}TCP streams
+  \item \textbf{\index{encoding}Encoding}: \index{JSON}JSON via \code{\index{Rust!serialization}\index{serde}serde\_json}
+  \item \textbf{\index{message}Message model}: \code{\index{Package}Package} enum + \code{\index{OpType}OpType} enum
+  \item \textbf{\index{dispatcher}Dispatcher}: \code{\index{process\_stream}process\_stream(...)} (routes each \index{inbound}inbound \index{package}package to the right action)
+  \item \textbf{\index{send}Send primitives}: \code{\index{send\_data}send\_data(...)} and typed wrappers (\code{\index{send\_inv}send\_inv}, \code{\index{send\_get\_data}send\_get\_data}, \code{\index{send\_block}send\_block}, \code{\index{send\_tx}send\_tx}, \code{\index{send\_version}send\_version}, \ldots)
+  \item \textbf{\index{peer!bootstrap}Peer bootstrap}: \index{central-node}central-node concept + ``known \index{node}nodes'' exchange
+\end{itemize}
+
+The core implementation lives in:
+
+\begin{itemize}
+  \item \code{bitcoin/src/net/net\_processing.rs}
+  \item \code{bitcoin/src/node/server.rs} (TCP accept loop + bootstrap wiring)
+\end{itemize}
+
+\begin{warnbox}[Implementation Note]
+This implementation uses a simplified P2P protocol suitable for learning. It does not implement NAT traversal, relay nodes, or the full Bitcoin protocol message set. Production networking would require significantly more robust connection handling.
+\end{warnbox}
+
+% ──────────────────────────────────────────────────────────────
+\section{The Minimal Protocol Loop}
+\label{sec:ch12-protocol-loop}
+
+Bitcoin uses a \textbf{\index{gossip protocol}gossip and fetch} strategy to minimize bandwidth: peers announce what they have by sharing only the hash (the \index{gossip protocol}gossip phase), peers request the full object by hash (the fetch phase), and peers deliver the full object.
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{rust}
+Peer A has object (tx or block)
+  |
+  | 1) announce (hash only)
+  v
+INV(op_type, [id]) -----> Peer B
+                             |
+                             | 2) request bytes
+                             v
+                          GETDATA -----> Peer A
+                                           |
+                                           | 3) send full bytes
+                                           v
+                                  (TX | BLOCK) -----> Peer B
+                                                        |
+                                                        | 4) hand to node
+                                                        v
+                                                 mempool / add_block
+\end{minted}
+
+This three-message pattern---announce, request, deliver---is the heartbeat of blockchain peer-to-peer communication.
+
+% ──────────────────────────────────────────────────────────────
+\section{Message Model: The Wire-Level Vocabulary}
+\label{sec:ch12-message-model}
+
+Before reading any runtime flow, we need to understand what messages exist and what fields they carry.
+
+\begin{listing}[htbp]
+\caption{Network globals and message type enums}
+\label{lst:ch12-message-model}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub const NODE_VERSION: usize = 1;
+
+// Discriminator: tells receiver what type
+// (Tx or Block) the hash refers to.
+#[derive(Debug, Serialize, Deserialize)]
+pub enum OpType { Tx, Block }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum MessageType {
+    Error, Success, Info, Warning, Ack
+}
+
+// Admin operations (not part of P2P protocol)
+#[derive(Debug, Serialize, Deserialize)]
+pub enum AdminNodeQueryType {
+    GetBalance { wlt_address: String },
+    GetAllTransactions,
+    GetBlockHeight,
+    MineEmptyBlock,
+    ReindexUtxo,
+}
+
+// Wire envelope: every JSON message is one Package
+#[derive(Debug, Serialize, Deserialize)]
+pub enum Package {
+    Block { addr_from: SocketAddr, block: Vec<u8> },
+    GetBlocks { addr_from: SocketAddr },
+    GetData {
+        addr_from: SocketAddr,
+        op_type: OpType,
+        id: Vec<u8>
+    },
+    Inv {
+        addr_from: SocketAddr,
+        op_type: OpType,
+        items: Vec<Vec<u8>>
+    },
+    Tx { addr_from: SocketAddr, transaction: Vec<u8> },
+    SendBitCoin {
+        addr_from: SocketAddr,
+        wlt_frm_addr: String,
+        wlt_to_addr: String,
+        amount: i32,
+    },
+    KnownNodes { addr_from: SocketAddr, nodes: Vec<SocketAddr> },
+    Version {
+        addr_from: SocketAddr,
+        version: usize,
+        best_height: usize
+    },
+    Message {
+        addr_from: SocketAddr,
+        message_type: MessageType,
+        message: String,
+    },
+    AdminNodeQuery {
+        addr_from: SocketAddr,
+        query_type: AdminNodeQueryType
+    },
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{TCP Server Loop: How Nodes Accept Connections}
+\label{sec:ch12-server-loop}
+
+This is the runtime entry point for inbound peer connections. It binds a TCP listener, does initial bootstrap, and then spawns one task per accepted connection.
+
+\begin{listing}[htbp]
+\caption{TCP server setup and bootstrap}
+\label{lst:ch12-server-setup}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Clone)]
+pub struct Server {
+    node_context: NodeContext,
+}
+
+impl Server {
+    pub fn new(blockchain: NodeContext) -> Server {
+        Server { node_context: blockchain }
+    }
+
+    pub async fn run_with_shutdown(
+        &self,
+        addrs: &SocketAddr,
+        connect_nodes: HashSet<ConnectNode>,
+        mut shutdown:
+            tokio::sync::broadcast::Receiver<()>,
+    ) {
+        let listener = TcpListener::bind(addrs)
+            .await
+            .expect("TcpListener bind error");
+        info!("Server listening on {:?}",
+            listener.local_addr());
+
+        if !addrs.eq(&CENTERAL_NODE) {
+            let best_height = self
+                .node_context
+                .get_blockchain_height()
+                .await
+                .expect("Blockchain read error");
+            send_version(&CENTERAL_NODE, best_height)
+                .await;
+        } else {
+            let remote_nodes: HashSet<SocketAddr> =
+                connect_nodes
+                    .iter()
+                    .filter(|node| node.is_remote())
+                    .map(|node| node.get_addr())
+                    .collect();
+
+            GLOBAL_NODES
+                .add_nodes(remote_nodes.clone())
+                .expect("Global nodes add error");
+        }
+
+        // Serve incoming connections with
+        // graceful shutdown.
+        loop {
+            tokio::select! {
+                _ = shutdown.recv() => {
+                    info!(
+                        "Network server shutdown signal received"
+                    );
+                    break;
+                }
+                accept_res = listener.accept() => {
+                    match accept_res {
+                        Ok((stream, _peer)) => {
+                            let blockchain =
+                                self.node_context.clone();
+                            tokio::spawn(async move {
+                                match stream.into_std() {
+                                    Ok(std_stream) => {
+                                        let _ = std_stream
+                                            .set_nonblocking(false);
+                                        if let Err(e) =
+                                            net_processing
+                                            ::process_stream(
+                                                blockchain,
+                                                std_stream,
+                                            ).await {
+                                            error!(
+                                                "Serve error: {}",
+                                                e
+                                            );
+                                        }
+                                    }
+                                    Err(e) => {
+                                        error!(
+                                            "Stream conversion error: {}",
+                                            e
+                                        );
+                                    }
+                                }
+                            });
+                        }
+                        Err(e) => {
+                            error!("Accept error: {}", e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Message Dispatcher: Routing Inbound Messages}
+\label{sec:ch12-dispatcher}
+
+The dispatcher is the heart of message routing. It reads JSON from the TCP stream, deserializes into a \code{Package}, and routes based on the variant.
+
+\begin{listing}[htbp]
+\caption{Message dispatcher (simplified)}
+\label{lst:ch12-dispatcher}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn process_stream(
+    node_context: NodeContext,
+    stream: std::net::TcpStream,
+) -> Result<()> {
+    let reader = std::io::BufReader::new(
+        stream.try_clone()?);
+
+    // JSON message stream
+    let mut deserializer =
+        serde_json::Deserializer::from_reader(reader);
+
+    // For each JSON message from the stream...
+    loop {
+        match serde_json::Value::deserialize(
+            &mut deserializer) {
+            Ok(value) => {
+                // Parse the wire envelope
+                match serde_json::from_value::<Package>(
+                    value) {
+                    Ok(pkg) => {
+                        // Dispatch by variant
+                        if let Err(e) =
+                            match pkg {
+                            Package::Tx { addr_from, transaction } => {
+                                let tx = Transaction
+                                    ::deserialize(&transaction)?;
+                                node_context
+                                    .process_transaction(
+                                        &addr_from,
+                                        tx
+                                    ).await
+                                    .map(|_| ())
+                            }
+                            Package::Block {
+                                addr_from, block
+                            } => {
+                                let blk = Block
+                                    ::deserialize(&block)?;
+                                node_context
+                                    .add_block(&blk)
+                                    .await
+                            }
+                            Package::Inv {
+                                addr_from,
+                                op_type,
+                                items
+                            } => {
+                                handle_inv(
+                                    &node_context,
+                                    &addr_from,
+                                    op_type,
+                                    items
+                                ).await
+                            }
+                            Package::GetData {
+                                addr_from,
+                                op_type,
+                                id
+                            } => {
+                                handle_get_data(
+                                    &node_context,
+                                    &addr_from,
+                                    op_type,
+                                    id
+                                ).await
+                            }
+                            Package::Version {
+                                addr_from,
+                                version,
+                                best_height
+                            } => {
+                                // Record peer info
+                                GLOBAL_NODES
+                                    .add_node(addr_from)
+                                    .map(|_| ())
+                            }
+                            _ => Ok(()),
+                        } {
+                            error!("Handler error: {}", e);
+                        }
+                    }
+                    Err(e) => {
+                        error!("Deserialization error: {}", e);
+                        break;
+                    }
+                }
+            }
+            Err(e) if e.is_eof() => {
+                // Peer disconnected
+                break;
+            }
+            Err(e) => {
+                error!("JSON read error: {}", e);
+                break;
+            }
+        }
+    }
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Send Primitives: Broadcasting to Peers}
+\label{sec:ch12-send-primitives}
+
+The send primitives are typed wrappers around a base \code{send\_data(...)} function that opens a fresh TCP connection and sends one JSON message.
+
+\begin{listing}[htbp]
+\caption{Send primitives for inventory and block relay}
+\label{lst:ch12-send}
+\begin{minted}[fontsize=\footnotesize]{rust}
+pub async fn send_inv(
+    addr: &SocketAddr,
+    op_type: OpType,
+    items: &[Vec<u8>],
+) {
+    let pkg = Package::Inv {
+        addr_from: GLOBAL_CONFIG.get_node_addr(),
+        op_type,
+        items: items.to_vec(),
+    };
+    let _ = send_data(addr, pkg).await;
+}
+
+pub async fn send_get_data(
+    addr: &SocketAddr,
+    op_type: OpType,
+    id: Vec<u8>,
+) {
+    let pkg = Package::GetData {
+        addr_from: GLOBAL_CONFIG.get_node_addr(),
+        op_type,
+        id,
+    };
+    let _ = send_data(addr, pkg).await;
+}
+
+pub async fn send_block(
+    addr: &SocketAddr,
+    block: &Block,
+) -> Result<()> {
+    let pkg = Package::Block {
+        addr_from: GLOBAL_CONFIG.get_node_addr(),
+        block: block.serialize()?,
+    };
+    send_data(addr, pkg).await
+}
+
+pub async fn send_tx(
+    addr: &SocketAddr,
+    tx: &Transaction,
+) -> Result<()> {
+    let pkg = Package::Tx {
+        addr_from: GLOBAL_CONFIG.get_node_addr(),
+        transaction: tx.serialize()?,
+    };
+    send_data(addr, pkg).await
+}
+
+pub async fn send_version(
+    addr: &SocketAddr,
+    best_height: usize,
+) {
+    let pkg = Package::Version {
+        addr_from: GLOBAL_CONFIG.get_node_addr(),
+        version: NODE_VERSION,
+        best_height,
+    };
+    let _ = send_data(addr, pkg).await;
+}
+
+// Base send primitive: open connection, send message
+async fn send_data(
+    addr: &SocketAddr,
+    pkg: Package,
+) -> Result<()> {
+    let mut stream = std::net::TcpStream::connect(addr)?;
+    let _ = serde_json::to_writer(&mut stream, &pkg);
+    let _ = stream.flush();
+    Ok(())
+}
+\end{minted}
+\end{listing}
+
+% ──────────────────────────────────────────────────────────────
+\section{Peer Discovery: Bootstrap and Known Nodes}
+\label{sec:ch12-peer-discovery}
+
+The network layer maintains a peer set and exchanges known nodes to bootstrap new peers. The central node concept provides an initial meeting point.
+
+\begin{notebox}[Bootstrap Strategy]
+Nodes start with a hardcoded central node address. They announce their presence by sending a \code{Version} message. The central node collects these addresses and redistributes them via \code{KnownNodes}. This provides the initial peer discovery mechanism without requiring a separate DHT or seed server.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Trade-offs: Transport Layer Architecture}
+\label{sec:ch12-transport-tradeoffs}
+
+The network layer currently uses \code{std::net::TcpStream} for compatibility with existing JSON deserialization code. This choice trades scaling for simplicity:
+
+\begin{itemize}
+  \item \textbf{Advantage}: Direct compatibility with \code{serde\_json::Deserializer::from\_reader(...)}.
+  \item \textbf{Disadvantage}: Potential to block Tokio worker threads under high peer load.
+\end{itemize}
+
+A future migration to \code{tokio::net::TcpStream} would require:
+
+\begin{enumerate}
+  \item Moving from \code{serde\_json::from\_reader(...)} to async frame parsing
+  \item Implementing message framing (length-delimited or newline-delimited)
+  \item Updating connection handling to use async I/O primitives
+\end{enumerate}
+
+This would enable better scalability for production networks with many peers.
+
+% ──────────────────────────────────────────────────────────────
+\section{Exercises}
+\label{sec:ch12-exercises}
+
+\begin{enumerate}
+  \item \textbf{Message Flow Trace} --- Run two nodes locally and submit a transaction to one node. Trace the P2P messages exchanged as the transaction propagates to the second node. Document the message sequence: which message types are sent, in what order, and what each contains.
+
+  \item \textbf{Partition Recovery Scenario} --- Imagine a network partition splits your nodes into two groups. Each group mines blocks independently for 5 minutes. When the partition heals, describe the chain synchronization process. Which chain wins, and what happens to transactions in the losing chain?
+\end{enumerate}
+
+% ──────────────────────────────────────────────────────────────
+\section{Common Errors}
+\label{sec:ch12-common-errors}
+
+\begin{notebox}[Troubleshooting: Network Layer]
+\textbf{``Connection refused'' when connecting to a peer} --- The peer node is not running, or it is listening on a different port/interface than expected. Verify the peer's bind address (check for \code{0.0.0.0} vs \code{127.0.0.1}) and that no firewall rules are blocking the port.
+
+\textbf{Timeout during block synchronization} --- If a new node is catching up with a long chain, the default read timeout may be too short. Increase the TCP timeout or implement chunked block transfer. Also check that the sending peer is not blocked on a lock while the receiver waits.
+
+\textbf{``Address already in use'' on startup} --- The previous node process did not release the TCP port. Wait a few seconds for the OS to reclaim it, or use \code{SO\_REUSEADDR} in the socket options.
+
+\textbf{Peers connect but no blocks propagate} --- Check that the message dispatcher is routing \code{NewBlock} messages to the chainstate handler. A common mistake is registering the handler for \code{NewTransaction} but forgetting \code{NewBlock}.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+\item We built the peer-to-peer networking layer that enables blockchain nodes to communicate and synchronize.
+\item We implemented message processing for block and transaction propagation across the network.
+\item We designed peer connection management for discovery, handshake, and ongoing communication.
+\item We established the network synchronization protocol that keeps all nodes' chain state consistent.
+\item We understood the trade-offs between simplicity (blocking TCP) and scalability (async I/O).
+\end{chaptersummary}
+
+In the next chapter, we bring all these subsystems together under a unified \code{NodeContext} API that coordinates blockchain state, mempool, network, and mining.

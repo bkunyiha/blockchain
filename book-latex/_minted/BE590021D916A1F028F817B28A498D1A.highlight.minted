@@ -1,0 +1,31 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+Wallet UI
+  |
+  ├─\PYGZgt{} POST /api/v1/transactions
+  |     body: \PYGZob{} from: \PYGZdq{}A\PYGZdq{}, to: \PYGZdq{}B\PYGZdq{}, amount: N \PYGZcb{}
+  |
+  └─\PYGZgt{} send\PYGZus{}transaction (HTTP handler)
+        |
+        ├─\PYGZgt{} NodeContext::btc\PYGZus{}transaction(A, B, amount)
+        |     |
+        |     ├─\PYGZgt{} UTXOSet::new (UTXO view)
+        |     ├─\PYGZgt{} Transaction::new\PYGZus{}utxo\PYGZus{}transaction (build+sign)
+        |     |     ├─\PYGZgt{} Select spendable UTXOs from A
+        |     |     ├─\PYGZgt{} Create outputs (to B, change to A)
+        |     |     └─\PYGZgt{} Sign inputs
+        |     |
+        |     └─\PYGZgt{} NodeContext::process\PYGZus{}transaction (mempool)
+        |           |
+        |           ├─\PYGZgt{} transaction\PYGZus{}exists\PYGZus{}in\PYGZus{}pool (dedup)
+        |           ├─\PYGZgt{} add\PYGZus{}to\PYGZus{}memory\PYGZus{}pool
+        |           |     ├─\PYGZgt{} GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL.add(tx)
+        |           |     └─\PYGZgt{} Mark inputs as reserved
+        |           |
+        |           └─\PYGZgt{} tokio::spawn background task
+        |                 ├─\PYGZgt{} broadcast\PYGZus{}transaction\PYGZus{}to\PYGZus{}nodes
+        |                 |     └─\PYGZgt{} send\PYGZus{}inv (to all peers)
+        |                 |
+        |                 └─\PYGZgt{} (optional) process\PYGZus{}mine\PYGZus{}block
+        |
+        └─\PYGZgt{} Return txid (HTTP 202)
+\end{MintedVerbatim}

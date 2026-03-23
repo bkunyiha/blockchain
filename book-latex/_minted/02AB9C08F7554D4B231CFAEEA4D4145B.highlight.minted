@@ -1,0 +1,9 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n+nt}{apiVersion}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{v1}
+\PYG{n+nt}{kind}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{Namespace}
+\PYG{n+nt}{metadata}\PYG{p}{:}
+\PYG{+w}{  }\PYG{n+nt}{name}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{blockchain}
+\PYG{+w}{  }\PYG{n+nt}{labels}\PYG{p}{:}
+\PYG{+w}{    }\PYG{n+nt}{name}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{blockchain}
+\PYG{+w}{    }\PYG{n+nt}{environment}\PYG{p}{:}\PYG{+w}{ }\PYG{l+lScalar+lScalarPlain}{production}
+\end{MintedVerbatim}

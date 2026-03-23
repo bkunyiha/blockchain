@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nv}{CONTAINER\PYGZus{}NAME}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{HOSTNAME}\PYG{k}{:\PYGZhy{}}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}  \PYG{c+c1}{\PYGZsh{} e.g. \PYGZdq{}blockchain\PYGZus{}miner\PYGZus{}1\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} Extract instance number from container name}
+\PYG{k}{if} \PYG{o}{[[} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{CONTAINER\PYGZus{}NAME}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}} \PYG{o}{=}\PYGZti{} \PYGZus{}\PYG{o}{([}\PYG{l+m}{0}\PYGZhy{}23\PYG{o}{]}+\PYG{o}{)}\PYGZdl{} \PYG{o}{]]}\PYG{p}{;} \PYG{k}{then}
+    \PYG{n+nv}{INSTANCE\PYGZus{}NUMBER}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nv}{BASH\PYGZus{}REMATCH}\PYG{p}{[1]}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}  \PYG{c+c1}{\PYGZsh{} e.g. 1}
+\PYG{k}{fi}
+\end{Verbatim}

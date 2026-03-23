@@ -1,0 +1,11 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{tower\PYGZus{}http}\PYG{p}{::}\PYG{n}{cors}\PYG{p}{::}\PYG{n}{CorsLayer}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{tower\PYGZus{}http}\PYG{p}{::}\PYG{n}{compression}\PYG{p}{::}\PYG{n}{CompressionLayer}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{tower\PYGZus{}http}\PYG{p}{::}\PYG{n}{trace}\PYG{p}{::}\PYG{n}{TraceLayer}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{tower\PYGZus{}http}\PYG{p}{::}\PYG{n}{services}\PYG{p}{::}\PYG{n}{ServeDir}\PYG{p}{;}
+
+\PYG{p}{.}\PYG{n}{layer}\PYG{p}{(}\PYG{n}{CorsLayer}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{allow\PYGZus{}origin}\PYG{p}{(}\PYG{n}{Any}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{.}\PYG{n}{layer}\PYG{p}{(}\PYG{n}{CompressionLayer}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{.}\PYG{n}{layer}\PYG{p}{(}\PYG{n}{TraceLayer}\PYG{p}{::}\PYG{n}{new\PYGZus{}for\PYGZus{}http}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{.}\PYG{n}{nest\PYGZus{}service}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/assets}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ServeDir}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/path/to/assets}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{)}
+\end{MintedVerbatim}

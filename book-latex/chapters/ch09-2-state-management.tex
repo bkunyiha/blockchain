@@ -1,0 +1,331 @@
+% ══════════════════════════════════════════════════════════════
+%  Section 9.2: Blockchain State Management
+% ══════════════════════════════════════════════════════════════
+\chapter{Chain: Blockchain State Management}
+\label{ch:blockchain-state-management}
+
+\begin{learnbox}
+\begin{itemize}
+  \item How the \code{chain/} module serves as the public boundary between network events and state mutations
+  \item The \code{BlockchainService} façade: read/write lock boundary for concurrent access
+  \item Where reads take a shared lock and writes take an exclusive lock
+  \item How persistence (storage layer) and derived state (UTXO set) are delegated from the boundary
+\end{itemize}
+\end{learnbox}
+
+This section focuses on the \code{\index{blockchain!state management}chain/} module as the \textbf{public boundary} the rest of the node uses to read and mutate \index{blockchain!state}blockchain state.
+
+In a Bitcoin-style \index{node}node, multiple subsystems are active at once:
+
+\begin{itemize}
+  \item the \index{network!handler}network handler receives \index{block}blocks and \index{transaction}transactions,
+  \item the \index{miner}miner builds candidate \index{block}blocks,
+  \item the \index{wallet}wallet queries spendability (\index{UTXO}UTXOs),
+  \item the \index{web API}web/API layer reads \index{chain}chain information and triggers actions (e.g., ``submit \index{transaction}transaction'', ``start \index{mining}mining'').
+\end{itemize}
+
+In this project, we concentrate ``shared \index{chain}chain \index{state}state'' behind a single \index{facade}façade (\code{\index{BlockchainService}BlockchainService}) and control mutation using an \index{async}async \index{read-write lock}read/write lock. The \index{facade}façade then delegates persistence and \index{fork-choice}fork-choice decisions to the \index{storage layer}storage layer (\code{\index{BlockchainFileSystem}BlockchainFileSystem}) and \index{derived state}derived-state management to the \index{UTXO}UTXO set (\code{\index{UTXOSet}UTXOSet}).
+
+% ──────────────────────────────────────────────────────────────
+\section{Scope and Key Entry Points}
+\label{sec:ch09-2-scope}
+
+This chapter covers the \textbf{API boundary level}: where reads vs.\ writes are controlled, and where the node delegates to persistence and derived state.
+
+Key entry points in this chapter:
+
+\begin{itemize}
+  \item \textbf{Read boundary}: \code{\index{BlockchainService!read}BlockchainService::read(...)} (the \index{read-write lock}shared-read lock pattern)
+  \item \textbf{Write boundary (peer \index{block}blocks)}: \code{\index{BlockchainService!add\_block}BlockchainService::add\_block(...)} \(\to\) \code{\index{BlockchainFileSystem!add\_block}BlockchainFileSystem::add\_block(...)}
+  \item \textbf{Write boundary (local \index{mining}mining)}: \code{\index{BlockchainService!mine\_block}BlockchainService::mine\_block(...)} \(\to\) \code{\index{BlockchainFileSystem!mine\_block}BlockchainFileSystem::mine\_block(...)}
+  \item \textbf{\index{derived state}Derived-state update/rollback}: \code{\index{BlockchainService!update\_utxo\_set}BlockchainService::update\_utxo\_set(...)} / \code{\index{BlockchainService!rollback\_utxo\_set}rollback\_utxo\_set(...)} \(\to\) \code{\index{UTXOSet!update}UTXOSet::\{update, \index{UTXOSet!rollback\_block}rollback\_block\}(...)}
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Architecture: Shared Chain API Used by Node and Web Layers}
+\label{sec:ch09-2-architecture}
+
+\code{\index{BlockchainService}BlockchainService} is a \textbf{high-level \index{chain}chain API} used in two ways:
+
+\begin{itemize}
+  \item \textbf{\index{node!runtime}Node runtime}: \index{networking}networking and \index{mining}mining code call \code{\index{BlockchainService}BlockchainService} directly (for example, to add a received \index{block}block or \index{mining}mine a new one).
+  \item \textbf{\index{web API}Web/API layer}: \index{HTTP}HTTP handlers call into \code{\index{NodeContext}NodeContext} (\code{bitcoin/src/node/context.rs}), which holds a \code{\index{BlockchainService}BlockchainService} internally. In other words, the web layer uses the same \index{chain}chain \index{facade}façade \textbf{indirectly} through the \index{node!coordination}node's coordination boundary.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance = 1.2cm,
+  layer/.style = {rectangle, rounded corners=4pt, draw=sectioncolor, fill=codebg,
+                  text width=4.5cm, align=center, minimum height=0.9cm, font=\sffamily\small},
+  edge from parent/.style={draw=brand,-{Stealth[length=4pt,width=3pt]},thick},
+]
+
+% Web handlers
+\node[layer] (web) at (0, 6) {
+  Web server / handlers \\
+  \texttt{(State<Arc<NodeContext>>)}
+};
+
+% NodeContext
+\node[layer] (context) at (0, 4.4) {
+  NodeContext \\
+  {\small (coordination boundary)}
+};
+
+% BlockchainService
+\node[layer] (service) at (0, 2.8) {
+  BlockchainService \\
+  \texttt{(Arc<RwLock<...>>)}
+};
+
+% UTXO Set and Storage
+\node[layer] (utxo) at (-2.5, 0.8) {
+  UTXOSet \\
+  {\small (derived state)}
+};
+
+\node[layer] (storage) at (2.5, 0.8) {
+  BlockchainFileSystem \\
+  {\small (sled storage)}
+};
+
+% Arrows
+\draw[-{Stealth[length=4pt,width=3pt]},thick,color=brand] (web) -- (context);
+
+\draw[-{Stealth[length=4pt,width=3pt]},thick,color=brand] (context) -- (service)
+  node[midway,right=0.15cm,font=\small\sffamily,fill=white,inner sep=1pt] {owns};
+
+\draw[-{Stealth[length=4pt,width=3pt]},thick,color=brand] (service) -- (utxo)
+  node[midway,left=0.1cm,font=\small\sffamily\itshape,fill=white,inner sep=1pt] {read/write};
+
+\draw[-{Stealth[length=4pt,width=3pt]},thick,color=brand] (service) -- (storage)
+  node[midway,right=0.1cm,font=\small\sffamily\itshape,fill=white,inner sep=1pt] {durable state};
+
+\end{tikzpicture}
+\caption{State Management Architecture: Web API Through Node Context to Blockchain Service}
+\label{fig:ch09-2-state-mgmt}
+\end{figure}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 1: The \code{chain/} Module Exports (Public API Boundary)}
+\label{sec:ch09-2-step1}
+
+The types we import are re-exported here:
+
+\begin{listing}[htbp]
+\caption{Chain module exports (public boundary)}
+\label{lst:ch09-2-1}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: bitcoin/src/chain/mod.rs
+pub mod chainstate;
+pub mod utxo_set;
+
+// Re-export main types for convenience
+pub use chainstate::BlockchainService;
+pub use utxo_set::UTXOSet;
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+\code{chain/mod.rs} is intentionally small: it exposes the façade plus UTXO set without leaking internal layout. This boundary enforces that all chain access goes through the public API, never directly to the persistence engine.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 2: The Façade Type (\code{BlockchainService})}
+\label{sec:ch09-2-step2}
+
+\begin{listing}[H]
+\caption{\code{BlockchainService} façade structure}
+\label{lst:ch09-2-2}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: bitcoin/src/chain/chainstate.rs
+#[derive(Debug)]
+pub struct BlockchainService(
+    Arc<TokioRwLock<BlockchainFileSystem>>
+);
+
+impl BlockchainService {
+    pub async fn initialize(
+        genesis_address: &WalletAddress
+    ) -> Result<BlockchainService> {
+        let blockchain =
+            BlockchainFileSystem::create_blockchain(
+                genesis_address
+            ).await?;
+        Ok(BlockchainService(
+            Arc::new(TokioRwLock::new(blockchain))
+        ))
+    }
+
+    pub async fn default()
+        -> Result<BlockchainService>
+    {
+        let blockchain =
+            BlockchainFileSystem::open_blockchain()
+                .await?;
+        Ok(BlockchainService(
+            Arc::new(TokioRwLock::new(blockchain))
+        ))
+    }
+}
+\end{minted}
+\end{listing}
+
+\begin{infobox}[Key observations]
+\code{Arc<T>} makes the service clonable and shareable across tasks without copying the underlying chainstate. \code{TokioRwLock<T>} allows many readers concurrently (reads), but only one writer (mutations such as adding blocks). This is a standard Rust concurrency pattern for protecting shared mutable state in async environments.
+\end{infobox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 3: Read Helper (Shared Lock Pattern)}
+\label{sec:ch09-2-step3}
+
+The easiest way to understand the locking model is to find the helper used for reads, and then compare it to write paths.
+
+\begin{listing}[htbp]
+\caption{Read helper \(read\) lock + delegation}
+\label{lst:ch09-2-3}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: bitcoin/src/chain/chainstate.rs
+async fn read<F, Fut, T>(&self, f: F) -> Result<T>
+where
+    F: FnOnce(BlockchainFileSystem) -> Fut + Send,
+    Fut: Future<Output = Result<T>> + Send,
+    T: Send + 'static,
+{
+    // Acquire shared (read) lock...
+    let blockchain_guard = self.0.read().await;
+    // ...clone underlying chainstate handle,
+    // run the operation.
+    f(blockchain_guard.clone()).await
+}
+\end{minted}
+\end{listing}
+
+\begin{checkpointbox}
+The public ``read'' methods (\code{get\_tip\_hash}, \code{get\_block}, \code{find\_transaction}, etc.)\ are thin wrappers around \code{read(...)}. We intentionally funnel reads through a single mechanism so it is easy to audit which operations require exclusive access.
+\end{checkpointbox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 4: Write Lock Boundary (Adding a Block)}
+\label{sec:ch09-2-step4}
+
+\begin{listing}[H]
+\caption{Write-lock boundary example (\code{BlockchainService::add\_block})}
+\label{lst:ch09-2-4}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: bitcoin/src/chain/chainstate.rs
+pub async fn add_block(&self, block: &Block) -> Result<()> {
+    let mut blockchain_guard = self.0.write().await;
+    blockchain_guard.add_block(block).await
+}
+\end{minted}
+\end{listing}
+
+\begin{notebox}
+\code{add\_block} is intentionally short: it takes the write lock and delegates to \code{BlockchainFileSystem::add\_block(...)}. This delegation is important: \textbf{the storage layer is the acceptance boundary} where ``validate \(\to\) connect'' belongs. By keeping the lock boundary thin, we avoid holding the exclusive lock longer than necessary, which would slow down concurrent readers.
+\end{notebox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 5: Mining Is Also a Write Path (With Double-Validation)}
+\label{sec:ch09-2-step5}
+
+Mining constructs a new block, persists it, advances the tip, and updates the UTXO set. That is why \code{mine\_block} is also guarded by the write lock.
+
+\begin{listing}[htbp]
+\caption{Mining boundary (\code{BlockchainService::mine\_block})}
+\label{lst:ch09-2-5}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: bitcoin/src/chain/chainstate.rs
+pub async fn mine_block(
+    &self,
+    transactions: &[Transaction]
+) -> Result<Block> {
+    // Validate candidate transactions before we persist anything.
+    for transaction in transactions {
+        let is_valid = transaction.verify(self).await?;
+        if !is_valid {
+            return Err(BtcError::InvalidTransaction);
+        }
+    }
+
+    // Acquire write lock
+    let blockchain_guard = self.0.write().await;
+
+    // Re-validate transaction inputs under the write lock.
+    // Between prepare_mining_utxo (read lock) and here (write lock),
+    // a competing block may have been accepted, spending the same inputs.
+    let db = blockchain_guard.get_db();
+    let utxo_tree = db.open_tree("chainstate")?;
+    for tx in transactions {
+        if tx.is_coinbase() { continue; }
+        for input in tx.get_vin() {
+            // Verify each input's UTXO still exists...
+        }
+    }
+
+    // Mining + persistence happens inside the storage layer.
+    blockchain_guard.mine_block(transactions).await
+}
+\end{minted}
+\end{listing}
+
+\begin{warnbox}[Stale Mining Protection]
+When multiple miners compete for the same transactions, there is a race condition:
+
+\begin{enumerate}
+  \item \textbf{First validation} (read lock): checks each transaction's inputs are unspent (before write lock acquired).
+  \item Between steps 1 and 3, a \textbf{competing block} may arrive from the network and be processed via \code{add\_block} (which takes the write lock), spending the same transaction inputs.
+  \item \textbf{Second validation} (write lock): re-checks inputs just before mining. If any inputs were spent by the competing block in step 2, mining is aborted with a ``stale mining'' error.
+\end{enumerate}
+
+Without this double-check, the node would create a block with already-spent inputs. The \code{update\_utxo\_set} function silently skips missing inputs while still adding the coinbase transaction, effectively creating money from nothing.
+\end{warnbox}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 6: Derived-State Updates (UTXO Set)}
+\label{sec:ch09-2-step6}
+
+\begin{listing}[H]
+\caption{Derived-state delegation (UTXO update + rollback)}
+\label{lst:ch09-2-6}
+\begin{minted}[fontsize=\footnotesize]{rust}
+// Source: bitcoin/src/chain/chainstate.rs
+pub async fn update_utxo_set(
+    &self,
+    block: &Block
+) -> Result<()> {
+    let utxo_set = UTXOSet::new(self.clone());
+    utxo_set.update(block).await
+}
+
+pub async fn rollback_utxo_set(
+    &self,
+    block: &Block
+) -> Result<()> {
+    let utxo_set = UTXOSet::new(self.clone());
+    utxo_set.rollback_block(block).await
+}
+\end{minted}
+\end{listing}
+
+At this point, we have identified the most important ``state boundaries'' in code:
+
+\begin{itemize}
+  \item read-only operations are funneled through \code{read(...)},
+  \item state mutations take the write lock and delegate to the storage layer,
+  \item derived state is updated through the UTXO set.
+\end{itemize}
+
+Next, in Section~\ref{ch:chain-state}, we trace the storage layer's write paths that make blocks durable on disk. Then, in Section~\ref{ch:utxo-set}, we study update and rollback rules in detail.
+
+% ──────────────────────────────────────────────────────────────
+\section{Summary}
+\label{sec:ch09-2-summary}
+
+\begin{chaptersummary}
+\item \textbf{\code{BlockchainService} is the shared chain API}: one façade used across node runtime and indirectly by the web layer via \code{NodeContext}.
+\item \textbf{Read vs.\ write is explicit}: reads go through a shared lock; mutations take an exclusive lock before delegating to persistence.
+\item \textbf{Persistence and derived state are separate}: the storage layer persists blocks/tip; the UTXO set tracks spendability updates/rollbacks.
+\item \textbf{Double validation at mining boundary}: transaction verification happens before the write lock (pre-flight) and again inside the write lock (stale-mining protection).
+\end{chaptersummary}

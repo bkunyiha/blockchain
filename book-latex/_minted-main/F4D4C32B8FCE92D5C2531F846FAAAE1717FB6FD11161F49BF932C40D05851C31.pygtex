@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{WalletService}::\PYG{n}{create\PYGZus{}wallet}
+\PYG{+w}{   }\PYG{o}{|}
+\PYG{+w}{   }\PYG{o}{|}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{Wallet}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{                 }\PYG{c+c1}{// generates keypair}
+\PYG{+w}{   }\PYG{o}{|}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{Wallet}::\PYG{n}{get\PYGZus{}address}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{         }\PYG{c+c1}{// derives Base58 address from public key}
+\PYG{+w}{   }\PYG{o}{|}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{insert}\PYG{+w}{ }\PYG{n}{into}\PYG{+w}{ }\PYG{n}{HashMap}\PYG{+w}{           }\PYG{c+c1}{// address \PYGZhy{}\PYGZgt{} wallet}
+\PYG{+w}{   }\PYG{o}{|}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{save\PYGZus{}to\PYGZus{}file}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{                }\PYG{c+c1}{// bincode \PYGZhy{}\PYGZgt{} wallets.dat}
+\end{Verbatim}

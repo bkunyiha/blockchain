@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} All miner logs}
+docker compose logs \PYGZhy{}f miner
+
+\PYG{c+c1}{\PYGZsh{} All webserver logs}
+docker compose logs \PYGZhy{}f webserver
+
+\PYG{c+c1}{\PYGZsh{} Specific instance}
+docker compose logs \PYGZhy{}f miner\PYGZus{}1
+\end{Verbatim}

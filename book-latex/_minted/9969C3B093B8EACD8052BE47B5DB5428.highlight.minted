@@ -1,0 +1,8 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{tokio::test}\PYG{c+cp}{]}
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{test\PYGZus{}blockchain\PYGZus{}operation}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{create\PYGZus{}test\PYGZus{}blockchain}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{result}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{blockchain}\PYG{p}{.}\PYG{n}{process\PYGZus{}transaction}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nf+fm}{assert!}\PYG{p}{(}\PYG{n}{result}\PYG{p}{.}\PYG{n}{is\PYGZus{}ok}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

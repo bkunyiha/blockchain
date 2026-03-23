@@ -1,0 +1,41 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{error}\PYG{p}{::}\PYG{n+nb}{Result}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{::}\PYG{n}{node}\PYG{p}{::}\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}\PYG{n}{BlockchainService}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Transaction}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{UTXOSet}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{add\PYGZus{}to\PYGZus{}memory\PYGZus{}pool}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{tx}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Transaction}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{blockchain\PYGZus{}service}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{BlockchainService}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Store in pool + mark outputs}
+\PYG{+w}{    }\PYG{c+c1}{// \PYGZdq{}in mempool\PYGZdq{} to prevent double\PYGZhy{}spend}
+\PYG{+w}{    }\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}\PYG{p}{.}\PYG{n}{add}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{utxo\PYGZus{}set}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UTXOSet}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}
+\PYG{+w}{        }\PYG{n}{blockchain\PYGZus{}service}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{utxo\PYGZus{}set}\PYG{p}{.}\PYG{n}{set\PYGZus{}global\PYGZus{}mem\PYGZus{}pool\PYGZus{}flag}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{tx}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kc}{true}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{remove\PYGZus{}from\PYGZus{}memory\PYGZus{}pool}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{tx}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Transaction}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{blockchain}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{BlockchainService}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Remove from pool + clear \PYGZdq{}in mempool\PYGZdq{} flags}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}\PYG{p}{.}\PYG{n}{remove}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{utxo\PYGZus{}set}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{UTXOSet}\PYG{p}{::}\PYG{n}{new}\PYG{p}{(}
+\PYG{+w}{        }\PYG{n}{blockchain}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{utxo\PYGZus{}set}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{set\PYGZus{}global\PYGZus{}mem\PYGZus{}pool\PYGZus{}flag}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{tx}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kc}{false}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{transaction\PYGZus{}exists\PYGZus{}in\PYGZus{}pool}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{tx}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Transaction}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{GLOBAL\PYGZus{}MEMORY\PYGZus{}POOL}\PYG{p}{.}\PYG{n}{contains\PYGZus{}transaction}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or}\PYG{p}{(}\PYG{k+kc}{false}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{cd} ci/docker\PYGZhy{}compose/configs
+
+\PYG{n+nb}{export} \PYG{n+nv}{WALLET\PYGZus{}ADDRESS\PYGZus{}POOL}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}addr1,addr2,addr3,addr4,addr5\PYGZdq{}}
+./docker\PYGZhy{}compose.scale.sh \PYG{l+m}{3} \PYG{l+m}{2}
+\end{Verbatim}

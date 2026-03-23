@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+Webserver 1: NODE\PYGZus{}CONNECT\PYGZus{}NODES=miner\PYGZus{}1:2001
+Webserver 2: NODE\PYGZus{}CONNECT\PYGZus{}NODES=miner\PYGZus{}1:2001 (first miner, not webserver\PYGZus{}1)
+Webserver 3: NODE\PYGZus{}CONNECT\PYGZus{}NODES=miner\PYGZus{}1:2001 (first miner, not webserver\PYGZus{}2)
+\end{Verbatim}

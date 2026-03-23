@@ -1,0 +1,34 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{update\PYGZus{}blocks\PYGZus{}tree}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{blocks\PYGZus{}tree}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Tree}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{block}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Block}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Hash is the key; serialized block is the value.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block\PYGZus{}hash}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{block}\PYG{p}{.}\PYG{n}{get\PYGZus{}hash}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{block\PYGZus{}ivec}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{IVec}\PYG{p}{::}\PYG{n}{try\PYGZus{}from}\PYG{p}{(}\PYG{n}{block}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// sled transactions give us atomicity across}
+\PYG{+w}{    }\PYG{c+c1}{// multiple inserts into the same Tree.}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{transaction\PYGZus{}result}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{TransactionResult}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{        }\PYG{n}{blocks\PYGZus{}tree}\PYG{p}{.}\PYG{n}{transaction}\PYG{p}{(}\PYG{o}{|}\PYG{n}{tx\PYGZus{}db}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// 1) Persist the block bytes under its hash.}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx\PYGZus{}db}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{block\PYGZus{}hash}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{block\PYGZus{}ivec}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+c1}{// 2) Move the \PYGZdq{}tip pointer\PYGZdq{} to the same hash.}
+\PYG{+w}{        }\PYG{c+c1}{// If the process crashes after this transaction}
+\PYG{+w}{        }\PYG{c+c1}{// commits, both updates are present.}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx\PYGZus{}db}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}
+\PYG{+w}{            }\PYG{n}{DEFAULT\PYGZus{}TIP\PYGZus{}BLOCK\PYGZus{}HASH\PYGZus{}KEY}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{block\PYGZus{}hash}
+\PYG{+w}{        }\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{transaction\PYGZus{}result}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{map\PYGZus{}err}\PYG{p}{(}\PYG{o}{|}\PYG{n}{e}\PYG{o}{|}
+\PYG{+w}{            }\PYG{n}{BtcError}\PYG{p}{::}\PYG{n}{BlockchainDBconnection}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n+nf+fm}{format!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZob{}:?\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

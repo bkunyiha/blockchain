@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{app}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Router}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{with\PYGZus{}state}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{node}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// 1. CORS (outermost \PYGZhy{} handles preflight first)}
+\PYG{n}{app}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{layer}\PYG{p}{(}\PYG{n}{cors\PYGZus{}layer}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// 2. Compression}
+\PYG{n}{app}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{layer}\PYG{p}{(}\PYG{n}{CompressionLayer}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// 3. Error handling (innermost \PYGZhy{} catches handler errors)}
+\PYG{n}{app}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{layer}\PYG{p}{(}\PYG{n}{axum}::\PYG{n}{middleware}::\PYG{n}{from\PYGZus{}fn}\PYG{p}{(}\PYG{n}{handle\PYGZus{}errors}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// Request flow: CORS \PYGZhy{}\PYGZgt{} Compression \PYGZhy{}\PYGZgt{} Error Handler \PYGZhy{}\PYGZgt{} Handler}
+\end{Verbatim}

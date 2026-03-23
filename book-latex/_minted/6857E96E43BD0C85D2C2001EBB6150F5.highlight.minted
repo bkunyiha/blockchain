@@ -1,0 +1,10 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} All miner logs}
+kubectl\PYG{+w}{ }logs\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain\PYG{+w}{ }\PYGZhy{}l\PYG{+w}{ }\PYG{n+nv}{app}\PYG{o}{=}miner\PYG{+w}{ }\PYGZhy{}f
+
+\PYG{c+c1}{\PYGZsh{} Specific pod}
+kubectl\PYG{+w}{ }logs\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain\PYG{+w}{ }miner\PYGZhy{}0\PYG{+w}{ }\PYGZhy{}f
+
+\PYG{c+c1}{\PYGZsh{} Show previous container logs (for crashes)}
+kubectl\PYG{+w}{ }logs\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain\PYG{+w}{ }miner\PYGZhy{}0\PYG{+w}{ }\PYGZhy{}\PYGZhy{}previous
+\end{MintedVerbatim}

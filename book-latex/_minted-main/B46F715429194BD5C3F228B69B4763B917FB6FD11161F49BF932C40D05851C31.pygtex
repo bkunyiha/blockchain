@@ -1,0 +1,13 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{fn} \PYG{n+nf}{takes\PYGZus{}slice}\PYG{p}{(}\PYG{n}{data}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nf+fm}{println!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Length: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{data}\PYG{p}{.}\PYG{n}{len}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Both work the same:}
+\PYG{n}{takes\PYGZus{}slice}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{id}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// [OK] Auto\PYGZhy{}converts \PYGZam{}Vec\PYGZlt{}u8\PYGZgt{} \PYGZhy{}\PYGZgt{} \PYGZam{}[u8]}
+\PYG{n}{takes\PYGZus{}slice}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{id}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// [OK] Explicit conversion}
+
+\PYG{c+c1}{// For comparison:}
+\PYG{k}{if}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{tx}\PYG{p}{.}\PYG{n}{id}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{other\PYGZus{}slice}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{            }\PYG{c+c1}{// [OK] Works}
+\PYG{k}{if}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{id}\PYG{p}{.}\PYG{n}{as\PYGZus{}slice}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{other\PYGZus{}slice}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{  }\PYG{c+c1}{// [OK] Same result}
+\end{Verbatim}

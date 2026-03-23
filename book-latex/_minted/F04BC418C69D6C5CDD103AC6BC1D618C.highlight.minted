@@ -1,0 +1,37 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+┌──────────────────────────────┐                   ┌──────────────────────────────┐
+│ Node A: Web/API node         │                   │ Node B: Miner node           │
+│ (is\PYGZus{}web\PYGZus{}server=yes, no miner)│                   │ (is\PYGZus{}miner=yes)               │
+└───────────────┬──────────────┘                   └───────────────┬──────────────┘
+                │ HTTP POST /api/v1/transactions                    │
+                │                                                   │
+                ▼                                                   │
+  web::handlers::transaction::send\PYGZus{}transaction                      │
+                │                                                   │
+                ▼                                                   │
+          NodeContext::btc\PYGZus{}transaction                              │
+                │                                                   │
+                ▼                                                   │
+          NodeContext::process\PYGZus{}transaction                          │
+                │                                                   │
+                ├─\PYGZgt{} txmempool::add\PYGZus{}to\PYGZus{}memory\PYGZus{}pool                   │
+                │                                                   │
+                └─\PYGZgt{} submit\PYGZus{}transaction\PYGZus{}for\PYGZus{}mining (background)      │
+                      │                                             │
+                      └─\PYGZgt{} net\PYGZus{}processing::send\PYGZus{}inv(Tx, txid) ──────►│
+                                                                    │ receive INV
+                                                                    ▼
+                                                          net\PYGZus{}processing::process\PYGZus{}stream
+                                                                    │
+                                                                    ├─\PYGZgt{} send\PYGZus{}get\PYGZus{}data(Tx)
+                                                                    │
+                                                                    ▼
+                                                          net\PYGZus{}processing::send\PYGZus{}tx
+                                                                    │
+                                                                    ▼
+                                                          Package::Tx \PYGZhy{}\PYGZgt{} process\PYGZus{}transaction
+                                                                    │
+                                                                    └─\PYGZgt{} miner::process\PYGZus{}mine\PYGZus{}block
+                                                                        \PYGZhy{}\PYGZgt{} Block::new\PYGZus{}block
+                                                                        \PYGZhy{}\PYGZgt{} ProofOfWork::run
+\end{MintedVerbatim}

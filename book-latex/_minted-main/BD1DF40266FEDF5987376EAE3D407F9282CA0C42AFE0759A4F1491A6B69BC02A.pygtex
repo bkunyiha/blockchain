@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+git clone https://github.com/bkunyiha/rust\PYGZhy{}blockchain.git
+\PYG{n+nb}{cd} rust\PYGZhy{}blockchain
+\end{Verbatim}

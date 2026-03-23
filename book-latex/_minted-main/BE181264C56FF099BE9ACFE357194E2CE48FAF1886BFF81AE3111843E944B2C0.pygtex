@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+miner::process\PYGZus{}mine\PYGZus{}block
+  +\PYGZhy{}\PYGZgt{} BlockchainService::mine\PYGZus{}block
+        +\PYGZhy{}\PYGZgt{} BlockchainFileSystem::mine\PYGZus{}block
+              +\PYGZhy{}\PYGZgt{} Block::new\PYGZus{}block
+                    +\PYGZhy{}\PYGZgt{} ProofOfWork::run
+\end{Verbatim}

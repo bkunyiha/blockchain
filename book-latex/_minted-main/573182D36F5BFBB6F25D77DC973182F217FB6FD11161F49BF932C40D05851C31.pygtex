@@ -1,0 +1,46 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{handle\PYGZus{}errors}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{request}: \PYG{n+nc}{axum}::\PYG{n}{http}::\PYG{n}{Request}\PYG{o}{\PYGZlt{}}\PYG{n}{axum}::\PYG{n}{body}::\PYG{n}{Body}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{next}: \PYG{n+nc}{axum}::\PYG{n}{middleware}::\PYG{n}{Next}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{axum}::\PYG{n}{response}::\PYG{n}{Response}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{StatusCode}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{response}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{next}\PYG{p}{.}\PYG{n}{run}\PYG{p}{(}\PYG{n}{request}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Log error response body if status indicates error}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{is\PYGZus{}error}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{response}\PYG{p}{.}\PYG{n}{status}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{is\PYGZus{}server\PYGZus{}error}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{response}\PYG{p}{.}\PYG{n}{status}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{is\PYGZus{}client\PYGZus{}error}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{is\PYGZus{}error}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{parts}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{body}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{response}\PYG{p}{.}\PYG{n}{into\PYGZus{}parts}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{body\PYGZus{}bytes}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{axum}::\PYG{n}{body}::\PYG{n}{to\PYGZus{}bytes}\PYG{p}{(}\PYG{n}{body}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{usize}::\PYG{n}{MAX}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}default}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{body\PYGZus{}str}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{String}::\PYG{n}{from\PYGZus{}utf8\PYGZus{}lossy}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{body\PYGZus{}bytes}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{n}{tracing}::\PYG{n}{error}\PYG{o}{!}\PYG{p}{(}
+\PYG{+w}{            }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{[handle\PYGZus{}errors]: Error response (\PYGZob{}\PYGZcb{}): \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{parts}\PYG{p}{.}\PYG{n}{status}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{body\PYGZus{}str}
+\PYG{+w}{        }\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{c+c1}{// Format internal server errors safely}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{parts}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{StatusCode}::\PYG{n}{INTERNAL\PYGZus{}SERVER\PYGZus{}ERROR}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{error\PYGZus{}response}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ErrorResponse}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{error}: \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Internal Server Error}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{message}:
+                    \PYG{l+s}{\PYGZdq{}}\PYG{l+s}{An unexpected error occurred}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{status\PYGZus{}code}: \PYG{l+m+mi}{500}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{timestamp}: \PYG{n+nc}{chrono}::\PYG{n}{Utc}::\PYG{n}{now}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{+w}{            }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{Json}\PYG{p}{(}\PYG{n}{ApiResponse}::\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}::\PYG{n}{error}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{serde\PYGZus{}json}::\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{error\PYGZus{}response}\PYG{p}{)}
+\PYG{+w}{                    }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}
+\PYG{+w}{                        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Unknown error}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}\PYG{p}{)}\PYG{p}{.}\PYG{n}{into\PYGZus{}response}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{response}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{response}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

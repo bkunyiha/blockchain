@@ -1,0 +1,7 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{// Bitcoin Core: src/txdb.cpp}
+\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{n+nf}{CCoinsViewDB::GetCoin}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{COutPoint}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{outpoint}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Coin}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{coin}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// outpoint.hash is uint256 (binary) \PYGZhy{} used as DB key}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{m\PYGZus{}db}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZgt{}}\PYG{n}{Read}\PYG{p}{(}\PYG{n}{DB\PYGZus{}COIN}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{outpoint}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// Binary key}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

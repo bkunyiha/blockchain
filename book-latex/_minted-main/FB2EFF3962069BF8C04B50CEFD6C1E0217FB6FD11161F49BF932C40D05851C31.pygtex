@@ -1,0 +1,24 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// [OK] DO: Use get\PYGZus{}id() for comparisons and lookups}
+\PYG{k}{if}\PYG{+w}{ }\PYG{n}{tx1}\PYG{p}{.}\PYG{n}{get\PYGZus{}id}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx2}\PYG{p}{.}\PYG{n}{get\PYGZus{}id}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nf+fm}{println!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Same transaction!}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// [OK] DO: Use get\PYGZus{}id\PYGZus{}bytes() when you need ownership}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{txid\PYGZus{}owned}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}id\PYGZus{}bytes}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{n}{store\PYGZus{}in\PYGZus{}database}\PYG{p}{(}\PYG{n}{txid\PYGZus{}owned}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// [OK] DO: Use get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex() for user\PYGZhy{}facing output}
+\PYG{n+nf+fm}{println!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Transaction ID: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{json}\PYG{o}{!}\PYG{p}{(}\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{txid}\PYG{l+s}{\PYGZdq{}}: \PYG{n+nc}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{c+c1}{// [X] DON\PYGZsq{}T: Convert unnecessarily}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{hex}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{bytes}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{hex}::\PYG{n}{decode}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{hex}\PYG{p}{)}\PYG{p}{.}\PYG{n}{unwrap}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// Wasteful!}
+\PYG{c+c1}{// Just use: tx.get\PYGZus{}id() or tx.get\PYGZus{}id\PYGZus{}bytes()}
+
+\PYG{c+c1}{// [X] DON\PYGZsq{}T: Clone when borrowing is enough}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}id\PYGZus{}bytes}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// Allocates!}
+\PYG{n}{compare}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{id}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{other}\PYG{p}{)}\PYG{p}{;}
+\PYG{c+c1}{// Better: compare(tx.get\PYGZus{}id(), \PYGZam{}other);}
+\end{Verbatim}

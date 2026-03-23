@@ -1,0 +1,12 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct} \PYG{n+nc}{RateLimitConfig}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{requests\PYGZus{}per\PYGZus{}second}: \PYG{k+kt}{u32}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{burst\PYGZus{}size}: \PYG{k+kt}{u32}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{create\PYGZus{}rate\PYGZus{}limit\PYGZus{}layer}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{config}: \PYG{n+nc}{RateLimitConfig}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{impl}\PYG{+w}{ }\PYG{n}{tower}::\PYG{n}{Layer}\PYG{o}{\PYGZlt{}}\PYG{n}{axum}::\PYG{n}{Router}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n+nb}{Clone}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Returns rate limiting layer}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

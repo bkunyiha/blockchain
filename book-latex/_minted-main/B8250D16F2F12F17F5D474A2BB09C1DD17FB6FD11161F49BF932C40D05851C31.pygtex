@@ -1,0 +1,36 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{submit\PYGZus{}transaction\PYGZus{}for\PYGZus{}mining}\PYG{p}{(}
+\PYG{+w}{    }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{addr\PYGZus{}from}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{std}::\PYG{n}{net}::\PYG{n}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{utxo}: \PYG{n+nc}{Transaction}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Propagate tx to peers if this is central node}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{eq}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{CENTERAL\PYGZus{}NODE}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{nodes}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb+bp}{self}
+\PYG{+w}{            }\PYG{p}{.}\PYG{n}{get\PYGZus{}nodes\PYGZus{}excluding\PYGZus{}sender}\PYG{p}{(}\PYG{n}{addr\PYGZus{}from}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{broadcast\PYGZus{}transaction\PYGZus{}to\PYGZus{}nodes}\PYG{p}{(}
+\PYG{+w}{            }\PYG{o}{\PYGZam{}}\PYG{n}{nodes}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{utxo}\PYG{p}{.}\PYG{n}{get\PYGZus{}id\PYGZus{}bytes}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{c+c1}{// Trigger mining if threshold met}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{should\PYGZus{}trigger\PYGZus{}mining}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{mining\PYGZus{}address}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{            }\PYG{n}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}mining\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{txs}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{                }\PYG{n}{prepare\PYGZus{}mining\PYGZus{}utxo}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{mining\PYGZus{}address}\PYG{p}{)}
+\PYG{+w}{            }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{k}{if}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{txs}\PYG{p}{.}\PYG{n}{is\PYGZus{}empty}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n}{process\PYGZus{}mine\PYGZus{}block}\PYG{p}{(}\PYG{n}{txs}\PYG{p}{,}
+\PYG{+w}{                        }\PYG{o}{\PYGZam{}}\PYG{n+nb+bp}{self}\PYG{p}{.}\PYG{n}{blockchain}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

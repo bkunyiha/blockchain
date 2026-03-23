@@ -1,0 +1,15 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n}{new\PYGZus{}schnorr\PYGZus{}key\PYGZus{}pair}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{   }\PYG{o}{|}
+\PYG{+w}{   }\PYG{n}{v}
+\PYG{n}{private\PYGZus{}key}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{+}
+\PYG{+w}{   }\PYG{o}{|}\PYG{+w}{                                     }\PYG{o}{|}
+\PYG{+w}{   }\PYG{o}{+}\PYG{o}{\PYGZhy{}}\PYGZhy{}\PYGZgt{} \PYG{n+nc}{get\PYGZus{}schnorr\PYGZus{}public\PYGZus{}key}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{         }\PYG{o}{|}
+\PYG{+w}{               }\PYG{o}{|}\PYG{+w}{                         }\PYG{o}{|}
+\PYG{+w}{               }\PYG{n}{v}\PYG{+w}{                         }\PYG{o}{|}
+\PYG{+w}{           }\PYG{n}{public\PYGZus{}key}\PYG{+w}{                    }\PYG{o}{|}
+\PYG{+w}{               }\PYG{o}{|}\PYG{+w}{                         }\PYG{o}{|}
+\PYG{+w}{               }\PYG{o}{+}\PYG{o}{\PYGZhy{}}\PYGZhy{}\PYGZgt{} \PYG{n+nc}{hash\PYGZus{}pub\PYGZus{}key}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYG{o}{\PYGZhy{}}\PYGZhy{}\PYGZgt{} \PYG{n+nc}{pub\PYGZus{}key\PYGZus{}hash}
+\PYG{+w}{                                           }\PYG{o}{|}
+\PYG{+w}{                       }\PYG{o}{+}\PYG{o}{\PYGZhy{}}\PYGZhy{}\PYGZgt{} \PYG{n+nc}{convert\PYGZus{}address}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{WalletAddress}
+\end{Verbatim}

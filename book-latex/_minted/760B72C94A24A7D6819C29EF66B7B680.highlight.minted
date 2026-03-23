@@ -1,0 +1,6 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+kubectl\PYG{+w}{ }apply\PYG{+w}{ }\PYGZhy{}f\PYG{+w}{ }\PYG{l+m}{08}\PYGZhy{}service\PYGZhy{}miner\PYGZhy{}headless.yaml
+kubectl\PYG{+w}{ }apply\PYG{+w}{ }\PYGZhy{}f\PYG{+w}{ }\PYG{l+m}{08}\PYGZhy{}service\PYGZhy{}miner.yaml
+kubectl\PYG{+w}{ }apply\PYG{+w}{ }\PYGZhy{}f\PYG{+w}{ }\PYG{l+m}{09}\PYGZhy{}service\PYGZhy{}webserver\PYGZhy{}headless.yaml
+kubectl\PYG{+w}{ }apply\PYG{+w}{ }\PYGZhy{}f\PYG{+w}{ }\PYG{l+m}{09}\PYGZhy{}service\PYGZhy{}webserver.yaml
+\end{MintedVerbatim}

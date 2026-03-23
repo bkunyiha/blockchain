@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+curl http://localhost:8080/api/admin/blockchain\PYGZhy{}info \PYG{p}{|} python3 \PYGZhy{}m json.tool
+\end{Verbatim}

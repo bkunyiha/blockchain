@@ -1,0 +1,63 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{useQuery}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{useMutation}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{useQueryClient}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}react\PYGZhy{}query\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{getApiClient}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}../services/api\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{useApiConfig}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}../contexts/ApiConfigContext\PYGZsq{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{useBlockchainInfo}\PYG{p}{(}\PYG{n+nx}{refetchInterval?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{number}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{config}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{useApiConfig}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{getApiClient}\PYG{p}{(}\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{baseURL}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{apiKey}\PYG{p}{)}
+
+\PYG{+w}{  }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{useQuery}\PYG{p}{(}\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{queryKey}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}blockchain\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}info\PYGZsq{}}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{queryFn}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{n+nx}{client}\PYG{p}{.}\PYG{n+nx}{getBlockchainInfo}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{refetchInterval}\PYG{p}{,}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{useCreateWallet}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{queryClient}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{useQueryClient}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{config}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{useApiConfig}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{getApiClient}\PYG{p}{(}\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{baseURL}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{apiKey}\PYG{p}{)}
+
+\PYG{+w}{  }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{useMutation}\PYG{p}{(}
+\PYG{+w}{    }\PYG{k}{async}\PYG{+w}{ }\PYG{p}{(}\PYG{n+nx}{label?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{n+nx}{client}\PYG{p}{.}\PYG{n+nx}{createWallet}\PYG{p}{(}\PYG{n+nx}{label}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n+nx}{onSuccess}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nx}{queryClient}\PYG{p}{.}\PYG{n+nx}{invalidateQueries}\PYG{p}{(}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}wallet\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}addresses\PYGZsq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{+w}{        }\PYG{c+c1}{// Show toast success}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nx}{onError}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{n+nx}{error}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{any}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Show toast error}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{  }\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{useSendTransaction}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{queryClient}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{useQueryClient}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{config}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{useApiConfig}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{getApiClient}\PYG{p}{(}\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{baseURL}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{apiKey}\PYG{p}{)}
+
+\PYG{+w}{  }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{useMutation}\PYG{p}{(}
+\PYG{+w}{    }\PYG{k}{async}\PYG{+w}{ }\PYG{p}{(}\PYG{n+nx}{params}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{from}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{ }\PYG{n+nx}{to}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{;}\PYG{+w}{ }\PYG{n+nx}{amount}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{number}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}
+\PYG{+w}{      }\PYG{n+nx}{client}\PYG{p}{.}\PYG{n+nx}{sendTransaction}\PYG{p}{(}\PYG{n+nx}{params}\PYG{p}{.}\PYG{k+kr}{from}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{params}\PYG{p}{.}\PYG{n+nx}{to}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{params}\PYG{p}{.}\PYG{n+nx}{amount}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n+nx}{onSuccess}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nx}{queryClient}\PYG{p}{.}\PYG{n+nx}{invalidateQueries}\PYG{p}{(}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}blockchain\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}info\PYGZsq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{+w}{        }\PYG{n+nx}{queryClient}\PYG{p}{.}\PYG{n+nx}{invalidateQueries}\PYG{p}{(}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}transactions\PYGZsq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{  }\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{useAllBlocks}\PYG{p}{(}\PYG{n+nx}{enabled}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{boolean}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k+kc}{false}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{config}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{useApiConfig}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{  }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{client}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{getApiClient}\PYG{p}{(}\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{baseURL}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{config}\PYG{p}{.}\PYG{n+nx}{apiKey}\PYG{p}{)}
+
+\PYG{+w}{  }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{useQuery}\PYG{p}{(}\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{queryKey}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}blocks\PYGZsq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}all\PYGZsq{}}\PYG{p}{]}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{queryFn}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{=\PYGZgt{}}\PYG{+w}{ }\PYG{n+nx}{client}\PYG{p}{.}\PYG{n+nx}{getAllBlocks}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n+nx}{enabled}\PYG{p}{,}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

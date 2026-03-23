@@ -1,0 +1,17 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// ✅ Return hex in JSON/API responses}
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Serialize)}\PYG{c+cp}{]}
+\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{TransactionResponse}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{txid}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}\PYG{+w}{  }\PYG{c+c1}{// Hex string for readability}
+\PYG{+w}{    }\PYG{n}{confirmations}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{u32}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{impl}\PYG{+w}{ }\PYG{n+nb}{From}\PYG{o}{\PYGZlt{}}\PYG{n}{Transaction}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{TransactionResponse}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{from}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Transaction}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{Self}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nb+bp}{Self}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{txid}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{  }\PYG{c+c1}{// Convert to hex}
+\PYG{+w}{            }\PYG{n}{confirmations}\PYG{p}{:}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

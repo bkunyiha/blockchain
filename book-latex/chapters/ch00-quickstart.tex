@@ -1,0 +1,130 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 0: Quick Start --- See It Run
+% ══════════════════════════════════════════════════════════════
+\chapter{Quick Start --- See It Run}
+\label{ch:quickstart}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Deploy a multi-node blockchain network with a single command using Docker Compose
+  \item Observe blocks being mined, hashed, and propagated between peers in real time
+  \item Query the blockchain REST API and view the web admin dashboard
+  \item Understand which chapters of the book correspond to each running component
+\end{itemize}
+\end{learnbox}
+
+\lettrine{T}{ime} required: under 5 minutes. You need only \index{Docker}Docker and \index{Docker Compose}Docker Compose installed.
+This chapter exists so you can see the finish line before starting the journey. By the end of these
+steps, you will have a multi-node \index{blockchain!network}blockchain network, like the one Bitcoin runs on, running on
+your machine---\index{mining}mining blocks, propagating them to peers, and serving a \index{admin dashboard}web admin interface. No Rust
+installation required.
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 1: Clone the Repository}
+\label{sec:step1-clone}
+\index{Git!clone}
+
+\begin{minted}[fontsize=\footnotesize]{bash}
+git clone https://github.com/bkunyiha/rust-blockchain.git
+cd rust-blockchain
+\end{minted}
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 2: Start the Network}
+\label{sec:step2-start}
+
+\begin{minted}[fontsize=\footnotesize]{bash}
+cd ci/docker-compose/configs
+docker compose up --build
+\end{minted}
+
+This builds the \index{Rust!compilation}Rust node from source (first run takes a few minutes while \index{Cargo}Cargo compiles), then
+starts two \index{container}containers: a \textbf{\index{miner node}miner} node and a \textbf{\index{webserver}webserver} node.
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 3: Watch It Work}
+\label{sec:step3-watch}
+
+Once the build finishes, you will see output like this in your terminal:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+miner-1     | [INFO] Starting miner on port 8010...
+miner-1     | [INFO] Mining block #1 ...
+miner-1     | [INFO] Block mined: hash=00a3f2...  height=1  txns=1
+webserver-1 | [INFO] Connected to peer miner-1:8010
+miner-1     | [INFO] Mining block #2 ...
+miner-1     | [INFO] Block mined: hash=0017cb...  height=2  txns=1
+webserver-1 | [INFO] Received block #2 from miner-1
+\end{minted}
+
+Blocks are being \index{mining}mined, \index{hash}hashed, and propagated across the \index{peer-to-peer!network}network in real time.
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 4: Open the Admin Dashboard}
+\label{sec:step4-dashboard}
+
+While the network is running, open your browser to:
+
+\begin{minted}[fontsize=\footnotesize,linenos=false]{text}
+http://localhost:8080
+\end{minted}
+
+If the dashboard prompts you to configure an \index{API key}API key, use the default
+\textbf{Admin API key}: \code{admin-secret} (unless you have overridden it via
+\code{BITCOIN\_API\_ADMIN\_KEY}).
+
+\begin{notebox}
+\textbf{API keys (what they are):} the webserver protects its \index{REST API}REST endpoints
+with shared secrets passed on each request. In \index{Docker Compose}Docker Compose there are two keys:
+
+\begin{description}
+  \item[Admin key] (\code{BITCOIN\_API\_ADMIN\_KEY}, default \code{admin-secret}):
+    full access to \code{/api/admin/*} endpoints used by the admin dashboard.
+  \item[Wallet key] (\code{BITCOIN\_API\_WALLET\_KEY}, default \code{wallet-secret}):
+    access to wallet-related endpoints.
+\end{description}
+\end{notebox}
+
+You will see the Web Admin Interface showing the current \index{chain height}chain height, connected \index{peer}peers, recent
+\index{block}blocks, and the \index{mempool}mempool. This is the same \index{React}React dashboard we build in Chapter~30.
+
+% ──────────────────────────────────────────────────────────────
+\section{Step 5: Query the API}
+\label{sec:step5-query}
+
+In another terminal, try:
+
+\begin{minted}[fontsize=\footnotesize]{bash}
+curl http://localhost:8080/api/admin/blockchain-info | python3 -m json.tool
+\end{minted}
+
+You will get a \index{JSON}JSON response with the \index{chain height}chain height, \index{tip hash}tip hash, peer count, and \index{mempool}mempool size---the
+same \index{REST API}API we build in Chapter~24.
+
+% ──────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+  \item \textbf{Primitives} (Ch~6) --- the \code{\index{block}Block} and \code{\index{transaction}Transaction} structs that were
+        serialized into each mined block
+  \item \textbf{Cryptography} (Ch~8) --- the \index{SHA-256}SHA-256 hashing and \index{ECDSA}ECDSA signing that produced each
+        block hash
+  \item \textbf{Chain validation} (Ch~9--10) --- the \index{consensus rules}consensus rules that accepted each block
+        into the \index{canonical chain}canonical chain
+  \item \textbf{Storage} (Ch~11) --- the \index{sled}sled database that persisted blocks to disk
+  \item \textbf{Networking} (Ch~12) --- the \index{TCP}TCP protocol that propagated blocks between the miner
+        and webserver nodes
+  \item \textbf{Node orchestration} (Ch~13) --- the \index{coordinator}coordinator that routed messages between
+        subsystems
+  \item \textbf{Web API} (Ch~15) --- the \index{Axum}Axum \index{REST API}REST API that served the \code{/api/admin/*}
+        endpoints
+  \item \textbf{Web Admin UI} (Ch~21) --- the \index{React}React dashboard you just opened in your browser
+  \item \textbf{Docker Compose} (Ch~22) --- the \index{Docker Compose}deployment configuration that wired everything
+        together
+\end{chaptersummary}
+
+% ──────────────────────────────────────────────────────────────
+\section{Clean Up}
+\label{sec:cleanup}
+
+\begin{minted}[fontsize=\footnotesize]{bash}
+docker compose down -v    # Stop containers and remove volumes
+\end{minted}

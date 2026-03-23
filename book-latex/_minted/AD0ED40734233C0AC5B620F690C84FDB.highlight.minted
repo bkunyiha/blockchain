@@ -1,0 +1,36 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Clone)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum}\PYG{+w}{ }\PYG{n+nc}{Message}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Wallet selection}
+\PYG{+w}{    }\PYG{n}{SelectWallet}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{FetchWalletList}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{WalletListLoaded}\PYG{p}{(}\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Balance and transaction history}
+\PYG{+w}{    }\PYG{n}{FetchBalance}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{BalanceLoaded}\PYG{p}{(}\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{BalanceResponse}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{n}{FetchTransactionHistory}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{HistoryLoaded}\PYG{p}{(}\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{Transaction}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{n}{FetchUnspentOutputs}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{UnspentLoaded}\PYG{p}{(}\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{UnspentOutput}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Address generation}
+\PYG{+w}{    }\PYG{n}{GenerateAddress}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{AddressGenerated}\PYG{p}{(}\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Sending transactions}
+\PYG{+w}{    }\PYG{n}{SendToChanged}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{AmountChanged}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{SendTransaction}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{TransactionSent}\PYG{p}{(}\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Navigation}
+\PYG{+w}{    }\PYG{n}{TabChanged}\PYG{p}{(}\PYG{n}{Tab}\PYG{p}{)}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Persistence}
+\PYG{+w}{    }\PYG{n}{SaveToDatabaseRequested}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{SaveToDatabase}\PYG{p}{(}\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

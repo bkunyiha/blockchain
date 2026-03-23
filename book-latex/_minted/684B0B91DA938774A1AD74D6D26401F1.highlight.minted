@@ -1,0 +1,9 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+┌──────────────────────────────────────────┐
+│  Bitcoin Wire Format (inv message)       │
+├──────────────────────────────────────────┤
+│  Count:  1                      [varint] │
+│  Type:   0x01 (MSG\PYGZus{}TX)          [4 bytes]│
+│  Hash:   0x9a2f3c... (raw)      [32 bytes]  ← Binary!
+└──────────────────────────────────────────┘
+\end{MintedVerbatim}

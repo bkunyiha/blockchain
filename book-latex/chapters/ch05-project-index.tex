@@ -1,0 +1,150 @@
+% ══════════════════════════════════════════════════════════════
+%  Chapter 5: Rust Project Index
+% ══════════════════════════════════════════════════════════════
+\chapter{Rust Blockchain Project}
+\label{ch:project-index}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Navigate the Cargo workspace and understand its crate organization
+  \item Explain the dependency graph between crates and why it is structured this way
+  \item Identify which crate owns each responsibility in the system
+  \item Understand the build configuration and feature flags used across the project
+\end{itemize}
+\end{learnbox}
+
+\lettrine{I}{n} Chapters~\ref{ch:whitepaper}--\ref{ch:whitepaper-rust}, we used the Bitcoin \index{whitepaper}whitepaper to build a minimal mental model and a \textquotedblleft Bitcoin-shaped\textquotedblright{} implementation. In this chapter, we switch from concepts to code and read the \index{Rust!project}Rust project as a working system. We learn how the pieces connect in practice.
+
+Chapter~\ref{ch:whitepaper-rust} closed with a five-step implementation roadmap: \textbf{Bytes \(\to\) Identity \(\to\) Authorization \(\to\) State \(\to\) \index{consensus}Consensus}. The chapters ahead follow that same arc. Chapters~\ref{ch:primitives}--\ref{ch:utilities} (Primitives and Utilities) cover \emph{Bytes}---the \index{canonical encoding}canonical encodings every node must agree on. Chapter~\ref{ch:cryptography} (\index{cryptography}Cryptography) covers \emph{Identity} (\index{hash}hashes as IDs) and \emph{Authorization} (\index{digital signature}signatures that prove ownership). Chapters~\ref{ch:domain-model}--\ref{ch:tx-to-block} (\index{blockchain!core}Blockchain Core) and~\ref{ch:block-acceptance} (\index{block!acceptance}Block Acceptance) cover \emph{State} and \emph{\index{consensus}Consensus}---\index{UTXO}UTXO transitions, \index{proof-of-work}proof-of-work validation, and \index{chain selection}chain selection. From there, Chapters~\ref{ch:storage}--\ref{ch:wallet} build the surrounding infrastructure: \index{storage}storage, \index{networking}networking, \index{node!orchestration}node orchestration, and \index{wallet}wallet. By the time we reach Chapter~\ref{ch:web-api} (Web API), the full Bitcoin pipeline is implemented and we are exposing it to the outside world.
+
+% ──────────────────────────────────────────────────────────────
+\section{Before We Start: Clone the Repository}
+\label{sec:ch05-clone-repo}
+\index{Git!clone}
+
+To follow along locally, clone the repository from \index{GitHub}GitHub (\url{https://github.com/bkunyiha/blockchain}) and open it in your editor.
+
+In the repository, the \index{Rust!implementation}Rust implementation we will walk through lives under the \code{\index{Cargo!crate}bitcoin/} crate.
+
+% ──────────────────────────────────────────────────────────────
+\section{How to Use This Chapter}
+\label{sec:ch05-how-to-use}
+
+As we read the codebase, we keep two questions in mind:
+
+\begin{itemize}
+  \item \textbf{What exact bytes are parsed, serialized, hashed, and verified here?}
+  \item \textbf{What state is updated, and how would we roll it back on a reorg?}
+\end{itemize}
+
+We recommend reading in the same direction bytes flow through the system: \index{primitives}primitives \(\to\) \index{cryptography}crypto \(\to\) \index{proof-of-work}PoW/\index{validation}validation \(\to\) \index{storage}storage/\index{chainstate}chainstate \(\to\) \index{networking}networking/\index{node}node \(\to\) \index{wallet}wallet/client.
+
+% ──────────────────────────────────────────────────────────────
+\section{Rust Refresher}
+\label{sec:ch05-rust-refresher}
+
+Chapter~\ref{ch:rust-guide} (\index{Rust!language guide}Rust Language Guide) appears at the end of the book, but it is designed to be read \emph{before} the implementation chapters --- not after. If \index{Rust!ownership}ownership, \index{trait}traits, \index{generic}generics, or \index{async/await}async/await feel rusty, read it now:
+
+\begin{itemize}
+  \item \textbf{Chapter~\ref{ch:rust-guide}: Rust Language Guide} --- start with \textbf{Rust Installation \& Setup}, then continue to \textbf{Introduction}.
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\section{Guided Tour (Recommended Reading Order)}
+\label{sec:ch05-guided-tour}
+
+Each step below points to:
+
+\begin{itemize}
+  \item the \textbf{book chapter} (documentation) that explains the subsystem
+  \item the \textbf{code location} in the Rust project that implements it
+\end{itemize}
+
+\begin{notebox}
+The \index{Cargo!crate}crate names in this workspace (\code{bitcoin-blockchain}, \code{bitcoin-api}, etc.) are internal identifiers. They do not correspond to \index{crates.io}crates published on crates.io. All dependencies are \index{dependency!local}local path dependencies within the \index{Cargo!workspace}workspace.
+\end{notebox}
+
+\begin{enumerate}
+  \item \textbf{Business objects and encoding (block, header, transaction)}
+    \begin{itemize}
+      \item Chapter~\ref{ch:primitives}: Primitives
+      \item Code: \code{bitcoin/src/primitives/} (block, header, transaction)
+    \end{itemize}
+
+  \item \textbf{Utility helpers (bytes, plumbing, small reusable building blocks)}
+    \begin{itemize}
+      \item Chapter~\ref{ch:utilities}: Utilities
+      \item Code: \code{bitcoin/src/util/}
+    \end{itemize}
+
+  \item \textbf{Crypto primitives (hashes, keys, signatures, address/script helpers)}
+    \begin{itemize}
+      \item Chapter~\ref{ch:cryptography}: Cryptography
+      \item Code: \code{bitcoin/src/crypto/}
+    \end{itemize}
+
+  \item \textbf{Proof-of-work and block acceptance}
+    \begin{itemize}
+      \item Chapters~\ref{ch:domain-model}--\ref{ch:tx-to-block}: Blockchain --- From Transaction to Block Acceptance
+      \item Code: \code{bitcoin/src/pow.rs}, \code{bitcoin/src/chain/}
+    \end{itemize}
+
+  \item \textbf{Storage and persistence}
+    \begin{itemize}
+      \item Chapter~\ref{ch:storage}: Storage Layer
+      \item Code: \code{bitcoin/src/store/} (persisting chain/wallet data)
+    \end{itemize}
+
+  \item \textbf{Chainstate / UTXO updates}
+    \begin{itemize}
+      \item Chapter~\ref{ch:blockchain-state-management}: Blockchain State Management
+      \item Code: \code{bitcoin/src/chain/chainstate.rs}, \code{bitcoin/src/chain/utxo\_set.rs}
+    \end{itemize}
+
+  \item \textbf{Networking and message handling}
+    \begin{itemize}
+      \item Chapter~\ref{ch:network}: Network Layer
+      \item Code: \code{bitcoin/src/net/}, \code{bitcoin/src/net/net\_processing.rs}
+    \end{itemize}
+
+  \item \textbf{Node orchestration}
+    \begin{itemize}
+      \item Chapter~\ref{ch:node-orchestration}: Node Orchestration
+      \item Code: \code{bitcoin/src/node/} (peers, server, miner, mempool integration)
+    \end{itemize}
+
+  \item \textbf{Wallet/client}
+    \begin{itemize}
+      \item Chapter~\ref{ch:wallet}: Wallet System
+      \item Code: \code{bitcoin/src/wallet/} (wallet implementation + service layer)
+    \end{itemize}
+\end{enumerate}
+
+% ──────────────────────────────────────────────────────────────
+\section{A Small Exercise}
+\label{sec:ch05-exercise}
+
+To turn reading into understanding, pick one end-to-end flow and trace it through code:
+
+\begin{itemize}
+  \item \textbf{Receiving and confirming a transaction}: network receives a \code{tx} message \(\to\) parse \(\to\) validate \(\to\) mempool \(\to\) mine/include in block \(\to\) connect block \(\to\) wallet updates confirmation depth.
+\end{itemize}
+
+If we narrate that flow from memory and point to the relevant modules, we are ready for the deeper chapters that follow.
+
+% ──────────────────────────────────────────────────────────────
+\section{Further Reading}
+\label{sec:ch05-further-reading}
+
+\begin{itemize}
+  \item \textbf{Cargo Workspaces}---The Rust Book's guide to multi-crate projects. See \url{https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html}
+  \item \textbf{Cargo Reference: Features}---How conditional compilation and feature flags work in Cargo. See \url{https://doc.rust-lang.org/cargo/reference/features.html}
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+  \item We navigated the Cargo workspace structure, identifying each crate and its responsibility within the blockchain system.
+  \item We traced the dependency graph between crates, understanding why the architecture separates primitives, crypto, chain logic, and application layers.
+  \item We examined the build configuration, feature flags, and workspace-level settings that coordinate compilation across the project.
+  \item In the next chapter, we dive into the primitives crate --- the Block, Transaction, and Blockchain structures that form the foundation everything else builds on.
+\end{chaptersummary}

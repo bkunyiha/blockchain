@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{create\PYGZus{}swagger\PYGZus{}ui}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{SwaggerUi}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{SwaggerUi}::\PYG{n}{new}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/swagger\PYGZhy{}ui}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{url}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{/api\PYGZhy{}docs/openapi.json}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ApiDoc}::\PYG{n}{openapi}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

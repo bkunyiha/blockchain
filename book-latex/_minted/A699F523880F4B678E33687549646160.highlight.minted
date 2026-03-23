@@ -1,0 +1,69 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{import}\PYG{+w}{ }\PYG{n+nx}{axios}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{AxiosInstance}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}axios\PYGZsq{}}
+\PYG{k}{import}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{useApiConfig}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}../contexts/ApiConfigContext\PYGZsq{}}
+
+\PYG{k+kd}{interface}\PYG{+w}{ }\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{T}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{n+nx}{success}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{boolean}
+\PYG{+w}{  }\PYG{n+nx}{data?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{T}
+\PYG{+w}{  }\PYG{n+nx}{error?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{class}\PYG{+w}{ }\PYG{n+nx}{ApiClient}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k}{private}\PYG{+w}{ }\PYG{n+nx}{instance}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{AxiosInstance}
+
+\PYG{+w}{  }\PYG{k+kr}{constructor}\PYG{p}{(}\PYG{n+nx}{baseURL}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}http://127.0.0.1:8080\PYGZsq{}}\PYG{p}{,}
+\PYG{+w}{              }\PYG{n+nx}{apiKey}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}\PYGZsq{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{instance}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{axios}\PYG{p}{.}\PYG{n+nx}{create}\PYG{p}{(}\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{n+nx}{baseURL}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nx}{timeout}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{10000}\PYG{p}{,}
+\PYG{+w}{      }\PYG{n+nx}{headers}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{l+s+s1}{\PYGZsq{}Content\PYGZhy{}Type\PYGZsq{}}\PYG{o}{:}\PYG{+w}{ }\PYG{l+s+s1}{\PYGZsq{}application/json\PYGZsq{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{)}
+
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n+nx}{apiKey}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{      }\PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{instance}\PYG{p}{.}\PYG{n+nx}{defaults}\PYG{p}{.}\PYG{n+nx}{headers}\PYG{p}{.}\PYG{n+nx}{common}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}X\PYGZhy{}API\PYGZhy{}Key\PYGZsq{}}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nx}{apiKey}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{  }\PYG{k}{async}\PYG{+w}{ }\PYG{n+nx}{getBlockchainInfo}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{res}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{await}\PYG{+w}{ }\PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{instance}\PYG{p}{.}\PYG{n+nx}{get}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{BlockchainInfo}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}/api/admin/blockchain\PYGZsq{}}
+\PYG{+w}{    }\PYG{p}{)}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{data}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{  }\PYG{k}{async}\PYG{+w}{ }\PYG{n+nx}{getAllBlocks}\PYG{p}{(}\PYG{n+nx}{limit?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{number}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{offset?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{number}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{res}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{await}\PYG{+w}{ }\PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{instance}\PYG{p}{.}\PYG{n+nx}{get}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{BlockList}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}/api/admin/blocks\PYGZsq{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{params}\PYG{o}{:}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{limit}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{offset}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{)}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{data}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{  }\PYG{k}{async}\PYG{+w}{ }\PYG{n+nx}{createWallet}\PYG{p}{(}\PYG{n+nx}{label?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{res}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{await}\PYG{+w}{ }\PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{instance}\PYG{p}{.}\PYG{n+nx}{post}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{CreateWalletResponse}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}/api/admin/wallet\PYGZsq{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n+nx}{label}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{)}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{data}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{  }\PYG{k}{async}\PYG{+w}{ }\PYG{n+nx}{sendTransaction}\PYG{p}{(}\PYG{n+nx}{from}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{to}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{amount}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{number}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{const}\PYG{+w}{ }\PYG{n+nx}{res}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{await}\PYG{+w}{ }\PYG{k}{this}\PYG{p}{.}\PYG{n+nx}{instance}\PYG{p}{.}\PYG{n+nx}{post}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nx}{SendTxResponse}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{(}
+\PYG{+w}{      }\PYG{l+s+s1}{\PYGZsq{}/api/admin/send\PYGZhy{}transaction\PYGZsq{}}\PYG{p}{,}
+\PYG{+w}{      }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k+kr}{from}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{to}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{amount}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{)}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{data}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nx}{clientInstance}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{ApiClient}\PYG{+w}{ }\PYG{o}{|}\PYG{+w}{ }\PYG{k+kc}{null}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k+kc}{null}
+
+\PYG{k}{export}\PYG{+w}{ }\PYG{k+kd}{function}\PYG{+w}{ }\PYG{n+nx}{getApiClient}\PYG{p}{(}\PYG{n+nx}{baseURL?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{apiKey?}\PYG{o}{:}\PYG{+w}{ }\PYG{k+kt}{string}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n+nx}{clientInstance}\PYG{+w}{ }\PYG{o}{||}\PYG{+w}{ }\PYG{n+nx}{baseURL}\PYG{+w}{ }\PYG{o}{||}\PYG{+w}{ }\PYG{n+nx}{apiKey}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nx}{clientInstance}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o+ow}{new}\PYG{+w}{ }\PYG{n+nx}{ApiClient}\PYG{p}{(}\PYG{n+nx}{baseURL}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nx}{apiKey}\PYG{p}{)}
+\PYG{+w}{  }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{  }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nx}{clientInstance}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

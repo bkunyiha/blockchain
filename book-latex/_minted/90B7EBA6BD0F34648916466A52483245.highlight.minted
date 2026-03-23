@@ -1,0 +1,23 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+function mine\PYGZus{}block(block\PYGZus{}header):
+    target = calculate\PYGZus{}target(TARGET\PYGZus{}BITS)
+    nonce = 0
+
+    while nonce \PYGZlt{} MAX\PYGZus{}NONCE:
+        data = concatenate(
+            block\PYGZus{}header.prev\PYGZus{}hash,
+            block\PYGZus{}header.tx\PYGZus{}commitment,
+            block\PYGZus{}header.timestamp,
+            block\PYGZus{}header.difficulty\PYGZus{}bits,
+            nonce
+        )
+        hash = SHA256(data)
+        hash\PYGZus{}as\PYGZus{}integer = convert\PYGZus{}to\PYGZus{}integer(hash)
+
+        if hash\PYGZus{}as\PYGZus{}integer \PYGZlt{} target:
+            return (nonce, hash)
+        else:
+            nonce = nonce + 1
+
+    return error
+\end{MintedVerbatim}

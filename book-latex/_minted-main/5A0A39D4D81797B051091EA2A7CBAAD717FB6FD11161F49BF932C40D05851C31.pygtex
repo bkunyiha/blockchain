@@ -1,0 +1,23 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// Conversion costs for a 32\PYGZhy{}byte transaction ID:}
+
+\PYG{c+c1}{// get\PYGZus{}id() \PYGZhy{} FREE (just returns reference)}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{id\PYGZus{}ref}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}id}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{c+c1}{// Cost: 0 bytes allocated, 0 copies}
+\PYG{c+c1}{//       Just returns a pointer (8 bytes) + length (8 bytes) = 16 bytes total}
+\PYG{c+c1}{//       This is essentially free \PYGZhy{} no heap allocation, no data copying}
+\PYG{c+c1}{//       CPU: \PYGZti{}1\PYGZhy{}2 nanoseconds (just pointer arithmetic)}
+
+\PYG{c+c1}{// get\PYGZus{}id\PYGZus{}bytes() \PYGZhy{} CLONE COST}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{id\PYGZus{}vec}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}id\PYGZus{}bytes}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{c+c1}{// Cost: 32 bytes copied + Vec overhead (24 bytes) = 56 bytes allocated}
+\PYG{c+c1}{//       CPU: \PYGZti{}10\PYGZhy{}20 nanoseconds (memory copy operation)}
+\PYG{c+c1}{//       This is necessary when you need ownership (e.g., storing in HashMap)}
+
+\PYG{c+c1}{// get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex() \PYGZhy{} ENCODE + ALLOCATE}
+\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{id\PYGZus{}hex}: \PYG{n+nb}{String} \PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{.}\PYG{n}{get\PYGZus{}tx\PYGZus{}id\PYGZus{}hex}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{c+c1}{// Cost: 32 bytes read + 64 bytes allocated (hex string) + String overhead (24 bytes)}
+\PYG{c+c1}{//       = 88 bytes allocated + encoding computation}
+\PYG{c+c1}{//       CPU: \PYGZti{}50\PYGZhy{}100 nanoseconds (encoding each byte to 2 hex chars)}
+\PYG{c+c1}{//       This conversion is necessary at API boundaries but should be avoided internally}
+\end{Verbatim}

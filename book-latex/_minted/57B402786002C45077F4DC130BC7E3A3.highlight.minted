@@ -1,0 +1,11 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} View logs from crashed container}
+kubectl\PYG{+w}{ }logs\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain\PYG{+w}{ }miner\PYGZhy{}0\PYG{+w}{ }\PYGZhy{}\PYGZhy{}previous\PYG{+w}{ }\PYG{l+s+se}{\PYGZbs{}}
+\PYG{+w}{  }\PYGZhy{}\PYGZhy{}tail\PYG{+w}{ }\PYG{l+m}{200}
+
+\PYG{c+c1}{\PYGZsh{} Describe pod for events and probe failures}
+kubectl\PYG{+w}{ }describe\PYG{+w}{ }pod\PYG{+w}{ }miner\PYGZhy{}0\PYG{+w}{ }\PYGZhy{}n\PYG{+w}{ }blockchain
+
+\PYG{c+c1}{\PYGZsh{} Common cause: invalid MINER\PYGZbs{}\PYGZus{}ADDRESS}
+\PYG{c+c1}{\PYGZsh{} Fix: remove placeholder or set real address}
+\end{MintedVerbatim}

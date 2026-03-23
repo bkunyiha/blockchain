@@ -1,0 +1,1314 @@
+\indexentry{Docker|hyperpage}{1}
+\indexentry{Docker Compose|hyperpage}{1}
+\indexentry{blockchain!network|hyperpage}{1}
+\indexentry{mining|hyperpage}{1}
+\indexentry{admin dashboard|hyperpage}{1}
+\indexentry{Git!clone|hyperpage}{1}
+\indexentry{Rust!compilation|hyperpage}{2}
+\indexentry{Cargo|hyperpage}{2}
+\indexentry{container|hyperpage}{2}
+\indexentry{miner node|hyperpage}{2}
+\indexentry{webserver|hyperpage}{2}
+\indexentry{mining|hyperpage}{2}
+\indexentry{hash|hyperpage}{2}
+\indexentry{peer-to-peer!network|hyperpage}{2}
+\indexentry{chain height|hyperpage}{2}
+\indexentry{peer|hyperpage}{2}
+\indexentry{block|hyperpage}{2}
+\indexentry{mempool|hyperpage}{2}
+\indexentry{React|hyperpage}{2}
+\indexentry{JSON|hyperpage}{3}
+\indexentry{chain height|hyperpage}{3}
+\indexentry{tip hash|hyperpage}{3}
+\indexentry{mempool|hyperpage}{3}
+\indexentry{REST API|hyperpage}{3}
+\indexentry{block|hyperpage}{3}
+\indexentry{transaction|hyperpage}{3}
+\indexentry{SHA-256|hyperpage}{3}
+\indexentry{ECDSA|hyperpage}{3}
+\indexentry{consensus rules|hyperpage}{3}
+\indexentry{canonical chain|hyperpage}{3}
+\indexentry{sled|hyperpage}{3}
+\indexentry{TCP|hyperpage}{3}
+\indexentry{coordinator|hyperpage}{3}
+\indexentry{Axum|hyperpage}{3}
+\indexentry{REST API|hyperpage}{3}
+\indexentry{React|hyperpage}{3}
+\indexentry{Docker Compose|hyperpage}{3}
+\indexentry{blockchain|hyperpage}{9}
+\indexentry{Rust!ownership|hyperpage}{9}
+\indexentry{Rust!trait|hyperpage}{9}
+\indexentry{Rust!async|hyperpage}{9}
+\indexentry{Rust!await|hyperpage}{9}
+\indexentry{tokio|hyperpage}{10}
+\indexentry{mining|hyperpage}{10}
+\indexentry{Rust!channel|hyperpage}{10}
+\indexentry{Axum|hyperpage}{10}
+\indexentry{Tauri|hyperpage}{10}
+\indexentry{cryptography|hyperpage}{10}
+\indexentry{blockchain|hyperpage}{10}
+\indexentry{consensus|hyperpage}{10}
+\indexentry{network layer|hyperpage}{10}
+\indexentry{node orchestration|hyperpage}{10}
+\indexentry{wallet|hyperpage}{10}
+\indexentry{REST API|hyperpage}{10}
+\indexentry{Iced|hyperpage}{10}
+\indexentry{Tauri|hyperpage}{10}
+\indexentry{React|hyperpage}{10}
+\indexentry{Docker|hyperpage}{10}
+\indexentry{Kubernetes|hyperpage}{10}
+\indexentry{tokio|hyperpage}{13}
+\indexentry{SQLCipher|hyperpage}{13}
+\indexentry{Rust!serialization|hyperpage}{13}
+\indexentry{Axum|hyperpage}{13}
+\indexentry{Iced|hyperpage}{13}
+\indexentry{wallet|hyperpage}{13}
+\indexentry{React|hyperpage}{14}
+\indexentry{TypeScript|hyperpage}{14}
+\indexentry{WebSocket|hyperpage}{14}
+\indexentry{blockchain|hyperpage}{17}
+\indexentry{transaction|hyperpage}{17}
+\indexentry{block|hyperpage}{17}
+\indexentry{consensus|hyperpage}{17}
+\indexentry{UTXO|hyperpage}{17}
+\indexentry{proof-of-work|hyperpage}{17}
+\indexentry{block|hyperpage}{18}
+\indexentry{blockchain|hyperpage}{18}
+\indexentry{block|hyperpage}{18}
+\indexentry{transaction|hyperpage}{18}
+\indexentry{block header|hyperpage}{18}
+\indexentry{transaction|hyperpage}{18}
+\indexentry{block|hyperpage}{18}
+\indexentry{block|hyperpage}{18}
+\indexentry{blockchain|hyperpage}{18}
+\indexentry{block|hyperpage}{18}
+\indexentry{block|hyperpage}{18}
+\indexentry{block|hyperpage}{18}
+\indexentry{block|hyperpage}{18}
+\indexentry{peer-to-peer|hyperpage}{19}
+\indexentry{blockchain|hyperpage}{19}
+\indexentry{peer-to-peer|hyperpage}{19}
+\indexentry{blockchain|hyperpage}{19}
+\indexentry{consensus|hyperpage}{19}
+\indexentry{transaction|hyperpage}{19}
+\indexentry{consensus|hyperpage}{19}
+\indexentry{proof-of-work|hyperpage}{19}
+\indexentry{mining|hyperpage}{19}
+\indexentry{transaction|hyperpage}{19}
+\indexentry{block|hyperpage}{19}
+\indexentry{proof-of-work|hyperpage}{20}
+\indexentry{mining|hyperpage}{20}
+\indexentry{transaction|hyperpage}{20}
+\indexentry{block|hyperpage}{20}
+\indexentry{blockchain|hyperpage}{20}
+\indexentry{block|hyperpage}{20}
+\indexentry{transaction|hyperpage}{20}
+\indexentry{mining|hyperpage}{20}
+\indexentry{transaction|hyperpage}{20}
+\indexentry{peer-to-peer|hyperpage}{20}
+\indexentry{consensus|hyperpage}{20}
+\indexentry{block|hyperpage}{20}
+\indexentry{genesis block|hyperpage}{20}
+\indexentry{block|hyperpage}{20}
+\indexentry{SHA-256|hyperpage}{26}
+\indexentry{transaction|hyperpage}{26}
+\indexentry{block|hyperpage}{26}
+\indexentry{proof-of-work|hyperpage}{26}
+\indexentry{mining|hyperpage}{26}
+\indexentry{digital signature|hyperpage}{27}
+\indexentry{ECDSA|hyperpage}{27}
+\indexentry{private key|hyperpage}{27}
+\indexentry{transaction|hyperpage}{27}
+\indexentry{transaction|hyperpage}{27}
+\indexentry{digital signature|hyperpage}{27}
+\indexentry{digital signature|hyperpage}{27}
+\indexentry{transaction|hyperpage}{27}
+\indexentry{private key|hyperpage}{27}
+\indexentry{transaction|hyperpage}{27}
+\indexentry{public key|hyperpage}{27}
+\indexentry{private key|hyperpage}{27}
+\indexentry{digital signature|hyperpage}{27}
+\indexentry{key pair|hyperpage}{27}
+\indexentry{public key|hyperpage}{27}
+\indexentry{public key|hyperpage}{27}
+\indexentry{private key|hyperpage}{27}
+\indexentry{digital signature|hyperpage}{27}
+\indexentry{private key|hyperpage}{27}
+\indexentry{public key|hyperpage}{27}
+\indexentry{private key|hyperpage}{27}
+\indexentry{Merkle tree|hyperpage}{27}
+\indexentry{transaction|hyperpage}{27}
+\indexentry{transaction|hyperpage}{27}
+\indexentry{Merkle tree|hyperpage}{27}
+\indexentry{Merkle tree|hyperpage}{27}
+\indexentry{block header|hyperpage}{27}
+\indexentry{transaction|hyperpage}{27}
+\indexentry{block|hyperpage}{27}
+\indexentry{transaction|hyperpage}{27}
+\indexentry{Merkle tree|hyperpage}{27}
+\indexentry{transaction|hyperpage}{28}
+\indexentry{proof-of-work|hyperpage}{28}
+\indexentry{consensus|hyperpage}{28}
+\indexentry{mining|hyperpage}{28}
+\indexentry{transaction|hyperpage}{28}
+\indexentry{block|hyperpage}{28}
+\indexentry{nonce|hyperpage}{28}
+\indexentry{block header|hyperpage}{28}
+\indexentry{difficulty|hyperpage}{28}
+\indexentry{mining|hyperpage}{28}
+\indexentry{block|hyperpage}{28}
+\indexentry{block|hyperpage}{28}
+\indexentry{block|hyperpage}{28}
+\indexentry{mining|hyperpage}{28}
+\indexentry{difficulty|hyperpage}{28}
+\indexentry{block|hyperpage}{28}
+\indexentry{transaction|hyperpage}{28}
+\indexentry{UTXO|textbf}{28}
+\indexentry{UTXO|hyperpage}{28}
+\indexentry{UTXO|hyperpage}{28}
+\indexentry{UTXO|hyperpage}{28}
+\indexentry{UTXO|hyperpage}{28}
+\indexentry{UTXO|hyperpage}{28}
+\indexentry{UTXO|hyperpage}{28}
+\indexentry{peer-to-peer|hyperpage}{29}
+\indexentry{block propagation|hyperpage}{29}
+\indexentry{block|hyperpage}{29}
+\indexentry{gossip protocol|hyperpage}{29}
+\indexentry{transaction|hyperpage}{29}
+\indexentry{blockchain|hyperpage}{29}
+\indexentry{Satoshi Nakamoto|hyperpage}{33}
+\indexentry{whitepaper|hyperpage}{33}
+\indexentry{Bitcoin!whitepaper|hyperpage}{33}
+\indexentry{blockchain!history|hyperpage}{33}
+\indexentry{double-spending|hyperpage}{33}
+\indexentry{trustless|hyperpage}{34}
+\indexentry{Bitcoin!history|hyperpage}{34}
+\indexentry{digital signature|hyperpage}{34}
+\indexentry{hash function|hyperpage}{34}
+\indexentry{Merkle tree|hyperpage}{34}
+\indexentry{proof-of-work|hyperpage}{34}
+\indexentry{Byzantine fault tolerance|hyperpage}{34}
+\indexentry{permissionless|hyperpage}{34}
+\indexentry{trusted third party|hyperpage}{35}
+\indexentry{consensus!distributed|hyperpage}{38}
+\indexentry{transaction!digital signature|hyperpage}{39}
+\indexentry{public key|hyperpage}{39}
+\indexentry{private key|hyperpage}{39}
+\indexentry{double-spending|hyperpage}{41}
+\indexentry{timestamp server|hyperpage}{43}
+\indexentry{cryptographic proof|hyperpage}{43}
+\indexentry{proof-of-work|hyperpage}{44}
+\indexentry{mining|hyperpage}{44}
+\indexentry{SHA-256|hyperpage}{44}
+\indexentry{peer-to-peer!protocol|hyperpage}{47}
+\indexentry{node!coordination|hyperpage}{47}
+\indexentry{longest chain rule|hyperpage}{48}
+\indexentry{fork|hyperpage}{48}
+\indexentry{orphan block|hyperpage}{48}
+\indexentry{mining reward|hyperpage}{49}
+\indexentry{coinbase transaction|hyperpage}{49}
+\indexentry{transaction fee|hyperpage}{49}
+\indexentry{Merkle tree|hyperpage}{51}
+\indexentry{Merkle root|hyperpage}{51}
+\indexentry{SPV|hyperpage}{53}
+\indexentry{mobile wallet|hyperpage}{53}
+\indexentry{lightweight client|hyperpage}{53}
+\indexentry{whitepaper|hyperpage}{65}
+\indexentry{whitepaper|hyperpage}{65}
+\indexentry{Rust!modules|hyperpage}{65}
+\indexentry{Rust!introduction|hyperpage}{66}
+\indexentry{transaction|hyperpage}{67}
+\indexentry{transaction|hyperpage}{67}
+\indexentry{txid|hyperpage}{67}
+\indexentry{UTXO|hyperpage}{67}
+\indexentry{mempool|hyperpage}{67}
+\indexentry{block|hyperpage}{67}
+\indexentry{block|hyperpage}{67}
+\indexentry{block header|hyperpage}{67}
+\indexentry{UTXO|hyperpage}{67}
+\indexentry{CompactSize|hyperpage}{68}
+\indexentry{serialization|hyperpage}{68}
+\indexentry{SHA-256|hyperpage}{68}
+\indexentry{txid|hyperpage}{68}
+\indexentry{Merkle tree|hyperpage}{68}
+\indexentry{block hash|hyperpage}{68}
+\indexentry{script|hyperpage}{68}
+\indexentry{digital signature|hyperpage}{68}
+\indexentry{UTXO|hyperpage}{68}
+\indexentry{block!validation|hyperpage}{68}
+\indexentry{chain selection|hyperpage}{68}
+\indexentry{reorg|hyperpage}{68}
+\indexentry{longest chain rule|hyperpage}{68}
+\indexentry{script|hyperpage}{69}
+\indexentry{P2PKH|hyperpage}{69}
+\indexentry{P2WPKH|hyperpage}{69}
+\indexentry{scriptPubKey|hyperpage}{69}
+\indexentry{P2PKH|hyperpage}{69}
+\indexentry{HASH160|hyperpage}{69}
+\indexentry{digital signature|hyperpage}{69}
+\indexentry{public key|hyperpage}{69}
+\indexentry{script|hyperpage}{70}
+\indexentry{P2PKH|hyperpage}{70}
+\indexentry{P2WPKH|hyperpage}{70}
+\indexentry{HASH160|hyperpage}{70}
+\indexentry{RIPEMD160|hyperpage}{70}
+\indexentry{SHA-256|hyperpage}{70}
+\indexentry{P2WPKH|hyperpage}{70}
+\indexentry{SegWit|hyperpage}{70}
+\indexentry{P2PKH|hyperpage}{70}
+\indexentry{digital signature|hyperpage}{70}
+\indexentry{witness|hyperpage}{70}
+\indexentry{SegWit|hyperpage}{70}
+\indexentry{scriptSig|hyperpage}{70}
+\indexentry{whitepaper|hyperpage}{73}
+\indexentry{Rust!project|hyperpage}{73}
+\indexentry{consensus|hyperpage}{73}
+\indexentry{canonical encoding|hyperpage}{73}
+\indexentry{cryptography|hyperpage}{73}
+\indexentry{hash|hyperpage}{73}
+\indexentry{digital signature|hyperpage}{73}
+\indexentry{blockchain!core|hyperpage}{73}
+\indexentry{block!acceptance|hyperpage}{73}
+\indexentry{consensus|hyperpage}{73}
+\indexentry{UTXO|hyperpage}{73}
+\indexentry{proof-of-work|hyperpage}{73}
+\indexentry{chain selection|hyperpage}{73}
+\indexentry{storage|hyperpage}{73}
+\indexentry{networking|hyperpage}{73}
+\indexentry{node!orchestration|hyperpage}{73}
+\indexentry{wallet|hyperpage}{73}
+\indexentry{Git!clone|hyperpage}{74}
+\indexentry{GitHub|hyperpage}{74}
+\indexentry{Rust!implementation|hyperpage}{74}
+\indexentry{Cargo!crate|hyperpage}{74}
+\indexentry{primitives|hyperpage}{74}
+\indexentry{cryptography|hyperpage}{74}
+\indexentry{proof-of-work|hyperpage}{74}
+\indexentry{validation|hyperpage}{74}
+\indexentry{storage|hyperpage}{74}
+\indexentry{chainstate|hyperpage}{74}
+\indexentry{networking|hyperpage}{74}
+\indexentry{node|hyperpage}{74}
+\indexentry{wallet|hyperpage}{74}
+\indexentry{Rust!language guide|hyperpage}{74}
+\indexentry{Rust!ownership|hyperpage}{74}
+\indexentry{trait|hyperpage}{74}
+\indexentry{generic|hyperpage}{74}
+\indexentry{async/await|hyperpage}{74}
+\indexentry{Cargo!crate|hyperpage}{74}
+\indexentry{crates.io|hyperpage}{74}
+\indexentry{dependency!local|hyperpage}{74}
+\indexentry{Cargo!workspace|hyperpage}{74}
+\indexentry{block|hyperpage}{77}
+\indexentry{transaction|hyperpage}{77}
+\indexentry{transaction|hyperpage}{77}
+\indexentry{transaction|hyperpage}{77}
+\indexentry{blockchain|hyperpage}{77}
+\indexentry{block|hyperpage}{77}
+\indexentry{transaction|hyperpage}{77}
+\indexentry{Rust!serialization|hyperpage}{77}
+\indexentry{Rust!serialization|hyperpage}{77}
+\indexentry{consensus|hyperpage}{78}
+\indexentry{UTXO|hyperpage}{78}
+\indexentry{sled|hyperpage}{78}
+\indexentry{peer-to-peer|hyperpage}{78}
+\indexentry{block|hyperpage}{78}
+\indexentry{transaction|hyperpage}{78}
+\indexentry{transaction|hyperpage}{78}
+\indexentry{transaction|hyperpage}{78}
+\indexentry{block|hyperpage}{78}
+\indexentry{block|hyperpage}{78}
+\indexentry{blockchain|hyperpage}{78}
+\indexentry{block header|hyperpage}{78}
+\indexentry{transaction|hyperpage}{78}
+\indexentry{SHA-256|hyperpage}{80}
+\indexentry{SHA-256|hyperpage}{80}
+\indexentry{block header|hyperpage}{80}
+\indexentry{block|hyperpage}{80}
+\indexentry{block|hyperpage}{80}
+\indexentry{block|hyperpage}{80}
+\indexentry{proof-of-work|hyperpage}{80}
+\indexentry{nonce|hyperpage}{80}
+\indexentry{proof-of-work|hyperpage}{80}
+\indexentry{mining|hyperpage}{80}
+\indexentry{difficulty|hyperpage}{80}
+\indexentry{difficulty|hyperpage}{80}
+\indexentry{block|hyperpage}{80}
+\indexentry{Merkle tree|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{Merkle tree|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{UTXO|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{SHA-256|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{digital signature|hyperpage}{80}
+\indexentry{digital signature|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{coinbase transaction|hyperpage}{80}
+\indexentry{mining|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{transaction|hyperpage}{80}
+\indexentry{blockchain|hyperpage}{81}
+\indexentry{block|hyperpage}{81}
+\indexentry{blockchain|hyperpage}{81}
+\indexentry{block|hyperpage}{81}
+\indexentry{block|hyperpage}{81}
+\indexentry{chain tip|hyperpage}{81}
+\indexentry{block|hyperpage}{81}
+\indexentry{genesis block|hyperpage}{81}
+\indexentry{block|hyperpage}{81}
+\indexentry{block|hyperpage}{81}
+\indexentry{blockchain|hyperpage}{81}
+\indexentry{block|hyperpage}{81}
+\indexentry{blockchain|hyperpage}{81}
+\indexentry{primitives|hyperpage}{107}
+\indexentry{block|hyperpage}{107}
+\indexentry{transaction|hyperpage}{107}
+\indexentry{Rust!module|hyperpage}{107}
+\indexentry{blockchain!domain|hyperpage}{107}
+\indexentry{whitepaper|hyperpage}{108}
+\indexentry{transaction|hyperpage}{108}
+\indexentry{block|hyperpage}{108}
+\indexentry{proof-of-work|hyperpage}{108}
+\indexentry{timestamp|hyperpage}{108}
+\indexentry{block header|hyperpage}{108}
+\indexentry{block|hyperpage}{108}
+\indexentry{map!functional programming|hyperpage}{108}
+\indexentry{filter!functional programming|hyperpage}{108}
+\indexentry{transaction|hyperpage}{108}
+\indexentry{UTXO|hyperpage}{108}
+\indexentry{UTXO|hyperpage}{108}
+\indexentry{whitepaper|hyperpage}{108}
+\indexentry{proof-of-work|hyperpage}{108}
+\indexentry{block|hyperpage}{108}
+\indexentry{timestamp|hyperpage}{108}
+\indexentry{header!metadata|hyperpage}{108}
+\indexentry{timestamp|hyperpage}{108}
+\indexentry{Unix timestamp|hyperpage}{108}
+\indexentry{consensus rules|hyperpage}{109}
+\indexentry{determinism|hyperpage}{109}
+\indexentry{timestamp|hyperpage}{109}
+\indexentry{block!creation|hyperpage}{109}
+\indexentry{timestamp|hyperpage}{109}
+\indexentry{Rust!module|hyperpage}{109}
+\indexentry{cryptography|hyperpage}{111}
+\indexentry{hash|hyperpage}{111}
+\indexentry{digital signature|hyperpage}{111}
+\indexentry{key generation|hyperpage}{111}
+\indexentry{transaction|hyperpage}{111}
+\indexentry{block|hyperpage}{111}
+\indexentry{blockchain|hyperpage}{113}
+\indexentry{transaction|hyperpage}{113}
+\indexentry{block|hyperpage}{113}
+\indexentry{blockchain|hyperpage}{113}
+\indexentry{blockchain|hyperpage}{113}
+\indexentry{hash function|hyperpage}{114}
+\indexentry{proof-of-work|hyperpage}{114}
+\indexentry{digital signature|hyperpage}{114}
+\indexentry{key pair|hyperpage}{114}
+\indexentry{Base58|hyperpage}{114}
+\indexentry{hash function|hyperpage}{114}
+\indexentry{transaction|hyperpage}{114}
+\indexentry{block|hyperpage}{114}
+\indexentry{proof-of-work|hyperpage}{114}
+\indexentry{digital signature|hyperpage}{114}
+\indexentry{key pair|hyperpage}{114}
+\indexentry{key pair|hyperpage}{114}
+\indexentry{digital signature|hyperpage}{114}
+\indexentry{hash function|hyperpage}{114}
+\indexentry{hash function|hyperpage}{114}
+\indexentry{proof-of-work|hyperpage}{114}
+\indexentry{digital signature|hyperpage}{114}
+\indexentry{digital signature|hyperpage}{114}
+\indexentry{key pair|hyperpage}{114}
+\indexentry{private key|hyperpage}{114}
+\indexentry{public key|hyperpage}{114}
+\indexentry{Base58|hyperpage}{114}
+\indexentry{hash function|hyperpage}{115}
+\indexentry{blockchain|hyperpage}{115}
+\indexentry{SHA-256|hyperpage}{115}
+\indexentry{blockchain|hyperpage}{115}
+\indexentry{transaction|hyperpage}{115}
+\indexentry{block|hyperpage}{115}
+\indexentry{Merkle tree|hyperpage}{115}
+\indexentry{hash function|hyperpage}{116}
+\indexentry{checksum|hyperpage}{116}
+\indexentry{hash function|hyperpage}{116}
+\indexentry{hash function|hyperpage}{116}
+\indexentry{hash function|hyperpage}{116}
+\indexentry{hash function|hyperpage}{116}
+\indexentry{hash function|hyperpage}{116}
+\indexentry{hash function|hyperpage}{116}
+\indexentry{transaction|hyperpage}{116}
+\indexentry{block|hyperpage}{116}
+\indexentry{hash function|hyperpage}{116}
+\indexentry{proof-of-work|hyperpage}{116}
+\indexentry{hash function|hyperpage}{116}
+\indexentry{SHA-256|hyperpage}{116}
+\indexentry{hash function|hyperpage}{116}
+\indexentry{blockchain|hyperpage}{116}
+\indexentry{transaction|hyperpage}{116}
+\indexentry{block|hyperpage}{116}
+\indexentry{Merkle tree|hyperpage}{116}
+\indexentry{transaction|hyperpage}{118}
+\indexentry{hash function|hyperpage}{118}
+\indexentry{blockchain|hyperpage}{118}
+\indexentry{transaction|hyperpage}{118}
+\indexentry{block|hyperpage}{147}
+\indexentry{transaction|hyperpage}{147}
+\indexentry{UTXO|hyperpage}{147}
+\indexentry{blockchain|hyperpage}{148}
+\indexentry{UTXO|hyperpage}{148}
+\indexentry{transaction|hyperpage}{148}
+\indexentry{blockchain!state management|hyperpage}{155}
+\indexentry{blockchain!state|hyperpage}{155}
+\indexentry{node|hyperpage}{155}
+\indexentry{network!handler|hyperpage}{155}
+\indexentry{block|hyperpage}{155}
+\indexentry{transaction|hyperpage}{155}
+\indexentry{miner|hyperpage}{155}
+\indexentry{block|hyperpage}{155}
+\indexentry{wallet|hyperpage}{155}
+\indexentry{UTXO|hyperpage}{155}
+\indexentry{web API|hyperpage}{155}
+\indexentry{chain|hyperpage}{155}
+\indexentry{transaction|hyperpage}{155}
+\indexentry{mining|hyperpage}{155}
+\indexentry{chain|hyperpage}{155}
+\indexentry{state|hyperpage}{155}
+\indexentry{facade|hyperpage}{155}
+\indexentry{BlockchainService|hyperpage}{155}
+\indexentry{async|hyperpage}{155}
+\indexentry{read-write lock|hyperpage}{155}
+\indexentry{facade|hyperpage}{155}
+\indexentry{fork-choice|hyperpage}{155}
+\indexentry{storage layer|hyperpage}{155}
+\indexentry{BlockchainFileSystem|hyperpage}{155}
+\indexentry{derived state|hyperpage}{155}
+\indexentry{UTXO|hyperpage}{155}
+\indexentry{UTXOSet|hyperpage}{155}
+\indexentry{BlockchainService!read|hyperpage}{156}
+\indexentry{read-write lock|hyperpage}{156}
+\indexentry{block|hyperpage}{156}
+\indexentry{BlockchainService!add\_block|hyperpage}{156}
+\indexentry{BlockchainFileSystem!add\_block|hyperpage}{156}
+\indexentry{mining|hyperpage}{156}
+\indexentry{BlockchainService!mine\_block|hyperpage}{156}
+\indexentry{BlockchainFileSystem!mine\_block|hyperpage}{156}
+\indexentry{derived state|hyperpage}{156}
+\indexentry{BlockchainService!update\_utxo\_set|hyperpage}{156}
+\indexentry{BlockchainService!rollback\_utxo\_set|hyperpage}{156}
+\indexentry{UTXOSet!update|hyperpage}{156}
+\indexentry{UTXOSet!rollback\_block|hyperpage}{156}
+\indexentry{BlockchainService|hyperpage}{156}
+\indexentry{chain|hyperpage}{156}
+\indexentry{node!runtime|hyperpage}{156}
+\indexentry{networking|hyperpage}{156}
+\indexentry{mining|hyperpage}{156}
+\indexentry{BlockchainService|hyperpage}{156}
+\indexentry{block|hyperpage}{156}
+\indexentry{mining|hyperpage}{156}
+\indexentry{web API|hyperpage}{156}
+\indexentry{HTTP|hyperpage}{156}
+\indexentry{NodeContext|hyperpage}{156}
+\indexentry{BlockchainService|hyperpage}{156}
+\indexentry{chain|hyperpage}{156}
+\indexentry{facade|hyperpage}{156}
+\indexentry{node!coordination|hyperpage}{156}
+\indexentry{peer-to-peer|hyperpage}{165}
+\indexentry{blockchain|hyperpage}{165}
+\indexentry{blockchain|hyperpage}{165}
+\indexentry{block|hyperpage}{165}
+\indexentry{block|hyperpage}{165}
+\indexentry{sled|hyperpage}{165}
+\indexentry{block|hyperpage}{165}
+\indexentry{blockchain|hyperpage}{165}
+\indexentry{UTXO|hyperpage}{183}
+\indexentry{transaction|hyperpage}{183}
+\indexentry{transaction|hyperpage}{183}
+\indexentry{transaction|hyperpage}{183}
+\indexentry{UTXO|hyperpage}{183}
+\indexentry{UTXO|hyperpage}{183}
+\indexentry{UTXO|hyperpage}{183}
+\indexentry{block|hyperpage}{183}
+\indexentry{wallet|hyperpage}{183}
+\indexentry{blockchain|hyperpage}{184}
+\indexentry{UTXO|hyperpage}{184}
+\indexentry{sled|hyperpage}{184}
+\indexentry{UTXO|hyperpage}{184}
+\indexentry{UTXO|hyperpage}{184}
+\indexentry{sled|hyperpage}{184}
+\indexentry{UTXO|hyperpage}{184}
+\indexentry{transaction|hyperpage}{184}
+\indexentry{transaction|hyperpage}{184}
+\indexentry{transaction|hyperpage}{203}
+\indexentry{transaction!lifecycle|hyperpage}{203}
+\indexentry{construction|hyperpage}{203}
+\indexentry{digital signature!signing|hyperpage}{203}
+\indexentry{verification|hyperpage}{203}
+\indexentry{mempool|hyperpage}{203}
+\indexentry{network!propagation|hyperpage}{203}
+\indexentry{block|hyperpage}{203}
+\indexentry{transaction|hyperpage}{204}
+\indexentry{stage|hyperpage}{204}
+\indexentry{system|hyperpage}{204}
+\indexentry{construction|hyperpage}{204}
+\indexentry{digital signature!signing|hyperpage}{204}
+\indexentry{submission|hyperpage}{204}
+\indexentry{mempool|hyperpage}{204}
+\indexentry{broadcast|hyperpage}{204}
+\indexentry{mining|hyperpage}{204}
+\indexentry{verification|hyperpage}{204}
+\indexentry{mining boundary|hyperpage}{204}
+\indexentry{confirmation|hyperpage}{204}
+\indexentry{orchestration|hyperpage}{205}
+\indexentry{transaction|hyperpage}{205}
+\indexentry{node|hyperpage}{205}
+\indexentry{mempool|hyperpage}{205}
+\indexentry{networking|hyperpage}{205}
+\indexentry{transaction|hyperpage}{207}
+\indexentry{wallet|hyperpage}{207}
+\indexentry{change output|hyperpage}{207}
+\indexentry{txid|hyperpage}{207}
+\indexentry{digital signature!signing|hyperpage}{207}
+\indexentry{key|hyperpage}{209}
+\indexentry{public key|hyperpage}{209}
+\indexentry{coin selection|hyperpage}{209}
+\indexentry{UTXOSet!find\_spendable\_outputs|hyperpage}{209}
+\indexentry{outpoint|hyperpage}{209}
+\indexentry{TXInput|hyperpage}{209}
+\indexentry{digital signature|hyperpage}{209}
+\indexentry{TXOutput|hyperpage}{209}
+\indexentry{change output|hyperpage}{209}
+\indexentry{txid|hyperpage}{209}
+\indexentry{hash|hyperpage}{209}
+\indexentry{digital signature!signing|hyperpage}{209}
+\indexentry{sign|hyperpage}{209}
+\indexentry{new output|hyperpage}{209}
+\indexentry{UTXO|hyperpage}{209}
+\indexentry{digital signature!signing|hyperpage}{210}
+\indexentry{trimmed copy|hyperpage}{210}
+\indexentry{transaction|hyperpage}{210}
+\indexentry{authorization|hyperpage}{210}
+\indexentry{digital signature|hyperpage}{210}
+\indexentry{transaction!lifecycle|hyperpage}{223}
+\indexentry{transaction|hyperpage}{223}
+\indexentry{construction|hyperpage}{223}
+\indexentry{digital signature!signing|hyperpage}{223}
+\indexentry{mempool|hyperpage}{223}
+\indexentry{propagation|hyperpage}{223}
+\indexentry{transaction|hyperpage}{223}
+\indexentry{node|hyperpage}{223}
+\indexentry{block|hyperpage}{223}
+\indexentry{mempool|hyperpage}{223}
+\indexentry{proof-of-work|hyperpage}{223}
+\indexentry{tip|hyperpage}{223}
+\indexentry{UTXO|hyperpage}{223}
+\indexentry{block|hyperpage}{223}
+\indexentry{peer|hyperpage}{223}
+\indexentry{transaction|hyperpage}{224}
+\indexentry{block!acceptance|hyperpage}{224}
+\indexentry{proof-of-work|hyperpage}{224}
+\indexentry{UTXO|hyperpage}{224}
+\indexentry{state transition|hyperpage}{224}
+\indexentry{block|hyperpage}{224}
+\indexentry{pending|hyperpage}{224}
+\indexentry{transaction|hyperpage}{224}
+\indexentry{mining|hyperpage}{224}
+\indexentry{block|hyperpage}{224}
+\indexentry{transaction|hyperpage}{224}
+\indexentry{mempool|hyperpage}{224}
+\indexentry{coinbase transaction|hyperpage}{224}
+\indexentry{block header|hyperpage}{224}
+\indexentry{transaction|hyperpage}{224}
+\indexentry{proof-of-work|hyperpage}{224}
+\indexentry{nonce|hyperpage}{224}
+\indexentry{hash|hyperpage}{224}
+\indexentry{tip|hyperpage}{224}
+\indexentry{UTXO|hyperpage}{224}
+\indexentry{state transition|hyperpage}{224}
+\indexentry{block|hyperpage}{224}
+\indexentry{peer|hyperpage}{224}
+\indexentry{block|hyperpage}{224}
+\indexentry{INV message|hyperpage}{224}
+\indexentry{GETDATA message|hyperpage}{224}
+\indexentry{BLOCK message|hyperpage}{224}
+\indexentry{mempool|hyperpage}{224}
+\indexentry{transaction|hyperpage}{224}
+\indexentry{block|hyperpage}{224}
+\indexentry{GLOBAL\_MEMORY\_POOL|hyperpage}{224}
+\indexentry{coinbase transaction|hyperpage}{224}
+\indexentry{transaction|hyperpage}{224}
+\indexentry{block|hyperpage}{224}
+\indexentry{coinbase transaction|hyperpage}{224}
+\indexentry{miner|hyperpage}{224}
+\indexentry{mining reward|hyperpage}{224}
+\indexentry{whitepaper|hyperpage}{224}
+\indexentry{incentive mechanism|hyperpage}{224}
+\indexentry{transaction|hyperpage}{224}
+\indexentry{block|hyperpage}{224}
+\indexentry{transaction|hyperpage}{224}
+\indexentry{block|hyperpage}{224}
+\indexentry{Transaction!new\_coinbase\_tx|hyperpage}{224}
+\indexentry{tip|hyperpage}{224}
+\indexentry{block|hyperpage}{224}
+\indexentry{hash|hyperpage}{224}
+\indexentry{node|hyperpage}{224}
+\indexentry{canonical|hyperpage}{224}
+\indexentry{chain|hyperpage}{224}
+\indexentry{blocks tree|hyperpage}{224}
+\indexentry{block|hyperpage}{224}
+\indexentry{hash|hyperpage}{224}
+\indexentry{serialization|hyperpage}{224}
+\indexentry{block|hyperpage}{224}
+\indexentry{UTXO|hyperpage}{224}
+\indexentry{chainstate|hyperpage}{224}
+\indexentry{derived state|hyperpage}{224}
+\indexentry{output|hyperpage}{224}
+\indexentry{chainstate|hyperpage}{224}
+\indexentry{INV message|hyperpage}{224}
+\indexentry{GETDATA message|hyperpage}{224}
+\indexentry{BLOCK message|hyperpage}{224}
+\indexentry{mining boundary|hyperpage}{225}
+\indexentry{proof-of-work|hyperpage}{225}
+\indexentry{transaction|hyperpage}{225}
+\indexentry{verification|hyperpage}{225}
+\indexentry{mining|hyperpage}{225}
+\indexentry{BlockchainService!mine\_block|hyperpage}{225}
+\indexentry{persistence|hyperpage}{225}
+\indexentry{state transition|hyperpage}{225}
+\indexentry{mining|hyperpage}{225}
+\indexentry{block|hyperpage}{225}
+\indexentry{chain|hyperpage}{225}
+\indexentry{block|hyperpage}{225}
+\indexentry{tip|hyperpage}{225}
+\indexentry{UTXO|hyperpage}{225}
+\indexentry{tip|hyperpage}{225}
+\indexentry{BlockchainFileSystem!mine\_block|hyperpage}{225}
+\indexentry{BlockchainService!update\_utxo\_set|hyperpage}{225}
+\indexentry{peer!acceptance|hyperpage}{225}
+\indexentry{block|hyperpage}{225}
+\indexentry{network|hyperpage}{225}
+\indexentry{chain|hyperpage}{225}
+\indexentry{process\_stream|hyperpage}{225}
+\indexentry{Package|hyperpage}{225}
+\indexentry{NodeContext!add\_block|hyperpage}{225}
+\indexentry{transaction|hyperpage}{245}
+\indexentry{transaction|hyperpage}{245}
+\indexentry{digital signature|hyperpage}{245}
+\indexentry{block|hyperpage}{245}
+\indexentry{proof-of-work|hyperpage}{245}
+\indexentry{block|hyperpage}{245}
+\indexentry{block|hyperpage}{246}
+\indexentry{reorganization|hyperpage}{246}
+\indexentry{UTXO|hyperpage}{246}
+\indexentry{transaction|hyperpage}{246}
+\indexentry{digital signature|hyperpage}{246}
+\indexentry{block|hyperpage}{246}
+\indexentry{coinbase transaction|hyperpage}{246}
+\indexentry{transaction|hyperpage}{246}
+\indexentry{block|hyperpage}{246}
+\indexentry{proof-of-work|hyperpage}{246}
+\indexentry{consensus|hyperpage}{246}
+\indexentry{fork|hyperpage}{246}
+\indexentry{proof-of-work|hyperpage}{246}
+\indexentry{fork|hyperpage}{246}
+\indexentry{chain tip|hyperpage}{246}
+\indexentry{UTXO|hyperpage}{246}
+\indexentry{block|hyperpage}{246}
+\indexentry{double-spend|hyperpage}{246}
+\indexentry{proof-of-work|hyperpage}{246}
+\indexentry{transaction|hyperpage}{265}
+\indexentry{construction|hyperpage}{265}
+\indexentry{digital signature!signing|hyperpage}{265}
+\indexentry{block|hyperpage}{265}
+\indexentry{mining|hyperpage}{265}
+\indexentry{persistence|hyperpage}{265}
+\indexentry{UTXO|hyperpage}{265}
+\indexentry{output|hyperpage}{265}
+\indexentry{runtime|hyperpage}{265}
+\indexentry{node|hyperpage}{265}
+\indexentry{incoming|hyperpage}{265}
+\indexentry{network!message|hyperpage}{265}
+\indexentry{message|hyperpage}{265}
+\indexentry{mempool|hyperpage}{265}
+\indexentry{mining|hyperpage}{265}
+\indexentry{blockchain!state|hyperpage}{265}
+\indexentry{state|hyperpage}{265}
+\indexentry{node|hyperpage}{266}
+\indexentry{blockchain|hyperpage}{266}
+\indexentry{node|hyperpage}{266}
+\indexentry{instance|hyperpage}{266}
+\indexentry{blockchain|hyperpage}{266}
+\indexentry{software|hyperpage}{266}
+\indexentry{blockchain|hyperpage}{266}
+\indexentry{validation|hyperpage}{266}
+\indexentry{transaction|hyperpage}{266}
+\indexentry{block|hyperpage}{266}
+\indexentry{peer-to-peer|hyperpage}{266}
+\indexentry{network|hyperpage}{266}
+\indexentry{mining|hyperpage}{266}
+\indexentry{block|hyperpage}{266}
+\indexentry{distributed systems|hyperpage}{266}
+\indexentry{node|hyperpage}{266}
+\indexentry{blockchain|hyperpage}{266}
+\indexentry{BlockchainFileSystem|hyperpage}{266}
+\indexentry{block|hyperpage}{266}
+\indexentry{sled|hyperpage}{266}
+\indexentry{database|hyperpage}{266}
+\indexentry{node|hyperpage}{266}
+\indexentry{block|hyperpage}{266}
+\indexentry{transaction|hyperpage}{266}
+\indexentry{network|hyperpage}{266}
+\indexentry{node|hyperpage}{266}
+\indexentry{storage|hyperpage}{266}
+\indexentry{central database|hyperpage}{266}
+\indexentry{database|hyperpage}{266}
+\indexentry{node|hyperpage}{266}
+\indexentry{decentralization|hyperpage}{266}
+\indexentry{blockchain|hyperpage}{266}
+\indexentry{node|hyperpage}{266}
+\indexentry{implementation|hyperpage}{266}
+\indexentry{node|hyperpage}{266}
+\indexentry{runtime|hyperpage}{266}
+\indexentry{system|hyperpage}{266}
+\indexentry{blockchain!state|hyperpage}{266}
+\indexentry{state|hyperpage}{266}
+\indexentry{BlockchainFileSystem|hyperpage}{266}
+\indexentry{transaction|hyperpage}{266}
+\indexentry{mempool|hyperpage}{266}
+\indexentry{network|hyperpage}{266}
+\indexentry{communication|hyperpage}{266}
+\indexentry{mining|hyperpage}{266}
+\indexentry{operation|hyperpage}{266}
+\indexentry{code walkthrough|hyperpage}{287}
+\indexentry{chain|hyperpage}{287}
+\indexentry{instruction|hyperpage}{287}
+\indexentry{main|hyperpage}{287}
+\indexentry{call chain|hyperpage}{287}
+\indexentry{block|hyperpage}{287}
+\indexentry{subsystem|hyperpage}{287}
+\indexentry{wiring|hyperpage}{287}
+\indexentry{flow|hyperpage}{287}
+\indexentry{runtime|hyperpage}{287}
+\indexentry{entry point|hyperpage}{287}
+\indexentry{message|hyperpage}{287}
+\indexentry{bitcoin|hyperpage}{287}
+\indexentry{miner|hyperpage}{287}
+\indexentry{block|hyperpage}{287}
+\indexentry{main|hyperpage}{288}
+\indexentry{startnode|hyperpage}{288}
+\indexentry{node|hyperpage}{288}
+\indexentry{web server|hyperpage}{288}
+\indexentry{miner|hyperpage}{288}
+\indexentry{Mining|hyperpage}{288}
+\indexentry{node|hyperpage}{288}
+\indexentry{is\_miner|hyperpage}{288}
+\indexentry{HTTP|hyperpage}{288}
+\indexentry{transaction|hyperpage}{288}
+\indexentry{is\_web\_server|hyperpage}{288}
+\indexentry{process|hyperpage}{288}
+\indexentry{node|hyperpage}{288}
+\indexentry{web server|hyperpage}{288}
+\indexentry{node|hyperpage}{288}
+\indexentry{HTTP|hyperpage}{288}
+\indexentry{request|hyperpage}{288}
+\indexentry{transaction|hyperpage}{288}
+\indexentry{peer-to-peer|hyperpage}{288}
+\indexentry{node|hyperpage}{288}
+\indexentry{miner|hyperpage}{288}
+\indexentry{node|hyperpage}{288}
+\indexentry{transaction|hyperpage}{288}
+\indexentry{peer-to-peer|hyperpage}{288}
+\indexentry{mempool|hyperpage}{288}
+\indexentry{mining|hyperpage}{288}
+\indexentry{block|hyperpage}{288}
+\indexentry{mining|hyperpage}{288}
+\indexentry{limitation|hyperpage}{288}
+\indexentry{Bitcoin|hyperpage}{288}
+\indexentry{protocol|hyperpage}{288}
+\indexentry{implementation|hyperpage}{288}
+\indexentry{main|hyperpage}{288}
+\indexentry{whitepaper|hyperpage}{309}
+\indexentry{block|hyperpage}{309}
+\indexentry{transaction|hyperpage}{309}
+\indexentry{node|hyperpage}{309}
+\indexentry{durable state|hyperpage}{309}
+\indexentry{chain|hyperpage}{309}
+\indexentry{blockchain|hyperpage}{309}
+\indexentry{ownership|hyperpage}{309}
+\indexentry{key|hyperpage}{309}
+\indexentry{output|hyperpage}{309}
+\indexentry{scarcity|hyperpage}{309}
+\indexentry{output|hyperpage}{309}
+\indexentry{double-spending|hyperpage}{309}
+\indexentry{chain|hyperpage}{309}
+\indexentry{validation|hyperpage}{309}
+\indexentry{Transaction!verify|hyperpage}{309}
+\indexentry{digital signature|hyperpage}{309}
+\indexentry{spendability|hyperpage}{309}
+\indexentry{UTXO|hyperpage}{309}
+\indexentry{fork-choice|hyperpage}{309}
+\indexentry{branch|hyperpage}{309}
+\indexentry{node|hyperpage}{310}
+\indexentry{Package|hyperpage}{310}
+\indexentry{peer|hyperpage}{310}
+\indexentry{data|hyperpage}{310}
+\indexentry{block|hyperpage}{310}
+\indexentry{state|hyperpage}{310}
+\indexentry{whitepaper|hyperpage}{310}
+\indexentry{block|hyperpage}{310}
+\indexentry{block|hyperpage}{310}
+\indexentry{node|hyperpage}{310}
+\indexentry{canonical tip|hyperpage}{310}
+\indexentry{derived state|hyperpage}{310}
+\indexentry{UTXO|hyperpage}{310}
+\indexentry{reorganization|hyperpage}{310}
+\indexentry{block|hyperpage}{310}
+\indexentry{branch|hyperpage}{310}
+\indexentry{block|hyperpage}{310}
+\indexentry{Rust!developer|hyperpage}{311}
+\indexentry{validation|hyperpage}{311}
+\indexentry{pure function|hyperpage}{311}
+\indexentry{chain|hyperpage}{311}
+\indexentry{state|hyperpage}{311}
+\indexentry{UTXO|hyperpage}{311}
+\indexentry{state|hyperpage}{311}
+\indexentry{durable state|hyperpage}{311}
+\indexentry{connection|hyperpage}{311}
+\indexentry{state transition|hyperpage}{311}
+\indexentry{tip|hyperpage}{311}
+\indexentry{UTXO|hyperpage}{311}
+\indexentry{rollback|hyperpage}{311}
+\indexentry{state transition|hyperpage}{311}
+\indexentry{node|hyperpage}{311}
+\indexentry{durable storage|hyperpage}{319}
+\indexentry{node|hyperpage}{319}
+\indexentry{blockchain|hyperpage}{319}
+\indexentry{history|hyperpage}{319}
+\indexentry{chain|hyperpage}{319}
+\indexentry{peer|hyperpage}{319}
+\indexentry{storage layer|hyperpage}{319}
+\indexentry{invariant|hyperpage}{319}
+\indexentry{chain tip|hyperpage}{319}
+\indexentry{hash|hyperpage}{319}
+\indexentry{block|hyperpage}{319}
+\indexentry{consistency|hyperpage}{319}
+\indexentry{node|hyperpage}{319}
+\indexentry{block|hyperpage}{319}
+\indexentry{database|hyperpage}{319}
+\indexentry{block|hyperpage}{319}
+\indexentry{chain tip|hyperpage}{319}
+\indexentry{atomicity|hyperpage}{319}
+\indexentry{sled|hyperpage}{320}
+\indexentry{sled|hyperpage}{320}
+\indexentry{block|hyperpage}{320}
+\indexentry{chain tip|hyperpage}{320}
+\indexentry{sled|hyperpage}{320}
+\indexentry{sled|hyperpage}{320}
+\indexentry{block|hyperpage}{320}
+\indexentry{block|hyperpage}{320}
+\indexentry{block|hyperpage}{320}
+\indexentry{chain tip|hyperpage}{320}
+\indexentry{chain tip|hyperpage}{320}
+\indexentry{block|hyperpage}{320}
+\indexentry{chain tip|hyperpage}{320}
+\indexentry{sled|hyperpage}{320}
+\indexentry{block|hyperpage}{321}
+\indexentry{chain tip|hyperpage}{321}
+\indexentry{block|hyperpage}{321}
+\indexentry{blockchain|hyperpage}{339}
+\indexentry{network layer|hyperpage}{339}
+\indexentry{consensus|hyperpage}{339}
+\indexentry{transaction|hyperpage}{339}
+\indexentry{mining|hyperpage}{339}
+\indexentry{block|hyperpage}{339}
+\indexentry{block|hyperpage}{339}
+\indexentry{double-spend|hyperpage}{339}
+\indexentry{peer-to-peer|hyperpage}{340}
+\indexentry{TCP|hyperpage}{340}
+\indexentry{TCP|hyperpage}{340}
+\indexentry{encoding|hyperpage}{340}
+\indexentry{JSON|hyperpage}{340}
+\indexentry{Rust!serialization|hyperpage}{340}
+\indexentry{serde|hyperpage}{340}
+\indexentry{message|hyperpage}{340}
+\indexentry{Package|hyperpage}{340}
+\indexentry{OpType|hyperpage}{340}
+\indexentry{dispatcher|hyperpage}{340}
+\indexentry{process\_stream|hyperpage}{340}
+\indexentry{inbound|hyperpage}{340}
+\indexentry{package|hyperpage}{340}
+\indexentry{send|hyperpage}{340}
+\indexentry{send\_data|hyperpage}{340}
+\indexentry{send\_inv|hyperpage}{340}
+\indexentry{send\_get\_data|hyperpage}{340}
+\indexentry{send\_block|hyperpage}{340}
+\indexentry{send\_tx|hyperpage}{340}
+\indexentry{send\_version|hyperpage}{340}
+\indexentry{peer!bootstrap|hyperpage}{340}
+\indexentry{central-node|hyperpage}{340}
+\indexentry{node|hyperpage}{340}
+\indexentry{gossip protocol|hyperpage}{340}
+\indexentry{gossip protocol|hyperpage}{340}
+\indexentry{runtime|hyperpage}{353}
+\indexentry{subsystem|hyperpage}{353}
+\indexentry{network!layer|hyperpage}{353}
+\indexentry{message|hyperpage}{353}
+\indexentry{Package|hyperpage}{353}
+\indexentry{NodeContext|hyperpage}{353}
+\indexentry{subsystem|hyperpage}{353}
+\indexentry{message|hyperpage}{353}
+\indexentry{mempool|hyperpage}{353}
+\indexentry{chainstate|hyperpage}{353}
+\indexentry{mining|hyperpage}{353}
+\indexentry{chainstate|hyperpage}{353}
+\indexentry{block|hyperpage}{353}
+\indexentry{canonical|hyperpage}{353}
+\indexentry{tip|hyperpage}{353}
+\indexentry{UTXO|hyperpage}{353}
+\indexentry{mempool|hyperpage}{353}
+\indexentry{unconfirmed transaction|hyperpage}{353}
+\indexentry{transaction|hyperpage}{353}
+\indexentry{output|hyperpage}{353}
+\indexentry{mempool|hyperpage}{353}
+\indexentry{miner|hyperpage}{353}
+\indexentry{mempool|hyperpage}{353}
+\indexentry{block|hyperpage}{353}
+\indexentry{tip|hyperpage}{353}
+\indexentry{peer|hyperpage}{353}
+\indexentry{node|hyperpage}{353}
+\indexentry{peer|hyperpage}{353}
+\indexentry{Rust!module|hyperpage}{353}
+\indexentry{Rust!module|hyperpage}{353}
+\indexentry{Rust!developer|hyperpage}{353}
+\indexentry{coordination|hyperpage}{353}
+\indexentry{network!message|hyperpage}{353}
+\indexentry{message|hyperpage}{353}
+\indexentry{chainstate|hyperpage}{353}
+\indexentry{mempool|hyperpage}{353}
+\indexentry{mining|hyperpage}{353}
+\indexentry{peer!relay|hyperpage}{353}
+\indexentry{runtime|hyperpage}{354}
+\indexentry{entry point|hyperpage}{354}
+\indexentry{NodeContext!process\_transaction|hyperpage}{354}
+\indexentry{mempool|hyperpage}{354}
+\indexentry{NodeContext!add\_block|hyperpage}{354}
+\indexentry{chain|hyperpage}{354}
+\indexentry{peer|hyperpage}{354}
+\indexentry{NodeContext!mine\_empty\_block|hyperpage}{354}
+\indexentry{mining|hyperpage}{354}
+\indexentry{txmempool|hyperpage}{354}
+\indexentry{mempool|hyperpage}{354}
+\indexentry{state|hyperpage}{354}
+\indexentry{miner|hyperpage}{354}
+\indexentry{mining|hyperpage}{354}
+\indexentry{pipeline|hyperpage}{354}
+\indexentry{NodeContext|hyperpage}{354}
+\indexentry{entry point|hyperpage}{354}
+\indexentry{blockchain|hyperpage}{354}
+\indexentry{interface|hyperpage}{354}
+\indexentry{web API|hyperpage}{354}
+\indexentry{admin dashboard|hyperpage}{354}
+\indexentry{wallet|hyperpage}{354}
+\indexentry{blockchain|hyperpage}{354}
+\indexentry{NodeContext|hyperpage}{354}
+\indexentry{Rust!module|hyperpage}{354}
+\indexentry{system|hyperpage}{354}
+\indexentry{wallet|hyperpage}{371}
+\indexentry{key pair|hyperpage}{371}
+\indexentry{wallet|hyperpage}{371}
+\indexentry{key pair|hyperpage}{371}
+\indexentry{key pair|hyperpage}{371}
+\indexentry{hash function|hyperpage}{371}
+\indexentry{digital signature|hyperpage}{371}
+\indexentry{UTXO|hyperpage}{371}
+\indexentry{wallet|hyperpage}{371}
+\indexentry{wallet|hyperpage}{372}
+\indexentry{key pair|hyperpage}{372}
+\indexentry{key pair|hyperpage}{372}
+\indexentry{Base58|hyperpage}{372}
+\indexentry{hash function|hyperpage}{372}
+\indexentry{checksum|hyperpage}{372}
+\indexentry{wallet|hyperpage}{372}
+\indexentry{public key|hyperpage}{373}
+\indexentry{checksum|hyperpage}{373}
+\indexentry{SHA-256|hyperpage}{373}
+\indexentry{wallet|hyperpage}{373}
+\indexentry{Base58|hyperpage}{373}
+\indexentry{checksum|hyperpage}{373}
+\indexentry{hash function|hyperpage}{373}
+\indexentry{blockchain|hyperpage}{389}
+\indexentry{REST API|hyperpage}{389}
+\indexentry{Axum|hyperpage}{389}
+\indexentry{REST API|hyperpage}{391}
+\indexentry{Rust!async|hyperpage}{391}
+\indexentry{blockchain|hyperpage}{391}
+\indexentry{CORS|hyperpage}{391}
+\indexentry{Rust!serialization|hyperpage}{391}
+\indexentry{Iced|hyperpage}{449}
+\indexentry{Rust!enum|hyperpage}{449}
+\indexentry{Iced|hyperpage}{449}
+\indexentry{REST API|hyperpage}{449}
+\indexentry{Iced|hyperpage}{449}
+\indexentry{Rust!enum|hyperpage}{449}
+\indexentry{Rust!pattern matching|hyperpage}{449}
+\indexentry{Rust!async|hyperpage}{450}
+\indexentry{tokio|hyperpage}{450}
+\indexentry{framework|hyperpage}{473}
+\indexentry{desktop application|hyperpage}{473}
+\indexentry{Rust!backend|hyperpage}{473}
+\indexentry{web-technology|hyperpage}{473}
+\indexentry{frontend|hyperpage}{473}
+\indexentry{Electron|hyperpage}{473}
+\indexentry{Tauri|hyperpage}{473}
+\indexentry{webview|hyperpage}{473}
+\indexentry{binary|hyperpage}{473}
+\indexentry{Rust!backend|hyperpage}{473}
+\indexentry{command|hyperpage}{473}
+\indexentry{tauri::command|hyperpage}{473}
+\indexentry{frontend|hyperpage}{473}
+\indexentry{invoke|hyperpage}{473}
+\indexentry{IPC|hyperpage}{473}
+\indexentry{architecture|hyperpage}{473}
+\indexentry{Rust!backend|hyperpage}{473}
+\indexentry{logic|hyperpage}{473}
+\indexentry{system|hyperpage}{473}
+\indexentry{React|hyperpage}{473}
+\indexentry{UI|hyperpage}{473}
+\indexentry{bitcoin-desktop-ui-tauri|hyperpage}{474}
+\indexentry{Cargo!crate|hyperpage}{474}
+\indexentry{Rust!developer|hyperpage}{474}
+\indexentry{Tauri|hyperpage}{474}
+\indexentry{Rust!backend|hyperpage}{474}
+\indexentry{React|hyperpage}{474}
+\indexentry{TypeScript|hyperpage}{474}
+\indexentry{frontend|hyperpage}{474}
+\indexentry{command|hyperpage}{474}
+\indexentry{IPC|hyperpage}{474}
+\indexentry{frontend|hyperpage}{474}
+\indexentry{Bitcoin|hyperpage}{474}
+\indexentry{implementation|hyperpage}{474}
+\indexentry{admin dashboard|hyperpage}{474}
+\indexentry{Tauri|hyperpage}{474}
+\indexentry{desktop application|hyperpage}{474}
+\indexentry{admin dashboard|hyperpage}{474}
+\indexentry{desktop application|hyperpage}{474}
+\indexentry{application|hyperpage}{474}
+\indexentry{Rust!backend|hyperpage}{474}
+\indexentry{backend|hyperpage}{474}
+\indexentry{tauri::command|hyperpage}{474}
+\indexentry{bitcoin-api|hyperpage}{474}
+\indexentry{Cargo!crate|hyperpage}{474}
+\indexentry{React|hyperpage}{474}
+\indexentry{TypeScript|hyperpage}{474}
+\indexentry{frontend|hyperpage}{474}
+\indexentry{Tauri|hyperpage}{474}
+\indexentry{IPC|hyperpage}{474}
+\indexentry{invoke|hyperpage}{474}
+\indexentry{admin dashboard|hyperpage}{475}
+\indexentry{dashboard|hyperpage}{475}
+\indexentry{Iced|hyperpage}{475}
+\indexentry{Rust!backend|hyperpage}{475}
+\indexentry{MVU|hyperpage}{475}
+\indexentry{framework|hyperpage}{475}
+\indexentry{feature|hyperpage}{475}
+\indexentry{blockchain|hyperpage}{475}
+\indexentry{wallet|hyperpage}{475}
+\indexentry{management|hyperpage}{475}
+\indexentry{mining|hyperpage}{475}
+\indexentry{health check|hyperpage}{475}
+\indexentry{Tauri|hyperpage}{475}
+\indexentry{Rust!backend|hyperpage}{475}
+\indexentry{backend|hyperpage}{475}
+\indexentry{web|hyperpage}{475}
+\indexentry{frontend|hyperpage}{475}
+\indexentry{trade-off|hyperpage}{475}
+\indexentry{bitcoin-wallet-ui|hyperpage}{489}
+\indexentry{Cargo!crate|hyperpage}{489}
+\indexentry{user-facing|hyperpage}{489}
+\indexentry{wallet|hyperpage}{489}
+\indexentry{interface|hyperpage}{489}
+\indexentry{address|hyperpage}{489}
+\indexentry{balance|hyperpage}{489}
+\indexentry{transaction|hyperpage}{489}
+\indexentry{admin dashboard|hyperpage}{489}
+\indexentry{wallet|hyperpage}{489}
+\indexentry{workflow|hyperpage}{489}
+\indexentry{wallet|hyperpage}{489}
+\indexentry{transaction|hyperpage}{489}
+\indexentry{transaction|hyperpage}{489}
+\indexentry{history|hyperpage}{489}
+\indexentry{encryption|hyperpage}{489}
+\indexentry{key|hyperpage}{489}
+\indexentry{wallet|hyperpage}{489}
+\indexentry{interface|hyperpage}{489}
+\indexentry{wallet|hyperpage}{489}
+\indexentry{implementation|hyperpage}{489}
+\indexentry{wallet|hyperpage}{489}
+\indexentry{backend|hyperpage}{489}
+\indexentry{Wallet|hyperpage}{489}
+\indexentry{System|hyperpage}{489}
+\indexentry{MVU|hyperpage}{489}
+\indexentry{persistence|hyperpage}{489}
+\indexentry{wallet|hyperpage}{489}
+\indexentry{wallet|hyperpage}{489}
+\indexentry{Iced|hyperpage}{489}
+\indexentry{MVU|hyperpage}{489}
+\indexentry{pattern|hyperpage}{489}
+\indexentry{persistent|hyperpage}{489}
+\indexentry{encryption|hyperpage}{489}
+\indexentry{storage|hyperpage}{489}
+\indexentry{embedded database|hyperpage}{489}
+\indexentry{database|hyperpage}{489}
+\indexentry{wallet|hyperpage}{490}
+\indexentry{metadata|hyperpage}{490}
+\indexentry{derived state|hyperpage}{490}
+\indexentry{data|hyperpage}{490}
+\indexentry{blockchain|hyperpage}{490}
+\indexentry{session|hyperpage}{490}
+\indexentry{bitcoin-wallet-ui-tauri|hyperpage}{503}
+\indexentry{Cargo!crate|hyperpage}{503}
+\indexentry{wallet|hyperpage}{503}
+\indexentry{functionality|hyperpage}{503}
+\indexentry{Tauri|hyperpage}{503}
+\indexentry{Iced|hyperpage}{503}
+\indexentry{admin dashboard|hyperpage}{503}
+\indexentry{comparison|hyperpage}{503}
+\indexentry{wallet|hyperpage}{503}
+\indexentry{feature|hyperpage}{503}
+\indexentry{architecture|hyperpage}{503}
+\indexentry{Rust!backend|hyperpage}{503}
+\indexentry{Iced|hyperpage}{503}
+\indexentry{MVU|hyperpage}{503}
+\indexentry{Tauri|hyperpage}{503}
+\indexentry{Rust!backend|hyperpage}{503}
+\indexentry{backend|hyperpage}{503}
+\indexentry{React|hyperpage}{503}
+\indexentry{frontend|hyperpage}{503}
+\indexentry{UI|hyperpage}{503}
+\indexentry{logic|hyperpage}{503}
+\indexentry{blockchain|hyperpage}{503}
+\indexentry{operation|hyperpage}{503}
+\indexentry{framework|hyperpage}{503}
+\indexentry{Tauri|hyperpage}{503}
+\indexentry{wallet|hyperpage}{503}
+\indexentry{persistent|hyperpage}{503}
+\indexentry{encryption|hyperpage}{503}
+\indexentry{storage|hyperpage}{503}
+\indexentry{private key|hyperpage}{503}
+\indexentry{key|hyperpage}{503}
+\indexentry{transaction|hyperpage}{503}
+\indexentry{history|hyperpage}{503}
+\indexentry{admin dashboard|hyperpage}{503}
+\indexentry{blockchain|hyperpage}{504}
+\indexentry{node|hyperpage}{504}
+\indexentry{wallet|hyperpage}{504}
+\indexentry{key|hyperpage}{504}
+\indexentry{transaction|hyperpage}{504}
+\indexentry{Rust!backend|hyperpage}{504}
+\indexentry{backend|hyperpage}{504}
+\indexentry{broadcast|hyperpage}{504}
+\indexentry{wallet|hyperpage}{517}
+\indexentry{Iced|hyperpage}{517}
+\indexentry{wallet|hyperpage}{517}
+\indexentry{Tauri|hyperpage}{517}
+\indexentry{wallet|hyperpage}{517}
+\indexentry{wallet|hyperpage}{517}
+\indexentry{SQLCipher|hyperpage}{517}
+\indexentry{wallet|hyperpage}{517}
+\indexentry{SQLCipher|hyperpage}{518}
+\indexentry{SQLCipher|hyperpage}{518}
+\indexentry{SQLCipher|hyperpage}{518}
+\indexentry{Web|hyperpage}{545}
+\indexentry{Admin|hyperpage}{545}
+\indexentry{bitcoin-web-ui|hyperpage}{545}
+\indexentry{React|hyperpage}{545}
+\indexentry{TypeScript|hyperpage}{545}
+\indexentry{single-page application|hyperpage}{545}
+\indexentry{application|hyperpage}{545}
+\indexentry{Rust!backend|hyperpage}{545}
+\indexentry{node|hyperpage}{545}
+\indexentry{admin API|hyperpage}{545}
+\indexentry{administrative|hyperpage}{545}
+\indexentry{interface|hyperpage}{545}
+\indexentry{Tauri|hyperpage}{545}
+\indexentry{admin dashboard|hyperpage}{545}
+\indexentry{wallet|hyperpage}{545}
+\indexentry{React Query|hyperpage}{545}
+\indexentry{pattern|hyperpage}{545}
+\indexentry{component|hyperpage}{545}
+\indexentry{architecture|hyperpage}{545}
+\indexentry{difference|hyperpage}{545}
+\indexentry{transport|hyperpage}{545}
+\indexentry{HTTP|hyperpage}{545}
+\indexentry{REST API|hyperpage}{545}
+\indexentry{Axios|hyperpage}{545}
+\indexentry{Tauri|hyperpage}{545}
+\indexentry{IPC|hyperpage}{545}
+\indexentry{React|hyperpage}{545}
+\indexentry{side|hyperpage}{545}
+\indexentry{hook|hyperpage}{545}
+\indexentry{cache|hyperpage}{545}
+\indexentry{management|hyperpage}{545}
+\indexentry{component|hyperpage}{545}
+\indexentry{structure|hyperpage}{545}
+\indexentry{admin dashboard|hyperpage}{545}
+\indexentry{functionality|hyperpage}{545}
+\indexentry{Iced|hyperpage}{545}
+\indexentry{Rust!backend|hyperpage}{545}
+\indexentry{MVU|hyperpage}{545}
+\indexentry{pattern|hyperpage}{545}
+\indexentry{Tauri|hyperpage}{545}
+\indexentry{Rust!backend|hyperpage}{545}
+\indexentry{backend|hyperpage}{545}
+\indexentry{React|hyperpage}{545}
+\indexentry{frontend|hyperpage}{545}
+\indexentry{IPC|hyperpage}{545}
+\indexentry{React|hyperpage}{545}
+\indexentry{frontend|hyperpage}{545}
+\indexentry{REST API|hyperpage}{545}
+\indexentry{HTTP|hyperpage}{545}
+\indexentry{bitcoin-api|hyperpage}{546}
+\indexentry{Cargo!crate|hyperpage}{546}
+\indexentry{difference|hyperpage}{546}
+\indexentry{transport|hyperpage}{546}
+\indexentry{IPC|hyperpage}{546}
+\indexentry{HTTP|hyperpage}{546}
+\indexentry{runtime|hyperpage}{546}
+\indexentry{block propagation|hyperpage}{575}
+\indexentry{Docker|hyperpage}{575}
+\indexentry{Docker|hyperpage}{576}
+\indexentry{Docker|hyperpage}{576}
+\indexentry{Docker|hyperpage}{595}
+\indexentry{Kubernetes|hyperpage}{595}
+\indexentry{blockchain|hyperpage}{595}
+\indexentry{Kubernetes|hyperpage}{595}
+\indexentry{Kubernetes|hyperpage}{595}
+\indexentry{Docker|hyperpage}{595}
+\indexentry{Kubernetes|hyperpage}{596}
+\indexentry{mining|hyperpage}{596}
+\indexentry{wallet|hyperpage}{596}
+\indexentry{Kubernetes|hyperpage}{596}
+\indexentry{Rust!ownership|hyperpage}{621}
+\indexentry{blockchain|hyperpage}{621}
+\indexentry{Rust!async|hyperpage}{622}
+\indexentry{Rust!async|hyperpage}{622}
+\indexentry{blockchain|hyperpage}{623}
+\indexentry{transaction|hyperpage}{623}
+\indexentry{Rust!async|hyperpage}{623}
+\indexentry{transaction|hyperpage}{623}
+\indexentry{mining|hyperpage}{623}
+\indexentry{Rust!ownership|hyperpage}{623}
+\indexentry{Rust!ownership|hyperpage}{623}
+\indexentry{Rust!ownership|hyperpage}{623}
+\indexentry{Rust!ownership|hyperpage}{623}
+\indexentry{Rust!borrowing|hyperpage}{623}

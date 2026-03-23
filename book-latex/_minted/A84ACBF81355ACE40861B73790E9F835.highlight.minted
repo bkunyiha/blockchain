@@ -1,0 +1,3 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+./docker\PYGZhy{}compose.scale.sh\PYG{+w}{ }\PYG{l+m}{3}\PYG{+w}{ }\PYG{l+m}{1}
+\end{MintedVerbatim}

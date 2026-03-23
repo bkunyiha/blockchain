@@ -1,0 +1,807 @@
+% ══════════════════════════════════════════════════════════════════════════════
+%  Chapter 16: Desktop Admin Interface (Iced)
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Desktop Admin Interface (Iced)}
+\label{ch:desktop-iced}
+
+\begin{learnbox}
+\begin{itemize}
+  \item Build a desktop admin interface using the Iced framework's Model-View-Update pattern
+  \item Implement state management, async API calls, and UI event handling in pure Rust
+  \item Design modular UI components with styling and layout
+  \item Integrate with the bitcoin-api crate for blockchain communication
+\end{itemize}
+\end{learnbox}
+
+\lettrine{I}{\index{Iced}ced} is a cross-platform GUI framework for Rust inspired by Elm. It uses a Model-View-Update architecture: your application state lives in a single struct (the \emph{model}), user interactions produce \emph{messages} (a Rust \index{Rust!enum}enum), and a pure \code{update} function handles each message by returning the new state. A separate \code{view} function renders the current state into a widget tree. If you have used Elm, Redux, or SwiftUI, the pattern will be familiar---but \index{Iced}Iced is pure Rust with no JavaScript or web runtime involved.
+
+\begin{notebox}[Prerequisites]
+This chapter assumes you have read the Web API chapter (Chapter~\ref{ch:web-api})---the desktop UI is an HTTP client to that \index{REST API}API. No prior GUI framework experience is needed; we introduce \index{Iced}Iced from scratch below. Familiarity with Rust \index{Rust!enum}enums and \index{Rust!pattern matching}pattern matching is essential, as the entire UI is driven by message dispatch.
+\end{notebox}
+
+This chapter explains the \code{bitcoin-desktop-ui} crate as a Rust developer reads it: \textbf{how an Iced MVU app boots}, \textbf{how messages flow through the update loop}, and \textbf{how the UI triggers async HTTP calls} to our Rust Bitcoin implementation's admin API.
+
+\section{What This UI Is (In One Sentence)}
+\label{sec:ch16-oneline}
+
+The desktop admin UI is a \textbf{thin MVU shell}: it renders state (\code{view.rs}), mutates state in response to messages (\code{update.rs}), and performs \index{Rust!async}async admin calls (\code{api.rs}) on a \index{tokio}Tokio runtime (\code{runtime.rs}).
+
+The methods involved in this architecture are: \code{main} (boot \texttt{+} theme \texttt{+} app start), \code{init\_runtime} and \code{spawn\_on\_tokio} (async boundary), \code{AdminApp::\{new, clear\_related\_data\}} (state and screen cleanup), \code{update} (message dispatcher), and \code{view} and \code{view\_*} helpers (rendering).
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Diagram: MVU Event Loop (Iced)}
+\label{sec:ch16-mvu-loop}
+
+\begin{minted}[fontsize=\footnotesize]{text}
+User input (click / type)
+   |
+   v
+Message (enum variant)  -----+
+   |                         |
+   v                         |
+update(&mut AdminApp, Message)
+   |
+   |-- pure state change -> Task::none()
+   |-- async request -> Task::perform() -+
+   |                                      |
+   v                                      |
+view(&AdminApp) -> Element<Message>       |
+                                   (later) |
+                                Message::XxxLoaded(Result)
+\end{minted}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Diagram: Async Boundary (HTTP Requests)}
+\label{sec:ch16-async-boundary}
+
+\begin{minted}[fontsize=\footnotesize]{text}
+update (sync)        runtime (tokio)           api (async)
+-------------        ---------------           -----------
+Task::perform(   spawn_on_tokio(fut)  ---->  AdminClient::new()
+  spawn_on_tokio,     .await                .endpoint().await
+  Message::Loaded                          .send()
+)
+\end{minted}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{File Organization}
+\label{sec:ch16-files}
+
+Together, these chapters walk through implementation in:
+
+\begin{itemize}
+  \item \code{bitcoin-desktop-ui-iced/src/main.rs}
+  \item \code{bitcoin-desktop-ui-iced/src/runtime.rs}
+  \item \code{bitcoin-desktop-ui-iced/src/types.rs}
+  \item \code{bitcoin-desktop-ui-iced/src/app.rs}
+  \item \code{bitcoin-desktop-ui-iced/src/api.rs}
+  \item \code{bitcoin-desktop-ui-iced/src/update.rs}
+  \item \code{bitcoin-desktop-ui-iced/src/view.rs}
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Application Entrypoint}
+\label{sec:ch16-main}
+
+\begin{listing}[H]
+\caption{App entrypoint (\code{bitcoin-desktop-ui-iced/src/main.rs})}
+\label{lst:ch16-main}
+\begin{minted}[fontsize=\footnotesize]{rust}
+mod api;
+mod app;
+mod runtime;
+mod types;
+mod update;
+mod view;
+
+use app::AdminApp;
+use iced::{Theme, application};
+use runtime::init_runtime;
+use update::update;
+use view::view;
+
+fn main() -> iced::Result {
+    // Initialize tracing subscriber for logging
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .with_target(false)
+        .init();
+
+    // Initialize Tokio runtime for async operations
+    init_runtime();
+
+    // Run the application
+    application("Bitcoin Admin UI", update, view)
+        .theme(|_| Theme::Dark)
+        .run_with(AdminApp::new)
+}
+\end{minted}
+\end{listing}
+
+\textbf{Walkthrough: what \code{main} wires together:}
+
+\begin{itemize}
+  \item \textbf{Modules}: \code{update} and \code{view} are the MVU ``engine''; everything else exists to support them.
+  \item \textbf{\code{init\_runtime()}}: starts an async executor so later HTTP tasks don't block the UI thread.
+  \item \textbf{\code{application(...).run\_with(AdminApp::new)}}: creates initial state once, then enters the event loop:
+  \begin{itemize}
+    \item \code{view(\&AdminApp)} draws the UI
+    \item user interaction emits \code{Message}
+    \item \code{update(\&mut AdminApp, Message)} mutates state and optionally schedules work
+  \end{itemize}
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Tokio Runtime Bridge}
+\label{sec:ch16-tokio-runtime}
+
+\begin{listing}[H]
+\caption{Tokio runtime bridge (\code{bitcoin-desktop-ui-iced/src/runtime.rs})}
+\label{lst:ch16-runtime}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use std::sync::OnceLock;
+
+// Store the Tokio runtime handle globally so tasks can access it
+static TOKIO_HANDLE: OnceLock<tokio::runtime::Handle> = OnceLock::new();
+
+pub fn init_runtime() {
+    // Create a Tokio runtime for async operations
+    // This must outlive the application to keep the reactor running
+    let rt = tokio::runtime::Runtime::new()
+        .expect("Failed to create Tokio runtime");
+
+    // Store the handle globally so it can be accessed from any thread
+    TOKIO_HANDLE
+        .set(rt.handle().clone())
+        .expect("Failed to set Tokio handle");
+
+    // Keep the runtime alive in a background thread
+    std::thread::spawn(move || {
+        rt.block_on(async {
+            // Keep the runtime alive indefinitely
+            std::future::pending::<()>().await;
+        });
+    });
+}
+
+// Helper function to wrap a future to ensure it runs on Tokio runtime
+pub fn spawn_on_tokio<F>(fut: F)
+    -> impl std::future::Future<Output = F::Output> + Send
+where
+    F: std::future::Future + Send + 'static,
+    F::Output: Send + 'static,
+{
+    let handle = TOKIO_HANDLE
+        .get()
+        .expect("Tokio runtime not initialized")
+        .clone();
+    async move { handle.spawn(fut).await.unwrap() }
+}
+\end{minted}
+\end{listing}
+
+\textbf{Walkthrough: why we need \code{spawn\_on\_tokio}:}
+
+Iced's update loop is \textbf{synchronous}: it should be fast and never block on network I/O. The \code{spawn\_on\_tokio(...)} helper gives us a clean ``async boundary'':
+
+\begin{itemize}
+  \item \code{update.rs} can return a \code{Task<Message>} immediately (UI stays responsive)
+  \item Tokio runs the future in the background
+  \item the result is converted into a \code{Message::XxxLoaded(...)} and re-enters the update loop
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Navigation and Events}
+\label{sec:ch16-types}
+
+The \code{types.rs} file defines navigation enums and the \code{Message} enum, which is the ``event vocabulary'' of the UI:
+
+\begin{listing}[htbp]
+\caption{Navigation enums (\code{bitcoin-desktop-ui-iced/src/types.rs})}
+\label{lst:ch16-menu-enum}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Menu {
+    Blockchain,
+    Wallet,
+    Transactions,
+    Mining,
+    Health,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum WalletSection {
+    GetWalletInfo,
+    GetBalance,
+    Create,
+    Send,
+    History,
+    Addresses,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BlockchainSection {
+    Info,
+    LatestBlocks,
+    AllBlocks,
+    BlockByHash,
+}
+\end{minted}
+\end{listing}
+
+The \code{Message} enum encodes all possible user interactions and async outcomes:
+
+\begin{listing}[htbp]
+\caption{Message enum (excerpt) (\code{bitcoin-desktop-ui-iced/src/types.rs})}
+\label{lst:ch16-message-enum}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug, Clone)]
+pub enum Message {
+    // Menu/UI navigation
+    MenuChanged(Menu),
+    WalletSectionChanged(WalletSection),
+    BlockchainSectionChanged(BlockchainSection),
+
+    // Configuration inputs
+    BaseUrlChanged(String),
+    ApiKeyChanged(String),
+
+    // Field inputs
+    BlockHashChanged(String),
+    MiningAddressChanged(String),
+    MiningNBlocksChanged(String),
+    TxidChanged(String),
+
+    // Request messages (trigger API calls)
+    FetchInfo,
+    FetchBlocks,
+    FetchBlockByHash(String),
+    GenerateToAddress {
+        address: String,
+        nblocks: u32,
+        maxtries: Option<u32>,
+    },
+
+    // Result messages (from async API calls)
+    InfoLoaded(Result<ApiResponse<BlockchainInfo>, String>),
+    BlocksLoaded(Result<ApiResponse<Vec<BlockSummary>>, String>),
+    BlockByHashLoaded(Result<ApiResponse<Value>, String>),
+    GenerateToAddressDone(Result<ApiResponse<Value>, String>),
+}
+\end{minted}
+\end{listing}
+
+\textbf{Walkthrough: \code{Message} is the UI's event vocabulary:}
+
+Treat \code{Message} as a \textbf{strict interface} between the view and the update loop:
+
+\begin{itemize}
+  \item \textbf{Input messages} (\code{BaseUrlChanged}, \code{MiningAddressChanged}, \ldots): pure state changes.
+  \item \textbf{Request messages} (\code{FetchInfo}, \code{FetchBlocks}, \code{CreateWalletAdmin}, \ldots): these trigger \code{Task::perform(...)} in the update loop.
+  \item \textbf{Result messages} (\code{InfoLoaded}, \code{BlocksLoaded}, \code{TxSent}, \ldots): these store JSON into \code{AdminApp} and update status/editor buffers.
+  \item \textbf{UI mechanics} (hover \texttt{+} section routing): \code{*MenuHovered(bool)} and \code{*SectionChanged(...)} exist to drive popups and the active panel.
+\end{itemize}
+
+This design keeps the view layer simple: it never ``does'' network calls---it only emits intent.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Application State}
+\label{sec:ch16-app-state}
+
+\begin{listing}[H]
+\caption{Application state (\code{bitcoin-desktop-ui-iced/src/app.rs})}
+\label{lst:ch16-adminapp}
+\begin{minted}[fontsize=\footnotesize]{rust}
+#[derive(Debug)]
+pub struct AdminApp {
+    pub menu: Menu,
+    pub base_url: String,
+    pub api_key: String,
+    pub status: String,
+    pub info: Option<BlockchainInfo>,
+    pub blocks: Vec<BlockSummary>,
+
+    // Inputs for actions
+    pub block_hash_input: String,
+    pub mining_address_input: String,
+    pub mining_nblocks_input: String,
+    pub txid_input: String,
+
+    // Wallet admin state
+    pub wallet_label_input: String,
+    pub addresses: Vec<String>,
+    pub wallet_info: Option<Value>,
+    pub wallet_balance: Option<Value>,
+    pub created_wallet_address: Option<String>,
+
+    // Send transaction state
+    pub send_from_address: String,
+    pub send_to_address: String,
+    pub send_amount: String,
+
+    // Navigation state
+    pub wallet_section: WalletSection,
+    pub transaction_section: TransactionSection,
+    pub blockchain_section: BlockchainSection,
+    pub mining_section: MiningSection,
+    pub health_section: HealthSection,
+
+    // Menu hover state for popups
+    pub blockchain_menu_hovered: bool,
+    pub wallet_menu_hovered: bool,
+    pub transaction_menu_hovered: bool,
+    pub mining_menu_hovered: bool,
+    pub health_menu_hovered: bool,
+
+    // Response data storage
+    pub blocks_all_data: Option<Value>,
+    pub block_by_hash_data: Option<Value>,
+    pub mining_info_data: Option<Value>,
+    pub health_data: Option<Value>,
+    pub mempool_data: Option<Value>,
+    pub transactions_data: Option<Value>,
+
+    // Text editor states for selectable JSON display
+    pub transactions_editor: iced::widget::text_editor::Content,
+    pub mempool_editor: iced::widget::text_editor::Content,
+    pub wallet_info_editor: iced::widget::text_editor::Content,
+    pub blockchain_info_editor: iced::widget::text_editor::Content,
+}
+
+impl AdminApp {
+    pub fn new() -> (Self, iced::Task<Message>) {
+        (
+            Self {
+                menu: Menu::Blockchain,
+                base_url: "http://127.0.0.1:8080".into(),
+                api_key: std::env::var("BITCOIN_API_ADMIN_KEY")
+                    .unwrap_or_else(|_| "admin-secret".into()),
+                status: String::new(),
+                // ... (remaining fields initialized)
+            },
+            iced::Task::none(),
+        )
+    }
+
+    /// Clear previously loaded data for a specific section
+    pub fn clear_related_data(&mut self, section: DataSection) {
+        // "Hygiene rule": when we load one dataset, clear adjacent datasets
+        // so the UI doesn't render stale JSON next to fresh JSON.
+        match section {
+            DataSection::BlockchainInfo => {
+                self.blocks_all_data = None;
+                self.block_by_hash_data = None;
+            }
+            DataSection::BlocksAll => {
+                self.block_by_hash_data = None;
+            }
+            // ... (more cases)
+        }
+    }
+}
+\end{minted}
+\end{listing}
+
+\textbf{Walkthrough: what lives in \code{AdminApp} (and why):}
+
+\code{AdminApp} is intentionally ``wide'': it contains both \textbf{domain-ish data} and \textbf{UI presentation state}.
+
+\begin{itemize}
+  \item \textbf{Configuration}: \code{base\_url}, \code{api\_key} (what server we talk to).
+  \item \textbf{Navigation}: \code{menu} \texttt{+} section enums (which panel to render).
+  \item \textbf{Inputs}: text fields like \code{block\_hash\_input}, \code{send\_amount} (what the user typed).
+  \item \textbf{Responses}: \code{*\_data: Option<Value>} are cached JSON payloads to display.
+  \item \textbf{Editors}: \code{*\_editor: text\_editor::Content} exist so JSON can be selectable/copyable and scrollable.
+\end{itemize}
+
+The \code{clear\_related\_data(...)} helper is a small UX rule: when you fetch one dataset, clear nearby datasets so stale JSON doesn't linger on screen.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Async API Client Helpers}
+\label{sec:ch16-api}
+
+\begin{listing}[H]
+\caption{Async API client helpers (\code{bitcoin-desktop-ui-iced/src/api.rs})}
+\label{lst:ch16-api}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use bitcoin_api::{AdminClient, ApiConfig, ApiResponse, BlockchainInfo};
+
+pub async fn fetch_info(cfg: ApiConfig)
+    -> Result<ApiResponse<BlockchainInfo>, String>
+{
+    // A new client is constructed per call; config contains base_url + API key.
+    let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
+    client
+        .get_blockchain_info()
+        .await
+        .map_err(|e| e.to_string())
+}
+
+pub async fn fetch_blocks(cfg: ApiConfig)
+    -> Result<ApiResponse<Vec<BlockSummary>>, String>
+{
+    let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
+    client.get_latest_blocks().await.map_err(|e| e.to_string())
+}
+
+pub async fn fetch_block_by_hash(
+    cfg: ApiConfig,
+    hash: String,
+) -> Result<ApiResponse<Value>, String> {
+    let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
+    client
+        .get_block_by_hash(&hash)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+pub async fn fetch_mining_info(cfg: ApiConfig)
+    -> Result<ApiResponse<Value>, String>
+{
+    let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
+    client.get_mining_info().await.map_err(|e| e.to_string())
+}
+
+pub async fn generate_to_address(
+    cfg: ApiConfig,
+    address: String,
+    nblocks: u32,
+    maxtries: Option<u32>,
+) -> Result<ApiResponse<Value>, String> {
+    let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
+    client
+        .generate_to_address(&address, nblocks, maxtries)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+pub async fn fetch_health(cfg: ApiConfig)
+    -> Result<ApiResponse<Value>, String>
+{
+    let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
+    client.health().await.map_err(|e| e.to_string())
+}
+
+pub async fn fetch_mempool(cfg: ApiConfig)
+    -> Result<ApiResponse<Value>, String>
+{
+    let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
+    client.get_mempool().await.map_err(|e| e.to_string())
+}
+
+pub async fn create_wallet_admin(
+    cfg: ApiConfig,
+    req: CreateWalletRequest,
+) -> Result<ApiResponse<CreateWalletResponse>, String> {
+    let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
+    client
+        .create_wallet_admin(&req)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+pub async fn send_transaction(
+    cfg: ApiConfig,
+    req: SendTransactionRequest,
+) -> Result<ApiResponse<SendTransactionResponse>, String> {
+    let client = AdminClient::new(cfg).map_err(|e| e.to_string())?;
+    client
+        .send_transaction_admin(&req)
+        .await
+        .map_err(|e| e.to_string())
+}
+\end{minted}
+\end{listing}
+
+\textbf{Walkthrough: how \code{api.rs} supports the update loop:}
+
+This module is intentionally boring: each function is a \textbf{single HTTP call} wrapped in an \code{async fn} with a UI-friendly error type.
+
+\begin{itemize}
+  \item \textbf{Inputs}: \code{ApiConfig} is built from \code{AdminApp \{ base\_url, api\_key \}} in the update function.
+  \item \textbf{Return type}: \code{Result<ApiResponse<T>, String>}
+  \begin{itemize}
+    \item \code{Err(String)} means: ``we could not even complete the request'' (client construction, network error, decode error, etc.).
+    \item \code{Ok(ApiResponse<T>)} means: ``we got a response envelope''; it can still represent application-level failure via \code{api.success == false}.
+  \end{itemize}
+  \item \textbf{Why build a client per call?} It keeps the UI side stateless and makes each request self-contained. In the update loop you can read each \code{Task::perform(spawn\_on\_tokio(api\_call), Message::XxxLoaded)} arm as a direct mapping: \emph{message \(\to\) API call \(\to\) loaded message}.
+\end{itemize}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{The Update Loop: Message Dispatcher}
+\label{sec:ch16-update}
+
+\begin{listing}[H]
+\caption{Update loop (excerpt) (\code{bitcoin-desktop-ui-iced/src/update.rs})}
+\label{lst:ch16-update}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use crate::api::*;
+use crate::app::AdminApp;
+use crate::runtime::spawn_on_tokio;
+use crate::types::{DataSection, Menu, Message};
+use bitcoin_api::ApiConfig;
+use iced::Task;
+
+pub fn update(app: &mut AdminApp, message: Message) -> Task<Message> {
+    // This match is the "traffic controller" of MVU:
+    // - input events update state immediately
+    // - button presses spawn async work
+    // - async results re-enter as Message::XxxLoaded(...)
+    match message {
+        // Pure state changes (no I/O)
+        Message::MenuChanged(m) => {
+            app.menu = m;
+            Task::none()
+        }
+        Message::BaseUrlChanged(v) => {
+            app.base_url = v;
+            Task::none()
+        }
+        Message::ApiKeyChanged(v) => {
+            app.api_key = v;
+            Task::none()
+        }
+        Message::BlockHashChanged(v) => {
+            app.block_hash_input = v;
+            Task::none()
+        }
+
+        // Async request: spawn API call on Tokio runtime
+        Message::FetchInfo => {
+            let cfg = ApiConfig {
+                base_url: app.base_url.clone(),
+                api_key: Some(app.api_key.clone()),
+            };
+            Task::perform(
+                spawn_on_tokio(fetch_info(cfg)),
+                Message::InfoLoaded,
+            )
+        }
+
+        // Result handler: store JSON in app, update UI feedback
+        Message::InfoLoaded(res) => {
+            match res {
+                Ok(api) => {
+                    if api.success {
+                        app.info = api.data.clone();
+                        if let Some(ref data) = api.data {
+                            let json_str = serde_json::to_string_pretty(data)
+                                .unwrap_or_else(|_| "Error formatting".to_string());
+                            app.blockchain_info_editor =
+                                iced::widget::text_editor::Content::with_text(&json_str);
+                        }
+                        app.status = "Blockchain info loaded".into();
+                    } else {
+                        app.status = api.error
+                            .unwrap_or_else(|| "Error loading info".into());
+                        app.info = None;
+                    }
+                }
+                Err(e) => {
+                    app.status = e;
+                    app.info = None;
+                }
+            }
+            Task::none()
+        }
+
+        Message::FetchBlocks => {
+            app.clear_related_data(DataSection::Blocks);
+            let cfg = ApiConfig {
+                base_url: app.base_url.clone(),
+                api_key: Some(app.api_key.clone()),
+            };
+            Task::perform(
+                spawn_on_tokio(fetch_blocks(cfg)),
+                Message::BlocksLoaded,
+            )
+        }
+
+        Message::BlocksLoaded(res) => {
+            match res {
+                Ok(api) => {
+                    if api.success {
+                        app.blocks = api.data.unwrap_or_default();
+                        app.status = format!("Loaded {} blocks", app.blocks.len());
+                    } else {
+                        app.status = api.error
+                            .unwrap_or_else(|| "Error loading blocks".into());
+                    }
+                }
+                Err(e) => {
+                    app.status = e;
+                }
+            }
+            Task::none()
+        }
+
+        // Similar patterns for all other messages...
+        _ => Task::none(),
+    }
+}
+\end{minted}
+\end{listing}
+
+\textbf{Walkthrough: the async ``round-trip'' pattern (UI \(\to\) HTTP \(\to\) UI):}
+
+The update loop follows a consistent three-step pattern for every API call:
+
+\begin{enumerate}
+  \item \textbf{Input message arrives} (user clicks button or types).
+  \item \textbf{Update handler} (sync):
+  \begin{itemize}
+    \item Mutates local state immediately (inputs/status/hover state).
+    \item Returns \code{Task::perform(spawn\_on\_tokio(async \{ http\_call().await \}), Message::XxxLoaded)}.
+  \end{itemize}
+  \item \textbf{Async work happens} (on Tokio runtime, background):
+  \begin{itemize}
+    \item \code{api.rs} \(\to\) \code{AdminClient} \(\to\) HTTP \(\to\) JSON.
+  \end{itemize}
+  \item \textbf{Result message arrives} (\code{Message::XxxLoaded(Result<ApiResponse<T>, String>)}).
+  \item \textbf{Update handler} (sync, again):
+  \begin{itemize}
+    \item Stores JSON payload in \code{app.*\_data}.
+    \item Updates text editor buffers (pretty JSON).
+    \item Updates \code{app.status} for UX feedback.
+  \end{itemize}
+\end{enumerate}
+
+This separates concerns cleanly: the view never blocks, \code{update} remains lightweight, and I/O happens on the Tokio runtime.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{The View Layer: Rendering and Dispatch}
+\label{sec:ch16-view}
+
+\begin{listing}[H]
+\caption{View function (excerpt) (\code{bitcoin-desktop-ui-iced/src/view.rs})}
+\label{lst:ch16-view}
+\begin{minted}[fontsize=\footnotesize]{rust}
+use crate::app::AdminApp;
+use crate::types::{Menu, Message, BlockchainSection};
+use iced::Element;
+use iced::widget::{button, column, container, row, text, text_input};
+
+pub fn view<'a>(app: &'a AdminApp) -> Element<'a, Message> {
+    // The view is (mostly) pure: it reads app and returns an Element<Message>.
+    // Any "actions" are triggered by Messages, handled in update.rs.
+
+    // Toolbar: configure base_url and api_key
+    let toolbar = row![
+        text("Base URL:").size(12),
+        text_input("http://127.0.0.1:8080", &app.base_url)
+            .on_input(Message::BaseUrlChanged)
+            .width(iced::Length::Fixed(250.0)),
+        text("Admin Key:").size(12),
+        text_input("admin-secret", &app.api_key)
+            .on_input(Message::ApiKeyChanged)
+            .width(iced::Length::Fixed(200.0)),
+        text(format!("Status: {}", app.status))
+            .size(12)
+            .width(iced::Length::Fill),
+    ]
+    .spacing(8)
+    .padding(8);
+
+    // Left navigation menu
+    let nav_buttons = column![
+        button("Blockchain")
+            .on_press(Message::MenuChanged(Menu::Blockchain)),
+        button("Wallet")
+            .on_press(Message::MenuChanged(Menu::Wallet)),
+        button("Transactions")
+            .on_press(Message::MenuChanged(Menu::Transactions)),
+        button("Mining")
+            .on_press(Message::MenuChanged(Menu::Mining)),
+        button("Health")
+            .on_press(Message::MenuChanged(Menu::Health)),
+    ]
+    .spacing(4)
+    .padding(8);
+
+    // Main content panel: dispatch to view_* functions by menu
+    let content = match app.menu {
+        Menu::Blockchain => view_blockchain(app),
+        Menu::Wallet => view_wallet(app),
+        Menu::Transactions => view_transactions(app),
+        Menu::Mining => view_mining(app),
+        Menu::Health => view_health(app),
+    };
+
+    // Assemble: toolbar + (nav + content)
+    container(
+        column![
+            toolbar,
+            row![
+                container(nav_buttons).width(iced::Length::Fixed(150.0)),
+                container(content).width(iced::Length::Fill),
+            ]
+            .spacing(8)
+            .height(iced::Length::Fill),
+        ]
+        .spacing(8)
+    )
+    .padding(8)
+    .into()
+}
+
+// Helper: render the Blockchain section
+fn view_blockchain<'a>(app: &'a AdminApp) -> Element<'a, Message> {
+    match app.blockchain_section {
+        BlockchainSection::Info => {
+            column![
+                button("Fetch Info").on_press(Message::FetchInfo),
+                text_editor(&app.blockchain_info_editor)
+                    .on_action(Message::BlockchainInfoEditorAction),
+            ]
+            .spacing(8)
+            .into()
+        }
+        BlockchainSection::LatestBlocks => {
+            column![
+                button("Fetch Blocks").on_press(Message::FetchBlocks),
+                row![
+                    text(format!("Loaded: {} blocks", app.blocks.len())),
+                ]
+                .spacing(8),
+            ]
+            .spacing(8)
+            .into()
+        }
+        _ => container(text("Select a section")).into(),
+    }
+}
+
+// Similar for view_wallet, view_transactions, view_mining, view_health...
+\end{minted}
+\end{listing}
+
+\textbf{Walkthrough: view dispatch \texttt{+} popup hover model:}
+
+The view function is organized into layers:
+
+\begin{enumerate}
+  \item \textbf{Toolbar} (top): configuration inputs (\code{base\_url}, \code{api\_key}) and status feedback.
+  \item \textbf{Navigation} (left): menu buttons dispatch \code{Message::MenuChanged(...)}.
+  \item \textbf{Main content panel} (right): matches on \code{app.menu} to dispatch to \code{view\_blockchain}, \code{view\_wallet}, etc.
+\end{enumerate}
+
+Each content panel handles its own sub-sections and data display:
+
+\begin{itemize}
+  \item Buttons emit request messages (\code{FetchInfo}, \code{FetchBlocks}, etc.).
+  \item Text editors display and allow copying of JSON responses.
+  \item Input fields emit change messages (\code{BlockHashChanged}, etc.).
+  \item Hover states drive popup menus: when \code{app.blockchain\_menu\_hovered == true}, the UI renders a submenu; when false, it disappears.
+\end{itemize}
+
+The view layer never calls the API directly---all side effects go through messages and the update loop.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\begin{chaptersummary}
+\item We built a full-featured desktop admin interface using Iced's Model-View-Update pattern in pure Rust.
+\item We implemented the complete MVU cycle: Model state (\code{AdminApp}), Message types, Update logic (\code{update} function), and View rendering (\code{view} function).
+\item We integrated async API communication with the bitcoin-api crate for real-time blockchain data via a Tokio runtime bridge.
+\item We designed modular UI components with popup menus, selectable text, and a consistent styling system.
+\item The async boundary between sync MVU and Tokio-powered HTTP keeps the UI responsive while allowing long-running network calls.
+\end{chaptersummary}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Exercises}
+\label{sec:ch16-exercises}
+
+\begin{enumerate}
+  \item \textbf{Add a Refresh Button} --- Add a ``Refresh'' button to the admin UI that reloads blockchain data from the API. Define a new \code{Message::Refresh} variant, implement the update handler to trigger an API call, and add the button to the view. Observe how the MVU cycle processes this new interaction.
+
+  \item \textbf{MVU Cycle Trace} --- Pick any user interaction (e.g., clicking ``Mine Block'') and trace the complete MVU cycle: which \code{Message} variant is generated, what the \code{Update} function does, what side effects (API calls, state changes) occur, and how the \code{View} reflects the new state.
+\end{enumerate}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Further Reading}
+\label{sec:ch16-reading}
+
+\begin{itemize}
+  \item \textbf{Iced Framework Documentation} --- API reference for the Iced GUI framework at \url{https://docs.rs/iced/}.
+  \item \textbf{Iced Examples Repository} --- Official examples demonstrating various Iced patterns at \url{https://github.com/iced-rs/iced/tree/master/examples}.
+  \item \textbf{The Elm Architecture} --- The original MVU pattern that inspired Iced's design at \url{https://guide.elm-lang.org/architecture/}.
+\end{itemize}
+

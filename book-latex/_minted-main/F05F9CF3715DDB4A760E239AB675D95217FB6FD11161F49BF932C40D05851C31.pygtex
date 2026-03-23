@@ -1,0 +1,106 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{api}::\PYG{o}{*}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{app}::\PYG{n}{AdminApp}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{runtime}::\PYG{n}{spawn\PYGZus{}on\PYGZus{}tokio}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{k}{crate}::\PYG{n}{types}::\PYG{p}{\PYGZob{}}\PYG{n}{DataSection}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Menu}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Message}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{bitcoin\PYGZus{}api}::\PYG{n}{ApiConfig}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{iced}::\PYG{n}{Task}\PYG{p}{;}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{update}\PYG{p}{(}\PYG{n}{app}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{mut}\PYG{+w}{ }\PYG{n}{AdminApp}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{message}: \PYG{n+nc}{Message}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{Task}\PYG{o}{\PYGZlt{}}\PYG{n}{Message}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// This match is the \PYGZdq{}traffic controller\PYGZdq{} of MVU:}
+\PYG{+w}{    }\PYG{c+c1}{// \PYGZhy{} input events update state immediately}
+\PYG{+w}{    }\PYG{c+c1}{// \PYGZhy{} button presses spawn async work}
+\PYG{+w}{    }\PYG{c+c1}{// \PYGZhy{} async results re\PYGZhy{}enter as Message::XxxLoaded(...)}
+\PYG{+w}{    }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{message}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Pure state changes (no I/O)}
+\PYG{+w}{        }\PYG{n}{Message}::\PYG{n}{MenuChanged}\PYG{p}{(}\PYG{n}{m}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{app}\PYG{p}{.}\PYG{n}{menu}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{m}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{Task}::\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{Message}::\PYG{n}{BaseUrlChanged}\PYG{p}{(}\PYG{n}{v}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{app}\PYG{p}{.}\PYG{n}{base\PYGZus{}url}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{v}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{Task}::\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{Message}::\PYG{n}{ApiKeyChanged}\PYG{p}{(}\PYG{n}{v}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{app}\PYG{p}{.}\PYG{n}{api\PYGZus{}key}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{v}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{Task}::\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{Message}::\PYG{n}{BlockHashChanged}\PYG{p}{(}\PYG{n}{v}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{app}\PYG{p}{.}\PYG{n}{block\PYGZus{}hash\PYGZus{}input}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{v}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{Task}::\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{c+c1}{// Async request: spawn API call on Tokio runtime}
+\PYG{+w}{        }\PYG{n}{Message}::\PYG{n}{FetchInfo}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{cfg}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ApiConfig}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{base\PYGZus{}url}: \PYG{n+nc}{app}\PYG{p}{.}\PYG{n}{base\PYGZus{}url}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{api\PYGZus{}key}: \PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{app}\PYG{p}{.}\PYG{n}{api\PYGZus{}key}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{Task}::\PYG{n}{perform}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{spawn\PYGZus{}on\PYGZus{}tokio}\PYG{p}{(}\PYG{n}{fetch\PYGZus{}info}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{Message}::\PYG{n}{InfoLoaded}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{c+c1}{// Result handler: store JSON in app, update UI feedback}
+\PYG{+w}{        }\PYG{n}{Message}::\PYG{n}{InfoLoaded}\PYG{p}{(}\PYG{n}{res}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{res}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{api}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{api}\PYG{p}{.}\PYG{n}{success}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                        }\PYG{n}{app}\PYG{p}{.}\PYG{n}{info}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{api}\PYG{p}{.}\PYG{n}{data}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                        }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{k}{ref}\PYG{+w}{ }\PYG{n}{data}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{api}\PYG{p}{.}\PYG{n}{data}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{json\PYGZus{}str}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{serde\PYGZus{}json}::\PYG{n}{to\PYGZus{}string\PYGZus{}pretty}\PYG{p}{(}\PYG{n}{data}\PYG{p}{)}
+\PYG{+w}{                                }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Error formatting}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                            }\PYG{n}{app}\PYG{p}{.}\PYG{n}{blockchain\PYGZus{}info\PYGZus{}editor}\PYG{+w}{ }\PYG{o}{=}
+\PYG{+w}{                                }\PYG{n}{iced}::\PYG{n}{widget}::\PYG{n}{text\PYGZus{}editor}::\PYG{n}{Content}::\PYG{n}{with\PYGZus{}text}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{json\PYGZus{}str}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                        }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Blockchain info loaded}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{into}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                        }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{api}\PYG{p}{.}\PYG{n}{error}
+\PYG{+w}{                            }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Error loading info}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{into}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                        }\PYG{n}{app}\PYG{p}{.}\PYG{n}{info}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{None}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{e}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{n}{app}\PYG{p}{.}\PYG{n}{info}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{None}\PYG{p}{;}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{n}{Task}::\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{n}{Message}::\PYG{n}{FetchBlocks}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{app}\PYG{p}{.}\PYG{n}{clear\PYGZus{}related\PYGZus{}data}\PYG{p}{(}\PYG{n}{DataSection}::\PYG{n}{Blocks}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{cfg}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ApiConfig}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{base\PYGZus{}url}: \PYG{n+nc}{app}\PYG{p}{.}\PYG{n}{base\PYGZus{}url}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{api\PYGZus{}key}: \PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{app}\PYG{p}{.}\PYG{n}{api\PYGZus{}key}\PYG{p}{.}\PYG{n}{clone}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{Task}::\PYG{n}{perform}\PYG{p}{(}
+\PYG{+w}{                }\PYG{n}{spawn\PYGZus{}on\PYGZus{}tokio}\PYG{p}{(}\PYG{n}{fetch\PYGZus{}blocks}\PYG{p}{(}\PYG{n}{cfg}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{Message}::\PYG{n}{BlocksLoaded}\PYG{p}{,}
+\PYG{+w}{            }\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{n}{Message}::\PYG{n}{BlocksLoaded}\PYG{p}{(}\PYG{n}{res}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{match}\PYG{+w}{ }\PYG{n}{res}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{api}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{k}{if}\PYG{+w}{ }\PYG{n}{api}\PYG{p}{.}\PYG{n}{success}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                        }\PYG{n}{app}\PYG{p}{.}\PYG{n}{blocks}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{api}\PYG{p}{.}\PYG{n}{data}\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}default}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                        }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nf+fm}{format!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Loaded \PYGZob{}\PYGZcb{} blocks}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{.}\PYG{n}{blocks}\PYG{p}{.}\PYG{n}{len}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                        }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{api}\PYG{p}{.}\PYG{n}{error}
+\PYG{+w}{                            }\PYG{p}{.}\PYG{n}{unwrap\PYGZus{}or\PYGZus{}else}\PYG{p}{(}\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Error loading blocks}\PYG{l+s}{\PYGZdq{}}\PYG{p}{.}\PYG{n}{into}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{                }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{e}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n}{app}\PYG{p}{.}\PYG{n}{status}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{;}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{n}{Task}::\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{c+c1}{// Similar patterns for all other messages...}
+\PYG{+w}{        }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{Task}::\PYG{n}{none}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

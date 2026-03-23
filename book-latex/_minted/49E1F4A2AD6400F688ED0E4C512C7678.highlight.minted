@@ -1,0 +1,13 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{// ✅ EFFICIENT: Pass by reference}
+\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{verify\PYGZus{}transaction}\PYG{p}{(}\PYG{n}{txid}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{signature}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{k+kt}{u8}\PYG{p}{]}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Just reading, don\PYGZsq{}t need ownership}
+\PYG{+w}{    }\PYG{n}{signature}\PYG{p}{::}\PYG{n}{verify}\PYG{p}{(}\PYG{n}{txid}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{signature}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// ❌ WASTEFUL: Passing owned values}
+\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{verify\PYGZus{}transaction}\PYG{p}{(}\PYG{n}{txid}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{signature}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Forces cloning at call site}
+\PYG{+w}{    }\PYG{n}{signature}\PYG{p}{::}\PYG{n}{verify}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{txid}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{signature}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

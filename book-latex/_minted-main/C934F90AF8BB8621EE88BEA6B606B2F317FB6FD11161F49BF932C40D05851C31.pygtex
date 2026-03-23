@@ -1,0 +1,72 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{send\PYGZus{}inv}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{addr}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{op\PYGZus{}type}: \PYG{n+nc}{OpType}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{items}: \PYG{k+kp}{\PYGZam{}}\PYG{p}{[}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{]}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pkg}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Package}::\PYG{n}{Inv}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{op\PYGZus{}type}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{items}: \PYG{n+nc}{items}\PYG{p}{.}\PYG{n}{to\PYGZus{}vec}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{send\PYGZus{}data}\PYG{p}{(}\PYG{n}{addr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{pkg}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{send\PYGZus{}get\PYGZus{}data}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{addr}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{op\PYGZus{}type}: \PYG{n+nc}{OpType}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{id}: \PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u8}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pkg}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Package}::\PYG{n}{GetData}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{op\PYGZus{}type}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{id}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{send\PYGZus{}data}\PYG{p}{(}\PYG{n}{addr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{pkg}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{send\PYGZus{}block}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{addr}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{block}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Block}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pkg}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Package}::\PYG{n}{Block}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{block}: \PYG{n+nc}{block}\PYG{p}{.}\PYG{n}{serialize}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{send\PYGZus{}data}\PYG{p}{(}\PYG{n}{addr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{pkg}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{send\PYGZus{}tx}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{addr}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{tx}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{Transaction}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pkg}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Package}::\PYG{n}{Tx}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{transaction}: \PYG{n+nc}{tx}\PYG{p}{.}\PYG{n}{serialize}\PYG{p}{(}\PYG{p}{)}\PYG{o}{?}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{send\PYGZus{}data}\PYG{p}{(}\PYG{n}{addr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{pkg}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{send\PYGZus{}version}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{addr}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{best\PYGZus{}height}: \PYG{k+kt}{usize}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{pkg}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Package}::\PYG{n}{Version}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{addr\PYGZus{}from}: \PYG{n+nc}{GLOBAL\PYGZus{}CONFIG}\PYG{p}{.}\PYG{n}{get\PYGZus{}node\PYGZus{}addr}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{version}: \PYG{n+nc}{NODE\PYGZus{}VERSION}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{best\PYGZus{}height}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{send\PYGZus{}data}\PYG{p}{(}\PYG{n}{addr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{pkg}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Base send primitive: open connection, send message}
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{send\PYGZus{}data}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{addr}: \PYG{k+kp}{\PYGZam{}}\PYG{n+nc}{SocketAddr}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{pkg}: \PYG{n+nc}{Package}\PYG{p}{,}
+\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{stream}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{std}::\PYG{n}{net}::\PYG{n}{TcpStream}::\PYG{n}{connect}\PYG{p}{(}\PYG{n}{addr}\PYG{p}{)}\PYG{o}{?}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{serde\PYGZus{}json}::\PYG{n}{to\PYGZus{}writer}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{stream}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{pkg}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{\PYGZus{}}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{stream}\PYG{p}{.}\PYG{n}{flush}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

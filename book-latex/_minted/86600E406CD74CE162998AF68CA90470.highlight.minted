@@ -1,0 +1,16 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{impl}\PYG{o}{\PYGZlt{}}\PYG{n}{T}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nc}{Serialize}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{IntoResponse}\PYG{+w}{ }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{Json}\PYG{o}{\PYGZlt{}}\PYG{n}{T}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{into\PYGZus{}response}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{Response}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Serializes T to JSON}
+\PYG{+w}{        }\PYG{c+c1}{// Sets Content\PYGZhy{}Type header}
+\PYG{+w}{        }\PYG{c+c1}{// Returns Response}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Handlers return values that implement IntoResponse}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{handler}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{impl}\PYG{+w}{ }\PYG{n}{IntoResponse}
+\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{Json}\PYG{p}{(}\PYG{n}{response}\PYG{p}{)}\PYG{+w}{  }\PYG{c+c1}{// Implements IntoResponse}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

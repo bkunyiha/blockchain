@@ -1,0 +1,13 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{cd}\PYG{+w}{ }ci/kubernetes/manifests
+./undeploy.sh
+
+\PYG{c+c1}{\PYGZsh{} Or delete namespace (removes all resources)}
+kubectl\PYG{+w}{ }delete\PYG{+w}{ }namespace\PYG{+w}{ }blockchain
+
+\PYG{c+c1}{\PYGZsh{} Stop local cluster (keeps cluster on disk)}
+minikube\PYG{+w}{ }stop
+
+\PYG{c+c1}{\PYGZsh{} Remove local cluster completely}
+minikube\PYG{+w}{ }delete
+\end{MintedVerbatim}

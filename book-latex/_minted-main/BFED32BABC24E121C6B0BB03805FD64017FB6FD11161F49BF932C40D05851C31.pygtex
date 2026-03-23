@@ -1,0 +1,22 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{tokio::main}\PYG{c+cp}{]}
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{deny(unused\PYGZus{}must\PYGZus{}use)}\PYG{c+cp}{]}
+\PYG{k}{async}\PYG{+w}{ }\PYG{k}{fn} \PYG{n+nf}{main}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// 1) Initialize the global tracing subscriber}
+\PYG{+w}{    }\PYG{c+c1}{// so later components can log.}
+\PYG{+w}{    }\PYG{n}{initialize\PYGZus{}logging}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 2) Parse CLI args (subcommands like}
+\PYG{+w}{    }\PYG{c+c1}{// startnode/createwallet/etc.).}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{opt}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Opt}::\PYG{n}{parse}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 3) Dispatch the selected command.}
+\PYG{+w}{    }\PYG{c+c1}{// For end\PYGZhy{}to\PYGZhy{}end node runtime, we care about}
+\PYG{+w}{    }\PYG{c+c1}{// Command::StartNode.}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{e}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{process\PYGZus{}command}\PYG{p}{(}\PYG{n}{opt}\PYG{p}{.}\PYG{n}{command}\PYG{p}{)}\PYG{p}{.}\PYG{k}{await}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nf+fm}{eprintln!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Error: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{std}::\PYG{n}{process}::\PYG{n}{exit}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

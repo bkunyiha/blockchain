@@ -5,50 +5,62 @@
 
 ### Part I: Foundations & Core Implementation
 
-1. <a href="../../01-Introduction.md">Chapter 1: Introduction & Overview</a>
-2. <a href="../README.md">Chapter 2: Introduction to Blockchain</a>
-3. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 3: Bitcoin Whitepaper</a>
-4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 4: Bitcoin Whitepaper In Rust</a>
-5. <a href="../Rust-Project-Index.md">Chapter 5: Rust Blockchain Project</a>
-6. <a href="../primitives/README.md">Chapter 6: Primitives</a>
-7. <a href="../util/README.md">Chapter 7: Utilities</a>
-8. <a href="../crypto/README.md">Chapter 8: Cryptography</a>
-9. <a href="README.md">Chapter 9: Blockchain (Technical Foundations)</a>
-10. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 10: Block Acceptance</a>
-11. <a href="../store/README.md">Chapter 11: Storage Layer</a>
-12. <a href="../net/README.md">Chapter 12: Network Layer</a>
-13. <a href="../node/README.md">Chapter 13: Node Orchestration</a>
-14. <a href="../wallet/README.md">Chapter 14: Wallet System</a>
-15. <a href="../web/README.md">Chapter 15: Web API Architecture</a>
-16. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 16: Desktop Admin (Iced)</a>
-17. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">16A: Code Walkthrough</a>
-18. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">16B: Update Loop</a>
-19. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">16C: View Layer</a>
-20. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 17: Desktop Admin (Tauri)</a>
-21. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">17A: Rust Backend</a>
-22. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">17B: Frontend Infrastructure</a>
-23. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">17C: Frontend Pages</a>
-24. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 18: Wallet UI (Iced)</a>
-25. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">18A: Code Listings</a>
-26. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 19: Wallet UI (Tauri)</a>
-27. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">19A: Rust Backend</a>
-28. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">19B: Frontend Infrastructure</a>
-29. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">19C: Frontend Pages</a>
-30. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 20: Embedded Database</a>
-31. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">20A: Code Listings</a>
-32. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 21: Web Admin Interface</a>
-33. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">21A: Code Listings</a>
-
+1. <a href="../../00-Quick-Start.md">Chapter 1: Quick Start</a>
+2. <a href="../../01-Introduction.md">Chapter 2: Introduction & Overview</a>
+3. <a href="../README.md">Chapter 3: Introduction to Blockchain</a>
+4. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Summary.md">Chapter 4: Bitcoin Whitepaper</a>
+5. <a href="../whitepaper-rust/00-Bitcoin-Whitepaper-Rust-Encoding-Summary.md">Chapter 5: Bitcoin Whitepaper in Rust</a>
+6. <a href="../Rust-Project-Index.md">Chapter 6: Rust Blockchain Project</a>
+7. <a href="../primitives/README.md">Chapter 7: Primitives</a>
+8. <a href="../util/README.md">Chapter 8: Utilities</a>
+9. <a href="../crypto/README.md">Chapter 9: Cryptography</a>
+10. <a href="01-Domain-Model.md">Chapter 10: Domain Model</a>
+11. <a href="02-Blockchain-State-Management.md">Chapter 11: Blockchain State Management</a>
+12. <a href="03-Chain-State-and-Storage.md">Chapter 12: Chain State and Storage</a>
+13. <a href="04-UTXO-Set.md">Chapter 13: UTXO Set</a>
+14. <a href="05-Transaction-Lifecycle.md">Chapter 14: Transaction Lifecycle</a>
+15. **Chapter 15: Block Lifecycle and Mining** ← *You are here*
+16. <a href="07-Consensus-and-Validation.md">Chapter 16: Consensus and Validation</a>
+17. <a href="08-Node-Orchestration.md">Chapter 17: Node Orchestration</a>
+18. <a href="09-Transaction-To-Block.md">Chapter 18: Transaction to Block</a>
+19. <a href="10-Whitepaper-Step-5-Block-Acceptance.md">Chapter 19: Block Acceptance</a>
+20. <a href="../store/README.md">Chapter 20: Storage Layer</a>
+21. <a href="../net/README.md">Chapter 21: Network Layer</a>
+22. <a href="../node/README.md">Chapter 22: Node Orchestration</a>
+23. <a href="../wallet/README.md">Chapter 23: Wallet System</a>
+24. <a href="../web/README.md">Chapter 24: Web API Architecture</a>
+25. <a href="../../bitcoin-desktop-ui-iced/04.1-Desktop-Admin-UI-Iced.md">Chapter 25: Desktop Admin (Iced)</a>
+26. <a href="../../bitcoin-desktop-ui-iced/04.1A-Desktop-Admin-UI-Code-Walkthrough.md">25A: Code Walkthrough</a>
+27. <a href="../../bitcoin-desktop-ui-iced/04.1B-Desktop-Admin-UI-Update-Loop.md">25B: Update Loop</a>
+28. <a href="../../bitcoin-desktop-ui-iced/04.1C-Desktop-Admin-UI-View-Layer.md">25C: View Layer</a>
+29. <a href="../../bitcoin-desktop-ui-tauri/04.2-Desktop-Admin-UI-Tauri.md">Chapter 26: Desktop Admin (Tauri)</a>
+30. <a href="../../bitcoin-desktop-ui-tauri/04.2A-Tauri-Admin-Rust-Backend.md">26A: Rust Backend</a>
+31. <a href="../../bitcoin-desktop-ui-tauri/04.2B-Tauri-Admin-Frontend-Infrastructure.md">26B: Frontend Infrastructure</a>
+32. <a href="../../bitcoin-desktop-ui-tauri/04.2C-Tauri-Admin-Frontend-Pages.md">26C: Frontend Pages</a>
+33. <a href="../../bitcoin-wallet-ui-iced/05.1-Wallet-UI-Iced.md">Chapter 27: Wallet UI (Iced)</a>
+34. <a href="../../bitcoin-wallet-ui-iced/05.1A-Wallet-UI-Code-Listings.md">27A: Code Listings</a>
+35. <a href="../../bitcoin-wallet-ui-tauri/05.2-Wallet-UI-Tauri.md">Chapter 28: Wallet UI (Tauri)</a>
+36. <a href="../../bitcoin-wallet-ui-tauri/05.2A-Tauri-Wallet-Rust-Backend.md">28A: Rust Backend</a>
+37. <a href="../../bitcoin-wallet-ui-tauri/05.2B-Tauri-Wallet-Frontend-Infrastructure.md">28B: Frontend Infrastructure</a>
+38. <a href="../../bitcoin-wallet-ui-tauri/05.2C-Tauri-Wallet-Frontend-Pages.md">28C: Frontend Pages</a>
+39. <a href="../../embedded-database/06-Embedded-Database.md">Chapter 29: Embedded Database</a>
+40. <a href="../../embedded-database/06A-Embedded-Database-Code-Listings.md">29A: Code Listings</a>
+41. <a href="../../bitcoin-web-ui/06-Web-Admin-UI.md">Chapter 30: Web Admin Interface</a>
+42. <a href="../../bitcoin-web-ui/06A-Web-Admin-UI-Code-Listings.md">30A: Code Listings</a>
 ### Part II: Deployment & Operations
 
-34. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 22: Docker Compose Deployment</a>
-35. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">22A: Code Listings</a>
-36. <a href="../../ci/kubernetes/README.md">Chapter 23: Kubernetes Deployment</a>
-37. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">23A: Code Listings</a>
-
+43. <a href="../../ci/docker-compose/01-Introduction.md">Chapter 31: Docker Compose Deployment</a>
+44. <a href="../../ci/docker-compose/01A-Docker-Compose-Code-Listings.md">31A: Code Listings</a>
+45. <a href="../../ci/kubernetes/README.md">Chapter 32: Kubernetes Deployment</a>
+46. <a href="../../ci/kubernetes/01A-Kubernetes-Code-Listings.md">32A: Code Listings</a>
 ### Part III: Language Reference
 
-38. <a href="../../rust/README.md">Chapter 24: Rust Language Guide</a>
+47. <a href="../../rust/README.md">Chapter 33: Rust Language Guide</a>
+### Appendices
+
+48. <a href="../../Glossary.md">Glossary</a>
+49. <a href="../../Bibliography.md">Bibliography</a>
+50. <a href="../../Appendix-Source-Reference.md">Source Reference</a>
 
 </details>
 
@@ -56,15 +68,15 @@
 
 ---
 
-## Section 9.6: Block Lifecycle and Mining
+# Chapter 15: Block Lifecycle and Mining
 
-In the previous section (Section 9.5, **Transaction Lifecycle**), we followed a transaction from construction and signing, through mempool admission and propagation. That brings us to the natural next question: **what happens to those pending transactions next?**
+In the previous section (Chapter 14, **Transaction Lifecycle**), we followed a transaction from construction and signing, through mempool admission and propagation. That brings us to the natural next question: **what happens to those pending transactions next?**
 
 This section picks up from that boundary and traces the rest of the path: how the node assembles a candidate block from the mempool, performs proof-of-work, persists the new tip, advances the UTXO set, and relays the new block to peers. We will walk through the code: key methods are printed, and each listing is followed by a succinct explanation of what the code is doing and why.
 
-## Scope within Section 9 (section flow)
+## Scope (section flow)
 
-This subsection covers **Section 9 (Blockchain — From Transaction to Block Acceptance) Steps 5–7**: candidate assembly, proof-of-work, persistence, and the UTXO state transition after a block is connected.
+This chapter covers **the blockchain pipeline (Blockchain — From Transaction to Block Acceptance) Steps 5–7**: candidate assembly, proof-of-work, persistence, and the UTXO state transition after a block is connected.
 
 ## Reader promise (what you will understand after this section)
 
@@ -366,7 +378,7 @@ pub async fn prepare_mining_utxo(
 
 > **Why does validation happen in `prepare` AND again in `mine_block`?**
 >
-> `prepare_mining_utxo` validates with a **read lock** — other operations can proceed concurrently. Between this validation and the actual `mine_block` call (which requires the **write lock**), a competing block may arrive from the network and be processed via `add_block`. That competing block spends the same transaction inputs. If we didn't re-validate under the write lock, we'd mine a block with already-spent inputs — creating a duplicate coinbase subsidy (money from nothing). The second validation in `BlockchainService::mine_block` (Section 9.2, Listing 9-10) catches this race condition.
+> `prepare_mining_utxo` validates with a **read lock** — other operations can proceed concurrently. Between this validation and the actual `mine_block` call (which requires the **write lock**), a competing block may arrive from the network and be processed via `add_block`. That competing block spends the same transaction inputs. If we didn't re-validate under the write lock, we'd mine a block with already-spent inputs — creating a duplicate coinbase subsidy (money from nothing). The second validation in `BlockchainService::mine_block` (Chapter 11, Listing 9-10) catches this race condition.
 
 ### Step 3 — Mine, persist, and clean up mempool (`process_mine_block` → `mine_block`)
 
@@ -1017,8 +1029,8 @@ AdminNodeQueryType::ReindexUtxo => {
 
 ## Navigation
 
-- **Previous**: Section 9.5 (Transaction Lifecycle)
-- **Next**: Section 9.7 (Consensus and Validation)
+- **Previous**: Chapter 14 (Transaction Lifecycle)
+- **Next**: Chapter 16 (Consensus and Validation)
 
 ---
 

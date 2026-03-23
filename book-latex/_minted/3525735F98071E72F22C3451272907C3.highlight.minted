@@ -1,0 +1,30 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{api}\PYG{p}{;}
+\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{app}\PYG{p}{;}
+\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{runtime}\PYG{p}{;}
+\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{types}\PYG{p}{;}
+\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{update}\PYG{p}{;}
+\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{view}\PYG{p}{;}
+
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{app}\PYG{p}{::}\PYG{n}{AdminApp}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{iced}\PYG{p}{:}\PYG{p}{:}\PYG{p}{\PYGZob{}}\PYG{n}{Theme}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{application}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{runtime}\PYG{p}{::}\PYG{n}{init\PYGZus{}runtime}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{update}\PYG{p}{::}\PYG{n}{update}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{view}\PYG{p}{::}\PYG{n}{view}\PYG{p}{;}
+
+\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{main}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZhy{}\PYGZgt{}}\PYG{+w}{ }\PYG{n+nc}{iced}\PYG{p}{::}\PYG{n+nb}{Result}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Initialize tracing subscriber for logging}
+\PYG{+w}{    }\PYG{n}{tracing\PYGZus{}subscriber}\PYG{p}{::}\PYG{n}{fmt}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{with\PYGZus{}env\PYGZus{}filter}\PYG{p}{(}\PYG{n}{tracing\PYGZus{}subscriber}\PYG{p}{::}\PYG{n}{EnvFilter}\PYG{p}{::}\PYG{n}{from\PYGZus{}default\PYGZus{}env}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{with\PYGZus{}target}\PYG{p}{(}\PYG{k+kc}{false}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{init}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Initialize Tokio runtime for async operations}
+\PYG{+w}{    }\PYG{n}{init\PYGZus{}runtime}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Run the application}
+\PYG{+w}{    }\PYG{n}{application}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Bitcoin Admin UI}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{update}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{view}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{theme}\PYG{p}{(}\PYG{o}{|}\PYG{n}{\PYGZus{}}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{Theme}\PYG{p}{::}\PYG{n}{Dark}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{run\PYGZus{}with}\PYG{p}{(}\PYG{n}{AdminApp}\PYG{p}{::}\PYG{n}{new}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

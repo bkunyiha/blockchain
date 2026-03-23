@@ -1,0 +1,20 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Serialize, Deserialize, Validate,}
+\PYG{c+cp}{         ToSchema)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{BlockQuery}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{validate(range(}
+\PYG{c+cp}{        min = 0,}
+\PYG{c+cp}{        message = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Page must be 0 or greater}\PYG{l+s}{\PYGZdq{}}
+\PYG{c+cp}{    ))}\PYG{c+cp}{]}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{page}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u32}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{validate(range(}
+\PYG{c+cp}{        min = 1,}
+\PYG{c+cp}{        max = 100,}
+\PYG{c+cp}{        message = }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Limit must be 1\PYGZhy{}100}\PYG{l+s}{\PYGZdq{}}
+\PYG{c+cp}{    ))}\PYG{c+cp}{]}
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{limit}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u32}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{k}{pub}\PYG{+w}{ }\PYG{n}{hash}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

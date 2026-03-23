@@ -1,0 +1,35 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{derive(Debug, Clone)}\PYG{c+cp}{]}
+\PYG{k}{pub}\PYG{+w}{ }\PYG{k}{enum}\PYG{+w}{ }\PYG{n+nc}{Message}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// Menu/UI navigation}
+\PYG{+w}{    }\PYG{n}{MenuChanged}\PYG{p}{(}\PYG{n}{Menu}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{WalletSectionChanged}\PYG{p}{(}\PYG{n}{WalletSection}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{BlockchainSectionChanged}\PYG{p}{(}\PYG{n}{BlockchainSection}\PYG{p}{)}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Configuration inputs}
+\PYG{+w}{    }\PYG{n}{BaseUrlChanged}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{ApiKeyChanged}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Field inputs}
+\PYG{+w}{    }\PYG{n}{BlockHashChanged}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{MiningAddressChanged}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{MiningNBlocksChanged}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{TxidChanged}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Request messages (trigger API calls)}
+\PYG{+w}{    }\PYG{n}{FetchInfo}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{FetchBlocks}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{FetchBlockByHash}\PYG{p}{(}\PYG{n+nb}{String}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{GenerateToAddress}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{address}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{nblocks}\PYG{p}{:}\PYG{+w}{ }\PYG{k+kt}{u32}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{maxtries}\PYG{p}{:}\PYG{+w}{ }\PYG{n+nb}{Option}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{u32}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{p}{,}
+
+\PYG{+w}{    }\PYG{c+c1}{// Result messages (from async API calls)}
+\PYG{+w}{    }\PYG{n}{InfoLoaded}\PYG{p}{(}\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{BlockchainInfo}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{BlocksLoaded}\PYG{p}{(}\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n+nb}{Vec}\PYG{o}{\PYGZlt{}}\PYG{n}{BlockSummary}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{BlockByHashLoaded}\PYG{p}{(}\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{GenerateToAddressDone}\PYG{p}{(}\PYG{n+nb}{Result}\PYG{o}{\PYGZlt{}}\PYG{n}{ApiResponse}\PYG{o}{\PYGZlt{}}\PYG{n}{Value}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{String}\PYG{o}{\PYGZgt{}}\PYG{p}{)}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

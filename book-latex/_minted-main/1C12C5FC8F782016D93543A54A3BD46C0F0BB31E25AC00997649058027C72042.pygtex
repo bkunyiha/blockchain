@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nt}{resources}\PYG{p}{:}
+\PYG{+w}{  }\PYG{n+nt}{requests}\PYG{p}{:}
+\PYG{+w}{    }\PYG{n+nt}{cpu}\PYG{p}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}500m\PYGZdq{}}
+\PYG{+w}{    }\PYG{n+nt}{memory}\PYG{p}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}512Mi\PYGZdq{}}
+\PYG{+w}{  }\PYG{n+nt}{limits}\PYG{p}{:}
+\PYG{+w}{    }\PYG{n+nt}{cpu}\PYG{p}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}2000m\PYGZdq{}}
+\PYG{+w}{    }\PYG{n+nt}{memory}\PYG{p}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}2Gi\PYGZdq{}}
+\end{Verbatim}

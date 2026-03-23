@@ -1,0 +1,21 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{cfg(test)}\PYG{c+cp}{]}
+\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{tests}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{use}\PYG{+w}{ }\PYG{k}{super}\PYG{p}{:}\PYG{p}{:}\PYG{o}{*}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{creation}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{use}\PYG{+w}{ }\PYG{k}{super}\PYG{p}{:}\PYG{p}{:}\PYG{o}{*}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{test}\PYG{c+cp}{]}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{test\PYGZus{}new\PYGZus{}transaction}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{validation}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{use}\PYG{+w}{ }\PYG{k}{super}\PYG{p}{:}\PYG{p}{:}\PYG{o}{*}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{test}\PYG{c+cp}{]}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{test\PYGZus{}valid\PYGZus{}transaction}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{mod}\PYG{+w}{ }\PYG{n+nn}{serialization}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{use}\PYG{+w}{ }\PYG{k}{super}\PYG{p}{:}\PYG{p}{:}\PYG{o}{*}\PYG{p}{;}
+\PYG{+w}{        }\PYG{c+cp}{\PYGZsh{}[}\PYG{c+cp}{test}\PYG{c+cp}{]}\PYG{+w}{ }\PYG{k}{fn}\PYG{+w}{ }\PYG{n+nf}{test\PYGZus{}serialize}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}
