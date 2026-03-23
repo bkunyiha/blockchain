@@ -119,8 +119,8 @@ The \code{OnceLock} guarantees that \code{init\_database} can only succeed once 
 Both wallets declare the same dependency:
 
 \begin{minted}[fontsize=\footnotesize]{toml}
-rusqlite = { version = "0.31", features = ["bundled-sqlcipher"] }
-dirs = "5.0"
+rusqlite = { version = "0.39", features = ["bundled-sqlcipher"] }
+dirs = "6.0"
 \end{minted}
 
 The \code{bundled-sqlcipher} feature compiles SQLCipher from source during \code{cargo build}, so no external SQLCipher library installation is needed. The \code{dirs} crate provides cross-platform data directory resolution (e.g., \code{~/Library/Application Support} on macOS, \code{~/.local/share} on Linux, \code{\%APPDATA\%} on Windows).

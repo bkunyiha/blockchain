@@ -196,8 +196,8 @@ The `OnceLock` guarantees that `init_database` can only succeed once per process
 Both wallets declare the same dependency:
 
 ```toml
-rusqlite = { version = "0.31", features = ["bundled-sqlcipher"] }
-dirs = "5.0"
+rusqlite = { version = "0.39", features = ["bundled-sqlcipher"] }
+dirs = "6.0"
 ```
 
 The `bundled-sqlcipher` feature compiles SQLCipher from source during `cargo build`, so no external SQLCipher library installation is needed. The `dirs` crate provides cross-platform data directory resolution (e.g., `~/Library/Application Support` on macOS, `~/.local/share` on Linux, `%APPDATA%` on Windows).

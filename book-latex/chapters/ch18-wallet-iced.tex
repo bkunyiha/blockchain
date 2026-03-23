@@ -98,9 +98,10 @@ fn main() -> iced::Result {
     }
 
     // 3) Enter Iced's MVU loop
-    application("Bitcoin Wallet UI", update, view)
-        .theme(|_| Theme::Dark)
-        .run_with(WalletApp::new)
+    application(WalletApp::new, update, view)
+        .title(title)
+        .theme(theme)
+        .run()
 }
 
 fn generate_database_password() -> String {
@@ -131,7 +132,7 @@ fn generate_database_password() -> String {
 \begin{enumerate}
   \item \textbf{Async execution}: \code{init\_runtime()} (same as Chapter~\ref{ch:desktop-iced}) creates a Tokio runtime for API calls.
   \item \textbf{Persistent storage}: \code{init\_database(password)} opens/creates an encrypted SQLite database (see Chapter~\ref{ch:embedded-db}).
-  \item \textbf{MVU loop}: \code{application(...).run\_with(WalletApp::new)} starts the event loop.
+  \item \textbf{MVU loop}: \code{application(WalletApp::new, update, view).run()} starts the event loop.
 \end{enumerate}
 
 The database password is generated deterministically from the user's username and home directory, so:

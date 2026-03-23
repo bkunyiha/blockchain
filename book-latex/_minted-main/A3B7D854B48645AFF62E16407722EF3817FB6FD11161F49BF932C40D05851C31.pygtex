@@ -1,0 +1,53 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{mod} \PYG{n+nn}{api}\PYG{p}{;}
+\PYG{k}{mod} \PYG{n+nn}{app}\PYG{p}{;}
+\PYG{k}{mod} \PYG{n+nn}{database}\PYG{p}{;}
+\PYG{k}{mod} \PYG{n+nn}{runtime}\PYG{p}{;}
+\PYG{k}{mod} \PYG{n+nn}{types}\PYG{p}{;}
+\PYG{k}{mod} \PYG{n+nn}{update}\PYG{p}{;}
+\PYG{k}{mod} \PYG{n+nn}{view}\PYG{p}{;}
+
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{app}::\PYG{n}{WalletApp}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{iced}::\PYG{p}{\PYGZob{}}\PYG{n}{Theme}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{application}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{runtime}::\PYG{n}{init\PYGZus{}runtime}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{update}::\PYG{n}{update}\PYG{p}{;}
+\PYG{k}{use}\PYG{+w}{ }\PYG{n}{view}::\PYG{n}{view}\PYG{p}{;}
+
+\PYG{k}{fn} \PYG{n+nf}{main}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nc}{iced}::\PYG{n+nb}{Result}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// 1) Async precondition: initialize Tokio runtime for API calls}
+\PYG{+w}{    }\PYG{n}{init\PYGZus{}runtime}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 2) Persistence precondition: generate deterministic database password}
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n}{db\PYGZus{}password}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{generate\PYGZus{}database\PYGZus{}password}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Err}\PYG{p}{(}\PYG{n}{e}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{database}::\PYG{n}{init\PYGZus{}database}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{db\PYGZus{}password}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n+nf+fm}{eprintln!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Failed to initialize database: \PYGZob{}\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// 3) Enter Iced\PYGZsq{}s MVU loop}
+\PYG{+w}{    }\PYG{n}{application}\PYG{p}{(}\PYG{n}{WalletApp}::\PYG{n}{new}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{update}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{view}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{title}\PYG{p}{(}\PYG{n}{title}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{theme}\PYG{p}{(}\PYG{n}{theme}\PYG{p}{)}
+\PYG{+w}{        }\PYG{p}{.}\PYG{n}{run}\PYG{p}{(}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{fn} \PYG{n+nf}{generate\PYGZus{}database\PYGZus{}password}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{} \PYG{n+nb}{String} \PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{use}\PYG{+w}{ }\PYG{n}{std}::\PYG{n}{collections}::\PYG{n}{hash\PYGZus{}map}::\PYG{n}{DefaultHasher}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{use}\PYG{+w}{ }\PYG{n}{std}::\PYG{n}{hash}::\PYG{p}{\PYGZob{}}\PYG{n}{Hash}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Hasher}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{hasher}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{DefaultHasher}::\PYG{n}{new}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Deterministic password from username + home directory}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{username}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{std}::\PYG{n}{env}::\PYG{n}{var}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{USER}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{username}\PYG{p}{.}\PYG{n}{hash}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{hasher}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Ok}\PYG{p}{(}\PYG{n}{username}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{std}::\PYG{n}{env}::\PYG{n}{var}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{USERNAME}\PYG{l+s}{\PYGZdq{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{username}\PYG{p}{.}\PYG{n}{hash}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{hasher}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{k+kd}{let}\PYG{+w}{ }\PYG{n+nb}{Some}\PYG{p}{(}\PYG{n}{home}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{dirs}::\PYG{n}{home\PYGZus{}dir}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{home}\PYG{p}{.}\PYG{n}{to\PYGZus{}string\PYGZus{}lossy}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n}{hash}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{k}{mut}\PYG{+w}{ }\PYG{n}{hasher}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// Return hex\PYGZhy{}encoded hash as password}
+\PYG{+w}{    }\PYG{n+nf+fm}{format!}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZob{}:x\PYGZcb{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{hasher}\PYG{p}{.}\PYG{n}{finish}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

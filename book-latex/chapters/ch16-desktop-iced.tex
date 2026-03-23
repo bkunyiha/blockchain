@@ -111,9 +111,10 @@ fn main() -> iced::Result {
     init_runtime();
 
     // Run the application
-    application("Bitcoin Admin UI", update, view)
-        .theme(|_| Theme::Dark)
-        .run_with(AdminApp::new)
+    application(AdminApp::new, update, view)
+        .title(title)
+        .theme(theme)
+        .run()
 }
 \end{minted}
 \end{listing}
@@ -123,7 +124,7 @@ fn main() -> iced::Result {
 \begin{itemize}
   \item \textbf{Modules}: \code{update} and \code{view} are the MVU ``engine''; everything else exists to support them.
   \item \textbf{\code{init\_runtime()}}: starts an async executor so later HTTP tasks don't block the UI thread.
-  \item \textbf{\code{application(...).run\_with(AdminApp::new)}}: creates initial state once, then enters the event loop:
+  \item \textbf{\code{application(AdminApp::new, update, view).run()}}: creates initial state once, then enters the event loop:
   \begin{itemize}
     \item \code{view(\&AdminApp)} draws the UI
     \item user interaction emits \code{Message}

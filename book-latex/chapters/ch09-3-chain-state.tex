@@ -468,14 +468,22 @@ impl BlockchainIterator {
         }
     }
 
-    pub fn next(&mut self) -> Option<Block> {
+}
+
+impl Iterator for BlockchainIterator {
+    type Item = Block;
+
+    fn next(&mut self) -> Option<Self::Item> {
         let block_tree = self.db
             .open_tree(self.file_system_blocks_tree.clone())
             .ok()?;
-        let data = block_tree
-            .get(self.current_hash.clone())
-            .ok()
-            .flatten()?;
+
+        let data = match block_tree.get(self.current_hash.clone()) {
+            Ok(Some(d)) => d,
+            Ok(None) => return None,
+            Err(_) => return None,
+        };
+
         let block = Block::deserialize(
             data.to_vec().as_slice()
         ).ok()?;
@@ -497,16 +505,13 @@ pub async fn get_blocks_by_height(
     height: usize,
 ) -> Result<Vec<Block>> {
     let mut blocks = Vec::new();
-    let mut iterator = self.iterator().await?;
-
-    while let Some(block) = iterator.next() {
+    let iterator = self.iterator().await?;
+    for block in iterator {
         let h = block.get_height();
-        if h <= height && h >= initial_height {
-            blocks.push(block.clone());
-        }
-        if h < initial_height {
+        if h > height || h < initial_height {
             break;
         }
+        blocks.push(block);
     }
     Ok(blocks)
 }
