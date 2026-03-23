@@ -72,7 +72,6 @@
 
 use crate::error::{BtcError, Result};
 // use rand::SeedableRng; // Not needed in current implementation
-use rand::rng;
 use ring::rand::SecureRandom;
 use ring::signature::{ECDSA_P256_SHA256_FIXED, ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair};
 use secp256k1::{Keypair, Message, PublicKey, Secp256k1, SecretKey, XOnlyPublicKey, schnorr};
@@ -271,7 +270,8 @@ pub fn schnorr_sign_digest(private_key: &[u8], message: &[u8]) -> Result<Vec<u8>
     let _message_obj = Message::from_digest(message_hash_array);
 
     let keypair = Keypair::from_secret_key(&secp, &secret_key);
-    let mut rng = rng();
+    // Use the RNG re-exported by `secp256k1` to avoid `rand` version mismatches.
+    let mut rng = secp256k1::rand::rng();
     let signature = secp.sign_schnorr_with_rng(&message_hash, &keypair, &mut rng);
     Ok(signature.as_ref().to_vec())
 }

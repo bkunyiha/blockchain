@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 # UI framework
-iced = { version = "0.13.1", features = ["advanced"] }
+iced = { version = "0.14.0", features = ["advanced"] }
 
 # Shared typed HTTP client for the node API.
 # We need admin feature for wallet info, balance, and transaction history queries.
@@ -15,10 +15,10 @@ bitcoin-api = { path = "../bitcoin-api", features = ["client", "wallet", "admin"
 serde_json = "1.0"
 
 # Database persistence with SQLCipher encryption
-rusqlite = { version = "0.31", features = ["bundled-sqlcipher"] }
+rusqlite = { version = "0.39", features = ["bundled-sqlcipher"] }
 
 # Directory utilities for finding data directory
-dirs = "5.0"
+dirs = "6.0"
 
 # Async runtime used by the API client in this UI process.
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }

@@ -1400,22 +1400,24 @@ impl BlockchainIterator {
             db,
         }
     }
+}
 
-    pub fn next(&mut self) -> Option<Block> {
+impl Iterator for BlockchainIterator {
+    type Item = Block;
+
+    fn next(&mut self) -> Option<Self::Item> {
         let block_tree = self
             .db
             .open_tree(self.file_system_blocks_tree.clone())
-            .unwrap();
+            .ok()?;
+
         let data = match block_tree.get(self.current_hash.clone()) {
             Ok(Some(d)) => d,
             Ok(None) => return None, // Block doesn't exist (empty blockchain)
             Err(_) => return None,   // Error reading from database
         };
 
-        let block = match Block::deserialize(data.to_vec().as_slice()) {
-            Ok(b) => b,
-            Err(_) => return None, // Failed to deserialize block
-        };
+        let block = Block::deserialize(data.to_vec().as_slice()).ok()?;
         self.current_hash = block.get_pre_block_hash().clone();
         Some(block)
     }

@@ -12,6 +12,14 @@ use runtime::init_runtime;
 use update::update;
 use view::view;
 
+fn title(_: &WalletApp) -> String {
+    "Bitcoin Wallet UI".to_string()
+}
+
+fn theme(_: &WalletApp) -> Theme {
+    Theme::Dark
+}
+
 fn main() -> iced::Result {
     // Initialize Tokio runtime for async operations
     init_runtime();
@@ -25,9 +33,10 @@ fn main() -> iced::Result {
     }
 
     // Run the application
-    application("Bitcoin Wallet UI", update, view)
-        .theme(|_| Theme::Dark)
-        .run_with(WalletApp::new)
+    application(WalletApp::new, update, view)
+        .title(title)
+        .theme(theme)
+        .run()
 }
 
 /// Generate a secure database password

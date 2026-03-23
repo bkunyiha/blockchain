@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 # UI framework
-iced = { version = "0.13.1", features = ["advanced"] }
+iced = { version = "0.14.0", features = ["advanced"] }
 
 # Shared typed HTTP client for the node API.
 # Admin UI needs full surface: client + wallet + admin features.

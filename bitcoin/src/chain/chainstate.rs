@@ -104,14 +104,13 @@ impl BlockchainService {
         height: usize,
     ) -> Result<Vec<Block>> {
         let mut blocks = Vec::new();
-        let mut iterator = self.iterator().await?;
-        while let Some(block) = iterator.next() {
-            if block.get_height() <= height && block.get_height() >= initial_height {
-                blocks.push(block.clone());
-            }
-            if block.get_height() > height || block.get_height() < initial_height {
+        let iterator = self.iterator().await?;
+        for block in iterator {
+            let h = block.get_height();
+            if h > height || h < initial_height {
                 break;
             }
+            blocks.push(block);
         }
         Ok(blocks)
     }

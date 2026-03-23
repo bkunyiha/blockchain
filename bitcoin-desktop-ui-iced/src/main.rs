@@ -11,6 +11,14 @@ use runtime::init_runtime;
 use update::update;
 use view::view;
 
+fn title(_: &AdminApp) -> String {
+    "Bitcoin Admin UI".to_string()
+}
+
+fn theme(_: &AdminApp) -> Theme {
+    Theme::Dark
+}
+
 fn main() -> iced::Result {
     // Initialize tracing subscriber for logging
     tracing_subscriber::fmt()
@@ -22,7 +30,8 @@ fn main() -> iced::Result {
     init_runtime();
 
     // Run the application
-    application("Bitcoin Admin UI", update, view)
-        .theme(|_| Theme::Dark)
-        .run_with(AdminApp::new)
+    application(AdminApp::new, update, view)
+        .title(title)
+        .theme(theme)
+        .run()
 }
