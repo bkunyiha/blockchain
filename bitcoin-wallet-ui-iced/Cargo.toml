@@ -16,7 +16,7 @@ bitcoin-api = { path = "../bitcoin-api", features = ["client", "wallet", "admin"
 serde_json = "1.0"
 
 # Database persistence with SQLCipher encryption
-rusqlite = { version = "0.39", features = ["bundled-sqlcipher"] }
+rusqlite = { version = "0.40", features = ["bundled-sqlcipher"] }
 
 # Directory utilities for finding data directory
 dirs = "6.0"

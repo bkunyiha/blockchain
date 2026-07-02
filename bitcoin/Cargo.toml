@@ -30,7 +30,7 @@ bs58 = "0.5.1"
 # Used in: Multiple files for hex encoding of hashes and transaction IDs
 # Files: src/domain/proof_of_work.rs, src/domain/transaction.rs, src/main.rs, src/server/operations.rs, src/server/process_messages.rs
 # Purpose: Convert binary data to/from hexadecimal strings for logging and display
-data-encoding = "2.10.0"
+data-encoding = "2.11.0"
 
 # =============================================================================
 # Cryptographic Libraries
@@ -46,7 +46,7 @@ ring = "0.17.14"
 # Used in: src/util/utils.rs for taproot_hash function
 # Purpose: SHA256 hashing for P2TR address generation
 # Usage: Replaces RIPEMD160 with secure SHA256 for modern Bitcoin addresses
-sha2 = "0.10.9"
+sha2 = "0.11.0"
 
 # Elliptic curve cryptography for Bitcoin operations
 # Used in: src/util/utils.rs for Schnorr signature operations
@@ -59,7 +59,7 @@ secp256k1 = { version = "0.31.1", features = ["rand"] }
 # Used in: src/util/utils.rs for Schnorr signature generation
 # Purpose: Provide CryptoRng trait implementation for secp256k1
 # Features: std - for standard library support
-rand = { version = "0.10.0", features = ["std"] }
+rand = { version = "0.10.1", features = ["std"] }
 
 # =============================================================================
 # Database and Storage
@@ -81,7 +81,7 @@ sled = "0.34.7"
 # Purpose: Asynchronous I/O and concurrent operations
 # Features: full - complete async runtime with all features
 # Usage: Network operations, database I/O, concurrent blockchain operations
-tokio = { version = "1.50.0", features = ["full"] }
+tokio = { version = "1.52.3", features = ["full"] }
 
 # =============================================================================
 # Logging and Diagnostics
@@ -110,7 +110,7 @@ tracing-subscriber = { version = "0.3", default-features = false, features = ["f
 # Purpose: Parse command-line arguments for blockchain operations
 # Usage: Create wallet, send transactions, start nodes, etc.
 # Features: derive - automatic trait implementation, env - environment variable support
-clap = { version = "4.6.0", features = ["derive", "env"] }
+clap = { version = "4.6.1", features = ["derive", "env"] }
 
 # =============================================================================
 # Error Handling
@@ -137,7 +137,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 # Used in: src/server/operations.rs, src/server/process_messages.rs
 # Purpose: JSON message serialization for network communication
 # Usage: Serialize/deserialize network messages and API responses
-serde_json = "1.0.149"
+serde_json = "1.0.150"
 
 # =============================================================================
 # Web Framework and HTTP
@@ -152,7 +152,7 @@ serde_json = "1.0.149"
 # version to avoid multiple-incompatible Axum versions in the dependency graph.
 # Keep Axum aligned with `axum_rate_limiter` to avoid multiple incompatible Axum versions.
 axum = { version = "0.7.9", features = ["ws", "macros"] }
-utoipa = { version = "5.4.0", features = ["axum_extras", "chrono", "uuid"] }
+utoipa = { version = "5.5.0", features = ["axum_extras", "chrono", "uuid"] }
 # Axum integration for Swagger UI.
 # v8 targets axum 0.7.x (v9 targets newer axum).
 utoipa-swagger-ui = { version = "8.1.0", features = ["axum"] }
@@ -165,7 +165,7 @@ tower = "0.5.3"
 # HTTP-specific Tower middleware
 # Used in: src/web/ for CORS, tracing, and other HTTP middleware
 # Purpose: CORS handling, request tracing, compression
-tower-http = { version = "0.6.8", features = ["cors", "trace", "compression-gzip", "fs"] }
+tower-http = { version = "0.7.0", features = ["cors", "trace", "compression-gzip", "fs"] }
 
 # Rate limiting middleware
 # Used in: src/web/middleware/ for API rate limiting
@@ -180,7 +180,7 @@ axum_rate_limiter = "0.1.1"
 # HTTP client and server library
 # Used in: src/web/ for low-level HTTP operations
 # Purpose: HTTP protocol implementation
-hyper = { version = "1.8", features = ["full"] }
+hyper = { version = "1.10", features = ["full"] }
 
 # WebSocket support
 # Used in: src/web/ for real-time blockchain updates
@@ -219,7 +219,7 @@ num-bigint = "0.4.6"
 # Purpose: Generate unique identifiers for transactions and test databases
 # Features: v4 - random UUID generation
 # Usage: Transaction IDs, test database naming, unique resource identification
-uuid = { version = "1.22.0", features = ["v4"]}
+uuid = { version = "1.23.4", features = ["v4"]}
 
 # =============================================================================
 # Removed Dependencies (for reference)
@@ -240,7 +240,7 @@ uuid = { version = "1.22.0", features = ["v4"]}
 # Used in: tests/ for integration testing
 # Purpose: Test command-line applications and their output
 # Usage: Verify CLI commands work correctly
-assert_cmd = "2.2.0"
+assert_cmd = "2.2.2"
 
 # Temporary file and directory utilities
 # Used in: tests/ for temporary test data
